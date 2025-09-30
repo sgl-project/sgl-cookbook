@@ -44,7 +44,7 @@ Each recipe is designed to be:
 
 We welcome contributions from the community!  
 
-1. Start from the template in `Model Recipes/_template/`.  
+1. Start from the template in `model-recipes/<models>`.  
 2. Include:  
    - **Environment details** (driver, CUDA, SGL version, OS)  
    - **Hardware description** (GPU type, count, interconnect)  
