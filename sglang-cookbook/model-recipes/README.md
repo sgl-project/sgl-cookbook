@@ -1,7 +1,9 @@
 # Model Recipes
 
 SGL Model Recipes is a community-maintained hub of reference setups that make deploying and operating SGL fast, consistent, and reproducible. Inside you’ll find curated configurations, scripts, and best-practice guides covering a range of models, hardware targets, and deployment environments. 
+
 Each recipe is designed to be copy-paste friendly, benchmarkable, and easy to adapt to your needs. 
+
 Contributions are welcome: submit new recipes, improvements, or bug fixes via PRs, and open issues for requests
 
 ---
