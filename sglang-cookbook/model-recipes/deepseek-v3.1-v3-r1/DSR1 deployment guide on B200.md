@@ -293,7 +293,9 @@ python3 -m sglang.bench_serving \
 --random-input-len 1000 \
 --random-output-len 1000 \
 --random-range-ratio 1 \
---max-concurrency 512  \--warmup-request 512 \--save-result --result-filename vllm_benchmark_serving_results.json
+--max-concurrency 512  \
+--warmup-request 512 \
+--save-result --result-filename vllm_benchmark_serving_results.json
 
 ```
 
