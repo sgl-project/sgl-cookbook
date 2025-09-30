@@ -58,4 +58,4 @@ We welcome contributions from the community!
 
 ---
 
-> 🚀 Whether you’re running small experiments or scaling to production, these recipes are here to help you get the most out of **SGL**.
+🚀 Whether you’re running small experiments or scaling to production, these recipes are here to help you get the most out of **SGL**.
