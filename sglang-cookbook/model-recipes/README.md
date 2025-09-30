@@ -29,11 +29,13 @@ Each recipe is designed to be:
 ### DeepSeek <img src="https://avatars.githubusercontent.com/u/148330874?s=200&v=4" alt="DeepSeek" width="16" height="16" style="vertical-align:middle;">
 
 - DeepSeek Model Recipes (model-recipes/deepseek-v3.1-v3-r1/)
+  
   Reference configurations and scripts for running DeepSeek models with SGL across different hardware setups.  
 
 ### GPT-OSS <img src="https://avatars.githubusercontent.com/u/14957082?v=4" alt="OpenAI" width="16" height="16" style="vertical-align:middle;">
 
 - GPT-OSS Model Recipes (model-recipes/gpt-oss/)
+  
   Reference configurations and scripts for running GPT-OSS models with SGL across different hardware setups.
   
 ---
