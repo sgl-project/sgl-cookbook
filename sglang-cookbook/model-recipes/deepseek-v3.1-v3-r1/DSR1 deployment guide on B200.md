@@ -30,12 +30,12 @@ GPU: Blackwell architecture
 
 ### Running the Docker Container
 
-Once built, use this script to start a container with full GPU access and an expanded shared memory segment (important for multi-GPU workloads):
+Use this script to start a container with full GPU access and an expanded shared memory segment (important for multi-GPU workloads):
 
 ```shell
 #!/bin/bash
 
-IMAGE_NAME="sglang"
+IMAGE_NAME="lmsysorg/sglang:v0.5.3rc1-cu129-b200"
 
 docker build --pull --no-cache -t "$IMAGE_NAME" .
 
