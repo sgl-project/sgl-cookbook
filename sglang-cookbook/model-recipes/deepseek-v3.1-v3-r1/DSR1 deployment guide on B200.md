@@ -28,49 +28,6 @@ Drivers: CUDA Driver 575 or above
 GPU: Blackwell architecture  
 [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html)
 
-## Building Docker Image
-
-Build a Docker image with SGLang and all dependencies using the official SGLang base image as a starting point. The provided example is for x86 (NVIDIA B200);
-
-```shell
-# This is x86 container. We will modify this to multiplatform blackwell in the next iteration
-FROM lmsysorg/sglang:b200-cu129
-
-WORKDIR /workspace
-
-# Install latest pip and necessary development tools
-RUN apt-get update && apt-get install -y git python3-dev build-essential ninja-build && \
-    pip install --upgrade pip
-
-# Install lm-eval harness (latest version from commit or main branch)
-RUN pip install --no-build-isolation "lm-eval[api] @ git+https://github.com/EleutherAI/lm-evaluation-harness@4f8195f"
-
-# Clone SGLang and FlashInfer sources
-RUN git clone https://github.com/sgl-project/sglang.git
- /workspace/sglang/sglang-src -b #HASH && \
-    git clone --recursive https://github.com/FlashInfer-ai/FlashInfer.git -b v0.2.12 /workspace/flashinfer 
-
-
-# Build/install SGLang from source
-RUN cd /workspace/sglang/sglang-src && \
-    pip install --break-system-packages -e python
-
-# Build/install FlashInfer from source, with AOT kernels for Blackwell
-RUN cd /workspace/flashinfer && \
-    pip install ninja && \
-    export TORCH_CUDA_ARCH_LIST="9.0a 9.0 10.0 10.0a" && \
-    python -m pip install --no-build-isolation -e . -v 
-
-# Install any additional dependencies for your workload
-RUN python3 -m pip install --no-cache-dir \
-    "nvidia-cudnn-cu12>=9.11" \
-    "nvidia-cudnn-frontend>=1.13"
-
-RUN pip install --break-system-packages httpx openai
-
-ENV PYTHONPATH=/workspace/sglang/sglang-src:/workspace/flashinfer:${PYTHONPATH}
-```
-
 ### Running the Docker Container
 
 Once built, use this script to start a container with full GPU access and an expanded shared memory segment (important for multi-GPU workloads):
@@ -255,8 +212,8 @@ Backend:                                 sglang-oai
 Traffic request rate:                    inf       
 Max request concurrency:                 1         
 Successful requests:                     10        
-Benchmark duration (s):                  1287.25   
-Total input tokens:                      10240     
+Benchmark duration (s):                  ---   
+Total input tokens:                      ---     
 Total generated tokens:                  ---     
 Total generated tokens (retokenized):    ---     
 Request throughput (req/s):              ---     
