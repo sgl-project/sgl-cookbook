@@ -55,9 +55,9 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### Llama
 
-- [x] [Llama4-Scout](./Llama/Llama4-Scout)
+- [ ] [Llama4-Scout](./Llama/Llama4-Scout)
 - [ ] [Llama3.3-70B](./Llama/Llama3.3-70B)
-- [x] [Llama3.1](./Llama/Llama3.1)
+- [ ] [Llama3.1](./Llama/Llama3.1)
 
 ### MiniMax
 
@@ -65,7 +65,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### OpenAI
 
-- [x] [gpt-oss](./OpenAI/GPT-OSS)
+- [ ] [gpt-oss](./OpenAI/GPT-OSS)
 
 ### Qwen
 
