@@ -47,7 +47,7 @@ const config = {
         docs: {
           sidebarPath: './sidebars.js',
           editUrl:
-            'https://github.com/sgl-project/sgl-cookbook/tree/main/docs',
+            'https://github.com/sgl-project/sgl-cookbook/tree/main',
         },
         // blog: {
         //   showReadingTime: true,
