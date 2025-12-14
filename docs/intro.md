@@ -140,7 +140,7 @@ The site will automatically open in your browser at `http://localhost:3000`.
 ## 📖 Resources
 
 - [SGLang GitHub](https://github.com/sgl-project/sglang)
-- [SGLang Documentation](https://sgl-project.github.io/start/intro.html)
+- [SGLang Documentation](https://sgl-project.github.io)
 - [Community Slack/Discord](https://discord.gg/MpEEuAeb)
 
 ## 📄 License
