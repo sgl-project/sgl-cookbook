@@ -74,11 +74,6 @@ const DeepSeekR1ConfigGenerator = () => {
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelPath}`;
       
-      // Add tokenizer path only for FP4
-      if (quantization === 'fp4') {
-        cmd += ` \\\n  --tokenizer-path ${modelPath}`;
-      }
-      
       // TP strategy
       if (strategyArray.includes('tp')) {
         cmd += ` \\\n  --tp 8`;
@@ -96,28 +91,8 @@ const DeepSeekR1ConfigGenerator = () => {
       
       // MTP strategy
       if (strategyArray.includes('mtp')) {
+        cmd = 'SGLANG_ENABLE_SPEC_V2=1 ' + cmd;
         cmd += ` \\\n  --speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4`;
-      }
-      
-      // Disable radix cache (always)
-      cmd += ` \\\n  --disable-radix-cache`;
-      
-      // Quantization
-      if (quantization === 'fp8') {
-        cmd += ` \\\n  --quantization fp8`;
-      } else if (quantization === 'fp4') {
-        cmd += ` \\\n  --quantization modelopt_fp4`;
-      }
-      
-      // Attention backend (B200 specific)
-      if (hardware === 'b200') {
-        cmd += ` \\\n  --attention-backend trtllm_mla`;
-        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
-      }
-      
-      // FP4 specific optimization
-      if (quantization === 'fp4') {
-        cmd += ` \\\n  --enable-symm-mem`;
       }
       
       // Add reasoning parser if enabled
@@ -128,6 +103,13 @@ const DeepSeekR1ConfigGenerator = () => {
       // Add tool call parser if enabled
       if (toolcall === 'enabled') {
         cmd += ` \\\n  --tool-call-parser deepseekv3 \\\n  --chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja`;
+      }
+
+      cmd += ` \\\n  --enable-symm-mem # Optional: improves performance, but may be unstable`;
+
+
+      if (hardware === 'b200') {
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3 # Optional: enables fp8 kv cache and fp8 attention kernels to improve performance`;
       }
       
       return cmd;
