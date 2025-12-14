@@ -75,10 +75,6 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [ ] [Qwen3-Coder-480B-A35B](./Qwen/Qwen3-Coder-480B-A35B)
 - [ ] [Qwen2.5-VL](./Qwen/Qwen2.5-VL)
 
-### NVIDIA
-
-- [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron-Nano-3-30B-A3B)
-
 ### Moonshotai
 
 - [x] [Kimi-K2](./Moonshotai/Kimi-K2)
