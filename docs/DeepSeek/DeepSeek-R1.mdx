@@ -7,7 +7,7 @@
 **Key Features:**
 
 - **Advanced Reasoning**: Built-in reasoning capabilities for complex problem-solving
-- **Multiple Quantizations**: FP8 and FP4 variants for different performance/memory tradeoffs
+- **Multiple Quantizations**: FP8 and FP4 variants for different performance/memory trade-offs
 - **Hardware Optimization**: Specifically tuned for NVIDIA B200 (Blackwell) and H200 (Hopper) GPUs
 - **High Performance**: Optimized for both throughput and latency scenarios
 
@@ -39,118 +39,7 @@ import DeepSeekR1ConfigGenerator from '@site/src/components/DeepSeekR1ConfigGene
 
 ### 3.2 Configuration Tips
 
-This section provides optimization guidelines and best practices for deploying DeepSeek-R1 models.
-
-#### 3.2.1 Hardware and Quantization
-
-- **Hardware Selection**:
-    - **H100**: Only supports FP8 quantization
-    - **H200**: Better for FP8 quantization with high memory bandwidth than H100
-    - **B200**: Supports both FP8 and FP4 quantization with advanced features
-
-- **Quantization Strategy**:
-    - **FP8**: Best performance for most workloads on H200, good balance on B200
-    - **FP4**: Maximum memory savings on B200, requires careful tuning for accuracy
-
-#### 3.2.2 Parallelism Strategies
-
-- **Tensor Parallelism (TP)**:
-    - **Always enabled**: `--tp 8` (required, enabled by default)
-    - Splits model layers across multiple GPUs, reducing per-device memory burden
-    - Essential for fitting large models in GPU memory
-
-- **Data Parallelism (DP-Attention)**:
-    - **Enable**: `--dp 8 --enable-dp-attention` for high concurrency scenarios (256+ requests)
-    - **Disabled by default**
-    - Partitions MLA attention across DP workers, handling independent prefill, decode, and idle batches
-    - Significantly reduces per-worker KV cache size and enables larger, more efficient batch processing
-    - **Trade-off**: Slightly reduced per-request decoding speed
-
-- **Expert Parallelism (EP-MoE)**:
-    - **Enable**: `--ep 8 --enable-ep-moe` for FP4 models
-    - **Disabled by default**
-    - Distributes expert subnetworks across multiple devices, reducing memory constraints and communication overhead
-    - Enables simultaneous, efficient processing of input tokens
-    - **Note**: May perform worse in low concurrency scenarios due to communication overhead
-
-#### 3.2.3 MLA Optimization
-
-- **MLA Optimization** (Multi-Latent Attention):
-    - **Enabled by default** for DeepSeek-R1
-    - **Disable**: `--disable-mla`
-    - SGLang custom tailored optimizations including:
-        - Weight Absorption
-        - Flashinfer MLA Wrapper
-        - FP8 Quantization
-        - CUDA Graph & Torch.compile support
-
-#### 3.2.4 Performance Optimizations
-
-- **CUDA Graph**:
-    - **Enabled by default**
-    - **Disable**: `--disable-cuda-graph`
-    - Captures and replays entire sequences of GPU operations as a single graph
-    - Reduces kernel launch overhead and synchronization delays
-    - **Trade-off**: Increases memory usage
-
-- **Torch Compile**:
-    - **Disabled by default**
-    - **Enable**: `--enable-torch-compile`
-    - Dynamically converts PyTorch models into optimized execution graphs
-    - Reduces runtime overhead and enhances GPU performance
-
-- **Radix Cache**:
-    - **Enabled by default**
-    - **Disable**: `--disable-radix-cache`
-    - Organizes KV cache in a radix tree, enabling automatic detection and reuse of shared prompt prefixes
-    - Reduces redundant computations across multiple generation calls
-
-#### 3.2.5 Speculative Decoding (MTP)
-
-- **Speculative Decoding (Next-N / EAGLE)**:
-    - **Disabled by default**
-    - **Enable**: `--enable-flashinfer-mla` or use speculative algorithm parameters
-    - Dynamically generates a context-aware draft token tree with a smaller model
-    - Verifies tokens in parallel with the original LLM, reducing expensive forward passes
-    - **Best for**: Low concurrency scenarios (< 32 requests)
-    - **Incompatibilities**:
-        - Cannot be used with Flashinfer MLA
-        - Cannot be used with Radix Cache
-        - Cannot be used with DP-Attention
-        - Cannot be used with both CUDA Graph and Torch Compile enabled simultaneously
-
-#### 3.2.6 Memory Management
-
-- **Memory Allocation**:
-    - Adjust `--mem-fraction-static` based on your workload (0.75-0.85 typical range)
-    - Use `--kv-cache-dtype fp8_e4m3` to reduce memory by 50% (requires CUDA 11.8+)
-
-- **Chunked Prefill**:
-    - Use `--chunked-prefill-size 32768` for balanced performance
-    - Set to `-1` to disable for specific scenarios (e.g., 8K/1K high concurrency)
-
-#### 3.2.7 Attention Backend
-
-- **Attention Backend**:
-    - **Flashinfer**: Recommended for H100/H200
-    - **TensorRT-LLM MLA**: Recommended for B200 with advanced optimizations
-        - Enable with `--attention-backend trtllm_mla`
-        - Additional optimizations: `--enable-flashinfer-trtllm-moe`, `--enable-flashinfer-allreduce-fusion`
-
-#### 3.2.8 Scheduler Tuning
-
-- **Scheduler Settings**:
-    - Low concurrency: `--scheduler-recv-interval 10`
-    - High concurrency: `--scheduler-recv-interval 30`
-
-#### 3.2.9 Know Issue
-- Speculative Decoding is not compatible with:
-    - Flashinfer-mla
-    - Radix Cache
-    - DP-Attention
-- Both CUDA Graph and Torch Compile enabled simultaneously
-- EP-MoE is not supported with both CUDA Graph and Torch Compile enabled
-- To run DP-Attention with large concurrency, you must first run a warmup phase with small concurrency (e.g. bs=16, total req=32) to avoid CUDA out of memory error.
+For more detailed configuration tips, please refer to [DeepSeek V3/V3.1/R1 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
 
 ## 4. Model Invocation
 
@@ -425,7 +314,7 @@ Three core scenarios reflect real-world usage patterns:
 
 #### 5.1.2 Concurrency Levels
 
-Test each scenario at different concurrency levels to capture the throughput vs. latency tradeoff:
+Test each scenario at different concurrency levels to capture the throughput vs. latency trade-off:
 
 - **Low Concurrency**: `--max-concurrency 1` (Latency-optimized)
 - **Medium Concurrency**: `--max-concurrency 16` (Balanced)
@@ -626,19 +515,6 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
-- Medium Concurrency
-
-```bash
-python -m sglang.bench_serving \
-  --backend sglang \
-  --model deepseek-ai/DeepSeek-R1-0528 \
-  --dataset-name random \
-  --random-input-len 1000 \
-  --random-output-len 8000 \
-  --num-prompts 80 \
-  --max-concurrency 16 \
-  --request-rate inf
-```
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -676,6 +552,20 @@ P95 ITL (ms):                            9.64
 P99 ITL (ms):                            9.86
 Max ITL (ms):                            15.18
 ==================================================
+```
+
+- Medium Concurrency
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model deepseek-ai/DeepSeek-R1-0528 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 8000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
 ```
 
 ```
@@ -942,7 +832,7 @@ Max ITL (ms):                            5521.53
 - **1K/1K (Chat)**: Represents the most common conversational AI workload. This is the highest priority scenario for most deployments.
 - **1K/8K (Reasoning)**: Tests long-form generation capabilities crucial for complex reasoning, code generation, and detailed explanations.
 - **8K/1K (Summarization)**: Evaluates performance with large context inputs, essential for RAG systems, document Q&A, and summarization tasks.
-- **Variable Concurrency**: Captures the Pareto frontier - the optimal tradeoff between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
+- **Variable Concurrency**: Captures the Pareto frontier - the optimal trade-off between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
 
 **Interpreting Results:**
 
