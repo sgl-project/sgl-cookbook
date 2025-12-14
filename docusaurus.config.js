@@ -70,7 +70,15 @@ const config = {
       }),
     ],
   ],
-
+  headTags: [
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'algolia-site-verification',
+        content: '4955E2E1A87E4C5C',
+      },
+    },
+  ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
@@ -149,11 +157,11 @@ const config = {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
-      // algolia: {
-      //   appId: 'YOUR_APP_ID',
-      //   apiKey: 'YOUR_SEARCH_API_KEY', // 搜索用的 public key
-      //   indexName: 'YOUR_INDEX_NAME',
-      // },
+      algolia: {
+        appId: 'BXPZDM8TOV',
+        apiKey: '9e524b0dcc4e70fc8d9c10a545dbbf9b', // 搜索用的 public key
+        indexName: 'sglang-cookbook',
+      },
     }),
 };
 
