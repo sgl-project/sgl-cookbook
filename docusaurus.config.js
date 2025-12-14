@@ -157,11 +157,11 @@ const config = {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
-      algolia: {
-        appId: 'PFTG7BFYCO',
-        apiKey: 'b3cd6461d229bde46720cae15de04b65', 
-        indexName: 'cookbook_sg_lang_vercel_app_pftg7bfyco_pages',
-      },
+      // algolia: {
+      //   appId: 'PFTG7BFYCO',
+      //   apiKey: 'b3cd6461d229bde46720cae15de04b65', 
+      //   indexName: 'cookbook_sg_lang_vercel_app_pftg7bfyco_pages',
+      // },
     }),
 };
 
