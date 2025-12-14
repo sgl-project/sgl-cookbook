@@ -1,0 +1,38 @@
+name: Deploy Docusaurus
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Docusaurus
+        run: npm run build
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        run: |
+          vercel deploy build --prod \
+            --yes \
+            --force \
+            --project ${{ secrets.VERCEL_PROJECT_ID }} \
+            --scope ${{ secrets.VERCEL_ORG_ID }} \
+            --token ${{ secrets.VERCEL_TOKEN }}
