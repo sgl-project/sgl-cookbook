@@ -102,7 +102,7 @@ const config = {
           // },
           // {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/sgl-project/sglang',
+            href: 'https://github.com/sgl-project/sgl-cookbook',
             label: 'GitHub',
             position: 'right',
           },
