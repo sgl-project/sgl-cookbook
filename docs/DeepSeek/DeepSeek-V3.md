@@ -24,8 +24,8 @@ git checkout -b add-deepseek-v3-guide
 
 ## 📚 Reference Examples
 
-- [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2.mdx)
-- [DeepSeek-R1](/docs/DeepSeek/DeepSeek-R1.mdx)
+- [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2)
+- [DeepSeek-R1](/docs/DeepSeek/DeepSeek-R1)
 
 ---
 

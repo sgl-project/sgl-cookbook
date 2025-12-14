@@ -17,7 +17,7 @@ git checkout -b add-ernie4-5-vl-guide
 
 ## 📚 Reference
 
-- [GLM-4.6V](/docs/GLM/GLM-4.6V.mdx)
+- [GLM-4.6V](/docs/GLM/GLM-4.6V)
 
 ---
 

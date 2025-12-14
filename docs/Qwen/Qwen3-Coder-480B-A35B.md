@@ -17,7 +17,7 @@ git checkout -b add-qwen3-coder-480b-guide
 
 ## 📚 Reference
 
-- [Qwen3](/docs/Qwen/Qwen3.mdx)
+- [Qwen3](/docs/Qwen/Qwen3)
 
 ---
 

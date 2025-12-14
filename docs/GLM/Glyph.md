@@ -17,7 +17,7 @@ git checkout -b add-glm-glyph-guide
 
 ## 📚 Reference
 
-- [GLM-4.6](/docs/GLM/GLM-4.6.mdx)
+- [GLM-4.6](/docs/GLM/GLM-4.6)
 
 ---
 
