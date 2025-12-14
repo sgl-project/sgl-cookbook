@@ -158,9 +158,9 @@ const config = {
         darkTheme: prismThemes.dracula,
       },
       algolia: {
-        appId: 'BXPZDM8TOV',
-        apiKey: '9e524b0dcc4e70fc8d9c10a545dbbf9b', 
-        indexName: 'cookbook_sg_lang_vercel_app_bxpzdm8tov_pages',
+        appId: 'PFTG7BFYCO',
+        apiKey: 'b3cd6461d229bde46720cae15de04b65', 
+        indexName: 'cookbook_sg_lang_vercel_app_pftg7bfyco_pages',
       },
     }),
 };
