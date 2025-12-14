@@ -10,8 +10,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'SGLang Recipes',
-  favicon: 'img/logo.png',
+  title: 'SGLang Cookbook',
+  favicon: 'img/favicon.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -77,15 +77,15 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
-      colorMode: {
-        respectPrefersColorScheme: true,
-      },
+      // image: 'img/docusaurus-social-card.jpg',
+      // colorMode: {
+      //   respectPrefersColorScheme: true,
+      // },
       navbar: {
-        title: 'SGLang Recipes',
+        title: 'SGLang Cookbook',
         logo: {
-          alt: 'SGLang Recipes Logo',
-          src: 'https://docs.sglang.io/_static/logo.png',
+          alt: 'SGLang Cookbook Logo',
+          src: 'img/logo.png',
         },
         items: [
           // {
