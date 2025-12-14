@@ -159,8 +159,8 @@ const config = {
       },
       algolia: {
         appId: 'BXPZDM8TOV',
-        apiKey: '9e524b0dcc4e70fc8d9c10a545dbbf9b', // 搜索用的 public key
-        indexName: 'sglang-cookbook',
+        apiKey: '9e524b0dcc4e70fc8d9c10a545dbbf9b', 
+        indexName: 'cookbook_sg_lang_vercel_app_bxpzdm8tov_pages',
       },
     }),
 };
