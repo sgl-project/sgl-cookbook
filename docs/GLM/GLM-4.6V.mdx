@@ -1,0 +1,667 @@
+# GLM-4.6V
+
+## 1. Model Introduction
+
+GLM-4.6V series model includes two versions: GLM-4.6V (106B), a foundation model designed for cloud and high-performance cluster scenarios, and GLM-4.6V-Flash (9B), a lightweight model optimized for local deployment and low-latency applications. GLM-4.6V scales its context window to 128k tokens in training, and achieves SoTA performance in visual understanding among models of similar parameter scales. Crucially, GLM team integrated native Function Calling capabilities for the first time. This effectively bridges the gap between "visual perception" and "executable action" providing a unified technical foundation for multimodal agents in real-world business scenarios.
+
+Beyond achieves SoTA performance across major multimodal benchmarks at comparable model scales. GLM-4.6V introduces several key features:
+
+- **Native Multimodal Function Calling** Enables native vision-driven tool use. Images, screenshots, and document pages can be passed directly as tool inputs without text conversion, while visual outputs (charts, search images, rendered pages) are interpreted and integrated into the reasoning chain. This closes the loop from perception to understanding to execution. Please refer to this [example](#tool-call-example).
+- **Interleaved Image-Text Content Generation** Supports high-quality mixed media creation from complex multimodal inputs. GLM-4.6V takes a multimodal context—spanning documents, user inputs, and tool-retrieved images—and synthesizes coherent, interleaved image-text content tailored to the task. During generation it can actively call search and retrieval tools to gather and curate additional text and visuals, producing rich, visually grounded content.
+- **Multimodal Document Understanding** GLM-4.6V can process up to 128K tokens of multi-document or long-document input, directly interpreting richly formatted pages as images. It understands text, layout, charts, tables, and figures jointly, enabling accurate comprehension of complex, image-heavy documents without requiring prior conversion to plain text.
+- **Frontend Replication & Visual Editing** Reconstructs pixel-accurate HTML/CSS from UI screenshots and supports natural-language-driven edits. It detects layout, components, and styles visually, generates clean code, and applies iterative visual modifications through simple user instructions.
+
+## 2. SGLang Installation
+
+SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
+
+### 2.1 Docker Installation (Recommended)
+
+```shell
+docker pull lmsysorg/sglang:latest
+```
+
+**Advantages:**
+
+- Ready to use out of the box, no manual environment configuration needed
+- Avoids dependency conflict issues
+- Easy to migrate between different environments
+
+### 2.2 Build from Source
+
+If you need to use the latest development version or require custom modifications, you can build from source:
+
+```bash
+# Install SGLang using UV (recommended)
+git clone https://github.com/sgl-project/sglang.git
+cd sglang
+uv venv
+source .venv/bin/activate
+uv pip install -e "python[all]" --index-url=https://pypi.org/simple
+pip install nvidia-cudnn-cu12==9.16.0.29
+# Install ffmpeg to support video input
+sudo apt update
+sudo apt install ffmpeg
+```
+
+**Use Cases:**
+
+- Need to customize and modify SGLang source code
+- Want to use the latest development features
+- Participate in SGLang project development
+
+For general installation instructions, you can also refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
+
+## 3. Model Deployment
+
+This section provides deployment configurations optimized for different hardware platforms and use cases.
+
+Use the interactive configuration generator below to customize your deployment settings. Select your hardware platform, model size, quantization method, and other options to generate the appropriate launch command.
+
+import GLM46VConfigGenerator from '@site/src/components/GLM46VConfigGenerator';
+
+<GLM46VConfigGenerator />
+
+{/* Old inline script configuration has been replaced with ConfigGenerator component */}
+{/* const CONFIG = {
+    modelFamily: 'GLM',
+  
+    options: {
+        hardware: {
+            name: 'hardware',
+            title: 'Hardware Platform',
+            items: [
+        { id: 'b200', label: 'B200', default: true },
+        { id: 'h100', label: 'H100', default: false },
+        { id: 'h200', label: 'H200', default: false }
+            ]
+        },
+        modelsize: {
+            name: 'modelsize',
+            title: 'Model Size',
+            items: [
+        { id: '106b', label: '106B', subtitle: 'GLM-4.6V', default: true },
+        { id: '9b', label: '9B', subtitle: 'GLM-4.6V-Flash', default: false }
+            ]
+        },
+        quantization: {
+            name: 'quantization',
+            title: 'Quantization',
+            items: [
+        { id: 'bf16', label: 'BF16', default: true },
+        { id: 'fp8', label: 'FP8', default: false }
+            ]
+        },
+        reasoning: {
+            name: 'reasoning',
+            title: 'Reasoning Parser',
+            items: [
+        { id: 'enabled', label: 'Enabled', default: true },
+        { id: 'disabled', label: 'Disabled', default: false }
+    ],
+            commandRule: (value) => value === 'enabled' ? '--reasoning-parser glm45' : null
+        },
+        toolcall: {
+            name: 'toolcall',
+            title: 'Tool Call Parser',
+            items: [
+                { id: 'enabled', label: 'Enabled', default: true },
+                { id: 'disabled', label: 'Disabled', default: false }
+            ],
+            commandRule: (value) => value === 'enabled' ? '--tool-call-parser glm45' : null
+        },
+        host: {
+            name: 'host',
+            title: 'Host',
+            type: 'text',
+            default: '0.0.0.0',
+            placeholder: '0.0.0.0'
+        },
+        port: {
+            name: 'port',
+            title: 'Port',
+            type: 'text',
+            default: '30000',
+            placeholder: '30000'
+        }
+    },
+  
+    modelConfigs: {
+        '106b': {
+            baseName: 'GLM-4.6V',
+            h100: { tp: 8, bf16: true, fp8: true },
+            h200: { tp: 8, bf16: true, fp8: true },
+            b200: { tp: 8, bf16: true, fp8: true }
+        },
+        '9b': {
+            baseName: 'GLM-4.6V-Flash',
+            h100: { tp: 1, bf16: true, fp8: true },
+            h200: { tp: 1, bf16: true, fp8: true },
+            b200: { tp: 1, bf16: true, fp8: true }
+        }
+    },
+  
+    specialCommands: {},
+
+    generateCommand: function(values) {
+        const { hardware, modelsize: modelSize, quantization, reasoning, toolcall } = values;
+        const commandKey = `${hardware}-${modelSize}-${quantization}`;
+        
+        if (this.specialCommands[commandKey]) {
+            return this.specialCommands[commandKey];
+        }
+        
+        const config = this.modelConfigs[modelSize];
+        if (!config) {
+            return `# Error: Unknown model size: ${modelSize}`;
+        }
+        
+        const hwConfig = config[hardware];
+        if (!hwConfig) {
+            return `# Error: Unknown hardware platform: ${hardware}`;
+        }
+        
+        const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
+        const modelName = `zai-org/${config.baseName}${quantSuffix}`;
+        
+        let cmd = 'python -m sglang.launch_server \\\n';
+        cmd += `  --model ${modelName}`;
+        
+        if (hwConfig.tp > 1) {
+            cmd += ` \\\n  --tp ${hwConfig.tp}`;
+        }
+        
+        for (const [key, option] of Object.entries(this.options)) {
+            if (key === 'host' || key === 'port') continue;
+            
+            if (option.commandRule) {
+                const rule = option.commandRule(values[key]);
+                if (rule) {
+                    cmd += ` \\\n  ${rule}`;
+                }
+            }
+        }
+        
+        const host = values.host || CONFIG.options.host.default;
+        const port = values.port || CONFIG.options.port.default;
+        cmd += ` \\\n  --host ${host} \\\n  --port ${port}`;
+        
+        return cmd;
+    }
+};
+
+function renderUI() {
+    const container = document.getElementById('config-container');
+    if (!container) return;
+    
+    let html = '';
+    let index = 1;
+    
+    for (const [key, option] of Object.entries(CONFIG.options)) {
+        html += `
+<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
+    <div style="font-size: 14px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px; display: flex; align-items: center;">
+        <span style="background: #667eea; color: white; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 12px;">${index}</span>
+        ${option.title}
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">`;
+        
+        if (option.type === 'text') {
+            html += `
+        <input type="text" id="input-${option.name}" name="${option.name}" value="${option.default || ''}" placeholder="${option.placeholder || ''}" 
+               style="padding: 8px 12px; border: 1px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; color: var(--md-default-fg-color, #2d3748); background: var(--md-default-bg-color, white);">`;
+        } else {
+            option.items.forEach(item => {
+                const inputId = `${option.name}-${item.id}`;
+                const checked = item.default ? 'checked' : '';
+                html += `
+            <input type="radio" id="${inputId}" name="${option.name}" value="${item.id}" ${checked} style="display: none;">
+            <label for="${inputId}" style="padding: 8px 18px; border: 2px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; cursor: pointer; display: inline-block; font-weight: 500; font-size: 13px; transition: all 0.3s; background: var(--md-default-bg-color, white); color: var(--md-default-fg-color, #2d3748);">${item.label}${item.subtitle ? `<br/><small style="color: var(--md-default-fg-color--light, #718096); font-size: 10px;">${item.subtitle}</small>` : ''}</label>`;
+            });
+        }
+        
+        html += `
+    </div>
+</div>`;
+        index++;
+    }
+    
+    html += `
+<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
+    <div style="font-size: 15px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px;">
+        Generated Command
+    </div>
+    <div id="command-display" style="padding: 16px; background: #2d3748; border-radius: 6px; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap; overflow-x: auto; border: none;"></div>
+</div>`;
+    
+    container.innerHTML = html;
+}
+
+function handleChange() {
+    updateQuantOptions();
+    updateCommand();
+    updateStyles();
+}
+
+function init() {
+    const container = document.getElementById('config-container');
+    if (!container) {
+        setTimeout(init, 100);
+        return;
+    }
+    
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+    
+    renderUI();
+    
+    container.addEventListener('change', function(e) {
+        if (e.target && e.target.matches('input[type="radio"]')) {
+            handleChange();
+        }
+    });
+    
+    container.addEventListener('input', function(e) {
+        if (e.target && e.target.matches('input[type="text"]')) {
+            updateCommand();
+        }
+    });
+    
+    updateCommand();
+    updateStyles();
+}
+
+init();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+setTimeout(init, 500);
+
+function updateQuantOptions() {
+    const hardware = document.querySelector('input[name="hardware"]:checked').value;
+    const modelSize = document.querySelector('input[name="modelsize"]:checked').value;
+    const config = CONFIG.modelConfigs[modelSize];
+  
+    if (!config) return;
+  
+    const hwConfig = config[hardware];
+    const bf16Radio = document.getElementById('quantization-bf16');
+    const fp8Radio = document.getElementById('quantization-fp8');
+    const bf16Label = document.querySelector('label[for="quantization-bf16"]');
+    const fp8Label = document.querySelector('label[for="quantization-fp8"]');
+  
+    bf16Radio.disabled = !hwConfig.bf16;
+    fp8Radio.disabled = !hwConfig.fp8;
+  
+    if (!hwConfig.bf16) {
+        bf16Label.style.opacity = '0.5';
+        bf16Label.style.cursor = 'not-allowed';
+        if (bf16Radio.checked) {
+            fp8Radio.checked = true;
+        }
+    } else {
+        bf16Label.style.opacity = '1';
+        bf16Label.style.cursor = 'pointer';
+    }
+  
+    if (!hwConfig.fp8) {
+        fp8Label.style.opacity = '0.5';
+        fp8Label.style.cursor = 'not-allowed';
+        if (fp8Radio.checked) {
+            bf16Radio.checked = true;
+        }
+    } else {
+        fp8Label.style.opacity = '1';
+        fp8Label.style.cursor = 'pointer';
+    }
+  
+    updateStyles();
+}
+
+function updateCommand() {
+    const values = {};
+    for (const [key, option] of Object.entries(CONFIG.options)) {
+        if (option.type === 'text') {
+            const input = document.getElementById(`input-${option.name}`);
+            if (input) {
+                values[option.name] = input.value;
+            }
+        } else {
+            const selected = document.querySelector(`input[name="${option.name}"]:checked`);
+            if (selected) {
+                values[option.name] = selected.value;
+            }
+        }
+    }
+  
+    const command = CONFIG.generateCommand(values);
+    document.getElementById("command-display").textContent = command;
+}
+
+function updateStyles() {
+    const labels = document.querySelectorAll('label');
+  
+    labels.forEach(label => {
+        const input = document.querySelector(`input[id="${label.getAttribute('for')}"]`);
+        if (input && input.disabled) {
+            return;
+        }
+        label.style.backgroundColor = '';
+        label.style.color = '';
+        label.style.borderColor = '#ddd';
+    });
+  
+    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked:not(:disabled)');
+    checkedInputs.forEach(input => {
+        const label = document.querySelector(`label[for="${input.id}"]`);
+        if (label) {
+            label.style.backgroundColor = '#dc3545';
+            label.style.color = 'white';
+            label.style.borderColor = '#d55816';
+        }
+    });
+}
+*/}
+
+## 4. Example APIs
+
+### Image Input Example
+
+#### API Payload
+```python
+curl_command = f"""
+curl -s http://localhost:{30000}/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{{
+    "model": "default",
+    "messages": [
+      {{
+        "role": "user", 
+        "content": [
+          {{
+            "type": "image_url", 
+            "image_url": {{
+              "url": "/home/jobuser/sgl_logo.png"
+            }}
+          }},
+          {{
+            "type": "text", 
+            "text": "What is the image"
+          }}
+        ]
+      }}
+    ],
+    "temperature": "0",
+    "max_completion_tokens": "1000",
+    "max_tokens": "1000"
+  }}'
+"""
+
+response = subprocess.check_output(curl_command, shell=True).decode()
+print(response)
+```
+
+#### API Response
+```shell
+{"id":"b61596ca71394dd699fd8abd4f650c44","object":"chat.completion","created":1765259019,"model":"default","choices":[{"index":0,"message":{"role":"assistant","content":"The image is a logo featuring the text \"SGL\" (in a bold, orange-brown font) alongside a stylized icon. The icon includes a network-like structure with circular nodes (suggesting connectivity or a tree/graph structure) and a tag with \"</>\" (a common symbol for coding, web development, or software). The color scheme uses warm orange-brown tones with a black background, giving it a tech-focused, modern aesthetic (likely representing a company, project, or tool related to software, web development, or digital technology).<|begin_of_box|>SGL logo (stylized text + network/coding icon)<|end_of_box|>","reasoning_content":"Okay, let's see. The image has a logo with the text \"SGL\" and a little icon on the left. The icon looks like a network or a tree structure with circles, and there's a tag with \"</>\" which is a common symbol for coding or web development. The colors are orange and brown tones, with a black background. So probably a logo for a company or project named SGL, maybe related to software, web development, or a tech company.","tool_calls":null},"logprobs":null,"finish_reason":"stop","matched_stop":151336}],"usage":{"prompt_tokens":2222,"total_tokens":2448,"completion_tokens":226,"prompt_tokens_details":null,"reasoning_tokens":0},"metadata":{"weight_version":"default"}}
+```
+
+### Video Input Example
+
+#### API Payload
+```python
+curl_command = f"""
+curl -s http://localhost:{30000}/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -d '{{
+    "model": "default",
+    "messages": [
+      {{
+        "role": "user", 
+        "content": [
+          {{
+            "type": "video_url", 
+            "video_url": {{
+              "url": "/home/jobuser/jobs_presenting_ipod.mp4"
+            }}
+          }},
+          {{
+            "type": "text", 
+            "text": "What is the image"
+          }}
+        ]
+      }}
+    ],
+    "temperature": "0",
+    "max_completion_tokens": "1000",
+    "max_tokens": "1000"
+  }}'
+"""
+
+response = subprocess.check_output(curl_command, shell=True).decode()
+print(response)
+```
+
+#### API Response
+```shell
+{"id":"520e0a079e5d4b17b82a6af619315a97","object":"chat.completion","created":1765259029,"model":"default","choices":[{"index":0,"message":{"role":"assistant","content":"The image is a still from a presentation by a man on a stage. He is pointing to a small pocket on his jeans and asking the audience what the pocket is for. The video is being shared by Evan Carmichael. The man then reveals that the pocket is for an iPod Nano.","reasoning_content":"Based on the visual evidence in the video, here is a breakdown of what is being shown:\n\n*   **Subject:** The video features a man on a stage, giving a presentation. He is wearing a black t-shirt and dark jeans.\n*   **Action:** The man is pointing to a pocket on his jeans. He is asking the audience a question about the purpose of this pocket.\n*   **Context:** The presentation is being filmed, and the video is being shared by \"Evan Carmichael,\" a well-known motivational speaker and content creator. The source of the clip is credited to \"JoshuaG.\"\n*   **Reveal:** The man then reveals the answer to his question. He pulls a small, white, rectangular device out of the pocket. He identifies this device as an \"iPod Nano.\"\n\nIn summary, the image is a still from a presentation where a speaker is explaining the purpose of the small pocket found on many pairs of jeans.","tool_calls":null},"logprobs":null,"finish_reason":"stop","matched_stop":151336}],"usage":{"prompt_tokens":30276,"total_tokens":30532,"completion_tokens":256,"prompt_tokens_details":null,"reasoning_tokens":0},"metadata":{"weight_version":"default"}}
+```
+
+### Tool Call Example
+
+### Payload
+```python
+from openai import OpenAI
+import argparse
+import sys
+import base64
+
+def image_to_base64(image_path):
+    """Convert image file to base64 data URL format for OpenAI API"""
+    with open(image_path, 'rb') as image_file:
+        image_data = image_file.read()
+        base64_string = base64.b64encode(image_data).decode('utf-8')
+        return f"data:image/png;base64,{base64_string}"
+
+openai_api_key = "EMPTY"
+openai_api_base = "http://127.0.0.1:30000/v1"
+client = OpenAI(api_key=openai_api_key, base_url=openai_api_base)
+
+
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get current temperature for a given location.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "City and country e.g. Beijing, China",
+                    }
+                },
+                "required": ["location"],
+                "additionalProperties": False,
+            },
+        },
+    }
+]
+
+
+messages = [
+    {
+        "role": "user",
+        "content": "Please help me check today’s weather in Beijing, and tell me whether the tool returned an image."
+    },
+    {
+        "role": "assistant",
+        "tool_calls": [
+            {
+                "id": "call_bk32t88BGpSdbtDgzT044Rh4",
+                "type": "function",
+                "function": {
+                    "name": 'get_weather',
+                    "arguments": '{"location":"Beijing, China"}'
+                }
+            }
+        ]
+    },
+    {
+        "role": "tool",
+        "tool_call_id": "call_bk32t88BGpSdbtDgzT044Rh4",
+        "content": [
+            {
+                "type": "text",
+                "text": "Weather report generated: Beijing, November 7, 2025, sunny, temperature 2°C."
+            },
+            {
+                "type": "image_url",
+                "image_url": {
+                     "url": "/home/jobuser/sgl_logo.png"
+                }
+            }
+        ]
+    },
+]
+
+response = client.chat.completions.create(
+    model="zai-org/GLM-4.6V",
+    messages=messages,
+    timeout=900,
+    tools=tools
+)
+print(response.choices[0].message.content.strip())
+```
+
+### Output
+
+```shell
+The weather in Beijing today (November 7, 2025) is sunny with a temperature of 2°C.  
+
+Yes, the tool returned an image (the SGL logo).
+```
+
+## 5. Benchmark
+
+### 5.1. Text Benchmark: Latency, Throughput and Accuracy
+
+```shell
+python3 ./benchmark/gsm8k/bench_sglang.py
+```
+
+### 5.2. Multimodal Benchmark - Latency and Throughput
+
+#### Command
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --port 30000 \
+  --model zai-org/GLM-4.6V \
+  --dataset-name image \
+  --image-count 2 \
+  --image-resolution 720p \
+  --random-input-len 128 \
+  --random-output-len 1024 \
+  --num-prompts 128 \
+  --max-concurrency 4
+```
+
+#### Response
+```shell
+============ Serving Benchmark Result ============
+Backend:                                 sglang    
+Traffic request rate:                    inf       
+Max request concurrency:                 64        
+Successful requests:                     128       
+Benchmark duration (s):                  30.60     
+Total input tokens:                      315362    
+Total input text tokens:                 8674      
+Total input vision tokens:               306688    
+Total generated tokens:                  63692     
+Total generated tokens (retokenized):    63662     
+Request throughput (req/s):              4.18      
+Input token throughput (tok/s):          10305.12  
+Output token throughput (tok/s):         2081.27   
+Peak output token throughput (tok/s):    3007.00   
+Peak concurrent requests:                71        
+Total token throughput (tok/s):          12386.39  
+Concurrency:                             48.29     
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   11546.09  
+Median E2E Latency (ms):                 11856.43  
+---------------Time to First Token----------------
+Mean TTFT (ms):                          286.91    
+Median TTFT (ms):                        259.37    
+P99 TTFT (ms):                           575.39    
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          22.87     
+Median TPOT (ms):                        23.48     
+P99 TPOT (ms):                           25.89     
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           22.67     
+Median ITL (ms):                         20.01     
+P95 ITL (ms):                            68.51     
+P99 ITL (ms):                            74.81     
+Max ITL (ms):                            189.34    
+==================================================
+```
+
+
+### 5.3. Multimodal Accuracy Benchmark - MMMU
+
+#### Command
+```shell
+python3 benchmark/mmmu/bench_sglang.py --response-answer-regex "<\|begin_of_box\|>(.*)<\|end_of_box\|>" --port 30000 --concurrency 64 --extra-request-body '{"max_tokens": 4096}'
+```
+
+#### Response
+```shell
+Benchmark time: 487.2229107860476
+answers saved to: ./answer_sglang.json
+Evaluating...
+answers saved to: ./answer_sglang.json
+{'Accounting': {'acc': 0.962, 'num': 26},
+ 'Agriculture': {'acc': 0.5, 'num': 30},
+ 'Architecture_and_Engineering': {'acc': 0.733, 'num': 15},
+ 'Art': {'acc': 0.833, 'num': 30},
+ 'Art_Theory': {'acc': 0.9, 'num': 30},
+ 'Basic_Medical_Science': {'acc': 0.733, 'num': 30},
+ 'Biology': {'acc': 0.586, 'num': 29},
+ 'Chemistry': {'acc': 0.654, 'num': 26},
+ 'Clinical_Medicine': {'acc': 0.633, 'num': 30},
+ 'Computer_Science': {'acc': 0.76, 'num': 25},
+ 'Design': {'acc': 0.867, 'num': 30},
+ 'Diagnostics_and_Laboratory_Medicine': {'acc': 0.633, 'num': 30},
+ 'Economics': {'acc': 0.862, 'num': 29},
+ 'Electronics': {'acc': 0.5, 'num': 18},
+ 'Energy_and_Power': {'acc': 0.875, 'num': 16},
+ 'Finance': {'acc': 0.857, 'num': 28},
+ 'Geography': {'acc': 0.714, 'num': 28},
+ 'History': {'acc': 0.767, 'num': 30},
+ 'Literature': {'acc': 0.897, 'num': 29},
+ 'Manage': {'acc': 0.759, 'num': 29},
+ 'Marketing': {'acc': 1.0, 'num': 26},
+ 'Materials': {'acc': 0.833, 'num': 18},
+ 'Math': {'acc': 0.76, 'num': 25},
+ 'Mechanical_Engineering': {'acc': 0.619, 'num': 21},
+ 'Music': {'acc': 0.286, 'num': 28},
+ 'Overall': {'acc': 0.761, 'num': 803},
+ 'Overall-Art and Design': {'acc': 0.729, 'num': 118},
+ 'Overall-Business': {'acc': 0.884, 'num': 138},
+ 'Overall-Health and Medicine': {'acc': 0.773, 'num': 150},
+ 'Overall-Humanities and Social Science': {'acc': 0.78, 'num': 118},
+ 'Overall-Science': {'acc': 0.728, 'num': 136},
+ 'Overall-Tech and Engineering': {'acc': 0.671, 'num': 143},
+ 'Pharmacy': {'acc': 0.933, 'num': 30},
+ 'Physics': {'acc': 0.929, 'num': 28},
+ 'Psychology': {'acc': 0.733, 'num': 30},
+ 'Public_Health': {'acc': 0.933, 'num': 30},
+ 'Sociology': {'acc': 0.724, 'num': 29}}
+eval out saved to ./val_sglang.json
+Overall accuracy: 0.761
+```

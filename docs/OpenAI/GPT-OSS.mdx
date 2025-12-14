@@ -1,0 +1,971 @@
+# GPT-OSS-20B
+
+## 1.Model Introduction
+
+[GPT-OSS](https://huggingface.co/openai/gpt-oss-20b) is an advanced large language model developed by OpenAI designed for power reasoning, agentic tasks, and versatile developer use cases. It has versions with two model sizes.
+
+- **gpt-oss-120b** — for production, general purpose, high reasoning use cases that fit into a single 80GB GPU (like NVIDIA H100 or AMD MI300X) (117B parameters with 5.1B active parameters)
+- **gpt-oss-20b** — for lower latency, and local or specialized use cases (21B parameters with 3.6B active parameters)
+
+GPT-OSS introduces several groundbreaking innovations:
+
+- **Configurable reasoning effort**: Easily adjust the reasoning effort (low, medium, high) based on your specific use case and latency needs.
+- **Full chain-of-thought**: Gain complete access to the model’s reasoning process, facilitating easier debugging and increased trust in outputs. It’s not intended to be shown to end users.
+- **Fine-tunable**: Fully customize models to your specific use case through parameter fine-tuning.
+- **Agentic capabilities**: Use the models’ native capabilities for function calling, web browsing, Python code execution, and Structured Outputs.
+- **MXFP4 quantization**: The models were post-trained with MXFP4 quantization of the MoE weights, making gpt-oss-120b run on a single 80GB GPU (like NVIDIA H100 or AMD MI300X) and the gpt-oss-20b model run within 16GB of memory. All evals were performed with the same MXFP4 quantization.
+
+## 2.SGLang Installation
+
+SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
+
+Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+
+## 3.Model Deployment
+
+This section provides deployment configurations optimized for different hardware platforms and use cases.
+
+### 3.1 Basic Configuration
+
+The GPT-OSS series comes in two sizes. Recommended starting configurations vary depending on hardware.
+
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, quantization method, and thinking capabilities.
+
+import GPTOSSConfigGenerator from '@site/src/components/GPTOSSConfigGenerator';
+
+<GPTOSSConfigGenerator />
+
+{/* Old inline script configuration has been replaced with ConfigGenerator component */}
+{/* const CONFIG = {
+    modelFamily: 'GPT-OSS',
+
+    options: {
+        hardware: {
+            name: 'hardware',
+            title: 'Hardware Platform',
+            items: [
+                { id: 'b200', label: 'B200', default: true },
+                { id: 'h200', label: 'H200', default: false },
+                { id: 'h100', label: 'H100', default: false }
+            ]
+        },
+        modelsize: {
+            name: 'modelsize',
+            title: 'Model Size',
+            items: [
+                { id: '120b', label: '120B', subtitle: 'MOE', default: true },
+                { id: '20b', label: '20B', subtitle: 'MOE', default: false },
+            ]
+        },
+        quantization: {
+            name: 'quantization',
+            title: 'Quantization',
+            items: [
+                { id: 'mxfp4', label: 'MXFP4', default: true },
+                { id: 'bf16', label: 'BF16', default: false }
+            ]
+        },
+        thinking: {
+            name: 'thinking',
+            title: 'Thinking Capabilities',
+            items: [
+                { id: 'instruct', label: 'Instruct', subtitle: 'General Purpose', default: true },
+                { id: 'thinking', label: 'Thinking', subtitle: 'Reasoning / CoT', default: false }
+            ],
+            commandRule: (value) => value === 'thinking' ? '--reasoning-parser gpt-oss' : null
+        },
+        toolcall: {
+            name: 'toolcall',
+            title: 'Tool Call Parser',
+            items: [
+                { id: 'disabled', label: 'Disabled', default: true },
+                { id: 'enabled', label: 'Enabled', default: false }
+            ],
+            commandRule: (value) => value === 'enabled' ? '--tool-call-parser gpt-oss' : null
+        },
+        speculative: {
+            name: 'speculative',
+            title: 'Speculative Decoding',
+            items: [
+                { id: 'disabled', label: 'Disabled', default: true },
+                { id: 'enabled', label: 'Enabled', default: false }
+            ],
+            commandRule: (value, allValues) => {
+                if (value !== 'enabled') return null;
+
+    let cmd = '--speculative-algorithm EAGLE3\\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4';
+
+    // 新增判定逻辑：如果是 120b 且 mxfp4
+                if (allValues.modelsize === '120b' && allValues.quantization === 'mxfp4') {
+                    cmd += '\\\n  --speculative-draft-model-path nvidia/gpt-oss-120b-Eagle3';
+                } else if (allValues.modelsize === '20b' && allValues.quantization === 'mxfp4') {
+                    cmd += ' \\\n  --speculative-draft-model-path RedHatAI/gpt-oss-20b-speculator.eagle3';
+                } else if (allValues.modelsize === '120b' && allValues.quantization === 'bf16') {
+                    cmd += ' \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-120b-bf16';
+                } else if (allValues.modelsize === '20b' && allValues.quantization === 'bf16') {
+                    cmd += ' \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-20b-bf16';
+                }
+
+    return cmd;
+            }
+        }
+    },
+
+    modelConfigs: {
+        '120b': {
+            baseName: '120b',
+            isMOE: true,
+            h100: { tp: 8, ep: 0, mxfp4: true, bf16: false },
+            h200: { tp: 8, ep: 0, mxfp4: true, bf16: false },
+            b200: { tp: 8, ep: 0, mxfp4: true, bf16: false }
+        },
+        '20b': {
+            baseName: '20b',
+            isMOE: true,
+            h100: { tp: 1, ep: 0, mxfp4: true, bf16: false },
+            h200: { tp: 1, ep: 0, mxfp4: true, bf16: false },
+            b200: { tp: 1, ep: 0, mxfp4: true, bf16: false }
+        }
+    },
+
+    generateCommand: function(values) {
+        const { hardware, modelsize: modelSize, quantization, thinking} = values;
+        const commandKey =`${hardware}-${modelSize}-${quantization}-${thinking}`;
+
+    const config = this.modelConfigs[modelSize];
+        if (!config) {
+            return`# Error: Unknown model size: ${modelSize}`;
+        }
+
+    const hwConfig = config[hardware];
+        if (!hwConfig) {
+            return`# Error: Unknown hardware platform: ${hardware}`;
+        }
+
+    const quantSuffix = quantization === 'bf16' ? '-bf16' : '';
+        const orgPrefix = quantization === 'bf16' ? 'lmsys' : 'openai';
+        const modelName =`${orgPrefix}/gpt-oss-${config.baseName}${quantSuffix}`;
+
+    let cmd = 'python -m sglang.launch_server\\\n';
+        cmd += `  --model ${modelName}`;
+
+    if (hwConfig.tp > 1) {
+            cmd +=` \\\n  --tp ${hwConfig.tp}`;
+        }
+
+    let ep = hwConfig.ep;
+
+    if (ep > 0) {
+            cmd +=` \\\n  --ep ${ep}`;
+        }
+
+    for (const [key, option] of Object.entries(this.options)) {
+
+    if (option.commandRule) {
+                const rule = option.commandRule(values[key], values);
+
+    if (rule) {
+                    cmd +=` \\\n  ${rule}`;
+                }
+            }
+        }
+
+    return cmd;
+    }
+};
+
+function renderUI() {
+    const container = document.getElementById('config-container');
+    if (!container) return;
+
+    let html = '';
+    let index = 1;
+
+    for (const [key, option] of Object.entries(CONFIG.options)) {
+        html += `
+
+<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
+    <div style="font-size: 14px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px; display: flex; align-items: center;">
+        <span style="background: #667eea; color: white; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 12px;">${index}</span>
+        ${option.title}
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">`;
+
+    if (option.type === 'text') {
+            html +=`         <input type="text" id="input-${option.name}" name="${option.name}" value="${option.default || ''}" placeholder="${option.placeholder || ''}"                  style="padding: 8px 12px; border: 1px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; color: var(--md-default-fg-color, #2d3748); background: var(--md-default-bg-color, white);">`;
+        } else {
+            option.items.forEach(item => {
+                const inputId = `${option.name}-${item.id}`;
+                const checked = item.default ? 'checked' : '';
+                html += `            <input type="radio" id="${inputId}" name="${option.name}" value="${item.id}" ${checked} style="display: none;">             <label for="${inputId}" style="padding: 8px 18px; border: 2px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; cursor: pointer; display: inline-block; font-weight: 500; font-size: 13px; transition: all 0.3s; background: var(--md-default-bg-color, white); color: var(--md-default-fg-color, #2d3748);">${item.label}${item.subtitle ?<br/>``<small style="color: var(--md-default-fg-color--light, #718096); font-size: 10px;">`${item.subtitle}`</small> : ''}</label>`;
+            });
+        }
+
+    html += ``</div>`
+
+</div>`;
+        index++;
+    }
+
+`;
+        index++;
+    }
+    html += `
+
+<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
+    <div style="font-size: 15px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px;">
+        Generated Command
+    </div>
+    <div id="command-display" style="padding: 16px; background: #2d3748; border-radius: 6px; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap; overflow-x: auto; border: none;"></div>
+</div>`;
+
+    container.innerHTML = html;
+}
+
+function handleChange() {
+    updateCommand();
+    updateStyles();
+}
+
+function updateCommand() {
+    const values = {};
+    for (const [key, option] of Object.entries(CONFIG.options)) {
+        if (option.type === 'text') {
+            const input = document.getElementById(`input-${option.name}`);
+            if (input) {
+                values[option.name] = input.value;
+            }
+        } else {
+            const selected = document.querySelector(`input[name="${option.name}"]:checked`);
+            if (selected) {
+                values[option.name] = selected.value;
+            }
+        }
+    }
+
+    const command = CONFIG.generateCommand(values);
+    document.getElementById("command-display").textContent = command;
+}
+
+function updateStyles() {
+    const labels = document.querySelectorAll('label');
+    labels.forEach(label => {
+        label.style.backgroundColor = '';
+        label.style.color = '';
+        label.style.borderColor = '#ddd';
+    });
+
+    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked');
+    checkedInputs.forEach(input => {
+        const label = document.querySelector(`label[for="${input.id}"]`);
+        if (label) {
+            label.style.backgroundColor = '#dc3545';
+            label.style.color = 'white';
+            label.style.borderColor = '#d55816';
+        }
+    });
+}
+
+function init() {
+    const container = document.getElementById('config-container');
+    if (!container) {
+        setTimeout(init, 100);
+        return;
+    }
+
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+
+    renderUI();
+
+    container.addEventListener('change', function(e) {
+        if (e.target && e.target.matches('input[type="radio"]')) {
+            handleChange();
+        }
+    });
+
+    container.addEventListener('input', function(e) {
+        if (e.target && e.target.matches('input[type="text"]')) {
+            updateCommand();
+        }
+    });
+
+    updateCommand();
+    updateStyles();
+}
+
+init();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+setTimeout(init, 500);
+*/}
+
+### 3.2 Configuration Tips
+
+* **Expert Parallelism**: SGLang supports Expert Parallelism (EP) via `--ep`, allowing experts in MoE models to be deployed on separate GPUs for better throughput. One thing to note is that, for quantized models, you need to set `--ep` to a value that satisfies the requirement: `(moe_intermediate_size / moe_tp_size) % weight_block_size_n == 0, where moe_tp_size is equal to tp_size divided by ep_size.` Note that EP may perform worse in low concurrency scenarios due to additional communication overhead. Check out [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md) for more details.
+* **Kernel Tuning** : For MoE Triton kernel tuning on your specific hardware, refer to [fused_moe_triton](https://github.com/sgl-project/sglang/tree/main/benchmark/kernels/fused_moe_triton).
+* **GPU Memory Management**:
+
+  - `--mem-fraction-static 0.85`: Control GPU memory allocation (recommended: 0.80-0.90 to avoid out-of-memory errors)
+  - `--kv-cache-dtype fp8_e4m3`: Reduce KV cache memory by 50% (requires CUDA 11.8+)
+  - `--cpu-offload-gigabytes 16`: Offload layers to CPU on low-VRAM GPUs to save GPU memory
+* **Speculative Decoding**:
+
+  - `--speculative-algorithm EAGLE3`: Enable MTP speculative decoding
+  - `--speculative-num-steps 3`: Number of speculative verification rounds
+  - `--speculative-eagle-topk 1`: Top-k sampling for draft tokens
+  - `--speculative-num-draft-tokens 4`: Number of draft tokens per step
+  - `--speculative-draft-model-path`: The path of the draft model weights. This can be a local folder or a Hugging Face repo ID.
+* **DP Attention**: DP Attention is a strategy that separates the parallel strategies of the Attention layer and the MLP layer. `--dp_size`: Equivalent to `attention_dp_size`, representing how many micro-batch the attention layer will process simultaneously.
+
+## 4.Model Invocation
+
+### 4.1 Basic Usage
+
+For basic API usage and request examples, please refer to:
+
+- [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
+
+### 4.2 Advanced Usage
+
+#### 4.2.1 Reasoning Parser
+
+GPT-OSS supports thinking mode and non-thinking mode. Enable the reasoning parser during deployment to separate the thinking and the content sections.
+
+1. **Streaming with Thinking Process:**
+
+```shell
+python -m sglang.launch_server \
+  --model openai/gpt-oss-120b \
+  --reasoning-parser gpt-oss \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="EMPTY"
+)
+
+# Enable streaming to see the thinking process in real-time
+response = client.chat.completions.create(
+    model="openai/gpt-oss-120b",
+    messages=[
+        {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
+    ],
+    temperature=0.7,
+    max_tokens=2048,
+    stream=True
+)
+
+# Process the stream
+has_thinking = False
+has_answer = False
+thinking_started = False
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+    
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+    
+        # Print answer content
+        if delta.content:
+            # Close thinking section and add content header
+            if has_thinking and not has_answer:
+                print("\n=============== Content =================", flush=True)
+                has_answer = True
+            print(delta.content, end="", flush=True)
+
+print()
+```
+
+**Output Example:**
+
+```
+=============== Thinking =================
+The user asks: "Solve this problem step by step: What is 15% of 240?" So we need to provide step-by-step solution. Compute 15% of 240: 0.15 * 240 = 36. Provide steps: convert percent to decimal, multiply, maybe use fraction. Provide answer.
+=============== Content =================
+**Step‑by‑step solution**
+
+1. **Understand what “percent” means**  
+   “15 %” means 15 out of every 100 parts, i.e. the fraction \(\displaystyle \frac{15}{100}\).
+
+2. **Convert the percent to a decimal (or fraction)**  
+   \[
+   \frac{15}{100}=0.15
+   \]
+
+3. **Set up the multiplication**  
+   To find 15 % of 240 we multiply 240 by the decimal 0.15:
+   \[
+   240 \times 0.15
+   \]
+
+4. **Do the multiplication**  
+   One convenient way is to break it into two easier parts:
+   \[
+   240 \times 0.15 = 240 \times \left(\frac{15}{100}\right)
+                = \frac{240 \times 15}{100}
+   \]
+
+   - First compute \(240 \times 15\):
+     \[
+     240 \times 15 = 240 \times (10 + 5) = 2400 + 1200 = 3600
+     \]
+
+   - Then divide by 100:
+     \[
+     \frac{3600}{100} = 36
+     \]
+
+5. **Write the result**  
+   \[
+   15\% \text{ of } 240 = 36
+   \]
+
+---
+
+**Answer:** \(36\)
+```
+
+**Note:** The reasoning parser captures the model's step-by-step thinking process, allowing you to see how the model arrives at its conclusions.
+
+2. **Turn off Thinking:**
+
+```shell
+python -m sglang.launch_server \
+  --model openai/gpt-oss-120b \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="EMPTY"
+)
+
+# Turn off thinking process
+response = client.chat.completions.create(
+    model="openai/gpt-oss-120b",
+    messages=[
+        {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
+    ],
+    temperature=0.7,
+    max_tokens=2048,
+    stream=True,
+    extra_body={"chat_template_kwargs": {"enable_thinking": False}}
+)
+
+# Process the stream
+has_thinking = False
+has_answer = False
+thinking_started = False
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+    
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+    
+        # Print answer content
+        if delta.content:
+            # Close thinking section and add content header
+            if has_thinking and not has_answer:
+                print("\n=============== Content =================", flush=True)
+                has_answer = True
+            print(delta.content, end="", flush=True)
+
+print()
+```
+
+**Output Example:**
+
+```
+<|channel|>analysis<|message|>The user asks: "Solve this problem step by step: What is 15% of 240?" They want step-by-step solution. Simple: 15% = 15/100 = 0.15. Multiply by 240: 240 * 0.15 = 36. Or compute 10% = 24, 5% = 12, sum = 36. Provide steps.<|end|><|start|>assistant<|channel|>final<|message|>**Step 1: Write the percentage as a fraction (or decimal).**  
+
+\(15\%\) means “15 out of 100”, so  
+
+\[
+15\% = \frac{15}{100}=0.15.
+\]
+
+**Step 2: Multiply this fraction (or decimal) by the number you’re finding the percent of.**  
+
+We need \(15\%\) of \(240\):
+
+\[
+0.15 \times 240.
+\]
+
+**Step 3: Carry out the multiplication.**  
+
+You can do it directly:
+
+\[
+240 \times 0.15 = 240 \times \frac{15}{100}
+               = \frac{240 \times 15}{100}
+               = \frac{3600}{100}
+               = 36.
+\]
+
+Or use the “10 % + 5 %” shortcut:
+
+- 10 % of 240 = \(0.10 \times 240 = 24\).  
+- 5 % of 240 = half of 10 % = \(24 \div 2 = 12\).  
+
+Add them: \(24 + 12 = 36\).
+
+**Answer:**  
+
+\[
+\boxed{36}
+\] 
+
+So 15 % of 240 is 36.
+```
+
+#### 4.2.2 Tool Calling
+
+GPT-OSS supports tool calling capabilities. Enable the tool call parser:
+
+**Python Example (without Thinking Process):**
+
+Start sglang server:
+
+```shell
+python -m sglang.launch_server \
+  --model openai/gpt-oss-120b \
+  --tool-call-parser gpt-oss \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="EMPTY"
+)
+
+# Define available tools
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city name"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                        "description": "Temperature unit"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+# Make request with streaming to see thinking process
+response = client.chat.completions.create(
+    model="openai/gpt-oss-120b",
+    messages=[
+        {"role": "user", "content": "What's the weather in Beijing?"}
+    ],
+    tools=tools,
+    temperature=0.7,
+    stream=True
+)
+
+# Process streaming response
+thinking_started = False
+has_thinking = False
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+    
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+    
+        # Print tool calls
+        if hasattr(delta, 'tool_calls') and delta.tool_calls:
+            # Close thinking section if needed
+            if has_thinking and thinking_started:
+                print("\n=============== Content =================", flush=True)
+                thinking_started = False
+        
+            for tool_call in delta.tool_calls:
+                if tool_call.function:
+                    print(f"🔧 Tool Call: {tool_call.function.name}")
+                    print(f"   Arguments: {tool_call.function.arguments}")
+    
+        # Print content
+        if delta.content:
+            print(delta.content, end="", flush=True)
+
+print()
+```
+
+**Output Example:**
+
+```
+🔧 Tool Call: get_weather
+   Arguments: {"location": "Beijing", "unit": "celsius"}
+```
+
+**Python Example (with Thinking Process):**
+
+Start sglang server:
+
+```shell
+python -m sglang.launch_server \
+  --model openai/gpt-oss-120b \
+  --reasoning-parser gpt-oss \
+  --tool-call-parser gpt-oss \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="EMPTY"
+)
+
+# Define available tools
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city name"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                        "description": "Temperature unit"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+# Make request with streaming to see thinking process
+response = client.chat.completions.create(
+    model="openai/gpt-oss-120b",
+    messages=[
+        {"role": "user", "content": "What's the weather in Beijing?"}
+    ],
+    tools=tools,
+    temperature=0.7,
+    stream=True
+)
+
+# Process streaming response
+thinking_started = False
+has_thinking = False
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+    
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+    
+        # Print tool calls
+        if hasattr(delta, 'tool_calls') and delta.tool_calls:
+            # Close thinking section if needed
+            if has_thinking and thinking_started:
+                print("\n=============== Content =================", flush=True)
+                thinking_started = False
+        
+            for tool_call in delta.tool_calls:
+                if tool_call.function:
+                    print(f"🔧 Tool Call: {tool_call.function.name}")
+                    print(f"   Arguments: {tool_call.function.arguments}")
+    
+        # Print content
+        if delta.content:
+            print(delta.content, end="", flush=True)
+
+print()
+```
+
+**Output Example:**
+
+```
+=============== Thinking =================
+User asks: "What's the weather in Beijing?" We need to get current weather. Use function get_weather with location "Beijing". No unit specified; default? Probably use default (maybe Celsius). We can specify unit as "celsius". We'll call function.
+=============== Content =================
+🔧 Tool Call: get_weather
+   Arguments: {"location": "Beijing", "unit": "celsius"}
+```
+
+**Note:**
+
+- The reasoning parser shows how the model decides to use a tool
+- Tool calls are clearly marked with the function name and arguments
+- You can then execute the function and send the result back to continue the conversation
+
+**Handling Tool Call Results:**
+
+```python
+# After getting the tool call, execute the function
+def get_weather(location, unit="celsius"):
+    # Your actual weather API call here
+    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
+
+# Send tool result back to the model
+messages = [
+    {"role": "user", "content": "What's the weather in Beijing?"},
+    {
+        "role": "assistant",
+        "content": None,
+        "tool_calls": [{
+            "id": "call_123",
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "arguments": '{"location": "Beijing", "unit": "celsius"}'
+            }
+        }]
+    },
+    {
+        "role": "tool",
+        "tool_call_id": "call_123",
+        "content": get_weather("Beijing", "celsius")
+    }
+]
+
+final_response = client.chat.completions.create(
+    model="Qwen/Qwen3-Next-80B-A3B-Thinking",
+    messages=messages,
+    temperature=0.7
+)
+
+print(final_response.choices[0].message.content)
+# Output: "The current weather in Beijing is 22 °C and sunny. Let me know if you’d like a forecast for the next few days or any other details!"
+```
+
+## 5.Benchmark
+
+### 5.1 Speed Benchmark
+
+- Hardware: NVIDIA B200 GPU (8x)
+- Tensor Parallelism: 8
+- Model: openai/gpt-oss-120b
+- sglang version: 0.5.6
+
+We use SGLang's built-in benchmarking tool to conduct performance evaluation on the [ShareGPT_Vicuna_unfiltered](https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered) dataset. This dataset contains real conversation data and can better reflect performance in actual use scenarios.
+
+#### 5.1.1 Latency-Sensitive Benchmark
+
+- Server Command:
+
+```
+python -m sglang.launch_server \
+  --model openai/gpt-oss-120b \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+- Test Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --num-prompt 100 \
+  --host 127.0.0.1 \
+  --port 8000 \
+  --max-concurrency 1
+```
+
+- Test Results:
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang  
+Traffic request rate:                    inf     
+Max request concurrency:                 1       
+Successful requests:                     100     
+Benchmark duration (s):                  52.35   
+Total input tokens:                      33178   
+Total input text tokens:                 33178   
+Total input vision tokens:               0       
+Total generated tokens:                  21251   
+Total generated tokens (retokenized):    20868   
+Request throughput (req/s):              1.91    
+Input token throughput (tok/s):          633.76  
+Output token throughput (tok/s):         405.93  
+Peak output token throughput (tok/s):    433.00  
+Peak concurrent requests:                8       
+Total token throughput (tok/s):          1039.69   
+Concurrency:                             1.00    
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   523.30  
+Median E2E Latency (ms):                 389.91  
+---------------Time to First Token----------------
+Mean TTFT (ms):                          33.71   
+Median TTFT (ms):                        31.79   
+P99 TTFT (ms):                           108.98  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          2.31    
+Median TPOT (ms):                        2.31    
+P99 TPOT (ms):                           2.39    
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           2.31    
+Median ITL (ms):                         2.31    
+P95 ITL (ms):                            2.35    
+P99 ITL (ms):                            2.38    
+Max ITL (ms):                            3.54    
+==================================================
+```
+
+#### 5.1.2 Throughput-Sensitive Benchmark
+
+- Server Command:
+
+```
+python -m sglang.launch_server \
+  --model openai/gpt-oss-120b \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+- Test Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --num-prompt 1000 \
+  --host 127.0.0.1 \
+  --port 8000 \
+  --max-concurrency 100
+```
+
+**Test Results:**
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang  
+Traffic request rate:                    inf     
+Max request concurrency:                 100     
+Successful requests:                     1000    
+Benchmark duration (s):                  24.76   
+Total input tokens:                      297156  
+Total input text tokens:                 297156  
+Total input vision tokens:               0       
+Total generated tokens:                  192432  
+Total generated tokens (retokenized):    187145  
+Request throughput (req/s):              40.39   
+Input token throughput (tok/s):          12003.57  
+Output token throughput (tok/s):         7773.26   
+Peak output token throughput (tok/s):    13780.00  
+Peak concurrent requests:                156     
+Total token throughput (tok/s):          19776.83  
+Concurrency:                             89.23   
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   2208.97   
+Median E2E Latency (ms):                 1591.11   
+---------------Time to First Token----------------
+Mean TTFT (ms):                          102.94  
+Median TTFT (ms):                        31.53   
+P99 TTFT (ms):                           674.32  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          14.31   
+Median TPOT (ms):                        11.00   
+P99 TPOT (ms):                           91.28   
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           11.00   
+Median ITL (ms):                         5.75    
+P95 ITL (ms):                            25.35   
+P99 ITL (ms):                            43.18   
+Max ITL (ms):                            621.42  
+==================================================
+```
+
+### 5.2 Accuracy Benchmark
+
+### 5.2.1 GSM8K Benchmark
+
+- **Benchmark Command:**
+
+```shell
+python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 8000
+```
+
+- **Results**:
+
+  - GPT-OSS-120b
+
+    ```
+    Accuracy: 0.880
+    Invalid: 0.005
+    Latency: 5.262 s
+    Output throughput: 12143.675 token/s
+    ```
+  - GPT-OSS-20b
+
+    ```
+    Accuracy: 0.535
+    Invalid: 0.165
+    Latency: 4.157 s
+    Output throughput: 19589.165 token/s
+    ```

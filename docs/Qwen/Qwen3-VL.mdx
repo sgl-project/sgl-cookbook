@@ -1,0 +1,1062 @@
+# Qwen3-VL
+
+## 1. Model Introduction
+
+[Qwen3-VL series](https://github.com/QwenLM/Qwen3-VL) are the most powerful vision-language models in the Qwen series to date, featuring advanced capabilities in multi-modal understanding, reasoning, and agentic applications.
+
+This generation delivers comprehensive upgrades across the board:
+
+- **Superior text understanding & generation**: Qwen3-VL-235B-A22B-Instruct was ranked as the [#1 open model for text on lmarena.ai](https://x.com/arena/status/1973151703563460942)
+- **Deeper visual perception & reasoning**: Enhanced image and video understanding capabilities
+- **Extended context length**: Supports up to 262K tokens for processing long documents and videos
+- **Enhanced spatial and video dynamics comprehension**: Better understanding of spatial relationships and temporal dynamics
+- **Stronger agent interaction capabilities**: Improved tool use and search-based agent performance
+- **Flexible deployment options**: Available in Dense and MoE architectures that scale from edge to cloud, with Instruct and reasoning-enhanced Thinking editions
+
+For more details, please refer to the [official Qwen3-VL GitHub Repository](https://github.com/QwenLM/Qwen3-VL).
+
+## 2. SGLang Installation
+
+SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
+
+Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+
+## 3. Model Deployment
+
+This section provides deployment configurations optimized for different hardware platforms and use cases.
+
+### 3.1 Basic Configuration
+
+The Qwen3-VL series offers models in various sizes and architectures, optimized for different hardware platforms. The recommended launch configurations vary by hardware and model size.
+
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, quantization method, and thinking capabilities.
+
+import Qwen3VLConfigGenerator from '@site/src/components/Qwen3VLConfigGenerator';
+
+<Qwen3VLConfigGenerator />
+
+{/* Old inline script configuration has been replaced with ConfigGenerator component */}
+{/* const CONFIG = {
+    modelFamily: 'Qwen',
+  
+    options: {
+        hardware: {
+            name: 'hardware',
+            title: 'Hardware Platform',
+            items: [
+        { id: 'b200', label: 'B200', default: true },
+        { id: 'h100', label: 'H100', default: false },
+        { id: 'h200', label: 'H200', default: false }
+            ]
+        },
+        modelsize: {
+            name: 'modelsize',
+            title: 'Model Size',
+            items: [
+        { id: '235b', label: '235B', subtitle: 'MOE', default: true },
+        { id: '30b', label: '30B', subtitle: 'MOE', default: false },
+        { id: '32b', label: '32B', subtitle: 'Dense', default: false },
+        { id: '8b', label: '8B', subtitle: 'Dense', default: false },
+        { id: '4b', label: '4B', subtitle: 'Dense', default: false },
+        { id: '2b', label: '2B', subtitle: 'Dense', default: false }
+            ]
+        },
+        quantization: {
+            name: 'quantization',
+            title: 'Quantization',
+            items: [
+        { id: 'bf16', label: 'BF16', default: true },
+        { id: 'fp8', label: 'FP8', default: false }
+            ]
+        },
+        thinking: {
+            name: 'thinking',
+            title: 'Thinking Capabilities',
+            items: [
+        { id: 'instruct', label: 'Instruct', default: true },
+        { id: 'thinking', label: 'Thinking', default: false }
+    ],
+            commandRule: (value) => value === 'thinking' ? '--reasoning-parser qwen3' : null
+        },
+        toolcall: {
+            name: 'toolcall',
+            title: 'Tool Call Parser',
+            items: [
+                { id: 'disabled', label: 'Disabled', default: true },
+                { id: 'enabled', label: 'Enabled', default: false }
+            ],
+            commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen' : null
+        }
+    },
+  
+    modelConfigs: {
+        '235b': {
+            baseName: '235B-A22B',
+            isMOE: true,
+            h100: { tp: 8, ep: 0, bf16: true, fp8: true },
+            h200: { tp: 8, ep: 0, bf16: true, fp8: true },
+            b200: { tp: 8, ep: 0, bf16: true, fp8: true }
+        },
+        '30b': {
+            baseName: '30B-A3B',
+            isMOE: true,
+            h100: { tp: 1, ep: 0, bf16: true, fp8: true },
+            h200: { tp: 1, ep: 0, bf16: true, fp8: true },
+            b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        },
+        '32b': {
+            baseName: '32B',
+            isMOE: false,
+            h100: { tp: 1, ep: 0, bf16: true, fp8: true },
+            h200: { tp: 1, ep: 0, bf16: true, fp8: true },
+            b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        },
+        '8b': {
+            baseName: '8B',
+            isMOE: false,
+            h100: { tp: 1, ep: 0, bf16: true, fp8: true },
+            h200: { tp: 1, ep: 0, bf16: true, fp8: true },
+            b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        },
+        '4b': {
+            baseName: '4B',
+            isMOE: false,
+            h100: { tp: 1, ep: 0, bf16: true, fp8: true },
+            h200: { tp: 1, ep: 0, bf16: true, fp8: true },
+            b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        },
+        '2b': {
+            baseName: '2B',
+            isMOE: false,
+            h100: { tp: 1, ep: 0, bf16: true, fp8: true },
+            h200: { tp: 1, ep: 0, bf16: true, fp8: true },
+            b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        }
+    },
+  
+    specialCommands: {
+        'h100-235b-bf16-instruct': '# Error: Model is too large, cannot fit into 8*H100\n# Please use H200 (141GB) or select FP8 quantization',
+        'h100-235b-bf16-thinking': '# Error: Model is too large, cannot fit into 8*H100\n# Please use H200 (141GB) or select FP8 quantization'
+    },
+
+    generateCommand: function(values) {
+        const { hardware, modelsize: modelSize, quantization, thinking } = values;
+        const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+      
+        if (this.specialCommands[commandKey]) {
+            return this.specialCommands[commandKey];
+        }
+      
+        const config = this.modelConfigs[modelSize];
+        if (!config) {
+            return `# Error: Unknown model size: ${modelSize}`;
+        }
+      
+        const hwConfig = config[hardware];
+        if (!hwConfig) {
+            return `# Error: Unknown hardware platform: ${hardware}`;
+        }
+      
+        const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
+        const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '-Instruct';
+        const modelName = `Qwen/Qwen3-VL-${config.baseName}${thinkingSuffix}${quantSuffix}`;
+      
+        let cmd = 'python -m sglang.launch_server \\\n';
+        cmd += `  --model ${modelName}`;
+      
+        if (hwConfig.tp > 1) {
+            cmd += ` \\\n  --tp ${hwConfig.tp}`;
+        }
+      
+        let ep = hwConfig.ep;
+        if (quantization === 'fp8' && hwConfig.tp === 8) {
+            ep = 2;
+        }
+      
+        if (ep > 0) {
+            cmd += ` \\\n  --ep ${ep}`;
+        }
+      
+        for (const [key, option] of Object.entries(this.options)) {
+            if (key === 'host' || key === 'port') continue;
+          
+            if (option.commandRule) {
+                const rule = option.commandRule(values[key]);
+                if (rule) {
+                    cmd += ` \\\n  ${rule}`;
+                }
+            }
+        }
+      
+        return cmd;
+    }
+};
+
+function renderUI() {
+    const container = document.getElementById('config-container');
+    if (!container) return;
+  
+    let html = '';
+    let index = 1;
+  
+    for (const [key, option] of Object.entries(CONFIG.options)) {
+        html += `
+<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
+    <div style="font-size: 14px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px; display: flex; align-items: center;">
+        <span style="background: #667eea; color: white; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 12px;">${index}</span>
+        ${option.title}
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">`;
+      
+        if (option.type === 'text') {
+            html += `
+        <input type="text" id="input-${option.name}" name="${option.name}" value="${option.default || ''}" placeholder="${option.placeholder || ''}" 
+               style="padding: 8px 12px; border: 1px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; color: var(--md-default-fg-color, #2d3748); background: var(--md-default-bg-color, white);">`;
+        } else {
+            option.items.forEach(item => {
+                const inputId = `${option.name}-${item.id}`;
+                const checked = item.default ? 'checked' : '';
+                html += `
+            <input type="radio" id="${inputId}" name="${option.name}" value="${item.id}" ${checked} style="display: none;">
+            <label for="${inputId}" style="padding: 8px 18px; border: 2px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; cursor: pointer; display: inline-block; font-weight: 500; font-size: 13px; transition: all 0.3s; background: var(--md-default-bg-color, white); color: var(--md-default-fg-color, #2d3748);">${item.label}${item.subtitle ? `<br/><small style="color: var(--md-default-fg-color--light, #718096); font-size: 10px;">${item.subtitle}</small>` : ''}</label>`;
+            });
+        }
+      
+        html += `
+    </div>
+</div>`;
+        index++;
+    }
+  
+    html += `
+<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
+    <div style="font-size: 15px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px;">
+        Generated Command
+    </div>
+    <div id="command-display" style="padding: 16px; background: #2d3748; border-radius: 6px; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap; overflow-x: auto; border: none;"></div>
+</div>`;
+  
+    container.innerHTML = html;
+}
+
+function handleChange() {
+    updateQuantOptions();
+    updateCommand();
+    updateStyles();
+}
+
+function init() {
+    const container = document.getElementById('config-container');
+    if (!container) {
+        setTimeout(init, 100);
+        return;
+    }
+  
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+  
+    renderUI();
+  
+    container.addEventListener('change', function(e) {
+        if (e.target && e.target.matches('input[type="radio"]')) {
+            handleChange();
+        }
+    });
+  
+    container.addEventListener('input', function(e) {
+        if (e.target && e.target.matches('input[type="text"]')) {
+            updateCommand();
+        }
+    });
+  
+    updateCommand();
+    updateStyles();
+}
+
+init();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+setTimeout(init, 500);
+
+function updateQuantOptions() {
+    const hardware = document.querySelector('input[name="hardware"]:checked').value;
+    const modelSize = document.querySelector('input[name="modelsize"]:checked').value;
+    const config = CONFIG.modelConfigs[modelSize];
+  
+    if (!config) return;
+  
+    const hwConfig = config[hardware];
+    const bf16Radio = document.getElementById('quantization-bf16');
+    const fp8Radio = document.getElementById('quantization-fp8');
+    const bf16Label = document.querySelector('label[for="quantization-bf16"]');
+    const fp8Label = document.querySelector('label[for="quantization-fp8"]');
+  
+    bf16Radio.disabled = !hwConfig.bf16;
+    fp8Radio.disabled = !hwConfig.fp8;
+  
+    if (!hwConfig.bf16) {
+        bf16Label.style.opacity = '0.5';
+        bf16Label.style.cursor = 'not-allowed';
+        if (bf16Radio.checked) {
+            fp8Radio.checked = true;
+        }
+    } else {
+        bf16Label.style.opacity = '1';
+        bf16Label.style.cursor = 'pointer';
+    }
+  
+    if (!hwConfig.fp8) {
+        fp8Label.style.opacity = '0.5';
+        fp8Label.style.cursor = 'not-allowed';
+        if (fp8Radio.checked) {
+            bf16Radio.checked = true;
+        }
+    } else {
+        fp8Label.style.opacity = '1';
+        fp8Label.style.cursor = 'pointer';
+    }
+  
+    updateStyles();
+}
+
+function updateCommand() {
+    const values = {};
+    for (const [key, option] of Object.entries(CONFIG.options)) {
+        if (option.type === 'text') {
+            const input = document.getElementById(`input-${option.name}`);
+            if (input) {
+                values[option.name] = input.value;
+            }
+        } else {
+            const selected = document.querySelector(`input[name="${option.name}"]:checked`);
+            if (selected) {
+                values[option.name] = selected.value;
+            }
+        }
+    }
+  
+    const command = CONFIG.generateCommand(values);
+    document.getElementById("command-display").textContent = command;
+}
+
+function updateStyles() {
+    const labels = document.querySelectorAll('label');
+  
+    labels.forEach(label => {
+        const input = document.querySelector(`input[id="${label.getAttribute('for')}"]`);
+        if (input && input.disabled) {
+            return;
+        }
+        label.style.backgroundColor = '';
+        label.style.color = '';
+        label.style.borderColor = '#ddd';
+    });
+  
+    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked:not(:disabled)');
+    checkedInputs.forEach(input => {
+        const label = document.querySelector(`label[for="${input.id}"]`);
+        if (label) {
+            label.style.backgroundColor = '#dc3545';
+            label.style.color = 'white';
+            label.style.borderColor = '#d55816';
+        }
+    });
+}
+*/}
+
+### 3.2 Configuration Tips
+
+* **Multimodal attention backend** : Usually, `--mm-attention-backend` is default to `fa3` on H100/H200/A100 for better performance, but it is default to `triton_attn` on B200 for compatibility.
+* **TTFT Optimization** : Set `SGLANG_USE_CUDA_IPC_TRANSPORT=1` to use CUDA IPC for transferring multimodal features, which significantly improves TTFT. This consumes additional memory and may require adjusting `--mem-fraction-static` and/or `--max-running-requests`. (additional memory is proportional to image size * number of images in current running requests.)
+* **Memory Management** : Set lower `--context-length` to conserve memory. A value of `128000` is sufficient for most scenarios, down from the default 262K.
+* **Expert Parallelism** : SGLang supports Expert Parallelism (EP) via `--ep`, allowing experts in MoE models to be deployed on separate GPUs for better throughput. One thing to note is that, for quantized models, you need to set `--ep` to a value that satisfies the requirement: `(moe_intermediate_size / moe_tp_size) % weight_block_size_n == 0, where moe_tp_size is equal to tp_size divided by ep_size.` Note that EP may perform worse in low concurrency scenarios due to additional communication overhead. Check out [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md) for more details.
+* **Kernel Tuning** : For MoE Triton kernel tuning on your specific hardware, refer to [fused_moe_triton](https://github.com/sgl-project/sglang/tree/main/benchmark/kernels/fused_moe_triton).
+
+## 4. Model Invocation
+
+### 4.1 Basic Usage
+
+For basic API usage and request examples, please refer to:
+
+- [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
+- [SGLang OpenAI Vision API Guide](https://docs.sglang.ai/basic_usage/openai_api_vision.html)
+
+### 4.2 Advanced Usage
+
+#### 4.2.1 Multi-Modal Inputs
+
+Qwen3-VL supports both image and video inputs. Here's a basic example with image input:
+
+```python
+import time
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="EMPTY",
+    base_url="http://localhost:8000/v1",
+    timeout=3600
+)
+
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "https://ofasys-multimodal-wlcb-3-toshanghai.oss-accelerate.aliyuncs.com/wpf272043/keepme/image/receipt.png"
+                }
+            },
+            {
+                "type": "text",
+                "text": "Read all the text in the image."
+            }
+        ]
+    }
+]
+
+start = time.time()
+response = client.chat.completions.create(
+    model="Qwen/Qwen3-VL-235B-A22B-Instruct",
+    messages=messages,
+    max_tokens=2048
+)
+print(f"Response costs: {time.time() - start:.2f}s")
+print(f"Generated text: {response.choices[0].message.content}")
+```
+
+**Example Output:**
+
+```text
+Response costs: 3.37s
+Generated text: Auntie Anne's
+
+CINNAMON SUGAR
+1 x 17,000                    17,000
+
+SUB TOTAL                    17,000
+
+GRAND TOTAL                  17,000
+
+CASH IDR                     20,000
+
+CHANGE DUE                  3,000
+```
+
+**Multi-Image Input Example:**
+
+Qwen3-VL can process multiple images in a single request for comparison or analysis:
+
+```python
+import time
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="EMPTY",
+    base_url="http://localhost:8000/v1",
+    timeout=3600
+)
+
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "https://www.civitatis.com/f/china/hong-kong/guia/taxi.jpg"
+                }
+            },
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": "https://cdn.cheapoguides.com/wp-content/uploads/sites/7/2025/05/GettyImages-509614603-1280x600.jpg"
+                }
+            },
+            {
+                "type": "text",
+                "text": "Compare these two images and describe the differences in 100 words or less. Focus on the key visual elements, colors, textures, and any notable contrasts between the two scenes. Be specific about what you see in each image."
+            } 
+        ]
+    }
+]
+
+start = time.time()
+response = client.chat.completions.create(
+    model="Qwen/Qwen3-VL-235B-A22B-Instruct",
+    messages=messages,
+    max_tokens=2048
+)
+print(f"Response costs: {time.time() - start:.2f}s")
+print(f"Generated text: {response.choices[0].message.content}")
+```
+
+**Example Output:**
+
+```text
+Response costs: 10.18s
+Generated text: The two images present starkly different portrayals of Hong Kong’s iconic red taxis, contrasting a dynamic street-level moment with a static, large-scale gathering.
+
+The first image is a close-up, eye-level shot capturing a single red Toyota Crown taxi (license plate RX 5004) in motion or paused at an urban intersection. Its glossy red paint gleams under daylight, reflecting the vibrant, cluttered backdrop of a Hong Kong street — neon signs, glass-fronted shops displaying sunglasses, and Chinese characters. The taxi’s chrome grille, clear headlights, and black trim provide visual contrast. A green “4 SEATS” sticker and a “的士 TAXI” sign on the side reinforce its identity. The composition is intimate, focusing on the vehicle’s details — the texture of its paint, the slight reflections on the windows, and the crispness of its license plate. Other red taxis flank it, suggesting a bustling city rhythm, but the central taxi dominates the frame, conveying movement and immediacy.
+
+In contrast, the second image is an elevated, wide-angle shot of dozens of red taxis — along with a few green ones — parked in neat, grid-like rows on what appears to be a highway or staging area. The scene is static, almost ceremonial. Many taxis have their hoods open, suggesting maintenance, inspection, or protest. People are scattered among the vehicles, some inspecting engines, others conversing — adding a human, documentary element. The dominant color remains red, but the repetition creates a visual pattern rather than individual focus. The green taxis offer a subtle color contrast, hinting at different service zones (green for New Territories, red for urban areas). The setting is more utilitarian — concrete barriers, metal railings, and sparse vegetation — with an overpass looming in the background. The texture here is less about polished paint and more about the collective mass of vehicles, the asphalt, and the functional layout.
+
+Key contrasts emerge: the first image is kinetic and personal, emphasizing the taxi as a working vehicle in the city’s daily flow; the second is static and collective, portraying the taxis as a fleet, possibly for logistical or political purposes. The lighting in both is bright daylight, but the first has richer color saturation and depth due to its proximity and urban backdrop, while the second feels flatter, more documentary in tone. The first image invites you into the city’s pulse; the second invites you to observe a system — organized, perhaps even paused — from a distance.
+
+In essence, the first image celebrates the individual taxi in its natural habitat; the second reveals the scale and structure behind the fleet, transforming the familiar red icon into a symbol of coordination, maintenance, or collective action. Both are quintessentially Hong Kong, yet they offer vastly different narratives — one of motion and commerce, the other of assembly and purpose.
+```
+
+**Video Input Example:**
+
+Qwen3-VL supports video understanding by processing video URLs:
+
+```python
+import time
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="EMPTY",
+    base_url="http://localhost:8000/v1",
+    timeout=3600
+)
+
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "video_url",
+                "video_url": {
+                    "url": "https://videos.pexels.com/video-files/4114797/4114797-uhd_3840_2160_25fps.mp4"
+                }
+            },
+            {
+                "type": "text",
+                "text": "Describe what happens in this video."
+            }
+        ]
+    }
+]
+
+start = time.time()
+response = client.chat.completions.create(
+    model="Qwen/Qwen3-VL-235B-A22B-Instruct",
+    messages=messages,
+    max_tokens=2048
+)
+print(f"Response costs: {time.time() - start:.2f}s")
+print(f"Generated text: {response.choices[0].message.content}")
+```
+
+**Note:**
+
+- For video processing, ensure you have sufficient context length configured (up to 262K tokens)
+- Video processing may require more memory; adjust `--mem-fraction-static` accordingly
+- You can also provide local file paths using `file://` protocol
+
+**Example Output:**
+
+```text
+Response costs: 3.89s
+Generated text: A person wearing blue gloves is using a microscope. They are adjusting the focus knob with one hand while holding a pipette with the other, suggesting they are preparing or examining a sample on the slide beneath the objective lens. The microscope's 40x objective lens is positioned over the slide, indicating a high-magnification observation. The person carefully manipulates the slide and the microscope controls, likely to achieve a clear view of the specimen.
+```
+
+#### 4.2.2 Reasoning Parser
+
+Qwen3-VL-Thinking supports reasoning mode. Enable the reasoning parser during deployment to separate the thinking and content sections:
+
+```shell
+python -m sglang.launch_server \
+  --model Qwen/Qwen3-VL-235B-A22B-Thinking \
+  --reasoning-parser qwen3 \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+**Streaming with Thinking Process:**
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="EMPTY"
+)
+
+# Enable streaming to see the thinking process in real-time
+response = client.chat.completions.create(
+    model="Qwen/Qwen3-VL-235B-A22B-Thinking",
+    messages=[
+        {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
+    ],
+    temperature=0.7,
+    max_tokens=2048,
+    stream=True
+)
+
+# Process the stream
+has_thinking = False
+has_answer = False
+thinking_started = False
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+  
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+  
+        # Print answer content
+        if delta.content:
+            # Close thinking section and add content header
+            if has_thinking and not has_answer:
+                print("\n=============== Content =================", flush=True)
+                has_answer = True
+            print(delta.content, end="", flush=True)
+
+print()
+```
+
+**Output Example:**
+
+```
+=============== Thinking =================
+To solve this problem, I need to calculate 15% of 240.
+Step 1: Convert 15% to decimal: 15% = 0.15
+Step 2: Multiply 240 by 0.15
+Step 3: 240 × 0.15 = 36
+=============== Content =================
+
+The answer is 36. To find 15% of 240, we multiply 240 by 0.15, which equals 36.
+```
+
+**Note:** The reasoning parser captures the model's step-by-step thinking process, allowing you to see how the model arrives at its conclusions.
+
+#### 4.2.3 Tool Calling
+
+Qwen3-VL supports tool calling capabilities. Enable the tool call parser:
+
+```shell
+python -m sglang.launch_server \
+  --model Qwen/Qwen3-VL-235B-A22B-Thinking \
+  --reasoning-parser qwen3 \
+  --tool-call-parser qwen \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+**Python Example (with Thinking Process):**
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="EMPTY"
+)
+
+# Define available tools
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city name"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                        "description": "Temperature unit"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+# Make request with streaming to see thinking process
+response = client.chat.completions.create(
+    model="Qwen/Qwen3-VL-235B-A22B-Thinking",
+    messages=[
+        {"role": "user", "content": "What's the weather in Beijing?"}
+    ],
+    tools=tools,
+    temperature=0.7,
+    stream=True
+)
+
+# Process streaming response
+thinking_started = False
+has_thinking = False
+tool_calls_accumulator = {}
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+  
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+  
+        # Accumulate tool calls
+        if hasattr(delta, 'tool_calls') and delta.tool_calls:
+            # Close thinking section if needed
+            if has_thinking and thinking_started:
+                print("\n=============== Content =================\n", flush=True)
+                thinking_started = False
+  
+            for tool_call in delta.tool_calls:
+                index = tool_call.index
+                if index not in tool_calls_accumulator:
+                    tool_calls_accumulator[index] = {
+                        'name': None,
+                        'arguments': ''
+                    }
+  
+                if tool_call.function:
+                    if tool_call.function.name:
+                        tool_calls_accumulator[index]['name'] = tool_call.function.name
+                    if tool_call.function.arguments:
+                        tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
+  
+        # Print content
+        if delta.content:
+            print(delta.content, end="", flush=True)
+
+# Print accumulated tool calls
+for index, tool_call in sorted(tool_calls_accumulator.items()):
+    print(f"🔧 Tool Call: {tool_call['name']}")
+    print(f"   Arguments: {tool_call['arguments']}")
+
+print()
+```
+
+**Output Example:**
+
+```
+=============== Thinking =================
+The user is asking about the weather in Beijing. I need to use the get_weather function to retrieve this information.
+I should call the function with location="Beijing".
+=============== Content =================
+
+🔧 Tool Call: get_weather
+   Arguments: {"location": "Beijing", "unit": "celsius"}
+```
+
+**Note:**
+
+- The reasoning parser shows how the model decides to use a tool
+- Tool calls are clearly marked with the function name and arguments
+- You can then execute the function and send the result back to continue the conversation
+
+**Handling Tool Call Results:**
+
+```python
+# After getting the tool call, execute the function
+def get_weather(location, unit="celsius"):
+    # Your actual weather API call here
+    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
+
+# Send tool result back to the model
+messages = [
+    {"role": "user", "content": "What's the weather in Beijing?"},
+    {
+        "role": "assistant",
+        "content": None,
+        "tool_calls": [{
+            "id": "call_123",
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "arguments": '{"location": "Beijing", "unit": "celsius"}'
+            }
+        }]
+    },
+    {
+        "role": "tool",
+        "tool_call_id": "call_123",
+        "content": get_weather("Beijing", "celsius")
+    }
+]
+
+final_response = client.chat.completions.create(
+    model="Qwen/Qwen3-VL-235B-A22B-Thinking",
+    messages=messages,
+    temperature=0.7
+)
+
+print(final_response.choices[0].message.content)
+# Output: "The weather in Beijing is currently 22°C and sunny."
+```
+
+## 5. Benchmark
+
+### 5.1 Speed Benchmark
+
+**Test Environment:**
+
+- Hardware: NVIDIA B200 GPU (8x)
+- Model: Qwen3-VL-235B-A22B-Instruct
+- Tensor Parallelism: 8
+- sglang version: 0.5.6
+
+We use SGLang's built-in benchmarking tool to conduct performance evaluation with random images. To simulate real-world usage, you can specify different input and output lengths for each request. For example, each request can have 128 input tokens, two 720p images, and 1024 output tokens.
+
+#### 5.1.1 Latency-Sensitive Benchmark
+
+- Model Deployment Command:
+
+```shell
+python -m sglang.launch_server \
+  --model Qwen/Qwen3-VL-235B-A22B-Instruct \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang-oai-chat \
+  --host 127.0.0.1 \
+  --port 8000 \
+  --model Qwen/Qwen3-VL-235B-A22B-Instruct \
+  --dataset-name image \
+  --image-count 2 \
+  --image-resolution 720p \
+  --random-input-len 128 \
+  --random-output-len 1024 \
+  --num-prompts 10 \
+  --max-concurrency 1
+```
+
+- **Test Results:**
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  58.75
+Total input tokens:                      18341
+Total input text tokens:                 701
+Total input vision tokens:               17640
+Total generated tokens:                  5096
+Total generated tokens (retokenized):    4951
+Request throughput (req/s):              0.17
+Input token throughput (tok/s):          312.17
+Output token throughput (tok/s):         86.74
+Total token throughput (tok/s):          398.91
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   5873.13
+Median E2E Latency (ms):                 5590.23
+---------------Time to First Token----------------
+Mean TTFT (ms):                          147.40
+Median TTFT (ms):                        109.63
+P99 TTFT (ms):                           348.57
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          11.25
+Median TPOT (ms):                        11.26
+P99 TPOT (ms):                           11.27
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           11.26
+Median ITL (ms):                         11.26
+P95 ITL (ms):                            11.46
+P99 ITL (ms):                            11.57
+Max ITL (ms):                            17.00
+=================================================
+```
+
+**Optimized Results (with CUDA IPC Transport):**
+
+For further TTFT optimization, enable CUDA IPC Transport for multimodal features by setting `SGLANG_USE_CUDA_IPC_TRANSPORT=1`. This significantly reduces TTFT by using CUDA IPC for transferring multimodal features.
+
+- Model Deployment Command:
+
+```shell
+SGLANG_USE_CUDA_IPC_TRANSPORT=1 python -m sglang.launch_server \
+  --model Qwen/Qwen3-VL-235B-A22B-Instruct \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 8000 \
+  --model Qwen/Qwen3-VL-235B-A22B-Instruct \
+  --dataset-name image \
+  --image-count 2 \
+  --image-resolution 720p \
+  --random-input-len 128 \
+  --random-output-len 1024 \
+  --num-prompts 100 \
+  --max-concurrency 1
+```
+
+- **Test Results:**
+
+  With `SGLANG_USE_CUDA_IPC_TRANSPORT=1`, TTFT improves significantly:
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  58.49
+Total input tokens:                      18346
+Total input text tokens:                 706
+Total input vision tokens:               17640
+Total generated tokens:                  5096
+Total generated tokens (retokenized):    5089
+Request throughput (req/s):              0.17
+Input token throughput (tok/s):          313.69
+Output token throughput (tok/s):         87.13
+Total token throughput (tok/s):          400.82
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   5846.36
+Median E2E Latency (ms):                 5577.90
+---------------Time to First Token----------------
+Mean TTFT (ms):                          131.99
+Median TTFT (ms):                        116.14
+P99 TTFT (ms):                           218.76
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          11.22
+Median TPOT (ms):                        11.23
+P99 TPOT (ms):                           11.25
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           11.25
+Median ITL (ms):                         11.25
+P95 ITL (ms):                            11.47
+P99 ITL (ms):                            11.60
+Max ITL (ms):                            15.31
+==================================================
+```
+
+#### 5.1.2 Throughput-Sensitive Benchmark
+
+- Model Deployment Command:
+
+```shell
+python -m sglang.launch_server \
+  --model Qwen/Qwen3-VL-235B-A22B-Instruct \
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
+```
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 8000 \
+  --model Qwen/Qwen3-VL-235B-A22B-Instruct \
+  --dataset-name image \
+  --image-count 2 \
+  --image-resolution 720p \
+  --random-input-len 128 \
+  --random-output-len 1024 \
+  --num-prompts 1000 \
+  --max-concurrency 100
+```
+
+- **Test Results:**
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     1000
+Benchmark duration (s):                  216.03
+Total input tokens:                      1838837
+Total input text tokens:                 74837
+Total input vision tokens:               1764000
+Total generated tokens:                  509295
+Total generated tokens (retokenized):    465277
+Request throughput (req/s):              4.63
+Input token throughput (tok/s):          8511.76
+Output token throughput (tok/s):         2357.47
+Total token throughput (tok/s):          10869.23
+Concurrency:                             95.02
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   20527.34
+Median E2E Latency (ms):                 20394.36
+---------------Time to First Token----------------
+Mean TTFT (ms):                          333.81
+Median TTFT (ms):                        158.54
+P99 TTFT (ms):                           1609.40
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          39.85
+Median TPOT (ms):                        40.70
+P99 TPOT (ms):                           52.20
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           39.88
+Median ITL (ms):                         26.46
+P95 ITL (ms):                            107.56
+P99 ITL (ms):                            138.10
+Max ITL (ms):                            592.44
+==================================================
+```
+
+### 5.2 Accuracy Benchmark
+
+#### 5.2.1 MMMU Benchmark
+
+You can evaluate the model's accuracy using the MMMU dataset with `lmms_eval`:
+
+- Benchmark Command:
+
+```shell
+uv pip install lmms_eval
+
+python3 -m lmms_eval \
+  --model openai_compatible \
+  --model_args "model=Qwen/Qwen3-VL-235B-A22B-Instruct,api_key=EMPTY,base_url=http://127.0.0.1:8000/v1/" \
+  --tasks mmmu_val \
+  --batch_size 128 \
+  --log_samples \
+  --log_samples_suffix "openai_compatible" \
+  --output_path ./logs \
+  --gen_kwargs "max_new_tokens=4096"
+```
+
+- **Test Results:**
+
+```
+| Tasks  |Version|Filter|n-shot| Metric |   |Value |   |Stderr|
+|--------|------:|------|-----:|--------|---|-----:|---|------|
+|mmmu_val|      0|none  |     0|mmmu_acc|↑  |0.6567|±  |   N/A|
+```
