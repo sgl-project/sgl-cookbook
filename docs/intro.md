@@ -24,10 +24,10 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### DeepSeek
 
-- [x] [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2.mdx)
+- [x] [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2)
 - [ ] [DeepSeek-V3.1](./DeepSeek/DeepSeek-V3_1)
 - [ ] [DeepSeek-V3](./DeepSeek/DeepSeek-V3)
-- [x] [DeepSeek-R1](/docs/DeepSeek/DeepSeek-R1.mdx)
+- [x] [DeepSeek-R1](/docs/DeepSeek/DeepSeek-R1)
 
 ### Ernie
 
@@ -47,7 +47,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### InternLM
 
-- [ ] [Intern-S1](./InternLM/Intern-S1)
+- [x] [Intern-S1](./InternLM/Intern-S1)
 
 ### Jina AI
 
@@ -55,9 +55,9 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### Llama
 
-- [ ] [Llama4-Scout](./Llama/Llama4-Scout)
+- [x] [Llama4-Scout](./Llama/Llama4-Scout)
 - [ ] [Llama3.3-70B](./Llama/Llama3.3-70B)
-- [ ] [Llama3.1](./Llama/Llama3.1)
+- [x] [Llama3.1](./Llama/Llama3.1)
 
 ### MiniMax
 
