@@ -310,7 +310,7 @@ messages = [
 ]
 
 final_response = client.chat.completions.create(
-    model="Qwen/Qwen3-235B-A22B",
+    model="Qwen/Qwen3-235B-A22B-Instruct-2507",
     messages=messages,
     temperature=0.7
 )
