@@ -63,17 +63,12 @@ const GPTOSSConfigGenerator = () => {
         commandRule: (value, allValues) => {
           if (value !== 'enabled') return null;
 
-          let cmd = '--speculative-algorithm EAGLE3\\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4';
-
-          // 新增判定逻辑：如果是 120b 且 mxfp4
-          if (allValues.modelsize === '120b' && allValues.quantization === 'mxfp4') {
-            cmd += '\\\n  --speculative-draft-model-path nvidia/gpt-oss-120b-Eagle3';
-          } else if (allValues.modelsize === '20b' && allValues.quantization === 'mxfp4') {
-            cmd += ' \\\n  --speculative-draft-model-path RedHatAI/gpt-oss-20b-speculator.eagle3';
-          } else if (allValues.modelsize === '120b' && allValues.quantization === 'bf16') {
-            cmd += ' \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-120b-bf16';
-          } else if (allValues.modelsize === '20b' && allValues.quantization === 'bf16') {
-            cmd += ' \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-20b-bf16';
+          let cmd = '--speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4';
+                
+          if (allValues.modelsize === '120b') {
+              cmd += ' \\\n  --speculative-draft-model-path nvidia/gpt-oss-120b-Eagle3';
+          } else if (allValues.modelsize === '20b') {
+              cmd += ' \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-20b-bf16';
           }
 
           return cmd;
@@ -116,7 +111,14 @@ const GPTOSSConfigGenerator = () => {
       const orgPrefix = quantization === 'bf16' ? 'lmsys' : 'openai';
       const modelName = `${orgPrefix}/gpt-oss-${config.baseName}${quantSuffix}`;
 
-      let cmd = 'python -m sglang.launch_server\\\n';
+      let cmd = '';
+        
+      if (values.speculative === 'enabled') {
+          cmd += 'SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 ';
+      }
+      
+      cmd += 'python -m sglang.launch_server \\\n';
+
       cmd += `  --model ${modelName}`;
 
       if (hwConfig.tp > 1) {
