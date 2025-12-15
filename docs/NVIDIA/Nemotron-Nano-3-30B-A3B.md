@@ -218,8 +218,6 @@ print(completion.choices[0].message.tool_calls)
 python3 -m sglang.launch_server \
   --model-path nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 \
   --trust-remote-code \
-  --tp 1 \
-  --attention-backend flashinfer \
   --max-running-requests 1024 \
   --host 0.0.0.0 \
   --port 30000
@@ -289,8 +287,6 @@ Max ITL (ms):                            5368.19
 python3 -m sglang.launch_server \
   --model-path nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16 \
   --trust-remote-code \
-  --tp 1 \
-  --attention-backend flashinfer \
   --max-running-requests 1024 \
   --host 0.0.0.0 \
   --port 30000

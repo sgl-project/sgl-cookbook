@@ -43,6 +43,24 @@ const NemotronNano3ConfigGenerator = () => {
           { id: 'bf16', label: 'bf16', default: false }
         ]
       },
+      thinking: {
+        name: 'thinking',
+        title: 'Reasoning Parser',
+        items: [
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
+        ],
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser nano_v3' : null
+      },
+      toolcall: {
+        name: 'toolcall',
+        title: 'Tool Call Parser',
+        items: [
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
+        ],
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen3_coder' : null
+      },
       host: {
         name: 'host',
         title: 'Host',
