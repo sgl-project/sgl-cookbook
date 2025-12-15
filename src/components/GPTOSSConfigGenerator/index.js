@@ -113,7 +113,7 @@ const GPTOSSConfigGenerator = () => {
 
       let cmd = '';
         
-      if (modelSize === '20b' && values.speculative === 'enabled') {
+      if (values.speculative === 'enabled') {
           cmd += 'SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 ';
       }
       
