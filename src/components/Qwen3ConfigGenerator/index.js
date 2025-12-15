@@ -42,11 +42,12 @@ const Qwen3ConfigGenerator = () => {
           { id: 'fp8', label: 'FP8', default: false }
         ]
       },
-      thinking: {
-        name: 'thinking',
-        title: 'Thinking Capabilities',
+      capability: {
+        name: 'capability',
+        title: 'Capabilities',
         items: [
-          { id: 'instruct', label: 'Instruct', default: true },
+          { id: 'base', label: 'Base', default: true },
+          { id: 'instruct', label: 'Instruct', default: false },
           { id: 'thinking', label: 'Thinking', default: false }
         ],
         commandRule: (value) => value === 'thinking' ? '--reasoning-parser qwen3' : null
@@ -135,8 +136,8 @@ const Qwen3ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, modelsize: modelSize, quantization, thinking } = values;
-      const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+      const { hardware, modelsize: modelSize, quantization, capability } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${capability}`;
 
       if (this.specialCommands[commandKey]) {
         return this.specialCommands[commandKey];
@@ -150,6 +151,13 @@ const Qwen3ConfigGenerator = () => {
       const hwConfig = config[hardware];
       if (!hwConfig) {
         return `# Error: Unknown hardware platform: ${hardware}`;
+      }
+
+      if (capability === 'thinking' && !config.hasThinking) {
+        return `# Error: Model doesn't support thinking capabilities\n# Please select "Base" for Capabilities or choose a model that supports thinking capabilities`;
+      }
+      if (capability === 'instruct' && !config.hasInstruct) {
+        return `# Error: Model doesn't support instruct capabilities\n# Please select "Base" for Capabilities or choose a model that supports instruct capabilities`;
       }
 
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
