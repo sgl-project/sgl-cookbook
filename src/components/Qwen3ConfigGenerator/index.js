@@ -42,15 +42,31 @@ const Qwen3ConfigGenerator = () => {
           { id: 'fp8', label: 'FP8', default: false }
         ]
       },
-      capability: {
-        name: 'capability',
-        title: 'Capabilities',
+      category: {
+        name: 'category',
+        title: 'Categories',
         items: [
           { id: 'base', label: 'Base', default: true },
           { id: 'instruct', label: 'Instruct', default: false },
           { id: 'thinking', label: 'Thinking', default: false }
+        ]
+      },
+      reasoningParser: {
+        name: 'reasoningParser',
+        title: 'Reasoning Parser',
+        items: [
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
         ],
-        commandRule: (value) => value === 'thinking' ? '--reasoning-parser qwen3' : null
+        // Only visible when category is not 'instruct'
+        visibleWhen: (values) => values.category !== 'instruct',
+        // Only add command when category is not 'instruct' and enabled
+        commandRule: (value, values) => {
+          if (value === 'enabled' && values.category !== 'instruct') {
+            return '--reasoning-parser qwen3';
+          }
+          return null;
+        }
       },
       toolcall: {
         name: 'toolcall',
@@ -66,7 +82,6 @@ const Qwen3ConfigGenerator = () => {
     modelConfigs: {
       '235b': {
         baseName: '235B-A22B',
-        isMOE: true,
         hasThinkingVariants: true,
         h100: { tp: 8, ep: 0, bf16: true, fp8: true },
         h200: { tp: 8, ep: 0, bf16: true, fp8: true },
@@ -74,7 +89,6 @@ const Qwen3ConfigGenerator = () => {
       },
       '30b': {
         baseName: '30B-A3B',
-        isMOE: true,
         hasThinkingVariants: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
@@ -82,7 +96,6 @@ const Qwen3ConfigGenerator = () => {
       },
       '32b': {
         baseName: '32B',
-        isMOE: false,
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
@@ -90,7 +103,6 @@ const Qwen3ConfigGenerator = () => {
       },
       '14b': {
         baseName: '14B',
-        isMOE: false,
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
@@ -98,7 +110,6 @@ const Qwen3ConfigGenerator = () => {
       },
       '8b': {
         baseName: '8B',
-        isMOE: false,
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
@@ -106,7 +117,6 @@ const Qwen3ConfigGenerator = () => {
       },
       '4b': {
         baseName: '4B',
-        isMOE: true,
         hasThinkingVariants: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
@@ -114,7 +124,6 @@ const Qwen3ConfigGenerator = () => {
       },
       '1.7b': {
         baseName: '1.7B',
-        isMOE: false,
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
@@ -122,7 +131,6 @@ const Qwen3ConfigGenerator = () => {
       },
       '0.6b': {
         baseName: '0.6B',
-        isMOE: false,
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
@@ -136,8 +144,8 @@ const Qwen3ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, modelsize: modelSize, quantization, capability } = values;
-      const commandKey = `${hardware}-${modelSize}-${quantization}-${capability}`;
+      const { hardware, modelsize: modelSize, quantization, category } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${category}`;
 
       if (this.specialCommands[commandKey]) {
         return this.specialCommands[commandKey];
@@ -153,22 +161,28 @@ const Qwen3ConfigGenerator = () => {
         return `# Error: Unknown hardware platform: ${hardware}`;
       }
 
-      if (capability === 'thinking' && !config.hasThinking) {
-        return `# Error: Model doesn't support thinking capabilities\n# Please select "Base" for Capabilities or choose a model that supports thinking capabilities`;
-      }
-      if (capability === 'instruct' && !config.hasInstruct) {
-        return `# Error: Model doesn't support instruct capabilities\n# Please select "Base" for Capabilities or choose a model that supports instruct capabilities`;
-      }
-
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
-      
-      // Build model name based on model capabilities
+
+      // Build model name based on model category
       let modelName;
       if (config.hasThinkingVariants) {
-        // Models with Instruct/Thinking variants (235B, 30B, 4B MOE)
-        const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '-Instruct';
-        const dateSuffix = config.isMOE ? '-2507' : '';
-        modelName = `Qwen/Qwen3-${config.baseName}${thinkingSuffix}${dateSuffix}${quantSuffix}`;
+        // Models with Instruct/Thinking variants (235B, 30B, 4B)
+        // 4B is Dense but treated as having variants here
+        if (category === 'base') {
+           // Explicitly handle base selection for variant-capable models if needed,
+           // though the next block handles 'base only' models.
+           // If 'base' is selected on a variant model, we usually want just the base name
+           // or we need to ensure the thinking logic handles it.
+           // Based on the code structure:
+           // If category is 'base', we probably want just Qwen/Qwen3-XB[-FP8]
+           // BUT the existing logic adds suffixes based on hasThinkingVariants.
+           // Let's refine logic: if user selected 'base', don't add suffixes.
+           modelName = `Qwen/Qwen3-${config.baseName}${quantSuffix}`;
+        } else {
+           const thinkingSuffix = category === 'thinking' ? '-Thinking' : '-Instruct';
+           const dateSuffix = config.hasThinkingVariants ? '-2507' : '';
+           modelName = `Qwen/Qwen3-${config.baseName}${thinkingSuffix}${dateSuffix}${quantSuffix}`;
+        }
       } else {
         // Models without variants (32B, 14B, 8B, 1.7B, 0.6B) - base model only
         modelName = `Qwen/Qwen3-${config.baseName}${quantSuffix}`;
@@ -193,7 +207,8 @@ const Qwen3ConfigGenerator = () => {
       // Apply commandRule from all options
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule && values[key]) {
-          const additionalCmd = option.commandRule(values[key]);
+          // Pass the full values object so commandRule can access other option values
+          const additionalCmd = option.commandRule(values[key], values);
           if (additionalCmd) {
             cmd += ` \\\n  ${additionalCmd}`;
           }
@@ -219,37 +234,61 @@ const Qwen3ConfigGenerator = () => {
   // Get current model config
   const currentModelConfig = baseConfig.modelConfigs[values.modelsize];
   
-  // Dynamically adjust options based on model selection
+  // Dynamically adjust options based on model selection and filter by visibleWhen
   const displayOptions = useMemo(() => {
     const options = { ...baseConfig.options };
     
-    // If model doesn't have thinking variants, modify thinking options
+    // If model doesn't have thinking variants, modify category options
     if (currentModelConfig && !currentModelConfig.hasThinkingVariants) {
-      options.thinking = {
-        ...baseConfig.options.thinking,
-        items: baseConfig.options.thinking.items.map(item => ({
+      options.category = {
+        ...baseConfig.options.category,
+        items: baseConfig.options.category.items.map(item => ({
           ...item,
-          disabled: item.id === 'instruct'
+          // Disable any option that is not 'base'
+          disabled: item.id !== 'base'
         }))
       };
     }
     
-    return options;
-  }, [values.modelsize, currentModelConfig]);
+    // Filter options based on visibleWhen condition
+    const filteredOptions = {};
+    Object.entries(options).forEach(([key, option]) => {
+      // Check if option has visibleWhen condition
+      if (option.visibleWhen) {
+        // Only include if visibleWhen returns true
+        if (option.visibleWhen(values)) {
+          filteredOptions[key] = option;
+        }
+      } else {
+        // No visibleWhen condition, always include
+        filteredOptions[key] = option;
+      }
+    });
+
+    return filteredOptions;
+  }, [values, currentModelConfig]);
 
   // Handle radio change with auto-switching for non-variant models
   const handleRadioChange = (optionName, itemId) => {
     setValues(prev => {
       const newValues = { ...prev, [optionName]: itemId };
       
-      // Auto-switch to thinking mode for models without variants
+      // Auto-switch to 'base' category for models without thinking variants
       if (optionName === 'modelsize') {
         const modelConfig = baseConfig.modelConfigs[itemId];
         if (modelConfig && !modelConfig.hasThinkingVariants) {
-          newValues.thinking = 'thinking';
+          // If current category is not base, switch to base
+          if (newValues.category !== 'base') {
+            newValues.category = 'base';
+          }
         }
       }
       
+      // Reset reasoningParser when switching to 'instruct' category
+      if (optionName === 'category' && itemId === 'instruct') {
+        newValues.reasoningParser = 'disabled';
+      }
+
       return newValues;
     });
   };
