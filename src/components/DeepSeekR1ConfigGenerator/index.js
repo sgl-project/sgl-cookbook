@@ -4,7 +4,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const DeepSeekR1ConfigGenerator = () => {
   const config = {
     modelFamily: 'deepseek-ai',
-    
+
     options: {
       hardware: {
         name: 'hardware',
@@ -40,7 +40,8 @@ const DeepSeekR1ConfigGenerator = () => {
         items: [
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser deepseek-r1' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -48,21 +49,22 @@ const DeepSeekR1ConfigGenerator = () => {
         items: [
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser deepseekv3 \\\n  --chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja' : null
       }
     },
-    
-    generateCommand: function(values) {
-      const { hardware, quantization, strategy, thinking, toolcall } = values;
-      
+
+    generateCommand: function (values) {
+      const { hardware, quantization, strategy } = values;
+
       const strategyArray = Array.isArray(strategy) ? strategy : [];
-      
+
       // Validation checks
       // Check H100 compatibility - H100 only supports FP8
       if (hardware === 'h100' && quantization === 'fp4') {
         return '# Error: H100 only supports FP8 quantization\n# Please select FP8 quantization or use B200 hardware';
       }
-      
+
       // Model path based on quantization
       let modelPath = '';
       if (quantization === 'fp8') {
@@ -70,52 +72,51 @@ const DeepSeekR1ConfigGenerator = () => {
       } else if (quantization === 'fp4') {
         modelPath = 'nvidia/DeepSeek-R1-0528-FP4-v2';
       }
-      
+
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelPath}`;
-      
+
       // TP strategy
       if (strategyArray.includes('tp')) {
         cmd += ` \\\n  --tp 8`;
       }
-      
+
       // DP strategy
       if (strategyArray.includes('dp')) {
         cmd += ` \\\n  --dp 8 \\\n  --enable-dp-attention`;
       }
-      
-      // EP strategy (only for FP4)
-      if (strategyArray.includes('ep') && quantization === 'fp4') {
+
+      // EP strategy
+      if (strategyArray.includes('ep')) {
         cmd += ` \\\n  --ep 8`;
       }
-      
+
       // MTP strategy
       if (strategyArray.includes('mtp')) {
         cmd = 'SGLANG_ENABLE_SPEC_V2=1 ' + cmd;
         cmd += ` \\\n  --speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4`;
       }
-      
-      // Add reasoning parser if enabled
-      if (thinking === 'enabled') {
-        cmd += ` \\\n  --reasoning-parser deepseek-r1`;
-      }
-      
-      // Add tool call parser if enabled
-      if (toolcall === 'enabled') {
-        cmd += ` \\\n  --tool-call-parser deepseekv3 \\\n  --chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja`;
-      }
 
       cmd += ` \\\n  --enable-symm-mem # Optional: improves performance, but may be unstable`;
-
 
       if (hardware === 'b200') {
         cmd += ` \\\n  --kv-cache-dtype fp8_e4m3 # Optional: enables fp8 kv cache and fp8 attention kernels to improve performance`;
       }
-      
+
+      // Add thinking parser and tool call parser if enabled
+      for (const [key, option] of Object.entries(this.options)) {
+        if (option.commandRule) {
+          const rule = option.commandRule(values[key]);
+          if (rule) {
+            cmd += ` \\\n  ${rule}`;
+          }
+        }
+      }
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
