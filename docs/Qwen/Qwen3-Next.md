@@ -42,32 +42,7 @@ import Qwen3NextConfigGenerator from '@site/src/components/Qwen3NextConfigGenera
 <Qwen3NextConfigGenerator />
 
 ### 3.2 Configuration Tips
-
-* **Expert Parallelism**: SGLang supports Expert Parallelism (EP) via `--ep`, allowing experts in MoE models to be deployed on separate GPUs for better throughput. One thing to note is that, for quantized models, you need to set `--ep` to a value that satisfies the requirement: `(moe_intermediate_size / moe_tp_size) % weight_block_size_n == 0, where moe_tp_size is equal to tp_size divided by ep_size.` Note that EP may perform worse in low concurrency scenarios due to additional communication overhead. Check out [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md) for more details.
-
-* **Kernel Tuning** : For MoE Triton kernel tuning on your specific hardware, refer to [fused_moe_triton](https://github.com/sgl-project/sglang/tree/main/benchmark/kernels/fused_moe_triton).
-
-* **GPU Memory Management**:
-    - `--mem-fraction-static 0.85`: Control GPU memory allocation (recommended: 0.80-0.90 to avoid out-of-memory errors)
-    - `--kv-cache-dtype fp8_e4m3`: Reduce KV cache memory by 50% (requires CUDA 11.8+)
-    - `--cpu-offload-gigabytes 16`: Offload layers to CPU on low-VRAM GPUs to save GPU memory
-    - `--max-mamba-cache-size`: Adjust `--max-mamba-cache-size` to increase mamba cache space and max running requests capability. It will decrease KV cache space as a trade-off. You can adjust it according to workload.
-    - `--mamba-ssm-dtype`: `bfloat16` or `float32`, use `bfloat16` to save mamba cache size and `float32` to get more accurate results. The default setting is `float32`.
-
-* **Speculative Decoding**:
-    - `--speculative-algorithm NEXTN`: Enable MTP speculative decoding
-    - `--speculative-num-steps 3`: Number of speculative verification rounds
-    - `--speculative-eagle-topk 1`: Top-k sampling for draft tokens
-    - `--speculative-num-draft-tokens 4`: Number of draft tokens per step
-
-
-* **DP Attention**: DP Attention is a strategy that separates the parallel strategies of the Attention layer and the MLP layer. `--dp_size`: Equivalent to `attention_dp_size`, representing how many micro-batch the attention layer will process simultaneously.
-
-
-
-* **Context Length**:
-  - `--context-length 262144`: Set maximum sequence length to save memory by limiting sequence size
-  - Adjust based on your actual use case - shorter contexts use less memory
+For more detailed configuration tips, please refer to [Qwen3-Next Usage](https://docs.sglang.io/basic_usage/qwen3.html).
 
 ## 4. Model Invocation
 
