@@ -1,4 +1,4 @@
-# GPT-OSS-20B
+# GPT-OSS
 
 ## 1.Model Introduction
 
@@ -59,9 +59,7 @@ GPT-OSS supports thinking mode and non-thinking mode. Enable the reasoning parse
 python -m sglang.launch_server \
   --model openai/gpt-oss-120b \
   --reasoning-parser gpt-oss \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 ```python
@@ -167,9 +165,7 @@ The user asks: "Solve this problem step by step: What is 15% of 240?" So we need
 ```shell
 python -m sglang.launch_server \
   --model openai/gpt-oss-120b \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 ```python
@@ -278,9 +274,7 @@ Start sglang server:
 python -m sglang.launch_server \
   --model openai/gpt-oss-120b \
   --tool-call-parser gpt-oss \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 ```python
@@ -379,9 +373,7 @@ python -m sglang.launch_server \
   --model openai/gpt-oss-120b \
   --reasoning-parser gpt-oss \
   --tool-call-parser gpt-oss \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 ```python
@@ -538,9 +530,7 @@ We use SGLang's built-in benchmarking tool to conduct performance evaluation on 
 ```
 python -m sglang.launch_server \
   --model openai/gpt-oss-120b \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 - Test Command:
@@ -549,8 +539,6 @@ python -m sglang.launch_server \
 python3 -m sglang.bench_serving \
   --backend sglang \
   --num-prompt 100 \
-  --host 127.0.0.1 \
-  --port 8000 \
   --max-concurrency 1
 ```
 
@@ -602,9 +590,7 @@ Max ITL (ms):                            3.54
 ```
 python -m sglang.launch_server \
   --model openai/gpt-oss-120b \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 - Test Command:
@@ -613,8 +599,6 @@ python -m sglang.launch_server \
 python3 -m sglang.bench_serving \
   --backend sglang \
   --num-prompt 1000 \
-  --host 127.0.0.1 \
-  --port 8000 \
   --max-concurrency 100
 ```
 
