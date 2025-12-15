@@ -45,9 +45,7 @@ import NemotronNano3ConfigGenerator from '@site/src/components/NemotronConfigGen
   
 - **TP support**:
   
-    Current SGL version: only `TP=1` is supported for this model.
-  
-    `TP=2/4/8` will be supported for coming SGL release; the generator already exposes these options for forward compatibility but still emits `--tp 1` today.
+    To set tp size, use `--tp <1|2|4|8>`.
 
 - **FP8 KV cache**:
    
