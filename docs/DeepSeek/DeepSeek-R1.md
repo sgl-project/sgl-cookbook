@@ -60,8 +60,7 @@ python -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-R1-0528 \
   --reasoning-parser deepseek-r1 \
   --tp 8 \
-  --disable-radix-cache \
-  --quantization fp8
+  --disable-radix-cache
 ```
 
 **Streaming with Thinking Process:**
@@ -139,8 +138,7 @@ python -m sglang.launch_server \
   --tool-call-parser deepseekv3 \
   --chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja \
   --tp 8 \
-  --disable-radix-cache \
-  --quantization fp8
+  --disable-radix-cache
 ```
 
 **Python Example (with Thinking Process):**
@@ -338,8 +336,7 @@ For each concurrency level, configure `num_prompts` to simulate realistic user l
 ```bash
 python -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-R1-0528 \
-  --tp 8 \
-  --quantization fp8
+  --tp 8
 ```
 
 - Low Concurrency (Latency-Optimized)
