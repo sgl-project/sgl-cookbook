@@ -114,7 +114,7 @@ const GPTOSSConfigGenerator = () => {
       let cmd = '';
         
       if (values.speculative === 'enabled') {
-          cmd += 'SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 ';
+        cmd += 'SGLANG_ENABLE_SPEC_V2=1 SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 ';
       }
       
       cmd += 'python -m sglang.launch_server \\\n';
