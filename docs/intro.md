@@ -82,7 +82,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### NVIDIA
 
-- [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron-Nano-3-30B-A3B)
+- [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron3-Nano)
 
 ## 🚀 Quick Start
 
