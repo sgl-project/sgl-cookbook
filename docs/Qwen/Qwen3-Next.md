@@ -42,7 +42,11 @@ import Qwen3NextConfigGenerator from '@site/src/components/Qwen3NextConfigGenera
 <Qwen3NextConfigGenerator />
 
 ### 3.2 Configuration Tips
-For more detailed configuration tips, please refer to [Qwen3-Next Usage](https://docs.sglang.io/basic_usage/qwen3.html).
+- `--max-mamba-cache-size`: Adjust `--max-mamba-cache-size` to increase mamba cache space and max running requests capability. It will decrease KV cache space as a trade-off. You can adjust it according to workload.
+
+- `--mamba-ssm-dtype`: `bfloat16` or `float32`, use `bfloat16` to save mamba cache size and `float32` to get more accurate results. The default setting is `float32`.
+
+- `--mamba-full-memory-ratio`: Adjust `--mamba-full-memory-ratio` to set the ratio of mamba state memory to full kv cache memory. The default setting is `0.9`.
 
 ## 4. Model Invocation
 
