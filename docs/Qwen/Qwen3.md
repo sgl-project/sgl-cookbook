@@ -690,7 +690,7 @@ Max ITL (ms):                            650.89
 
 #### 5.1.3 Summarization Scenario Benchmark
 
-##### 5.1.2.1 Low Concurrency
+##### 5.1.3.1 Low Concurrency
 
 - Benchmark Command:
 
@@ -746,7 +746,7 @@ Max ITL (ms):                            11.29
 ==================================================
 ```
 
-##### 5.1.2.2 Medium Concurrency
+##### 5.1.3.2 Medium Concurrency
 
 - Benchmark Command:
 
@@ -802,7 +802,7 @@ Max ITL (ms):                            1431.38
 ==================================================
 ```
 
-##### 5.1.2.3 High Concurrency
+##### 5.1.3.3 High Concurrency
 
 - Benchmark Command:
 
