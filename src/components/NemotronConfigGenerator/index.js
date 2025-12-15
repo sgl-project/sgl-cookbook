@@ -4,7 +4,7 @@ import ConfigGenerator from '../ConfigGenerator';
 /**
  * NVIDIA Nemotron-Nano-3-30B-A3B Configuration Generator
  */
-const NemotronConfigGenerator = () => {
+const NemotronNano3ConfigGenerator = () => {
   const config = {
     modelFamily: 'nvidia',
     
@@ -95,4 +95,4 @@ const NemotronConfigGenerator = () => {
   return <ConfigGenerator config={config} />;
 };
 
-export default NemotronConfigGenerator;
+export default NemotronNano3ConfigGenerator;
