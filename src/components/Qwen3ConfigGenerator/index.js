@@ -41,11 +41,12 @@ const Qwen3ConfigGenerator = () => {
           { id: 'fp8', label: 'FP8', default: false }
         ]
       },
-      thinking: {
-        name: 'thinking',
-        title: 'Thinking Capabilities',
+      capability: {
+        name: 'capability',
+        title: 'Capabilities',
         items: [
-          { id: 'instruct', label: 'Instruct', default: true },
+          { id: 'base', label: 'Base', default: true },
+          { id: 'instruct', label: 'Instruct', default: false },
           { id: 'thinking', label: 'Thinking', default: false }
         ],
         commandRule: (value) => value === 'thinking' ? '--reasoning-parser qwen3' : null
@@ -65,6 +66,8 @@ const Qwen3ConfigGenerator = () => {
       '235b': {
         baseName: '235B-A22B',
         isMOE: true,
+        hasThinking: true,
+        hasInstruct: true,
         h100: { tp: 8, ep: 0, bf16: true, fp8: true },
         h200: { tp: 8, ep: 0, bf16: true, fp8: true },
         b200: { tp: 8, ep: 0, bf16: true, fp8: true }
@@ -72,6 +75,8 @@ const Qwen3ConfigGenerator = () => {
       '30b': {
         baseName: '30B-A3B',
         isMOE: true,
+        hasThinking: true,
+        hasInstruct: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -79,6 +84,8 @@ const Qwen3ConfigGenerator = () => {
       '32b': {
         baseName: '32B',
         isMOE: false,
+        hasThinking: false,
+        hasInstruct: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -86,6 +93,8 @@ const Qwen3ConfigGenerator = () => {
       '14b': {
         baseName: '14B',
         isMOE: false,
+        hasThinking: false,
+        hasInstruct: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -93,6 +102,8 @@ const Qwen3ConfigGenerator = () => {
       '8b': {
         baseName: '8B',
         isMOE: false,
+        hasThinking: false,
+        hasInstruct: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -100,6 +111,8 @@ const Qwen3ConfigGenerator = () => {
       '4b': {
         baseName: '4B',
         isMOE: false,
+        hasThinking: true,
+        hasInstruct: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -107,6 +120,8 @@ const Qwen3ConfigGenerator = () => {
       '1.7b': {
         baseName: '1.7B',
         isMOE: false,
+        hasThinking: false,
+        hasInstruct: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -114,6 +129,8 @@ const Qwen3ConfigGenerator = () => {
       '0.6b': {
         baseName: '0.6B',
         isMOE: false,
+        hasThinking: false,
+        hasInstruct: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -126,8 +143,8 @@ const Qwen3ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, modelsize: modelSize, quantization, thinking } = values;
-      const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+      const { hardware, modelsize: modelSize, quantization, capability } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${capability}`;
 
       if (this.specialCommands[commandKey]) {
         return this.specialCommands[commandKey];
@@ -143,9 +160,16 @@ const Qwen3ConfigGenerator = () => {
         return `# Error: Unknown hardware platform: ${hardware}`;
       }
 
+      if (capability === 'thinking' && !config.hasThinking) {
+        return `# Error: Model doesn't support thinking capabilities\n# Please select "Base" for Capabilities or choose a model that supports thinking capabilities`;
+      }
+      if (capability === 'instruct' && !config.hasInstruct) {
+        return `# Error: Model doesn't support instruct capabilities\n# Please select "Base" for Capabilities or choose a model that supports instruct capabilities`;
+      }
+
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
-      const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '-Instruct';
-      const modelName = `Qwen/Qwen3-${config.baseName}${thinkingSuffix}${quantSuffix}`;
+      const capabilitySuffix = capability === 'thinking' ? '-Thinking-2507' : (capability === 'instruct' ? '-Instruct-2507' : '');
+      const modelName = `Qwen/Qwen3-${config.baseName}${capabilitySuffix}${quantSuffix}`;
 
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
@@ -161,6 +185,16 @@ const Qwen3ConfigGenerator = () => {
 
       if (ep > 0) {
         cmd += ` \\\n  --ep ${ep}`;
+      }
+
+      for (const [key, option] of Object.entries(this.options)) {
+
+        if (option.commandRule) {
+          const rule = option.commandRule(values[key]);
+          if (rule) {
+            cmd += ` \\\n  ${rule}`;
+          }
+        }
       }
 
       return cmd;
