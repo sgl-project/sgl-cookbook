@@ -46,7 +46,7 @@ const Qwen3ConfigGenerator = () => {
         title: 'Capabilities',
         items: [
           { id: 'base', label: 'Base', default: true },
-          { id: 'instruct', label: 'Instruct', default: true },
+          { id: 'instruct', label: 'Instruct', default: false },
           { id: 'thinking', label: 'Thinking', default: false }
         ],
         commandRule: (value) => value === 'thinking' ? '--reasoning-parser qwen3' : null
