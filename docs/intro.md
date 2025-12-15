@@ -47,7 +47,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### InternLM
 
-- [x] [Intern-S1](./InternLM/Intern-S1)
+- [ ] [Intern-S1](./InternLM/Intern-S1)
 
 ### Jina AI
 
