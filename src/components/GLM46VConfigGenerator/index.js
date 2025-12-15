@@ -7,24 +7,8 @@ import ConfigGenerator from '../ConfigGenerator';
  */
 const GLM46VConfigGenerator = () => {
   const config = {
-    modelFamily: 'zai-org',
-    
-    // Model configurations for different sizes and hardware
-    modelConfigs: {
-      '106b': {
-        baseName: 'GLM-4.6V',
-        h100: { tp: 8, bf16: true, fp8: true },
-        h200: { tp: 8, bf16: true, fp8: true },
-        b200: { tp: 8, bf16: true, fp8: true }
-      },
-      '9b': {
-        baseName: 'GLM-4.6V-Flash',
-        h100: { tp: 1, bf16: true, fp8: true },
-        h200: { tp: 1, bf16: true, fp8: true },
-        b200: { tp: 1, bf16: true, fp8: true }
-      }
-    },
-    
+    modelFamily: 'GLM',
+
     options: {
       hardware: {
         name: 'hardware',
@@ -57,7 +41,8 @@ const GLM46VConfigGenerator = () => {
         items: [
           { id: 'enabled', label: 'Enabled', default: true },
           { id: 'disabled', label: 'Disabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser glm45' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -65,7 +50,8 @@ const GLM46VConfigGenerator = () => {
         items: [
           { id: 'enabled', label: 'Enabled', default: true },
           { id: 'disabled', label: 'Disabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser glm45' : null
       },
       host: {
         name: 'host',
@@ -82,52 +68,71 @@ const GLM46VConfigGenerator = () => {
         placeholder: '30000'
       }
     },
-    
-    generateCommand: function(values) {
-      const { hardware, modelsize, quantization, reasoning, toolcall, host, port } = values;
-      
-      // Get model configuration
-      const modelConfig = this.modelConfigs[modelsize];
-      if (!modelConfig) {
-        return `# Error: Unknown model size: ${modelsize}`;
+
+    modelConfigs: {
+      '106b': {
+        baseName: 'GLM-4.6V',
+        h100: { tp: 8, bf16: true, fp8: true },
+        h200: { tp: 8, bf16: true, fp8: true },
+        b200: { tp: 8, bf16: true, fp8: true }
+      },
+      '9b': {
+        baseName: 'GLM-4.6V-Flash',
+        h100: { tp: 1, bf16: true, fp8: true },
+        h200: { tp: 1, bf16: true, fp8: true },
+        b200: { tp: 1, bf16: true, fp8: true }
       }
-      
-      const hwConfig = modelConfig[hardware];
+    },
+
+    specialCommands: {},
+
+    generateCommand: function (values) {
+      const { hardware, modelsize: modelSize, quantization, reasoning, toolcall } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}`;
+
+      if (this.specialCommands[commandKey]) {
+        return this.specialCommands[commandKey];
+      }
+
+      const config = this.modelConfigs[modelSize];
+      if (!config) {
+        return `# Error: Unknown model size: ${modelSize}`;
+      }
+
+      const hwConfig = config[hardware];
       if (!hwConfig) {
         return `# Error: Unknown hardware platform: ${hardware}`;
       }
-      
-      // Build model name
+
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
-      const modelName = `${this.modelFamily}/${modelConfig.baseName}${quantSuffix}`;
-      
+      const modelName = `zai-org/${config.baseName}${quantSuffix}`;
+
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-      
-      // Add TP if needed
+
       if (hwConfig.tp > 1) {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
       }
-      
-      // Add reasoning parser if enabled
-      if (reasoning === 'enabled') {
-        cmd += ` \\\n  --reasoning-parser glm45`;
+
+      for (const [key, option] of Object.entries(this.options)) {
+        if (key === 'host' || key === 'port') continue;
+
+        if (option.commandRule) {
+          const rule = option.commandRule(values[key]);
+          if (rule) {
+            cmd += ` \\\n  ${rule}`;
+          }
+        }
       }
-      
-      // Add tool call parser if enabled
-      if (toolcall === 'enabled') {
-        cmd += ` \\\n  --tool-call-parser glm45`;
-      }
-      
-      // Add host and port
-      const finalHost = host || '0.0.0.0';
-      const finalPort = port || '30000';
-      cmd += ` \\\n  --host ${finalHost} \\\n  --port ${finalPort}`;
-      
+
+      const host = values.host || CONFIG.options.host.default;
+      const port = values.port || CONFIG.options.port.default;
+      cmd += ` \\\n  --host ${host} \\\n  --port ${port}`;
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 

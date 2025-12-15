@@ -8,7 +8,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const Qwen3NextConfigGenerator = () => {
   const config = {
     modelFamily: 'Qwen',
-    
+
     options: {
       hardware: {
         name: 'hardware',
@@ -23,7 +23,7 @@ const Qwen3NextConfigGenerator = () => {
         name: 'modelsize',
         title: 'Model Size',
         items: [
-          { id: '80b', label: '80B', subtitle: 'MOE', default: true }
+          { id: '80b', label: '80B', subtitle: 'MOE', default: true },
         ]
       },
       quantization: {
@@ -40,7 +40,8 @@ const Qwen3NextConfigGenerator = () => {
         items: [
           { id: 'instruct', label: 'Instruct', subtitle: 'General Purpose', default: true },
           { id: 'thinking', label: 'Thinking', subtitle: 'Reasoning / CoT', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'thinking' ? '--reasoning-parser qwen3' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -48,7 +49,8 @@ const Qwen3NextConfigGenerator = () => {
         items: [
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen' : null
       },
       speculative: {
         name: 'speculative',
@@ -56,10 +58,11 @@ const Qwen3NextConfigGenerator = () => {
         items: [
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--speculative-algorithm NEXTN \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
       }
     },
-    
+
     modelConfigs: {
       '80b': {
         baseName: '80B-A3B',
@@ -69,63 +72,55 @@ const Qwen3NextConfigGenerator = () => {
         b200: { tp: 2, ep: 0, bf16: true, fp8: true }
       }
     },
-    
-    generateCommand: function(values) {
-      const { hardware, modelsize, quantization, thinking, toolcall, speculative } = values;
-      
-      // Get model configuration
-      const modelConfig = this.modelConfigs[modelsize];
-      if (!modelConfig) {
-        return `# Error: Unknown model size: ${modelsize}`;
+
+    generateCommand: function (values) {
+      const { hardware, modelsize: modelSize, quantization, thinking } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+
+      const config = this.modelConfigs[modelSize];
+      if (!config) {
+        return `# Error: Unknown model size: ${modelSize}`;
       }
-      
-      const hwConfig = modelConfig[hardware];
+
+      const hwConfig = config[hardware];
       if (!hwConfig) {
         return `# Error: Unknown hardware platform: ${hardware}`;
       }
-      
-      // Build model name
+
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
       const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '-Instruct';
-      const modelName = `Qwen/Qwen3-Next-${modelConfig.baseName}${thinkingSuffix}${quantSuffix}`;
-      
+      const modelName = `Qwen/Qwen3-Next-${config.baseName}${thinkingSuffix}${quantSuffix}`;
+
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-      
-      // Add TP
+
       if (hwConfig.tp > 1) {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
       }
-      
-      // Add EP if needed
+
       let ep = hwConfig.ep;
-      if (quantization === 'fp8' && hwConfig.tp >= 4) {
+      if (quantization === 'fp8' && hwConfig.tp === 8) {
         ep = 2;
       }
-      
+
       if (ep > 0) {
         cmd += ` \\\n  --ep ${ep}`;
       }
-      
-      // Add tool call parser if enabled
-      if (toolcall === 'enabled') {
-        cmd += ` \\\n  --tool-call-parser qwen`;
+
+      for (const [key, option] of Object.entries(this.options)) {
+
+        if (option.commandRule) {
+          const rule = option.commandRule(values[key]);
+          if (rule) {
+            cmd += ` \\\n  ${rule}`;
+          }
+        }
       }
-      
-      // Add reasoning parser for thinking mode
-      if (thinking === 'thinking') {
-        cmd += ` \\\n  --reasoning-parser qwen3`;
-      }
-      
-      // Add speculative decoding if enabled
-      if (speculative === 'enabled') {
-        cmd += ` \\\n  --speculative-algorithm NEXTN \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4`;
-      }
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
