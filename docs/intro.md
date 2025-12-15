@@ -80,6 +80,10 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [x] [Kimi-K2](./Moonshotai/Kimi-K2)
 - [ ] [Kimi-Linear](./Moonshotai/Kimi-Linear)
 
+### NVIDIA
+
+- [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron-Nano-3-30B-A3B)
+
 ## 🚀 Quick Start
 
 1. Browse the recipe index above to find your model
