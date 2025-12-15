@@ -91,7 +91,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -99,7 +99,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -119,21 +119,21 @@ The user asks: "Solve this problem step by step: What is 15% of 240?" So we need
 =============== Content =================
 **Step‑by‑step solution**
 
-1. **Understand what “percent” means**  
+1. **Understand what “percent” means**
    “15 %” means 15 out of every 100 parts, i.e. the fraction \(\displaystyle \frac{15}{100}\).
 
-2. **Convert the percent to a decimal (or fraction)**  
+2. **Convert the percent to a decimal (or fraction)**
    \[
    \frac{15}{100}=0.15
    \]
 
-3. **Set up the multiplication**  
+3. **Set up the multiplication**
    To find 15 % of 240 we multiply 240 by the decimal 0.15:
    \[
    240 \times 0.15
    \]
 
-4. **Do the multiplication**  
+4. **Do the multiplication**
    One convenient way is to break it into two easier parts:
    \[
    240 \times 0.15 = 240 \times \left(\frac{15}{100}\right)
@@ -150,7 +150,7 @@ The user asks: "Solve this problem step by step: What is 15% of 240?" So we need
      \frac{3600}{100} = 36
      \]
 
-5. **Write the result**  
+5. **Write the result**
    \[
    15\% \text{ of } 240 = 36
    \]
@@ -200,7 +200,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -208,7 +208,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -223,15 +223,15 @@ print()
 **Output Example:**
 
 ```
-<|channel|>analysis<|message|>The user asks: "Solve this problem step by step: What is 15% of 240?" They want step-by-step solution. Simple: 15% = 15/100 = 0.15. Multiply by 240: 240 * 0.15 = 36. Or compute 10% = 24, 5% = 12, sum = 36. Provide steps.<|end|><|start|>assistant<|channel|>final<|message|>**Step 1: Write the percentage as a fraction (or decimal).**  
+<|channel|>analysis<|message|>The user asks: "Solve this problem step by step: What is 15% of 240?" They want step-by-step solution. Simple: 15% = 15/100 = 0.15. Multiply by 240: 240 * 0.15 = 36. Or compute 10% = 24, 5% = 12, sum = 36. Provide steps.<|end|><|start|>assistant<|channel|>final<|message|>**Step 1: Write the percentage as a fraction (or decimal).**
 
-\(15\%\) means “15 out of 100”, so  
+\(15\%\) means “15 out of 100”, so
 
 \[
 15\% = \frac{15}{100}=0.15.
 \]
 
-**Step 2: Multiply this fraction (or decimal) by the number you’re finding the percent of.**  
+**Step 2: Multiply this fraction (or decimal) by the number you’re finding the percent of.**
 
 We need \(15\%\) of \(240\):
 
@@ -239,7 +239,7 @@ We need \(15\%\) of \(240\):
 0.15 \times 240.
 \]
 
-**Step 3: Carry out the multiplication.**  
+**Step 3: Carry out the multiplication.**
 
 You can do it directly:
 
@@ -252,16 +252,16 @@ You can do it directly:
 
 Or use the “10 % + 5 %” shortcut:
 
-- 10 % of 240 = \(0.10 \times 240 = 24\).  
-- 5 % of 240 = half of 10 % = \(24 \div 2 = 12\).  
+- 10 % of 240 = \(0.10 \times 240 = 24\).
+- 5 % of 240 = half of 10 % = \(24 \div 2 = 12\).
 
 Add them: \(24 + 12 = 36\).
 
-**Answer:**  
+**Answer:**
 
 \[
 \boxed{36}
-\] 
+\]
 
 So 15 % of 240 is 36.
 ```
@@ -335,7 +335,7 @@ has_thinking = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -343,19 +343,19 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================", flush=True)
                 thinking_started = False
-        
+
             for tool_call in delta.tool_calls:
                 if tool_call.function:
                     print(f"🔧 Tool Call: {tool_call.function.name}")
                     print(f"   Arguments: {tool_call.function.arguments}")
-    
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
@@ -436,7 +436,7 @@ has_thinking = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -444,19 +444,19 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================", flush=True)
                 thinking_started = False
-        
+
             for tool_call in delta.tool_calls:
                 if tool_call.function:
                     print(f"🔧 Tool Call: {tool_call.function.name}")
                     print(f"   Arguments: {tool_call.function.arguments}")
-    
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
@@ -558,40 +558,40 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang  
-Traffic request rate:                    inf     
-Max request concurrency:                 1       
-Successful requests:                     100     
-Benchmark duration (s):                  52.35   
-Total input tokens:                      33178   
-Total input text tokens:                 33178   
-Total input vision tokens:               0       
-Total generated tokens:                  21251   
-Total generated tokens (retokenized):    20868   
-Request throughput (req/s):              1.91    
-Input token throughput (tok/s):          633.76  
-Output token throughput (tok/s):         405.93  
-Peak output token throughput (tok/s):    433.00  
-Peak concurrent requests:                8       
-Total token throughput (tok/s):          1039.69   
-Concurrency:                             1.00    
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     100
+Benchmark duration (s):                  52.35
+Total input tokens:                      33178
+Total input text tokens:                 33178
+Total input vision tokens:               0
+Total generated tokens:                  21251
+Total generated tokens (retokenized):    20868
+Request throughput (req/s):              1.91
+Input token throughput (tok/s):          633.76
+Output token throughput (tok/s):         405.93
+Peak output token throughput (tok/s):    433.00
+Peak concurrent requests:                8
+Total token throughput (tok/s):          1039.69
+Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   523.30  
-Median E2E Latency (ms):                 389.91  
+Mean E2E Latency (ms):                   523.30
+Median E2E Latency (ms):                 389.91
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          33.71   
-Median TTFT (ms):                        31.79   
-P99 TTFT (ms):                           108.98  
+Mean TTFT (ms):                          33.71
+Median TTFT (ms):                        31.79
+P99 TTFT (ms):                           108.98
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          2.31    
-Median TPOT (ms):                        2.31    
-P99 TPOT (ms):                           2.39    
+Mean TPOT (ms):                          2.31
+Median TPOT (ms):                        2.31
+P99 TPOT (ms):                           2.39
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           2.31    
-Median ITL (ms):                         2.31    
-P95 ITL (ms):                            2.35    
-P99 ITL (ms):                            2.38    
-Max ITL (ms):                            3.54    
+Mean ITL (ms):                           2.31
+Median ITL (ms):                         2.31
+P95 ITL (ms):                            2.35
+P99 ITL (ms):                            2.38
+Max ITL (ms):                            3.54
 ==================================================
 ```
 
@@ -622,40 +622,40 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang  
-Traffic request rate:                    inf     
-Max request concurrency:                 100     
-Successful requests:                     1000    
-Benchmark duration (s):                  24.76   
-Total input tokens:                      297156  
-Total input text tokens:                 297156  
-Total input vision tokens:               0       
-Total generated tokens:                  192432  
-Total generated tokens (retokenized):    187145  
-Request throughput (req/s):              40.39   
-Input token throughput (tok/s):          12003.57  
-Output token throughput (tok/s):         7773.26   
-Peak output token throughput (tok/s):    13780.00  
-Peak concurrent requests:                156     
-Total token throughput (tok/s):          19776.83  
-Concurrency:                             89.23   
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     1000
+Benchmark duration (s):                  24.76
+Total input tokens:                      297156
+Total input text tokens:                 297156
+Total input vision tokens:               0
+Total generated tokens:                  192432
+Total generated tokens (retokenized):    187145
+Request throughput (req/s):              40.39
+Input token throughput (tok/s):          12003.57
+Output token throughput (tok/s):         7773.26
+Peak output token throughput (tok/s):    13780.00
+Peak concurrent requests:                156
+Total token throughput (tok/s):          19776.83
+Concurrency:                             89.23
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   2208.97   
-Median E2E Latency (ms):                 1591.11   
+Mean E2E Latency (ms):                   2208.97
+Median E2E Latency (ms):                 1591.11
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          102.94  
-Median TTFT (ms):                        31.53   
-P99 TTFT (ms):                           674.32  
+Mean TTFT (ms):                          102.94
+Median TTFT (ms):                        31.53
+P99 TTFT (ms):                           674.32
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          14.31   
-Median TPOT (ms):                        11.00   
-P99 TPOT (ms):                           91.28   
+Mean TPOT (ms):                          14.31
+Median TPOT (ms):                        11.00
+P99 TPOT (ms):                           91.28
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           11.00   
-Median ITL (ms):                         5.75    
-P95 ITL (ms):                            25.35   
-P99 ITL (ms):                            43.18   
-Max ITL (ms):                            621.42  
+Mean ITL (ms):                           11.00
+Median ITL (ms):                         5.75
+P95 ITL (ms):                            25.35
+P99 ITL (ms):                            43.18
+Max ITL (ms):                            621.42
 ==================================================
 ```
 
@@ -679,6 +679,7 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 8000
     Latency: 5.262 s
     Output throughput: 12143.675 token/s
     ```
+
   - GPT-OSS-20b
 
     ```

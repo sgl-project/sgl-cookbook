@@ -8,7 +8,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const GPTOSSConfigGenerator = () => {
   const config = {
     modelFamily: 'GPT-OSS',
-    
+
     options: {
       hardware: {
         name: 'hardware',
@@ -24,7 +24,7 @@ const GPTOSSConfigGenerator = () => {
         title: 'Model Size',
         items: [
           { id: '120b', label: '120B', subtitle: 'MOE', default: true },
-          { id: '20b', label: '20B', subtitle: 'MOE', default: false }
+          { id: '20b', label: '20B', subtitle: 'MOE', default: false },
         ]
       },
       quantization: {
@@ -41,7 +41,8 @@ const GPTOSSConfigGenerator = () => {
         items: [
           { id: 'instruct', label: 'Instruct', subtitle: 'General Purpose', default: true },
           { id: 'thinking', label: 'Thinking', subtitle: 'Reasoning / CoT', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'thinking' ? '--reasoning-parser gpt-oss' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -49,7 +50,8 @@ const GPTOSSConfigGenerator = () => {
         items: [
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser gpt-oss' : null
       },
       speculative: {
         name: 'speculative',
@@ -57,10 +59,28 @@ const GPTOSSConfigGenerator = () => {
         items: [
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
-        ]
+        ],
+        commandRule: (value, allValues) => {
+          if (value !== 'enabled') return null;
+
+          let cmd = '--speculative-algorithm EAGLE3\\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4';
+
+          // 新增判定逻辑：如果是 120b 且 mxfp4
+          if (allValues.modelsize === '120b' && allValues.quantization === 'mxfp4') {
+            cmd += '\\\n  --speculative-draft-model-path nvidia/gpt-oss-120b-Eagle3';
+          } else if (allValues.modelsize === '20b' && allValues.quantization === 'mxfp4') {
+            cmd += ' \\\n  --speculative-draft-model-path RedHatAI/gpt-oss-20b-speculator.eagle3';
+          } else if (allValues.modelsize === '120b' && allValues.quantization === 'bf16') {
+            cmd += ' \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-120b-bf16';
+          } else if (allValues.modelsize === '20b' && allValues.quantization === 'bf16') {
+            cmd += ' \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-20b-bf16';
+          }
+
+          return cmd;
+        }
       }
     },
-    
+
     modelConfigs: {
       '120b': {
         baseName: '120b',
@@ -77,68 +97,53 @@ const GPTOSSConfigGenerator = () => {
         b200: { tp: 1, ep: 0, mxfp4: true, bf16: false }
       }
     },
-    
-    generateCommand: function(values) {
-      const { hardware, modelsize, quantization, thinking, toolcall, speculative } = values;
-      
-      // Get model configuration
-      const modelConfig = this.modelConfigs[modelsize];
-      if (!modelConfig) {
-        return `# Error: Unknown model size: ${modelsize}`;
+
+    generateCommand: function (values) {
+      const { hardware, modelsize: modelSize, quantization, thinking } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+
+      const config = this.modelConfigs[modelSize];
+      if (!config) {
+        return `# Error: Unknown model size: ${modelSize}`;
       }
-      
-      const hwConfig = modelConfig[hardware];
+
+      const hwConfig = config[hardware];
       if (!hwConfig) {
         return `# Error: Unknown hardware platform: ${hardware}`;
       }
-      
-      // Build model name
-      const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '';
-      const modelName = `nvidia/gpt-oss-${modelConfig.baseName}${thinkingSuffix}`;
-      
-      let cmd = 'python -m sglang.launch_server \\\n';
+
+      const quantSuffix = quantization === 'bf16' ? '-bf16' : '';
+      const orgPrefix = quantization === 'bf16' ? 'lmsys' : 'openai';
+      const modelName = `${orgPrefix}/gpt-oss-${config.baseName}${quantSuffix}`;
+
+      let cmd = 'python -m sglang.launch_server\\\n';
       cmd += `  --model ${modelName}`;
-      
-      // Add quantization
-      if (quantization === 'mxfp4') {
-        cmd += ` \\\n  --quantization mxfp4`;
-      }
-      
-      // Add TP
+
       if (hwConfig.tp > 1) {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
       }
-      
-      // Add tool call parser if enabled
-      if (toolcall === 'enabled') {
-        cmd += ` \\\n  --tool-call-parser gpt-oss`;
+
+      let ep = hwConfig.ep;
+
+      if (ep > 0) {
+        cmd += ` \\\n  --ep ${ep}`;
       }
-      
-      // Add reasoning parser for thinking mode
-      if (thinking === 'thinking') {
-        cmd += ` \\\n  --reasoning-parser gpt-oss`;
-      }
-      
-      // Add speculative decoding if enabled
-      if (speculative === 'enabled') {
-        cmd += ` \\\n  --speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4`;
-        
-        // Add draft model path based on model size and quantization
-        if (modelsize === '120b' && quantization === 'mxfp4') {
-          cmd += ` \\\n  --speculative-draft-model-path nvidia/gpt-oss-120b-Eagle3`;
-        } else if (modelsize === '20b' && quantization === 'mxfp4') {
-          cmd += ` \\\n  --speculative-draft-model-path RedHatAI/gpt-oss-20b-speculator.eagle3`;
-        } else if (modelsize === '120b' && quantization === 'bf16') {
-          cmd += ` \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-120b-bf16`;
-        } else if (modelsize === '20b' && quantization === 'bf16') {
-          cmd += ` \\\n  --speculative-draft-model-path zhuyksir/EAGLE3-gpt-oss-20b-bf16`;
+
+      for (const [key, option] of Object.entries(this.options)) {
+
+        if (option.commandRule) {
+          const rule = option.commandRule(values[key], values);
+
+          if (rule) {
+            cmd += ` \\\n  ${rule}`;
+          }
         }
       }
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 

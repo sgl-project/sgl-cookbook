@@ -8,7 +8,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const Qwen3ConfigGenerator = () => {
   const config = {
     modelFamily: 'Qwen',
-    
+
     options: {
       hardware: {
         name: 'hardware',
@@ -47,7 +47,8 @@ const Qwen3ConfigGenerator = () => {
         items: [
           { id: 'instruct', label: 'Instruct', default: true },
           { id: 'thinking', label: 'Thinking', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'thinking' ? '--reasoning-parser qwen3' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -55,10 +56,11 @@ const Qwen3ConfigGenerator = () => {
         items: [
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
-        ]
+        ],
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen' : null
       }
     },
-    
+
     modelConfigs: {
       '235b': {
         baseName: '235B-A22B',
@@ -117,69 +119,54 @@ const Qwen3ConfigGenerator = () => {
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       }
     },
-    
+
     specialCommands: {
       'h100-235b-bf16-instruct': '# Error: Model is too large, cannot fit into 8*H100\n# Please use H200 (141GB) or select FP8 quantization',
       'h100-235b-bf16-thinking': '# Error: Model is too large, cannot fit into 8*H100\n# Please use H200 (141GB) or select FP8 quantization'
     },
-    
-    generateCommand: function(values) {
-      const { hardware, modelsize, quantization, thinking, toolcall } = values;
-      const commandKey = `${hardware}-${modelsize}-${quantization}-${thinking}`;
-      
-      // Check for special error cases
+
+    generateCommand: function (values) {
+      const { hardware, modelsize: modelSize, quantization, thinking } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+
       if (this.specialCommands[commandKey]) {
         return this.specialCommands[commandKey];
       }
-      
-      // Get model configuration
-      const modelConfig = this.modelConfigs[modelsize];
-      if (!modelConfig) {
-        return `# Error: Unknown model size: ${modelsize}`;
+
+      const config = this.modelConfigs[modelSize];
+      if (!config) {
+        return `# Error: Unknown model size: ${modelSize}`;
       }
-      
-      const hwConfig = modelConfig[hardware];
+
+      const hwConfig = config[hardware];
       if (!hwConfig) {
         return `# Error: Unknown hardware platform: ${hardware}`;
       }
-      
-      // Build model name
+
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
       const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '-Instruct';
-      const modelName = `Qwen/Qwen3-${modelConfig.baseName}${thinkingSuffix}${quantSuffix}`;
-      
+      const modelName = `Qwen/Qwen3-${config.baseName}${thinkingSuffix}${quantSuffix}`;
+
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-      
-      // Add TP if needed
+
       if (hwConfig.tp > 1) {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
       }
-      
-      // Calculate EP (Expert Parallelism)
+
       let ep = hwConfig.ep;
       if (quantization === 'fp8' && hwConfig.tp === 8) {
         ep = 2;
       }
-      
+
       if (ep > 0) {
         cmd += ` \\\n  --ep ${ep}`;
       }
-      
-      // Add tool call parser if enabled
-      if (toolcall === 'enabled') {
-        cmd += ` \\\n  --tool-call-parser qwen`;
-      }
-      
-      // Add reasoning parser for thinking mode
-      if (thinking === 'thinking') {
-        cmd += ` \\\n  --reasoning-parser qwen3`;
-      }
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
