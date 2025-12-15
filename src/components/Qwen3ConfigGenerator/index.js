@@ -1,12 +1,13 @@
-import React from 'react';
-import ConfigGenerator from '../ConfigGenerator';
+import React, { useState, useMemo } from 'react';
+import styles from '../ConfigGenerator/styles.module.css';
 
 /**
  * Qwen3 Configuration Generator
  * Supports multiple Qwen3 model sizes (235B, 30B, 32B, 14B, 8B, 4B, 1.7B, 0.6B)
+ * Custom implementation to handle model-specific logic without modifying ConfigGenerator
  */
 const Qwen3ConfigGenerator = () => {
-  const config = {
+  const baseConfig = {
     modelFamily: 'Qwen',
 
     options: {
@@ -65,6 +66,7 @@ const Qwen3ConfigGenerator = () => {
       '235b': {
         baseName: '235B-A22B',
         isMOE: true,
+        hasThinkingVariants: true,
         h100: { tp: 8, ep: 0, bf16: true, fp8: true },
         h200: { tp: 8, ep: 0, bf16: true, fp8: true },
         b200: { tp: 8, ep: 0, bf16: true, fp8: true }
@@ -72,6 +74,7 @@ const Qwen3ConfigGenerator = () => {
       '30b': {
         baseName: '30B-A3B',
         isMOE: true,
+        hasThinkingVariants: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -79,6 +82,7 @@ const Qwen3ConfigGenerator = () => {
       '32b': {
         baseName: '32B',
         isMOE: false,
+        hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -86,6 +90,7 @@ const Qwen3ConfigGenerator = () => {
       '14b': {
         baseName: '14B',
         isMOE: false,
+        hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -93,13 +98,15 @@ const Qwen3ConfigGenerator = () => {
       '8b': {
         baseName: '8B',
         isMOE: false,
+        hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '4b': {
         baseName: '4B',
-        isMOE: false,
+        isMOE: true,
+        hasThinkingVariants: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -107,6 +114,7 @@ const Qwen3ConfigGenerator = () => {
       '1.7b': {
         baseName: '1.7B',
         isMOE: false,
+        hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -114,6 +122,7 @@ const Qwen3ConfigGenerator = () => {
       '0.6b': {
         baseName: '0.6B',
         isMOE: false,
+        hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
@@ -144,8 +153,18 @@ const Qwen3ConfigGenerator = () => {
       }
 
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
-      const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '-Instruct';
-      const modelName = `Qwen/Qwen3-${config.baseName}${thinkingSuffix}${quantSuffix}`;
+      
+      // Build model name based on model capabilities
+      let modelName;
+      if (config.hasThinkingVariants) {
+        // Models with Instruct/Thinking variants (235B, 30B, 4B MOE)
+        const thinkingSuffix = thinking === 'thinking' ? '-Thinking' : '-Instruct';
+        const dateSuffix = config.isMOE ? '-2507' : '';
+        modelName = `Qwen/Qwen3-${config.baseName}${thinkingSuffix}${dateSuffix}${quantSuffix}`;
+      } else {
+        // Models without variants (32B, 14B, 8B, 1.7B, 0.6B) - base model only
+        modelName = `Qwen/Qwen3-${config.baseName}${quantSuffix}`;
+      }
 
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
@@ -163,11 +182,116 @@ const Qwen3ConfigGenerator = () => {
         cmd += ` \\\n  --ep ${ep}`;
       }
 
+      // Apply commandRule from all options
+      Object.entries(this.options).forEach(([key, option]) => {
+        if (option.commandRule && values[key]) {
+          const additionalCmd = option.commandRule(values[key]);
+          if (additionalCmd) {
+            cmd += ` \\\n  ${additionalCmd}`;
+          }
+        }
+      });
+
       return cmd;
     }
   };
 
-  return <ConfigGenerator config={config} />;
+  // Initialize state with default values
+  const getInitialState = () => {
+    const initialState = {};
+    Object.entries(baseConfig.options).forEach(([key, option]) => {
+      const defaultItem = option.items.find(item => item.default);
+      initialState[key] = defaultItem ? defaultItem.id : option.items[0].id;
+    });
+    return initialState;
+  };
+
+  const [values, setValues] = useState(getInitialState());
+
+  // Get current model config
+  const currentModelConfig = baseConfig.modelConfigs[values.modelsize];
+  
+  // Dynamically adjust options based on model selection
+  const displayOptions = useMemo(() => {
+    const options = { ...baseConfig.options };
+    
+    // If model doesn't have thinking variants, modify thinking options
+    if (currentModelConfig && !currentModelConfig.hasThinkingVariants) {
+      options.thinking = {
+        ...baseConfig.options.thinking,
+        items: baseConfig.options.thinking.items.map(item => ({
+          ...item,
+          disabled: item.id === 'instruct'
+        }))
+      };
+    }
+    
+    return options;
+  }, [values.modelsize, currentModelConfig]);
+
+  // Handle radio change with auto-switching for non-variant models
+  const handleRadioChange = (optionName, itemId) => {
+    setValues(prev => {
+      const newValues = { ...prev, [optionName]: itemId };
+      
+      // Auto-switch to thinking mode for models without variants
+      if (optionName === 'modelsize') {
+        const modelConfig = baseConfig.modelConfigs[itemId];
+        if (modelConfig && !modelConfig.hasThinkingVariants) {
+          newValues.thinking = 'thinking';
+        }
+      }
+      
+      return newValues;
+    });
+  };
+
+  // Generate command
+  const command = baseConfig.generateCommand(values);
+
+  return (
+    <div className={styles.configContainer}>
+      {Object.entries(displayOptions).map(([key, option], index) => (
+        <div key={key} className={styles.optionCard}>
+          <div className={styles.optionTitle}>
+            <span className={styles.optionNumber}>{index + 1}</span>
+            {option.title}
+          </div>
+          <div className={styles.optionItems}>
+            {option.items.map(item => {
+              const isChecked = values[option.name] === item.id;
+              const isDisabled = item.disabled;
+              return (
+                <label
+                  key={item.id}
+                  className={`${styles.optionLabel} ${isChecked ? styles.checked : ''} ${isDisabled ? styles.disabled : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name={option.name}
+                    value={item.id}
+                    checked={isChecked}
+                    disabled={isDisabled}
+                    onChange={() => handleRadioChange(option.name, item.id)}
+                    className={styles.hiddenInput}
+                  />
+                  {item.label}
+                  {item.subtitle && (
+                    <small className={styles.subtitle}>{item.subtitle}</small>
+                  )}
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      <div className={styles.commandCard}>
+        <div className={styles.commandTitle}>Generated Command</div>
+        <pre className={styles.commandDisplay}>{command}</pre>
+      </div>
+    </div>
+  );
 };
 
 export default Qwen3ConfigGenerator;
