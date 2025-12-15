@@ -109,7 +109,7 @@ for chunk in stream:
 ```
 
 ### 4.2 Reasoning
-Note: The model supports two modes - Reasoning ON (default) vs OFF. This can be toggled by setting enable_thinking to False, as shown below.
+To enable reasoning, `--reasoning-parser nano_v3` should be appended to the launching command. The model supports two modes - Reasoning ON (default) vs OFF. This can be toggled by setting enable_thinking to False, as shown below.
 
 ```python
 from openai import OpenAI
@@ -128,9 +128,9 @@ resp = client.chat.completions.create(
         {"role": "user", "content": "Write a haiku about GPUs."}
     ],
     temperature=0.7,
-    max_tokens=256,
+    max_tokens=512,
 )
-print(resp.choices[0].message.reasoning_content, resp.choices[0].message.content)
+print(resp.choices[0].message.reasoning_content)
 
 # Reasoning off
 print("Reasoning off")
@@ -138,18 +138,18 @@ resp = client.chat.completions.create(
     model="nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Give me 3 interesting facts about SGLang."}
+        {"role": "user", "content": "Write a haiku about GPUs."}
     ],
     temperature=0.6,
     max_tokens=256,
     extra_body={"chat_template_kwargs": {"enable_thinking": False}}
 )
-print(resp.choices[0].message.reasoning_content, resp.choices[0].message.content)
+print(resp.choices[0].message.reasoning_content)
 
 ```
 
 ### 4.3 Tool calling
-Call functions using the OpenAI Tools schema and inspect returned tool_calls.
+To enable reasoning, `--tool-call-parser qwen3_coder` should be appended to the launching command. Call functions using the OpenAI Tools schema and inspect returned tool_calls.
 
 ```python
 from openai import OpenAI
@@ -184,7 +184,7 @@ TOOLS = [
 ]
 
 completion = client.chat.completions.create(
-    model="nemotron",
+    model="nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
     messages=[
         {"role": "system", "content": ""},
         {"role": "user", "content": "My bill is $50. What will be the amount for 15% tip?"}

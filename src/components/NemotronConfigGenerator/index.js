@@ -13,33 +13,33 @@ const NemotronNano3ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'h200', label: 'H200', default: true },
-          { id: 'b200', label: 'B200', default: false }
+          { id: 'h200', label: 'H200', default: false },
+          { id: 'b200', label: 'B200', default: true }
         ]
       },
       modelVariant: {
         name: 'modelVariant',
         title: 'Model Variant',
         items: [
-          { id: 'bf16', label: 'BF16', default: false },
-          { id: 'fp8', label: 'FP8', default: true }
+          { id: 'bf16', label: 'BF16', default: true },
+          { id: 'fp8', label: 'FP8', default: false }
         ]
       },
       tp: {
         name: 'tp',
         title: 'Tensor Parallel (TP)',
         items: [
-          { id: '1', label: 'TP=1 (current SGL support)', default: true },
-          { id: '2', label: 'TP=2 (coming in future SGL)', default: false },
-          { id: '4', label: 'TP=4 (coming in future SGL)', default: false },
-          { id: '8', label: 'TP=8 (coming in future SGL)', default: false }
+          { id: '1', label: 'TP=1', default: true },
+          { id: '2', label: 'TP=2', default: false },
+          { id: '4', label: 'TP=4', default: false },
+          { id: '8', label: 'TP=8', default: false }
         ]
       },
       kvcache: {
         name: 'kvcache',
         title: 'KV Cache DType',
         items: [
-          { id: 'fp8_e4m3', label: 'fp8_e4m3 (recommended)', default: true },
+          { id: 'fp8_e4m3', label: 'fp8_e4m3', default: true },
           { id: 'bf16', label: 'bf16', default: false }
         ]
       },
@@ -78,7 +78,7 @@ const NemotronNano3ConfigGenerator = () => {
     },
     
     generateCommand: function(values) {
-      const { hardware, modelVariant, tp, kvcache, host, port } = values;
+      const { hardware, modelVariant, tp, kvcache, thinking, toolcall, host, port } = values;
       
       // Default to FP8 if not selected
       const variant = modelVariant || 'fp8';
@@ -89,19 +89,22 @@ const NemotronNano3ConfigGenerator = () => {
           ? `${this.modelFamily}/${baseName}-BF16`
           : `${this.modelFamily}/${baseName}-FP8`;
       
-      // Current SGL version only supports TP=1 for this model
-      const effectiveTp = '1';
-      
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelName} \\\n`;
       cmd += `  --trust-remote-code \\\n`;
-      cmd += `  --tp ${effectiveTp} \\\n`;
+      cmd += `  --tp ${tp} \\\n`;
       cmd += `  --kv-cache-dtype ${kvcache} \\\n`;
-      
-      // B200 uses FlashInfer backend; H200 can use the default attention backend
-      if (hardware === 'b200') {
-        cmd += `  --attention-backend flashinfer \\\n`;
+
+      // Add thinking parser and tool call parser if enabled
+      for (const [key, option] of Object.entries(this.options)) {
+        if (option.commandRule) {
+          const rule = option.commandRule(values[key]);
+          if (rule) {
+            cmd += `  ${rule}  \\\n`;
+          }
+        }
       }
+
       
       cmd += `  --host ${host || '0.0.0.0'} \\\n`;
       cmd += `  --port ${port || '30000'}`;
