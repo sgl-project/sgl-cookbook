@@ -143,8 +143,8 @@ const Qwen3ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, modelsize: modelSize, quantization, thinking } = values;
-      const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+      const { hardware, modelsize: modelSize, quantization, capability } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${capability}`;
 
       if (this.specialCommands[commandKey]) {
         return this.specialCommands[commandKey];
