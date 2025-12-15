@@ -1,8 +1,8 @@
-# NVIDIA NVIDIA-Nemotron-3-Nano-30B-A3B
+# NVIDIA Nemotron3-Nano
 
 ## 1. Model Introduction
 
-`NVIDIA-Nemotron-3-Nano-30B-A3B` is a 30B-parameter hybrid LLM that mixes Mixture-of-Experts (MoE) feed-forward layers, Mamba2 sequence-modeling layers, and standard self-attention layers in a single stack rather than classic “attention + MLP” transformer blocks.
+`NVIDIA Nemotron3-Nano` is a 30B-parameter hybrid LLM that mixes Mixture-of-Experts (MoE) feed-forward layers, Mamba2 sequence-modeling layers, and standard self-attention layers in a single stack rather than classic “attention + MLP” transformer blocks.
 
 The BF16 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16`) is designed as a high-fidelity reference model, while the FP8 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8`) targets optimized inference performance on modern NVIDIA GPUs.
 
