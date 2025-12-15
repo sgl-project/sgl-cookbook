@@ -46,7 +46,7 @@ import Qwen3NextConfigGenerator from '@site/src/components/Qwen3NextConfigGenera
 
 - `--mamba-ssm-dtype`: `bfloat16` or `float32`, use `bfloat16` to save mamba cache size and `float32` to get more accurate results. The default setting is `float32`.
 
-- `--mamba-full-memory-ratio`: The ratio of mamba state memory to full kv cache memory. The default setting is `0.9`.
+- `--mamba-full-memory-ratio`: Adjust `--mamba-full-memory-ratio` to set the ratio of mamba state memory to full kv cache memory. The default setting is `0.9`.
 
 ## 4. Model Invocation
 
