@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # DeepSeek-R1
 
 ## 1. Model Introduction
@@ -91,7 +95,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -99,7 +103,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -193,7 +197,7 @@ has_thinking = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -201,19 +205,19 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================", flush=True)
                 thinking_started = False
-        
+
             for tool_call in delta.tool_calls:
                 if tool_call.function:
                     print(f"🔧 Tool Call: {tool_call.function.name}")
                     print(f"   Arguments: {tool_call.function.arguments}")
-    
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
@@ -302,8 +306,8 @@ We use industry-standard benchmark configurations to ensure results are comparab
 
 Three core scenarios reflect real-world usage patterns:
 
-| Scenario                | Input Length | Output Length | Use Case                                      |
-| ----------------------- | ------------ | ------------- | --------------------------------------------- |
+| Scenario          | Input Length | Output Length | Use Case                                      |
+| ----------------- | ------------ | ------------- | --------------------------------------------- |
 | **Chat**          | 1K           | 1K            | Most common conversational AI workload        |
 | **Reasoning**     | 1K           | 8K            | Long-form generation, complex reasoning tasks |
 | **Summarization** | 8K           | 1K            | Document summarization, RAG retrieval         |
@@ -331,6 +335,7 @@ For each concurrency level, configure `num_prompts` to simulate realistic user l
 **Scenario 1: Chat (1K/1K) - Most Important**
 
 - **Model Deployment**
+
 ```bash
 python -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-R1-0528 \
@@ -350,6 +355,7 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -402,6 +408,7 @@ python -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -454,6 +461,7 @@ python -m sglang.bench_serving \
   --max-concurrency 100 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -492,7 +500,6 @@ P99 ITL (ms):                            150.08
 Max ITL (ms):                            2052.85
 ==================================================
 ```
-
 
 **Scenario 2: Reasoning (1K/8K)**
 
@@ -615,6 +622,7 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -669,6 +677,7 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -721,6 +730,7 @@ python -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -773,6 +783,7 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -852,10 +863,10 @@ python3 benchmark/gsm8k/bench_sglang.py \
 ```
 
 **Test Results:**
+
 ```
 Accuracy: 0.959
 Invalid: 0.000
 Latency: 29.185 s
 Output throughput: 4854.672 token/s
 ```
-
