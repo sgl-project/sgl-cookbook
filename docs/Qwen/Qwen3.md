@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Qwen3
 
 ## 1. Model Introduction
@@ -9,7 +13,7 @@ This generation delivers comprehensive upgrades across the board:
 - **Stronger general intelligence**: Significant improvements in instruction following, logical reasoning, text comprehension, mathematics, science, coding, and tool usage.
 - **Broader multilingual knowledge**: Substantial gains in long-tail knowledge coverage across multiple languages.
 - **More helpful & aligned responses**: Markedly better alignment with user preferences in subjective and open-ended tasks, enabling higher-quality, more useful text generation.
-- **Extended context length**:  Enhanced capabilities in understanding and reasoning over 256K-token long contexts.
+- **Extended context length**: Enhanced capabilities in understanding and reasoning over 256K-token long contexts.
 - **Stronger agent interaction capabilities**: Improved tool use and search-based agent performance
 - **Flexible deployment options**: Available in Dense and MoE architectures that scale from edge to cloud, with Instruct and reasoning-enhanced Thinking editions
 
@@ -37,10 +41,10 @@ import Qwen3ConfigGenerator from '@site/src/components/Qwen3ConfigGenerator';
 
 ### 3.2 Configuration Tips
 
-* **Memory Management** : Set lower `--context-length` to conserve memory. A value of `128000` is sufficient for most scenarios, down from the default 262K.
-* **Expert Parallelism** : SGLang supports Expert Parallelism (EP) via `--ep`, allowing experts in MoE models to be deployed on separate GPUs for better throughput. One thing to note is that, for quantized models, you need to set `--ep` to a value that satisfies the requirement: `(moe_intermediate_size / moe_tp_size) % weight_block_size_n == 0, where moe_tp_size is equal to tp_size divided by ep_size.` Note that EP may perform worse in low concurrency scenarios due to additional communication overhead. Check out [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md) for more details.
-* **Kernel Tuning** : For MoE Triton kernel tuning on your specific hardware, refer to [fused_moe_triton](https://github.com/sgl-project/sglang/tree/main/benchmark/kernels/fused_moe_triton).
-* **Speculative Decoding**: Using Speculative Decoding for latency-sensitive scenarios.
+- **Memory Management** : Set lower `--context-length` to conserve memory. A value of `128000` is sufficient for most scenarios, down from the default 262K.
+- **Expert Parallelism** : SGLang supports Expert Parallelism (EP) via `--ep`, allowing experts in MoE models to be deployed on separate GPUs for better throughput. One thing to note is that, for quantized models, you need to set `--ep` to a value that satisfies the requirement: `(moe_intermediate_size / moe_tp_size) % weight_block_size_n == 0, where moe_tp_size is equal to tp_size divided by ep_size.` Note that EP may perform worse in low concurrency scenarios due to additional communication overhead. Check out [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md) for more details.
+- **Kernel Tuning** : For MoE Triton kernel tuning on your specific hardware, refer to [fused_moe_triton](https://github.com/sgl-project/sglang/tree/main/benchmark/kernels/fused_moe_triton).
+- **Speculative Decoding**: Using Speculative Decoding for latency-sensitive scenarios.
   - `--speculative-algorithm EAGLE3`: Speculative decoding algorithm
   - `--speculative-num-steps 3`: Number of speculative verification rounds
   - `--speculative-eagle-topk 1`: Top-k sampling for draft tokens
@@ -100,7 +104,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-  
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -108,7 +112,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-  
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -122,10 +126,10 @@ print()
 
 **Output Example:**
 
-````
+```
 =============== Thinking =================
 
-Okay, so I need to figure out what 15% of 240 is. Hmm, percentages can sometimes trip me up, but I think I remember some basics. Let me start by recalling that "percent" means "per hundred," so 15% is the same as 15 per 100, or 15/100. So, maybe I can convert 15% into a decimal first? Yeah, I think that's a common method. 
+Okay, so I need to figure out what 15% of 240 is. Hmm, percentages can sometimes trip me up, but I think I remember some basics. Let me start by recalling that "percent" means "per hundred," so 15% is the same as 15 per 100, or 15/100. So, maybe I can convert 15% into a decimal first? Yeah, I think that's a common method.
 ...
 So conclusion: The answer is 36.
 
@@ -143,7 +147,7 @@ $$
 $$
 
 Thus, 15% of 240 is **36**.
-````
+```
 
 **Note:** The reasoning parser captures the model's step-by-step thinking process, allowing you to see how the model arrives at its conclusions.
 
@@ -216,7 +220,7 @@ tool_calls_accumulator = {}
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-  
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -224,14 +228,14 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-  
+
         # Accumulate tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================\n", flush=True)
                 thinking_started = False
-  
+
             for tool_call in delta.tool_calls:
                 index = tool_call.index
                 if index not in tool_calls_accumulator:
@@ -239,13 +243,13 @@ for chunk in response:
                         'name': None,
                         'arguments': ''
                     }
-  
+
                 if tool_call.function:
                     if tool_call.function.name:
                         tool_calls_accumulator[index]['name'] = tool_call.function.name
                     if tool_call.function.arguments:
                         tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
-  
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)

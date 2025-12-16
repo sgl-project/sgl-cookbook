@@ -1,16 +1,19 @@
 .configContainer {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .optionCard {
   background: var(--ifm-background-surface-color);
   padding: 16px;
   border-radius: 10px;
-  margin-bottom: 12px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--ifm-color-emphasis-300);
+  flex: 1 1 calc(50% - 6px);
+  min-width: 400px;
 }
 
 .optionTitle {
@@ -39,6 +42,7 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .hiddenInput {
@@ -75,6 +79,7 @@
   background: var(--ifm-background-surface-color);
   color: var(--ifm-font-color-base);
   user-select: none;
+  flex-shrink: 0;
 }
 
 .optionLabel:hover {
@@ -113,6 +118,8 @@
   border-radius: 10px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--ifm-color-emphasis-300);
+  flex: 1 1 100%;
+  width: 100%;
 }
 
 .commandTitle {

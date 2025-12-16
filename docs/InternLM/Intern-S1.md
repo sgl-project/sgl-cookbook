@@ -17,7 +17,7 @@ git checkout -b add-intern-s1-guide
 
 ## 📚 Reference
 
-- [GLM-4.6V](/docs/GLM/GLM-4.6V)
+- [GLM-4.6V](/docs/GLM/GLM-4.6V.md)
 
 ---
 

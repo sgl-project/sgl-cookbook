@@ -17,7 +17,7 @@ git checkout -b add-llama4-scout-guide
 
 ## 📚 Reference
 
-- [Qwen3](/docs/Qwen/Qwen3)
+- [Qwen3](/docs/Qwen/Qwen3.md)
 
 ---
 
