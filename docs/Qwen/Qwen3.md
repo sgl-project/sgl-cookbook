@@ -68,7 +68,7 @@ Qwen3-235B-A22B supports reasoning mode. Enable the reasoning parser during depl
 
 ```shell
 python -m sglang.launch_server \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Thinking-2507 \
   --reasoning-parser qwen3 \
   --tp 8 \
   --host 0.0.0.0 \
@@ -87,7 +87,7 @@ client = OpenAI(
 
 # Enable streaming to see the thinking process in real-time
 response = client.chat.completions.create(
-    model="Qwen/Qwen3-235B-A22B",
+    model="Qwen/Qwen3-235B-A22B-Thinking-2507",
     messages=[
         {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
     ],
@@ -157,7 +157,7 @@ Qwen3 supports tool calling capabilities. Enable the tool call parser:
 
 ```shell
 python -m sglang.launch_server \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Thinking-2507 \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3 \
   --tp 8 \
@@ -203,7 +203,7 @@ tools = [
 
 # Make request with streaming to see thinking process
 response = client.chat.completions.create(
-    model="Qwen/Qwen3-235B-A22B",
+    model="Qwen/Qwen3-235B-A22B-Thinking-2507",
     messages=[
         {"role": "user", "content": "What's the weather in Beijing?"}
     ],
@@ -314,7 +314,7 @@ messages = [
 ]
 
 final_response = client.chat.completions.create(
-    model="Qwen/Qwen3-235B-A22B",
+    model="Qwen/Qwen3-235B-A22B-Instruct-2507",
     messages=messages,
     temperature=0.7
 )
@@ -330,7 +330,7 @@ print(final_response.choices[0].message.content)
 **Test Environment:**
 
 - Hardware: NVIDIA B200 GPU (8x)
-- Model: Qwen3-235B-A22B
+- Model: Qwen3-235B-A22B-Instruct-2507
 - Tensor Parallelism: 8
 - sglang version: 0.5.6
 
@@ -342,7 +342,7 @@ We use SGLang's built-in benchmarking tool to conduct performance evaluation on 
 
 ```shell
 python -m sglang.launch_server \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --tp 8
 ```
 
@@ -353,7 +353,7 @@ python -m sglang.launch_server \
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -369,36 +369,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 1
 Successful requests:                     10
-Benchmark duration (s):                  44.16
+Benchmark duration (s):                  43.56
 Total input tokens:                      6101
 Total input text tokens:                 6101
 Total input vision tokens:               0
 Total generated tokens:                  4210
-Total generated tokens (retokenized):    4210
+Total generated tokens (retokenized):    4206
 Request throughput (req/s):              0.23
-Input token throughput (tok/s):          138.14
-Output token throughput (tok/s):         95.32
-Peak output token throughput (tok/s):    98.00
+Input token throughput (tok/s):          140.07
+Output token throughput (tok/s):         96.65
+Peak output token throughput (tok/s):    100.00
 Peak concurrent requests:                2
-Total token throughput (tok/s):          233.47
+Total token throughput (tok/s):          236.72
 Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   4414.85
-Median E2E Latency (ms):                 3499.95
+Mean E2E Latency (ms):                   4353.63
+Median E2E Latency (ms):                 3475.79
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          96.27
-Median TTFT (ms):                        65.22
-P99 TTFT (ms):                           359.71
+Mean TTFT (ms):                          99.03
+Median TTFT (ms):                        92.18
+P99 TTFT (ms):                           166.05
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          10.27
-Median TPOT (ms):                        10.28
-P99 TPOT (ms):                           10.30
+Mean TPOT (ms):                          10.12
+Median TPOT (ms):                        10.12
+P99 TPOT (ms):                           10.15
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           10.28
-Median ITL (ms):                         10.28
-P95 ITL (ms):                            10.34
-P99 ITL (ms):                            10.40
-Max ITL (ms):                            10.76
+Mean ITL (ms):                           10.13
+Median ITL (ms):                         10.12
+P95 ITL (ms):                            10.49
+P99 ITL (ms):                            10.70
+Max ITL (ms):                            13.45
 ==================================================
 ```
 
@@ -409,7 +409,7 @@ Max ITL (ms):                            10.76
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -425,36 +425,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 16
 Successful requests:                     80
-Benchmark duration (s):                  48.01
+Benchmark duration (s):                  48.95
 Total input tokens:                      39668
 Total input text tokens:                 39668
 Total input vision tokens:               0
 Total generated tokens:                  40725
-Total generated tokens (retokenized):    40725
-Request throughput (req/s):              1.67
-Input token throughput (tok/s):          826.27
-Output token throughput (tok/s):         848.29
-Peak output token throughput (tok/s):    1152.00
-Peak concurrent requests:                20
-Total token throughput (tok/s):          1674.56
-Concurrency:                             13.58
+Total generated tokens (retokenized):    40716
+Request throughput (req/s):              1.63
+Input token throughput (tok/s):          810.44
+Output token throughput (tok/s):         832.04
+Peak output token throughput (tok/s):    1151.00
+Peak concurrent requests:                21
+Total token throughput (tok/s):          1642.48
+Concurrency:                             13.61
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   8150.37
-Median E2E Latency (ms):                 8608.58
+Mean E2E Latency (ms):                   8326.72
+Median E2E Latency (ms):                 8827.86
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          219.77
-Median TTFT (ms):                        76.69
-P99 TTFT (ms):                           817.57
+Mean TTFT (ms):                          215.70
+Median TTFT (ms):                        88.82
+P99 TTFT (ms):                           727.08
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          15.88
-Median TPOT (ms):                        15.72
-P99 TPOT (ms):                           21.37
+Mean TPOT (ms):                          16.36
+Median TPOT (ms):                        16.12
+P99 TPOT (ms):                           24.09
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           15.61
-Median ITL (ms):                         14.73
-P95 ITL (ms):                            15.50
-P99 ITL (ms):                            53.54
-Max ITL (ms):                            335.18
+Mean ITL (ms):                           15.96
+Median ITL (ms):                         14.52
+P95 ITL (ms):                            16.04
+P99 ITL (ms):                            67.69
+Max ITL (ms):                            457.52
 ==================================================
 ```
 
@@ -465,7 +465,7 @@ Max ITL (ms):                            335.18
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -481,36 +481,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 100
 Successful requests:                     500
-Benchmark duration (s):                  86.32
+Benchmark duration (s):                  92.07
 Total input tokens:                      249831
 Total input text tokens:                 249831
 Total input vision tokens:               0
 Total generated tokens:                  252162
-Total generated tokens (retokenized):    252131
-Request throughput (req/s):              5.79
-Input token throughput (tok/s):          2894.15
-Output token throughput (tok/s):         2921.15
-Peak output token throughput (tok/s):    4200.00
-Peak concurrent requests:                111
-Total token throughput (tok/s):          5815.30
-Concurrency:                             89.76
+Total generated tokens (retokenized):    251124
+Request throughput (req/s):              5.43
+Input token throughput (tok/s):          2713.46
+Output token throughput (tok/s):         2738.78
+Peak output token throughput (tok/s):    4400.00
+Peak concurrent requests:                110
+Total token throughput (tok/s):          5452.24
+Concurrency:                             90.50
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   15496.34
-Median E2E Latency (ms):                 15116.24
+Mean E2E Latency (ms):                   16665.09
+Median E2E Latency (ms):                 16060.10
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          325.26
-Median TTFT (ms):                        98.25
-P99 TTFT (ms):                           1484.77
+Mean TTFT (ms):                          260.55
+Median TTFT (ms):                        122.68
+P99 TTFT (ms):                           863.11
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          30.52
-Median TPOT (ms):                        31.62
-P99 TPOT (ms):                           35.22
+Mean TPOT (ms):                          32.94
+Median TPOT (ms):                        34.04
+P99 TPOT (ms):                           41.19
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           30.14
-Median ITL (ms):                         23.78
-P95 ITL (ms):                            63.71
-P99 ITL (ms):                            80.10
-Max ITL (ms):                            1019.75
+Mean ITL (ms):                           32.59
+Median ITL (ms):                         23.54
+P95 ITL (ms):                            69.79
+P99 ITL (ms):                            119.09
+Max ITL (ms):                            577.70
 ==================================================
 ```
 
@@ -520,7 +520,7 @@ Max ITL (ms):                            1019.75
 
 ```shell
 python -m sglang.launch_server \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --tp 8
 ```
 
@@ -531,7 +531,7 @@ python -m sglang.launch_server \
 ```
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 8000 \
@@ -547,36 +547,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 1
 Successful requests:                     10
-Benchmark duration (s):                  461.12
+Benchmark duration (s):                  457.45
 Total input tokens:                      6101
 Total input text tokens:                 6101
 Total input vision tokens:               0
 Total generated tokens:                  44452
-Total generated tokens (retokenized):    44419
+Total generated tokens (retokenized):    44059
 Request throughput (req/s):              0.02
-Input token throughput (tok/s):          13.23
-Output token throughput (tok/s):         96.40
-Peak output token throughput (tok/s):    98.00
+Input token throughput (tok/s):          13.34
+Output token throughput (tok/s):         97.17
+Peak output token throughput (tok/s):    100.00
 Peak concurrent requests:                2
-Total token throughput (tok/s):          109.63
+Total token throughput (tok/s):          110.51
 Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   46110.08
-Median E2E Latency (ms):                 49701.17
+Mean E2E Latency (ms):                   45742.42
+Median E2E Latency (ms):                 49266.87
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          91.23
-Median TTFT (ms):                        64.99
-P99 TTFT (ms):                           313.50
+Mean TTFT (ms):                          110.60
+Median TTFT (ms):                        109.36
+P99 TTFT (ms):                           167.43
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          10.33
-Median TPOT (ms):                        10.34
-P99 TPOT (ms):                           10.38
+Mean TPOT (ms):                          10.23
+Median TPOT (ms):                        10.24
+P99 TPOT (ms):                           10.32
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           10.35
-Median ITL (ms):                         10.35
-P95 ITL (ms):                            10.45
-P99 ITL (ms):                            10.48
-Max ITL (ms):                            11.68
+Mean ITL (ms):                           10.27
+Median ITL (ms):                         10.26
+P95 ITL (ms):                            10.71
+P99 ITL (ms):                            10.97
+Max ITL (ms):                            15.79
 ==================================================
 ```
 
@@ -587,7 +587,7 @@ Max ITL (ms):                            11.68
 ```
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 8000 \
@@ -603,36 +603,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 16
 Successful requests:                     80
-Benchmark duration (s):                  340.59
+Benchmark duration (s):                  340.17
 Total input tokens:                      39668
 Total input text tokens:                 39668
 Total input vision tokens:               0
 Total generated tokens:                  318226
-Total generated tokens (retokenized):    318120
-Request throughput (req/s):              0.23
-Input token throughput (tok/s):          116.47
-Output token throughput (tok/s):         934.33
-Peak output token throughput (tok/s):    1136.00
-Peak concurrent requests:                18
-Total token throughput (tok/s):          1050.80
-Concurrency:                             13.84
+Total generated tokens (retokenized):    318104
+Request throughput (req/s):              0.24
+Input token throughput (tok/s):          116.61
+Output token throughput (tok/s):         935.49
+Peak output token throughput (tok/s):    1120.00
+Peak concurrent requests:                19
+Total token throughput (tok/s):          1052.10
+Concurrency:                             13.85
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   58925.28
-Median E2E Latency (ms):                 58874.55
+Mean E2E Latency (ms):                   58885.30
+Median E2E Latency (ms):                 59238.70
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          174.97
-Median TTFT (ms):                        72.43
-P99 TTFT (ms):                           596.87
+Mean TTFT (ms):                          169.71
+Median TTFT (ms):                        101.61
+P99 TTFT (ms):                           455.71
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          14.83
-Median TPOT (ms):                        14.90
-P99 TPOT (ms):                           15.26
+Mean TPOT (ms):                          14.82
+Median TPOT (ms):                        14.91
+P99 TPOT (ms):                           15.20
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           14.77
-Median ITL (ms):                         14.77
-P95 ITL (ms):                            15.30
-P99 ITL (ms):                            15.67
-Max ITL (ms):                            150.37
+Mean ITL (ms):                           14.76
+Median ITL (ms):                         14.63
+P95 ITL (ms):                            15.46
+P99 ITL (ms):                            16.62
+Max ITL (ms):                            104.94
 ==================================================
 ```
 
@@ -643,7 +643,7 @@ Max ITL (ms):                            150.37
 ```
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 8000 \
@@ -659,36 +659,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 64
 Successful requests:                     320
-Benchmark duration (s):                  534.33
+Benchmark duration (s):                  544.83
 Total input tokens:                      158939
 Total input text tokens:                 158939
 Total input vision tokens:               0
 Total generated tokens:                  1300705
-Total generated tokens (retokenized):    1300016
-Request throughput (req/s):              0.60
-Input token throughput (tok/s):          297.45
-Output token throughput (tok/s):         2434.26
-Peak output token throughput (tok/s):    2944.00
+Total generated tokens (retokenized):    1293015
+Request throughput (req/s):              0.59
+Input token throughput (tok/s):          291.72
+Output token throughput (tok/s):         2387.34
+Peak output token throughput (tok/s):    3008.00
 Peak concurrent requests:                68
-Total token throughput (tok/s):          2731.71
-Concurrency:                             56.33
+Total token throughput (tok/s):          2679.06
+Concurrency:                             56.35
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   94064.17
-Median E2E Latency (ms):                 96651.55
+Mean E2E Latency (ms):                   95937.70
+Median E2E Latency (ms):                 99362.32
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          291.24
-Median TTFT (ms):                        86.55
-P99 TTFT (ms):                           1218.49
+Mean TTFT (ms):                          265.03
+Median TTFT (ms):                        129.11
+P99 TTFT (ms):                           823.85
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          23.22
-Median TPOT (ms):                        23.49
-P99 TPOT (ms):                           24.46
+Mean TPOT (ms):                          23.66
+Median TPOT (ms):                        24.07
+P99 TPOT (ms):                           24.97
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           23.08
-Median ITL (ms):                         22.85
-P95 ITL (ms):                            23.59
-P99 ITL (ms):                            59.35
-Max ITL (ms):                            650.89
+Mean ITL (ms):                           23.54
+Median ITL (ms):                         23.07
+P95 ITL (ms):                            25.92
+P99 ITL (ms):                            63.87
+Max ITL (ms):                            408.30
 ==================================================
 ```
 
@@ -701,7 +701,7 @@ Max ITL (ms):                            650.89
 ```
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
@@ -717,36 +717,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 1
 Successful requests:                     10
-Benchmark duration (s):                  45.24
+Benchmark duration (s):                  44.82
 Total input tokens:                      41941
 Total input text tokens:                 41941
 Total input vision tokens:               0
 Total generated tokens:                  4210
 Total generated tokens (retokenized):    4210
 Request throughput (req/s):              0.22
-Input token throughput (tok/s):          927.04
-Output token throughput (tok/s):         93.06
-Peak output token throughput (tok/s):    98.00
+Input token throughput (tok/s):          935.86
+Output token throughput (tok/s):         93.94
+Peak output token throughput (tok/s):    99.00
 Peak concurrent requests:                2
-Total token throughput (tok/s):          1020.09
+Total token throughput (tok/s):          1029.80
 Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   4522.50
-Median E2E Latency (ms):                 3640.13
+Mean E2E Latency (ms):                   4479.60
+Median E2E Latency (ms):                 3622.99
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          159.87
-Median TTFT (ms):                        147.35
-P99 TTFT (ms):                           334.09
+Mean TTFT (ms):                          139.90
+Median TTFT (ms):                        114.85
+P99 TTFT (ms):                           225.17
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          10.38
-Median TPOT (ms):                        10.39
-P99 TPOT (ms):                           10.46
+Mean TPOT (ms):                          10.31
+Median TPOT (ms):                        10.33
+P99 TPOT (ms):                           10.51
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           10.39
-Median ITL (ms):                         10.39
-P95 ITL (ms):                            10.47
-P99 ITL (ms):                            10.50
-Max ITL (ms):                            11.29
+Mean ITL (ms):                           10.33
+Median ITL (ms):                         10.33
+P95 ITL (ms):                            10.73
+P99 ITL (ms):                            10.93
+Max ITL (ms):                            14.48
 ==================================================
 ```
 
@@ -757,7 +757,7 @@ Max ITL (ms):                            11.29
 ```
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
@@ -773,36 +773,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 16
 Successful requests:                     80
-Benchmark duration (s):                  53.01
+Benchmark duration (s):                  50.68
 Total input tokens:                      300020
 Total input text tokens:                 300020
 Total input vision tokens:               0
 Total generated tokens:                  41589
-Total generated tokens (retokenized):    41579
-Request throughput (req/s):              1.51
-Input token throughput (tok/s):          5659.39
-Output token throughput (tok/s):         784.51
-Peak output token throughput (tok/s):    1152.00
+Total generated tokens (retokenized):    41578
+Request throughput (req/s):              1.58
+Input token throughput (tok/s):          5920.41
+Output token throughput (tok/s):         820.69
+Peak output token throughput (tok/s):    1200.00
 Peak concurrent requests:                20
-Total token throughput (tok/s):          6443.90
-Concurrency:                             13.93
+Total token throughput (tok/s):          6741.10
+Concurrency:                             13.90
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   9234.00
-Median E2E Latency (ms):                 9575.11
+Mean E2E Latency (ms):                   8805.54
+Median E2E Latency (ms):                 9368.79
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          388.55
-Median TTFT (ms):                        182.46
-P99 TTFT (ms):                           1926.02
+Mean TTFT (ms):                          284.29
+Median TTFT (ms):                        168.48
+P99 TTFT (ms):                           1027.21
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          17.46
-Median TPOT (ms):                        17.41
-P99 TPOT (ms):                           28.28
+Mean TPOT (ms):                          16.81
+Median TPOT (ms):                        16.66
+P99 TPOT (ms):                           27.18
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           17.05
-Median ITL (ms):                         14.28
-P95 ITL (ms):                            14.88
-P99 ITL (ms):                            100.67
-Max ITL (ms):                            1431.38
+Mean ITL (ms):                           16.42
+Median ITL (ms):                         13.68
+P95 ITL (ms):                            17.23
+P99 ITL (ms):                            90.75
+Max ITL (ms):                            574.64
 ==================================================
 ```
 
@@ -813,7 +813,7 @@ Max ITL (ms):                            1431.38
 ```
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B \
+  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
@@ -829,36 +829,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 64
 Successful requests:                     320
-Benchmark duration (s):                  103.23
+Benchmark duration (s):                  94.77
 Total input tokens:                      1273893
 Total input text tokens:                 1273893
 Total input vision tokens:               0
 Total generated tokens:                  169680
-Total generated tokens (retokenized):    169679
-Request throughput (req/s):              3.10
-Input token throughput (tok/s):          12340.40
-Output token throughput (tok/s):         1643.72
-Peak output token throughput (tok/s):    2750.00
-Peak concurrent requests:                71
-Total token throughput (tok/s):          13984.11
-Concurrency:                             59.06
+Total generated tokens (retokenized):    169640
+Request throughput (req/s):              3.38
+Input token throughput (tok/s):          13441.86
+Output token throughput (tok/s):         1790.43
+Peak output token throughput (tok/s):    2687.00
+Peak concurrent requests:                70
+Total token throughput (tok/s):          15232.28
+Concurrency:                             58.63
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   19051.11
-Median E2E Latency (ms):                 18542.35
+Mean E2E Latency (ms):                   17364.14
+Median E2E Latency (ms):                 17495.95
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          896.85
-Median TTFT (ms):                        215.93
-P99 TTFT (ms):                           6302.90
+Mean TTFT (ms):                          238.22
+Median TTFT (ms):                        203.27
+P99 TTFT (ms):                           510.48
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          35.36
-Median TPOT (ms):                        36.07
-P99 TPOT (ms):                           57.59
+Mean TPOT (ms):                          32.50
+Median TPOT (ms):                        34.27
+P99 TPOT (ms):                           40.59
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           34.30
-Median ITL (ms):                         22.38
-P95 ITL (ms):                            110.00
-P99 ITL (ms):                            165.88
-Max ITL (ms):                            5855.77
+Mean ITL (ms):                           32.36
+Median ITL (ms):                         22.50
+P95 ITL (ms):                            97.81
+P99 ITL (ms):                            151.55
+Max ITL (ms):                            352.79
 ==================================================
 ```
 
@@ -874,7 +874,7 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200
 
 - **Results**:
 
-  - Qwen/Qwen3-235B-A22B
+  - Qwen/Qwen3-235B-A22B-Instruct-2507
     ```
     Accuracy: 0.945
     Invalid: 0.000
