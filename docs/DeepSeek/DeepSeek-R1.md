@@ -60,7 +60,6 @@ python -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-R1-0528 \
   --reasoning-parser deepseek-r1 \
   --tp 8 \
-  --disable-radix-cache
 ```
 
 **Streaming with Thinking Process:**
