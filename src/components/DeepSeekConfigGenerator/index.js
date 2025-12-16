@@ -38,14 +38,14 @@ const DeepSeekConfigGenerator = () => {
                 { id: 'mtp', label: 'Multi-token Prediction', default: false }
             ]
         },
-        thinking: {
-            name: 'thinking',
-            title: 'Thinking Capabilities',
+        reasoningParser: {
+            name: 'reasoningParser',
+            title: 'Reasoning Parser',
             items: [
-                { id: 'nonthinking', label: 'Non-Thinking', default: true },
-                { id: 'thinking', label: 'Thinking', default: false }
+                { id: 'disabled', label: 'Disabled', default: true },
+                { id: 'enabled', label: 'Enabled', default: false }
             ],
-            commandRule: (value) => value === 'thinking' ? '--reasoning-parser deepseek-v3' : null
+            commandRule: (value) => value === 'enabled' ? '--reasoning-parser deepseek-v3' : null
         },
         toolcall: {
             name: 'toolcall',
@@ -58,7 +58,7 @@ const DeepSeekConfigGenerator = () => {
     },
   
     generateCommand: function(values) {
-        const { hardware, modelname, strategy, thinking, toolcall } = values;
+        const { hardware, modelname, strategy, reasoningParser, toolcall } = values;
   
         // Validation: DeepSeek-V3.2-Speciale doesn't support tool calling
         if (modelname === 'v32speciale' && toolcall === 'enabled') {
@@ -101,8 +101,8 @@ const DeepSeekConfigGenerator = () => {
             }
         }
   
-        // Add reasoning-parser for thinking mode
-        if (thinking === 'thinking') {
+        // Add reasoning-parser when enabled
+        if (reasoningParser === 'enabled') {
             cmd += ` \\\n  --reasoning-parser deepseek-v3`;
         }
   
