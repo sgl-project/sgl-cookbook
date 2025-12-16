@@ -27,261 +27,6 @@ import KimiK2ConfigGenerator from '@site/src/components/KimiK2ConfigGenerator';
 
 <KimiK2ConfigGenerator />
 
-{/* Old inline script configuration has been replaced with ConfigGenerator component */}
-{/* const CONFIG = {
-    modelFamily: 'moonshotai',
-  
-    options: {
-        hardware: {
-            name: 'hardware',
-            title: 'Hardware Platform',
-            items: [
-                { id: 'h200', label: 'H200', default: true },
-                { id: 'b200', label: 'B200', default: false }
-            ]
-        },
-        modelname: {
-            name: 'modelname',
-            title: 'Model Name',
-            items: [
-                { id: 'instruct', label: 'Kimi-K2-Instruct', default: true },
-                { id: 'thinking', label: 'Kimi-K2-Thinking', default: false }
-            ]
-        },
-        strategy: {
-            name: 'strategy',
-            title: 'Deployment Strategy',
-            type: 'checkbox',
-            items: [
-                { id: 'tp', label: 'TP', default: true, required: true },
-                { id: 'dp', label: 'DP attention', default: false },
-                { id: 'ep', label: 'EP', default: false }
-            ]
-        },
-        reasoning: {
-            name: 'reasoning',
-            title: 'Reasoning Parser',
-            items: [
-                { id: 'disabled', label: 'Disabled', default: true },
-                { id: 'enabled', label: 'Enabled', default: false }
-            ]
-        },
-        toolcall: {
-            name: 'toolcall',
-            title: 'Tool Call Parser',
-            items: [
-                { id: 'disabled', label: 'Disabled', default: true },
-                { id: 'enabled', label: 'Enabled', default: false }
-            ]
-        }
-    },
-  
-    generateCommand: function(values) {
-        const { hardware, modelname, strategy, reasoning, toolcall } = values;
-  
-        // Validation: Kimi-K2-Instruct doesn't support reasoning parser
-        if (modelname === 'instruct' && reasoning === 'enabled') {
-            return `# Error: Kimi-K2-Instruct doesn't support reasoning parser\n# Please select "Disabled" for Reasoning Parser or choose Kimi-K2-Thinking model`;
-        }
-  
-        // Model name mapping
-        const modelMap = {
-            'instruct': 'Kimi-K2-Instruct',
-            'thinking': 'Kimi-K2-Thinking'
-        };
-  
-        const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
-  
-        let cmd = 'python3 -m sglang.launch_server \\\n';
-        cmd += `  --model-path ${modelName}`;
-  
-        // Strategy configurations
-        const strategyArray = Array.isArray(strategy) ? strategy : [];
-        // TP is mandatory
-        cmd += ` \\\n  --tp 8`;
-        if (strategyArray.includes('dp')) {
-            cmd += ` \\\n  --dp 4 \\\n  --enable-dp-attention`;
-        }
-        if (strategyArray.includes('ep')) {
-            cmd += ` \\\n  --ep 4`;
-        }
-  
-        // Add trust-remote-code (required for Kimi-K2)
-        cmd += ` \\\n  --trust-remote-code`;
-  
-        // Add tool-call-parser if enabled
-        if (toolcall === 'enabled') {
-            cmd += ` \\\n  --tool-call-parser kimi_k2`;
-        }
-  
-        // Add reasoning-parser if enabled
-        if (reasoning === 'enabled') {
-            cmd += ` \\\n  --reasoning-parser kimi_k2`;
-        }
-  
-        return cmd;
-    }
-};
-
-function renderUI() {
-    const container = document.getElementById('config-container');
-    if (!container) return;
-  
-    let html = '';
-    let index = 1;
-  
-    for (const [key, option] of Object.entries(CONFIG.options)) {
-        html += `
-<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
-    <div style="font-size: 14px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px; display: flex; align-items: center;">
-        <span style="background: #667eea; color: white; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 12px;">${index}</span>
-        ${option.title}
-    </div>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">`;
-  
-        if (option.type === 'text') {
-            html += `
-        <input type="text" id="input-${option.name}" name="${option.name}" value="${option.default || ''}" placeholder="${option.placeholder || ''}" 
-               style="padding: 8px 12px; border: 1px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; font-size: 14px; width: 100%; max-width: 300px; color: var(--md-default-fg-color, #2d3748); background: var(--md-default-bg-color, white);">`;
-        } else if (option.type === 'checkbox') {
-            option.items.forEach(item => {
-                const inputId = `${option.name}-${item.id}`;
-                const checked = item.default ? 'checked' : '';
-                const disabled = item.required ? 'disabled' : '';
-                const cursor = item.required ? 'not-allowed' : 'pointer';
-                const opacity = item.required ? '0.7' : '1';
-                html += `
-            <input type="checkbox" id="${inputId}" name="${option.name}" value="${item.id}" ${checked} ${disabled} style="display: none;">
-            <label for="${inputId}" style="padding: 8px 18px; border: 2px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; cursor: ${cursor}; display: inline-block; font-weight: 500; font-size: 13px; transition: all 0.3s; background: var(--md-default-bg-color, white); color: var(--md-default-fg-color, #2d3748); opacity: ${opacity};">${item.label}${item.subtitle ? `<br/><small style="color: var(--md-default-fg-color--light, #718096); font-size: 10px;">${item.subtitle}</small>` : ''}</label>`;
-            });
-        } else {
-            option.items.forEach(item => {
-                const inputId = `${option.name}-${item.id}`;
-                const checked = item.default ? 'checked' : '';
-                html += `
-            <input type="radio" id="${inputId}" name="${option.name}" value="${item.id}" ${checked} style="display: none;">
-            <label for="${inputId}" style="padding: 8px 18px; border: 2px solid var(--md-default-fg-color--lightest, #e2e8f0); border-radius: 6px; cursor: pointer; display: inline-block; font-weight: 500; font-size: 13px; transition: all 0.3s; background: var(--md-default-bg-color, white); color: var(--md-default-fg-color, #2d3748);">${item.label}${item.subtitle ? `<br/><small style="color: var(--md-default-fg-color--light, #718096); font-size: 10px;">${item.subtitle}</small>` : ''}</label>`;
-            });
-        }
-  
-        html += `
-    </div>
-</div>`;
-        index++;
-    }
-  
-    html += `
-<div style="background: var(--md-default-bg-color, #ffffff); padding: 16px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);">
-    <div style="font-size: 15px; font-weight: 600; color: var(--md-default-fg-color, #2d3748); margin-bottom: 10px;">
-        Generated Command
-    </div>
-    <div id="command-display" style="padding: 16px; background: #2d3748; border-radius: 6px; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap; overflow-x: auto; border: none;"></div>
-</div>`;
-  
-    container.innerHTML = html;
-}
-
-function handleChange() {
-    updateCommand();
-    updateStyles();
-}
-
-function updateCommand() {
-    const values = {};
-    for (const [key, option] of Object.entries(CONFIG.options)) {
-        if (option.type === 'text') {
-            const input = document.getElementById(`input-${option.name}`);
-            if (input) {
-                values[option.name] = input.value;
-            }
-        } else if (option.type === 'checkbox') {
-            const checked = document.querySelectorAll(`input[name="${option.name}"]:checked`);
-            const checkedValues = Array.from(checked).map(cb => cb.value);
-            // Ensure required items are always included
-            option.items.forEach(item => {
-                if (item.required && !checkedValues.includes(item.id)) {
-                    checkedValues.push(item.id);
-                }
-            });
-            values[option.name] = checkedValues;
-        } else {
-            const selected = document.querySelector(`input[name="${option.name}"]:checked`);
-            if (selected) {
-                values[option.name] = selected.value;
-            }
-        }
-    }
-  
-    const command = CONFIG.generateCommand(values);
-    document.getElementById("command-display").textContent = command;
-}
-
-function updateStyles() {
-    const labels = document.querySelectorAll('label');
-    labels.forEach(label => {
-        const input = document.querySelector(`input[id="${label.getAttribute('for')}"]`);
-        if (input && input.disabled) {
-            // Keep disabled checked items styled
-            if (input.checked) {
-                label.style.backgroundColor = '#dc3545';
-                label.style.color = 'white';
-                label.style.borderColor = '#d55816';
-            }
-            return;
-        }
-        label.style.backgroundColor = '';
-        label.style.color = '';
-        label.style.borderColor = '#ddd';
-    });
-  
-    const checkedInputs = document.querySelectorAll('input[type="radio"]:checked:not(:disabled), input[type="checkbox"]:checked:not(:disabled)');
-    checkedInputs.forEach(input => {
-        const label = document.querySelector(`label[for="${input.id}"]`);
-        if (label) {
-            label.style.backgroundColor = '#dc3545';
-            label.style.color = 'white';
-            label.style.borderColor = '#d55816';
-        }
-    });
-}
-
-function init() {
-    const container = document.getElementById('config-container');
-    if (!container) {
-        setTimeout(init, 100);
-        return;
-    }
-  
-    if (container.dataset.initialized) return;
-    container.dataset.initialized = 'true';
-  
-    renderUI();
-  
-    container.addEventListener('change', function(e) {
-        if (e.target && e.target.matches('input[type="radio"], input[type="checkbox"]')) {
-            handleChange();
-        }
-    });
-  
-    container.addEventListener('input', function(e) {
-        if (e.target && e.target.matches('input[type="text"]')) {
-            updateCommand();
-        }
-    });
-  
-    updateCommand();
-    updateStyles();
-}
-
-init();
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
-setTimeout(init, 500);
-*/}
-
 ### 3.2 Configuration Tips
 
 - **Memory**: Requires 8 GPUs with ≥140GB each (H200/B200). Use `--context-length 128000` to conserve memory.
@@ -341,7 +86,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-  
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -349,7 +94,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-  
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -489,7 +234,7 @@ tool_calls_accumulator = {}
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-  
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -497,14 +242,14 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-  
+
         # Accumulate tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================\n", flush=True)
                 thinking_started = False
-  
+
             for tool_call in delta.tool_calls:
                 index = tool_call.index
                 if index not in tool_calls_accumulator:
@@ -512,13 +257,13 @@ for chunk in response:
                         'name': None,
                         'arguments': ''
                     }
-    
+
                 if tool_call.function:
                     if tool_call.function.name:
                         tool_calls_accumulator[index]['name'] = tool_call.function.name
                     if tool_call.function.arguments:
                         tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
-  
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
