@@ -22,10 +22,9 @@ git checkout -b add-deepseek-v3-guide
 # Submit a Pull Request
 ```
 
-## 📚 Reference Examples
+## 📚 Reference
 
-- [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2)
-- [DeepSeek-R1](/docs/DeepSeek/DeepSeek-R1)
+- [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2.md)
 
 ---
 

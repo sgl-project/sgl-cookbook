@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Qwen3-Next
 
 ## 1. Model Introduction
@@ -34,7 +38,6 @@ This section provides deployment configurations optimized for different hardware
 
 The Qwen3-Next series comes in only one size but offers different thinking modes. Recommended starting configurations vary depending on hardware.
 
-
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, quantization method, and thinking capabilities.
 
 import Qwen3NextConfigGenerator from '@site/src/components/Qwen3NextConfigGenerator';
@@ -42,6 +45,7 @@ import Qwen3NextConfigGenerator from '@site/src/components/Qwen3NextConfigGenera
 <Qwen3NextConfigGenerator />
 
 ### 3.2 Configuration Tips
+
 - `--max-mamba-cache-size`: Adjust `--max-mamba-cache-size` to increase mamba cache space and max running requests capability. It will decrease KV cache space as a trade-off. You can adjust it according to workload.
 
 - `--mamba-ssm-dtype`: `bfloat16` or `float32`, use `bfloat16` to save mamba cache size and `float32` to get more accurate results. The default setting is `float32`.
@@ -61,8 +65,8 @@ For basic API usage and request examples, please refer to:
 #### 4.2.1 Reasoning Parser
 
 1. **Streaming with Thinking Process:**
-   
-    Qwen3-Next-80B-A3B-Thinking only supports thinking mode. Enable the reasoning parser during deployment to separate the thinking and the content sections.
+
+   Qwen3-Next-80B-A3B-Thinking only supports thinking mode. Enable the reasoning parser during deployment to separate the thinking and the content sections.
 
 ```shell
 python -m sglang.launch_server \
@@ -72,7 +76,6 @@ python -m sglang.launch_server \
   --host 0.0.0.0 \
   --port 8000
 ```
-
 
 ```python
 from openai import OpenAI
@@ -101,7 +104,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-      
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -109,7 +112,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-      
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -172,7 +175,7 @@ $$
 
 2. **Turn off Thinking:**
 
-    Qwen3-Next-80B-A3B-Instruct only supports instruct (non-thinking) mode.
+   Qwen3-Next-80B-A3B-Instruct only supports instruct (non-thinking) mode.
 
 ```shell
 python -m sglang.launch_server \
@@ -210,7 +213,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-      
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -218,7 +221,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-      
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -229,6 +232,7 @@ for chunk in response:
 
 print()
 ```
+
 **Output Example:**
 
 ```
@@ -289,10 +293,10 @@ So, **15% of 240 is 36**.
 
 Qwen/Qwen3-Next-80B-A3B-Instruct | Qwen/Qwen3-Next-80B-A3B-Thinking both support tool calling capabilities. Enable the tool call parser:
 
-
 **Python Example (without Thinking Process):**
 
 Start sglang server:
+
 ```shell
 python -m sglang.launch_server \
   --model Qwen/Qwen3-Next-80B-A3B-Instruct \
@@ -301,7 +305,6 @@ python -m sglang.launch_server \
   --host 0.0.0.0 \
   --port 8000
 ```
-
 
 ```python
 from openai import OpenAI
@@ -355,7 +358,7 @@ has_thinking = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-      
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -363,19 +366,19 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-      
+
         # Print tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================", flush=True)
                 thinking_started = False
-          
+
             for tool_call in delta.tool_calls:
                 if tool_call.function:
                     print(f"🔧 Tool Call: {tool_call.function.name}")
                     print(f"   Arguments: {tool_call.function.arguments}")
-      
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
@@ -391,12 +394,10 @@ print()
 </tool_call>
 ```
 
-
-
-
 **Python Example (with Thinking Process):**
 
 Start sglang server:
+
 ```shell
 python -m sglang.launch_server \
   --model Qwen/Qwen3-Next-80B-A3B-Thinking \
@@ -406,7 +407,6 @@ python -m sglang.launch_server \
   --host 0.0.0.0 \
   --port 8000
 ```
-
 
 ```python
 from openai import OpenAI
@@ -460,7 +460,7 @@ has_thinking = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-      
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -468,19 +468,19 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-      
+
         # Print tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================", flush=True)
                 thinking_started = False
-          
+
             for tool_call in delta.tool_calls:
                 if tool_call.function:
                     print(f"🔧 Tool Call: {tool_call.function.name}")
                     print(f"   Arguments: {tool_call.function.arguments}")
-      
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
@@ -547,19 +547,22 @@ print(final_response.choices[0].message.content)
 ```
 
 #### 4.2.3 Processing Ultra-Long Texts
-Qwen3-Next natively supports context lengths of up to 262,144 tokens. For conversations where the total length (including both input and output) significantly exceeds this limit, we recommend using RoPE scaling techniques to handle long texts effectively. We have validated the model's performance on context lengths of up to 1 million tokens using the YaRN method. 
+
+Qwen3-Next natively supports context lengths of up to 262,144 tokens. For conversations where the total length (including both input and output) significantly exceeds this limit, we recommend using RoPE scaling techniques to handle long texts effectively. We have validated the model's performance on context lengths of up to 1 million tokens using the YaRN method.
 
 **Qwen3-Next-80B-A3B-Instruct**
+
 ```
 SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 python -m sglang.launch_server --model Qwen/Qwen3-Next-80B-A3B-Instruct    --tp 8   --host 0.0.0.0   --port 8000 --json-model-override-args '{"rope_scaling":{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":262144}}' --context-length 1010000
 
 ```
+
 **Qwen3-Next-80B-A3B-Thinking**
+
 ```
 SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 python -m sglang.launch_server --model Qwen/Qwen3-Next-80B-A3B-Thinking   --reasoning-parser qwen3     --tp 8   --host 0.0.0.0   --port 8000 --json-model-override-args '{"rope_scaling":{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":262144}}' --context-length 1010000
 
 ```
-
 
 ## 5. Benchmark
 
@@ -571,12 +574,13 @@ SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 python -m sglang.launch_server --mod
 - Tensor Parallelism: 8
 - Model: Qwen/Qwen3-Next-80B-A3B-Instruct
 - sglang version: 0.5.6
-  
+
 We use SGLang's built-in benchmarking tool to conduct performance evaluation on the [ShareGPT_Vicuna_unfiltered](https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered) dataset. This dataset contains real conversation data and can better reflect performance in actual use scenarios.
 
-####  5.1.1 Latency-Sensitive Benchmark
+#### 5.1.1 Latency-Sensitive Benchmark
 
 - Server Command:
+
 ```
 python -m sglang.launch_server \
   --model Qwen/Qwen3-Next-80B-A3B-Instruct \
@@ -596,47 +600,47 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 1         
-Successful requests:                     100       
-Benchmark duration (s):                  146.52    
-Total input tokens:                      33839     
-Total input text tokens:                 33839     
-Total input vision tokens:               0         
-Total generated tokens:                  21640     
-Total generated tokens (retokenized):    21619     
-Request throughput (req/s):              0.68      
-Input token throughput (tok/s):          230.95    
-Output token throughput (tok/s):         147.70    
-Peak output token throughput (tok/s):    164.00    
-Peak concurrent requests:                6         
-Total token throughput (tok/s):          378.65    
-Concurrency:                             1.00      
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     100
+Benchmark duration (s):                  146.52
+Total input tokens:                      33839
+Total input text tokens:                 33839
+Total input vision tokens:               0
+Total generated tokens:                  21640
+Total generated tokens (retokenized):    21619
+Request throughput (req/s):              0.68
+Input token throughput (tok/s):          230.95
+Output token throughput (tok/s):         147.70
+Peak output token throughput (tok/s):    164.00
+Peak concurrent requests:                6
+Total token throughput (tok/s):          378.65
+Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   1464.81   
-Median E2E Latency (ms):                 1077.48   
+Mean E2E Latency (ms):                   1464.81
+Median E2E Latency (ms):                 1077.48
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          127.88    
-Median TTFT (ms):                        132.88    
-P99 TTFT (ms):                           212.85    
+Mean TTFT (ms):                          127.88
+Median TTFT (ms):                        132.88
+P99 TTFT (ms):                           212.85
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          6.19      
-Median TPOT (ms):                        6.17      
-P99 TPOT (ms):                           6.64      
+Mean TPOT (ms):                          6.19
+Median TPOT (ms):                        6.17
+P99 TPOT (ms):                           6.64
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           6.21      
-Median ITL (ms):                         6.16      
-P95 ITL (ms):                            6.51      
-P99 ITL (ms):                            6.71      
-Max ITL (ms):                            10.07     
+Mean ITL (ms):                           6.21
+Median ITL (ms):                         6.16
+P95 ITL (ms):                            6.51
+P99 ITL (ms):                            6.71
+Max ITL (ms):                            10.07
 ==================================================
 ```
 
-
-####  5.1.2 Throughput-Sensitive Benchmark
+#### 5.1.2 Throughput-Sensitive Benchmark
 
 - Server Command:
+
 ```
 python -m sglang.launch_server \
   --model Qwen/Qwen3-Next-80B-A3B-Instruct \
@@ -656,51 +660,49 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 100       
-Successful requests:                     1000      
-Benchmark duration (s):                  100.32    
-Total input tokens:                      302118    
-Total input text tokens:                 302118    
-Total input vision tokens:               0         
-Total generated tokens:                  195775    
-Total generated tokens (retokenized):    195016    
-Request throughput (req/s):              9.97      
-Input token throughput (tok/s):          3011.69   
-Output token throughput (tok/s):         1951.60   
-Peak output token throughput (tok/s):    5909.00   
-Peak concurrent requests:                120       
-Total token throughput (tok/s):          4963.29   
-Concurrency:                             93.05     
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     1000
+Benchmark duration (s):                  100.32
+Total input tokens:                      302118
+Total input text tokens:                 302118
+Total input vision tokens:               0
+Total generated tokens:                  195775
+Total generated tokens (retokenized):    195016
+Request throughput (req/s):              9.97
+Input token throughput (tok/s):          3011.69
+Output token throughput (tok/s):         1951.60
+Peak output token throughput (tok/s):    5909.00
+Peak concurrent requests:                120
+Total token throughput (tok/s):          4963.29
+Concurrency:                             93.05
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   9333.98   
-Median E2E Latency (ms):                 6054.12   
+Mean E2E Latency (ms):                   9333.98
+Median E2E Latency (ms):                 6054.12
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          161.77    
-Median TTFT (ms):                        137.94    
-P99 TTFT (ms):                           503.29    
+Mean TTFT (ms):                          161.77
+Median TTFT (ms):                        137.94
+P99 TTFT (ms):                           503.29
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          50.87     
-Median TPOT (ms):                        50.28     
-P99 TPOT (ms):                           122.87    
+Mean TPOT (ms):                          50.87
+Median TPOT (ms):                        50.28
+P99 TPOT (ms):                           122.87
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           47.11     
-Median ITL (ms):                         13.84     
-P95 ITL (ms):                            195.33    
-P99 ITL (ms):                            289.56    
-Max ITL (ms):                            486.38    
+Mean ITL (ms):                           47.11
+Median ITL (ms):                         13.84
+P95 ITL (ms):                            195.33
+P99 ITL (ms):                            289.56
+Max ITL (ms):                            486.38
 ==================================================
 ```
-
-
-
 
 ### 5.2 Accuracy Benchmark
 
 ### 5.2.1 GSM8K Benchmark
 
 - **Benchmark Command:**
+
 ```shell
 python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 8000
 ```
@@ -708,6 +710,7 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 8000
 - **Results**:
 
   - Qwen3-Next-80B-A3B-Instruct
+
     ```
     Accuracy: 0.960
     Invalid: 0.000
@@ -723,9 +726,10 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 8000
     Output throughput: 3288.737 token/s
     ```
 
-
 ### 5.2.2 MMLU Benchmark
+
 - **Benchmark Command:**
+
 ```shell
 cd sglang
 bash benchmark/mmlu/download_data.sh
@@ -735,6 +739,7 @@ python3 benchmark/mmlu/bench_sglang.py --nsub 10
 - **Results**:
 
   - Qwen3-Next-80B-A3B-Instruct
+
     ```
     subject: abstract_algebra, #q:100, acc: 0.800
     subject: anatomy, #q:135, acc: 0.807
@@ -765,4 +770,3 @@ python3 benchmark/mmlu/bench_sglang.py --nsub 10
     Total latency: 10.236
     Average accuracy: 0.855
     ```
-

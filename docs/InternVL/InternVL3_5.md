@@ -17,7 +17,7 @@ git checkout -b add-internvl3-5-guide
 
 ## 📚 Reference
 
-- [GLM-4.6V](/docs/GLM/GLM-4.6V)
+- [GLM-4.6V](/docs/GLM/GLM-4.6V.md)
 
 ---
 

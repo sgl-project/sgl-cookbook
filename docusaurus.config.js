@@ -75,7 +75,7 @@ const config = {
       tagName: 'meta',
       attributes: {
         name: 'algolia-site-verification',
-        content: '507CC6F1693709F7',
+        content: 'B137E28CCDDFD715',
       },
     },
   ],
@@ -157,11 +157,11 @@ const config = {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
-      // algolia: {
-      //   appId: 'PFTG7BFYCO',
-      //   apiKey: 'b3cd6461d229bde46720cae15de04b65', 
-      //   indexName: 'cookbook_sg_lang_vercel_app_pftg7bfyco_pages',
-      // },
+      algolia: {
+        appId: '5PDGY21FSS',
+        apiKey: '58c29a0ac6c2759e581d630b54e57564', 
+        indexName: 'sgl-cookbook',
+      },
     }),
 };
 

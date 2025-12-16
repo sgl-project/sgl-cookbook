@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Qwen3-Coder-480B-A35B
 
 ## 📝 Community Contribution Welcome
@@ -17,7 +21,7 @@ git checkout -b add-qwen3-coder-480b-guide
 
 ## 📚 Reference
 
-- [Qwen3](/docs/Qwen/Qwen3)
+- [Qwen3](/docs/Qwen/Qwen3.md)
 
 ---
 

@@ -17,7 +17,7 @@ git checkout -b add-qwen2-5-vl-guide
 
 ## 📚 Reference
 
-- [Qwen3-VL](/docs/Qwen/Qwen3-VL)
+- [Qwen3-VL](/docs/Qwen/Qwen3-VL.md)
 
 ---
 

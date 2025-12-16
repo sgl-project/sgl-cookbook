@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Qwen3-VL
 
 ## 1. Model Introduction
@@ -143,7 +147,7 @@ messages = [
             {
                 "type": "text",
                 "text": "Compare these two images and describe the differences in 100 words or less. Focus on the key visual elements, colors, textures, and any notable contrasts between the two scenes. Be specific about what you see in each image."
-            } 
+            }
         ]
     }
 ]
@@ -270,7 +274,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-  
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -278,7 +282,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-  
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -374,7 +378,7 @@ tool_calls_accumulator = {}
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-  
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -382,14 +386,14 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-  
+
         # Accumulate tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================\n", flush=True)
                 thinking_started = False
-  
+
             for tool_call in delta.tool_calls:
                 index = tool_call.index
                 if index not in tool_calls_accumulator:
@@ -397,13 +401,13 @@ for chunk in response:
                         'name': None,
                         'arguments': ''
                     }
-  
+
                 if tool_call.function:
                     if tool_call.function.name:
                         tool_calls_accumulator[index]['name'] = tool_call.function.name
                     if tool_call.function.arguments:
                         tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
-  
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
