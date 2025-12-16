@@ -137,7 +137,6 @@ python -m sglang.launch_server \
   --tool-call-parser deepseekv3 \
   --chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja \
   --tp 8 \
-  --disable-radix-cache
 ```
 
 **Python Example (with Thinking Process):**
