@@ -2,7 +2,7 @@
 
 ## 1. Model Introduction
 
-This page covers the **Devstral 2** models from Mistral, focused on agentic software engineering workflows (tool use, repo exploration, code edits).
+**Devstral 2** series is a family of agentic LLMs for software engineering tasks, created by the Mistral AI team and focused on agentic software engineering workflows (tool use, repo exploration, code edits).
 
 - **Collection**: [mistralai/devstral-2 (Hugging Face)](https://huggingface.co/collections/mistralai/devstral-2)
 - **Models**:
