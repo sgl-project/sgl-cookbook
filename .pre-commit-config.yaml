@@ -1,0 +1,19 @@
+repos:
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # Custom hook for validating model YAML files (TypeScript)
+  - repo: local
+    hooks:
+      - id: validate-model-configs-ts
+        name: Validate Model Configuration YAML (TypeScript)
+        entry: bash -c 'cd data/schema && npm test'
+        language: system
+        files: ^(data/models/.*\.(yaml|yml)|data/schema/types\.ts)$
+        pass_filenames: false
