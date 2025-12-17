@@ -2,12 +2,28 @@
 
 ## 1. Model Introduction
 
-**Devstral 2** series is a family of agentic LLMs for software engineering tasks, created by the Mistral AI team and focused on agentic software engineering workflows (tool use, repo exploration, code edits).
+**Devstral 2** is an agentic LLM family for software engineering tasks. It is designed for agentic workflows such as tool use, codebase exploration, and multi-file edits, and achieves strong performance on **SWE-bench**.
+
+The **Devstral 2 Instruct** checkpoints are instruction-tuned **FP8** models, making them a good fit for chat, tool-using agents, and instruction-following SWE workloads.
+
+**Key Features:**
+
+- **Agentic coding**: Optimized for tool-driven coding and software engineering agents
+- **Improved performance**: A step up compared to earlier Devstral models
+- **Better generalization**: More robust across diverse prompts and coding environments
+- **Long context**: Up to a **256K** context window
+
+**Use Cases:**
+AI code assistants, agentic coding, and software engineering tasks that require deep codebase understanding and tool integration.
+
+For enterprises requiring specialized capabilities (increased context, domain-specific knowledge, etc.), please reach out to Mistral.
+
+**Models:**
 
 - **Collection**: [mistralai/devstral-2 (Hugging Face)](https://huggingface.co/collections/mistralai/devstral-2)
-- **Models**:
-  - **[mistralai/Devstral-2-123B-Instruct-2512](https://huggingface.co/mistralai/Devstral-2-123B-Instruct-2512)** (FP8 weights)
-  - **[mistralai/Devstral-Small-2-24B-Instruct-2512](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512)** (FP8 weights)
+- **FP8 Instruct**:
+  - **[mistralai/Devstral-2-123B-Instruct-2512](https://huggingface.co/mistralai/Devstral-2-123B-Instruct-2512)**
+  - **[mistralai/Devstral-Small-2-24B-Instruct-2512](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512)**
 
 ---
 
