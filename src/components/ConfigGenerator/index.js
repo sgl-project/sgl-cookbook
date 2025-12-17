@@ -9,7 +9,7 @@ import styles from './styles.module.css';
  *   - options: object with option groups
  *   - generateCommand: function(values) => string
  */
-const ConfigGenerator = ({ config }) => {
+const ConfigGenerator = ({ config, variant = 'minimal' }) => {
   if (!config || !config.options) {
     return <div>Error: Invalid configuration provided</div>;
   }
@@ -67,80 +67,81 @@ const ConfigGenerator = ({ config }) => {
 
   const command = config.generateCommand ? config.generateCommand(values) : '';
 
-  return (
-    <div className={styles.configContainer}>
-      {Object.entries(config.options).map(([key, option], index) => (
-        <div key={key} className={styles.optionCard}>
-          <div className={styles.optionTitle}>
-            <span className={styles.optionNumber}>{index + 1}</span>
-            {option.title}
-          </div>
-          <div className={styles.optionItems}>
-            {option.type === 'text' ? (
-              // Text input
-              <input
-                type="text"
-                value={values[option.name] || ''}
-                placeholder={option.placeholder || ''}
-                onChange={(e) => handleTextChange(option.name, e.target.value)}
-                className={styles.textInput}
-              />
-            ) : option.type === 'checkbox' ? (
-              // Checkbox items
-              option.items.map(item => {
-                const isChecked = (values[option.name] || []).includes(item.id);
-                const isDisabled = item.required;
-                return (
-                  <label
-                    key={item.id}
-                    className={`${styles.optionLabel} ${isChecked ? styles.checked : ''} ${isDisabled ? styles.disabled : ''}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      disabled={isDisabled}
-                      onChange={(e) => handleCheckboxChange(option.name, item.id, e.target.checked)}
-                      className={styles.hiddenInput}
-                    />
-                    {item.label}
-                    {item.subtitle && (
-                      <small className={styles.subtitle}>{item.subtitle}</small>
-                    )}
-                  </label>
-                );
-              })
-            ) : (
-              // Radio items
-              option.items.map(item => {
-                const isChecked = values[option.name] === item.id;
-                return (
-                  <label
-                    key={item.id}
-                    className={`${styles.optionLabel} ${isChecked ? styles.checked : ''}`}
-                  >
-                    <input
-                      type="radio"
-                      name={option.name}
-                      value={item.id}
-                      checked={isChecked}
-                      onChange={() => handleRadioChange(option.name, item.id)}
-                      className={styles.hiddenInput}
-                    />
-                    {item.label}
-                    {item.subtitle && (
-                      <small className={styles.subtitle}>{item.subtitle}</small>
-                    )}
-                  </label>
-                );
-              })
-            )}
-          </div>
-        </div>
-      ))}
+  const isMinimal = variant === 'minimal';
 
-      <div className={styles.commandCard}>
-        <div className={styles.commandTitle}>Generated Command</div>
-        <pre className={styles.commandDisplay}>{command}</pre>
+  return (
+    <div className={isMinimal ? styles.configContainerMinimal : styles.configContainer}>
+      <div className={styles.optionsTable}>
+        {Object.entries(config.options).map(([key, option]) => (
+          <div
+            key={key}
+            className={isMinimal ? styles.optionRowMinimal : styles.optionRow}
+          >
+            <div className={isMinimal ? styles.rowLabelMinimal : styles.rowLabel}>
+              {option.title}
+            </div>
+            <div className={styles.rowContent}>
+              {option.type === 'text' ? (
+                <input
+                  type="text"
+                  value={values[option.name] || ''}
+                  placeholder={option.placeholder || ''}
+                  onChange={(e) => handleTextChange(option.name, e.target.value)}
+                  className={styles.textInput}
+                />
+              ) : (
+                <div className={styles.choiceGroup}>
+                  {option.items.map(item => {
+                    const isChecked = option.type === 'checkbox'
+                      ? (values[option.name] || []).includes(item.id)
+                      : values[option.name] === item.id;
+                    const isDisabled = item.required;
+                    const inputType = option.type === 'checkbox' ? 'checkbox' : 'radio';
+
+                    return (
+                      <label
+                        key={item.id}
+                        className={`${styles.choiceButton} ${isChecked ? styles.active : ''} ${isDisabled ? styles.disabled : ''}`}
+                      >
+                        <input
+                          type={inputType}
+                          name={option.name}
+                          value={item.id}
+                          checked={isChecked}
+                          disabled={isDisabled}
+                          onChange={(e) => {
+                            if (inputType === 'radio') {
+                              handleRadioChange(option.name, item.id);
+                            } else {
+                              handleCheckboxChange(option.name, item.id, e.target.checked);
+                            }
+                          }}
+                          className={styles.hiddenInput}
+                        />
+                        <span className={styles.choiceLabel}>{item.label}</span>
+                        {item.subtitle && (
+                          <span className={styles.choiceSubtitle}>{item.subtitle}</span>
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className={isMinimal ? styles.commandRowMinimal : styles.commandRow}>
+        <div className={isMinimal ? styles.rowLabelMinimal : styles.rowLabel}>
+          Run this Command
+        </div>
+        <div className={styles.commandContent}>
+          {isMinimal && (
+            <div className={styles.commandHint}>Selections above update this command</div>
+          )}
+          <pre className={styles.commandDisplay}>{command}</pre>
+        </div>
       </div>
     </div>
   );
