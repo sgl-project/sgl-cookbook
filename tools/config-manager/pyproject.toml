@@ -1,0 +1,26 @@
+[project]
+name = "config-manager"
+version = "0.1.0"
+description = "Interactive CLI tool for managing SGLang model configurations"
+requires-python = ">=3.10"
+dependencies = [
+    "questionary>=2.0.0",
+    "rich>=13.0.0",
+    "pyyaml>=6.0",
+    "jsonschema>=4.0.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[project.scripts]
+config-manager = "main:run_cli"
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

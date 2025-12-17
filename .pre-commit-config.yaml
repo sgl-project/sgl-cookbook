@@ -6,7 +6,16 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        exclude: ^tools/config-manager/\.venv/
       - id: check-added-large-files
+
+  # Python linting with Ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        args: ["--select=E,F,W", "--ignore=E501,E402"]
+        files: ^tools/config-manager/.*\.py$
 
   # Custom hook for validating model YAML files (TypeScript)
   - repo: local
@@ -17,3 +26,11 @@ repos:
         language: system
         files: ^(data/models/.*\.(yaml|yml)|data/schema/types\.ts)$
         pass_filenames: false
+
+      - id: validate-model-configs
+        name: Validate Model Configuration YAML (Python)
+        entry: python tools/config-manager/validate_yaml.py
+        language: python
+        files: ^data/models/.*\.(yaml|yml)$
+        additional_dependencies: [pydantic>=2.0.0, pyyaml>=6.0]
+        pass_filenames: true
