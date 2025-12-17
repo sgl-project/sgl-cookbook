@@ -1,18 +1,18 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 ---
 
-# Qwen3-Coder-480B-A35B
+# Mistral 3
 
 :::info Community contribution welcome
-This guide is currently under development. If you have experience deploying **Qwen3-Coder-480B-A35B** with SGLang, please help us complete this documentation.
+This guide is currently under development. If you have experience deploying **Mistral 3** with SGLang, please help us complete this documentation.
 
 To contribute, fork the repo, edit this page, and open a PR.
 :::
 
 ## 1. Model Introduction
 
-This page will cover practical deployment configs and usage patterns for **Qwen3-Coder-480B-A35B** with SGLang.
+This page will cover practical deployment configs and usage patterns for **Mistral 3** with SGLang.
 
 ## 2. SGLang Installation
 
@@ -31,10 +31,10 @@ Coming soon: OpenAI-compatible API examples and tool-calling notes.
 ```shell
 git clone https://github.com/YOUR_USERNAME/sgl-cookbook.git
 cd sgl-cookbook
-git checkout -b add-qwen3-coder-480b-guide
+git checkout -b add-mistral-3-guide
 # Edit this file and submit a PR
 ```
 
 ## Reference
 
-- [Qwen3](./Qwen3)
+- [Devstral 2](/docs/Mistral/Devstral-2.md)
