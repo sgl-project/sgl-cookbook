@@ -39,6 +39,7 @@ uv venv
 source .venv/bin/activate
 uv pip install -e "python[all]" --index-url=https://pypi.org/simple
 pip install nvidia-cudnn-cu12==9.16.0.29
+pip install transformers==5.0.0rc1
 # Install ffmpeg to support video input
 sudo apt update
 sudo apt install ffmpeg
