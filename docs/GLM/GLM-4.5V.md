@@ -1027,53 +1027,53 @@ Document model accuracy on standard benchmarks:
 - Benchmark Command
 
 ```bash
-python3 benchmark/mmmu/bench_sglang.py --port 30000 --concurrency 64 --extra-request-body '{"max_tokens": 4096}'
+python3 benchmark/mmmu/bench_sglang.py --response-answer-regex "<\|begin_of_box\|>(.*)<\|end_of_box\|>" --port 30000 --concurrency 64
 ```
 
 - Test Result
 
 ```
-Benchmark time: 971.1949279410765
+Benchmark time: 616.6163094160147
 answers saved to: ./answer_sglang.json
 Evaluating...
 answers saved to: ./answer_sglang.json
 {'Accounting': {'acc': 0.867, 'num': 30},
  'Agriculture': {'acc': 0.567, 'num': 30},
- 'Architecture_and_Engineering': {'acc': 0.567, 'num': 30},
- 'Art': {'acc': 0.7, 'num': 30},
+ 'Architecture_and_Engineering': {'acc': 0.667, 'num': 30},
+ 'Art': {'acc': 0.667, 'num': 30},
  'Art_Theory': {'acc': 0.9, 'num': 30},
- 'Basic_Medical_Science': {'acc': 0.767, 'num': 30},
- 'Biology': {'acc': 0.567, 'num': 30},
- 'Chemistry': {'acc': 0.567, 'num': 30},
+ 'Basic_Medical_Science': {'acc': 0.8, 'num': 30},
+ 'Biology': {'acc': 0.6, 'num': 30},
+ 'Chemistry': {'acc': 0.533, 'num': 30},
  'Clinical_Medicine': {'acc': 0.667, 'num': 30},
  'Computer_Science': {'acc': 0.8, 'num': 30},
- 'Design': {'acc': 0.833, 'num': 30},
+ 'Design': {'acc': 0.867, 'num': 30},
  'Diagnostics_and_Laboratory_Medicine': {'acc': 0.667, 'num': 30},
- 'Economics': {'acc': 0.9, 'num': 30},
- 'Electronics': {'acc': 0.467, 'num': 30},
- 'Energy_and_Power': {'acc': 0.633, 'num': 30},
- 'Finance': {'acc': 0.8, 'num': 30},
- 'Geography': {'acc': 0.7, 'num': 30},
- 'History': {'acc': 0.733, 'num': 30},
+ 'Economics': {'acc': 0.833, 'num': 30},
+ 'Electronics': {'acc': 0.433, 'num': 30},
+ 'Energy_and_Power': {'acc': 0.733, 'num': 30},
+ 'Finance': {'acc': 0.767, 'num': 30},
+ 'Geography': {'acc': 0.667, 'num': 30},
+ 'History': {'acc': 0.8, 'num': 30},
  'Literature': {'acc': 0.9, 'num': 30},
  'Manage': {'acc': 0.733, 'num': 30},
  'Marketing': {'acc': 0.9, 'num': 30},
- 'Materials': {'acc': 0.667, 'num': 30},
- 'Math': {'acc': 0.759, 'num': 29},
- 'Mechanical_Engineering': {'acc': 0.567, 'num': 30},
- 'Music': {'acc': 0.267, 'num': 30},
- 'Overall': {'acc': 0.721, 'num': 899},
- 'Overall-Art and Design': {'acc': 0.675, 'num': 120},
- 'Overall-Business': {'acc': 0.84, 'num': 150},
- 'Overall-Health and Medicine': {'acc': 0.773, 'num': 150},
- 'Overall-Humanities and Social Science': {'acc': 0.767, 'num': 120},
- 'Overall-Science': {'acc': 0.705, 'num': 149},
- 'Overall-Tech and Engineering': {'acc': 0.61, 'num': 210},
+ 'Materials': {'acc': 0.567, 'num': 30},
+ 'Math': {'acc': 0.8, 'num': 30},
+ 'Mechanical_Engineering': {'acc': 0.767, 'num': 30},
+ 'Music': {'acc': 0.3, 'num': 30},
+ 'Overall': {'acc': 0.732, 'num': 900},
+ 'Overall-Art and Design': {'acc': 0.683, 'num': 120},
+ 'Overall-Business': {'acc': 0.82, 'num': 150},
+ 'Overall-Health and Medicine': {'acc': 0.787, 'num': 150},
+ 'Overall-Humanities and Social Science': {'acc': 0.783, 'num': 120},
+ 'Overall-Science': {'acc': 0.707, 'num': 150},
+ 'Overall-Tech and Engineering': {'acc': 0.648, 'num': 210},
  'Pharmacy': {'acc': 0.9, 'num': 30},
  'Physics': {'acc': 0.933, 'num': 30},
  'Psychology': {'acc': 0.767, 'num': 30},
- 'Public_Health': {'acc': 0.867, 'num': 30},
+ 'Public_Health': {'acc': 0.9, 'num': 30},
  'Sociology': {'acc': 0.667, 'num': 30}}
 eval out saved to ./val_sglang.json
-Overall accuracy: 0.721
+Overall accuracy: 0.732
 ```
