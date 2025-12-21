@@ -35,6 +35,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Check generated model configs are up-to-date
+        timeout-minutes: 2
+        working-directory: .
+        run: python3 data/scripts/compile_models.py --check
+
       - name: Validate YAML against TypeScript types
         timeout-minutes: 2
         run: npm test

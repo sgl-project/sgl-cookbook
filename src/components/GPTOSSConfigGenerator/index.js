@@ -64,7 +64,7 @@ const GPTOSSConfigGenerator = () => {
           if (value !== 'enabled') return null;
 
           let cmd = '--speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4';
-                
+
           if (allValues.modelsize === '120b') {
               cmd += ' \\\n  --speculative-draft-model-path nvidia/gpt-oss-120b-Eagle3';
           } else if (allValues.modelsize === '20b') {
@@ -112,11 +112,11 @@ const GPTOSSConfigGenerator = () => {
       const modelName = `${orgPrefix}/gpt-oss-${config.baseName}${quantSuffix}`;
 
       let cmd = '';
-        
+
       if (values.speculative === 'enabled') {
         cmd += 'SGLANG_ENABLE_SPEC_V2=1 SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 ';
       }
-      
+
       cmd += 'python -m sglang.launch_server \\\n';
 
       cmd += `  --model ${modelName}`;

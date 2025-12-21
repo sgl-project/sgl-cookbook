@@ -1,0 +1,265 @@
+company: zai-org
+families:
+- name: GLM-4.6V
+  description: GLM-4.6V vision-language model family
+  models:
+  - name: GLM-4.6V-GLM-4.6V
+    model_path: zai-org/GLM-4.6V-GLM-4.6V
+    attributes:
+      thinking_capability: hybrid
+      tool_parser: glm45
+      reasoning_parser: glm45
+      chat_template: null
+    hardware:
+      H100:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: bf16
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      H200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: bf16
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      B200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: bf16
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+  - name: GLM-4.6V-GLM-4.6V-FP8
+    model_path: zai-org/GLM-4.6V-GLM-4.6V-FP8
+    attributes:
+      thinking_capability: hybrid
+      tool_parser: glm45
+      reasoning_parser: glm45
+      chat_template: null
+    hardware:
+      H100:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      H200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      B200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+  - name: GLM-4.6V-GLM-4.6V-Flash
+    model_path: zai-org/GLM-4.6V-GLM-4.6V-Flash
+    attributes:
+      thinking_capability: hybrid
+      tool_parser: glm45
+      reasoning_parser: glm45
+      chat_template: null
+    hardware:
+      H100:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: bf16
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 1
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      H200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: bf16
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 1
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      B200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: bf16
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 1
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+  - name: GLM-4.6V-GLM-4.6V-Flash-FP8
+    model_path: zai-org/GLM-4.6V-GLM-4.6V-Flash-FP8
+    attributes:
+      thinking_capability: hybrid
+      tool_parser: glm45
+      reasoning_parser: glm45
+      chat_template: null
+    hardware:
+      H100:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 1
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      H200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 1
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+      B200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 1
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null

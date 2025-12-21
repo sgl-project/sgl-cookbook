@@ -3,7 +3,7 @@ import styles from './styles.module.css';
 
 /**
  * Generic Configuration Generator Component
- * 
+ *
  * @param {Object} config - Configuration object with the following structure:
  *   - modelFamily: string (optional)
  *   - options: object with option groups
@@ -147,4 +147,3 @@ const ConfigGenerator = ({ config }) => {
 };
 
 export default ConfigGenerator;
-

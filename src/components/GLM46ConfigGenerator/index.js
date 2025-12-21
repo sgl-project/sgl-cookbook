@@ -113,4 +113,3 @@ const GLM46ConfigGenerator = () => {
 };
 
 export default GLM46ConfigGenerator;
-

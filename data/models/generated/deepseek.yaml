@@ -1,0 +1,233 @@
+company: deepseek-ai
+families:
+- name: DeepSeek-V3.2
+  description: DeepSeek V3.2 family including base, Speciale, and Exp variants
+  models:
+  - name: DeepSeek-V3.2
+    model_path: deepseek-ai/DeepSeek-V3.2
+    attributes:
+      thinking_capability: hybrid
+      tool_parser: deepseekv32
+      reasoning_parser: deepseek-v3
+      chat_template: null
+    hardware:
+      H200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+            - name: high-throughput-dp
+              attributes:
+                nodes: single
+                optimization: high-throughput
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: 8
+                ep: null
+                enable_dp_attention: true
+                extra_args: []
+              prefill: null
+              decode: null
+      B200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+            - name: high-throughput-dp
+              attributes:
+                nodes: single
+                optimization: high-throughput
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: 8
+                ep: null
+                enable_dp_attention: true
+                extra_args: []
+              prefill: null
+              decode: null
+  - name: DeepSeek-V3.2-Exp
+    model_path: deepseek-ai/DeepSeek-V3.2-Exp
+    attributes:
+      thinking_capability: hybrid
+      tool_parser: deepseekv31
+      reasoning_parser: deepseek-v3
+      chat_template: ./examples/chat_template/tool_chat_template_deepseekv32.jinja
+    hardware:
+      H200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+            - name: high-throughput-dp
+              attributes:
+                nodes: single
+                optimization: high-throughput
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: 8
+                ep: null
+                enable_dp_attention: true
+                extra_args: []
+              prefill: null
+              decode: null
+      B200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+            - name: high-throughput-dp
+              attributes:
+                nodes: single
+                optimization: high-throughput
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: 8
+                ep: null
+                enable_dp_attention: true
+                extra_args: []
+              prefill: null
+              decode: null
+  - name: DeepSeek-V3.2-Speciale
+    model_path: deepseek-ai/DeepSeek-V3.2-Speciale
+    attributes:
+      thinking_capability: hybrid
+      tool_parser: null
+      reasoning_parser: deepseek-v3
+      chat_template: null
+    hardware:
+      H200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+            - name: high-throughput-dp
+              attributes:
+                nodes: single
+                optimization: high-throughput
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: 8
+                ep: null
+                enable_dp_attention: true
+                extra_args: []
+              prefill: null
+              decode: null
+      B200:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+            - name: high-throughput-dp
+              attributes:
+                nodes: single
+                optimization: high-throughput
+                quantization: fp8
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: 8
+                ep: null
+                enable_dp_attention: true
+                extra_args: []
+              prefill: null
+              decode: null

@@ -28,7 +28,7 @@ const config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'sgl-project', // Usually your GitHub org/user name.
   projectName: 'sgl-cookbook', // Usually your repo name.
-  
+
   onBrokenLinks: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
@@ -159,7 +159,7 @@ const config = {
       },
       algolia: {
         appId: '5PDGY21FSS',
-        apiKey: '58c29a0ac6c2759e581d630b54e57564', 
+        apiKey: '58c29a0ac6c2759e581d630b54e57564',
         indexName: 'sgl-cookbook',
       },
     }),

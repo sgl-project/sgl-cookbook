@@ -24,7 +24,7 @@ const MyModelConfigGenerator = () => {
   const config = {
     // Optional: Model family identifier
     modelFamily: 'my-model-family',
-    
+
     // Define your configuration options
     options: {
       hardware: {
@@ -37,20 +37,20 @@ const MyModelConfigGenerator = () => {
       },
       // ... more options
     },
-    
+
     // Command generation function
     generateCommand: function(values) {
       const { hardware } = values;
       let cmd = 'python3 -m sglang.launch_server';
-      
+
       if (hardware === 'h100') {
         cmd += ' --gpu-type h100';
       }
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
@@ -174,25 +174,25 @@ The `generateCommand` function receives a `values` object containing all user se
 ```javascript
 generateCommand: function(values) {
   const { hardware, quantization, strategy } = values;
-  
+
   // For radio buttons: string value
   if (hardware === 'h100') {
     // ...
   }
-  
+
   // For checkboxes: array of strings
   const strategyArray = Array.isArray(strategy) ? strategy : [];
   if (strategyArray.includes('tp')) {
     // ...
   }
-  
+
   // For text inputs: string value
   const modelPath = values.modelName || '';
-  
+
   // Build and return command string
   let cmd = 'python3 -m sglang.launch_server';
   cmd += ` --model ${modelPath}`;
-  
+
   return cmd;
 }
 ```
@@ -253,7 +253,7 @@ const config = {
     if (values.hardware === 'cpu' && values.precision === 'fp16') {
       return '# Error: FP16 is not supported on CPU\n# Please select FP32 or use GPU';
     }
-    
+
     let cmd = 'python3 -m sglang.launch_server';
     cmd += ` --device ${values.hardware}`;
     cmd += ` --precision ${values.precision}`;
@@ -296,10 +296,10 @@ const config = {
   generateCommand: function(values) {
     const { model, features, batchSize } = values;
     const featureArray = Array.isArray(features) ? features : [];
-    
+
     let cmd = `python3 -m sglang.launch_server --model ${model}`;
     cmd += ` --batch-size ${batchSize}`;
-    
+
     if (featureArray.includes('cache')) {
       cmd += ' --enable-cache';
     }
@@ -309,7 +309,7 @@ const config = {
     if (featureArray.includes('profiling')) {
       cmd += ' --enable-profiling';
     }
-    
+
     return cmd;
   }
 };
@@ -345,4 +345,3 @@ See `/src/components/DeepSeekR1ConfigGenerator/index.js` for a complete, product
 ## Support
 
 For issues or questions, please open an issue in the repository.
-

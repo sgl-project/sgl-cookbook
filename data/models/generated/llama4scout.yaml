@@ -1,17 +1,17 @@
-company: deepseek-ai
+company: meta-llama
 families:
-- name: DeepSeek-V3.2
-  description: DeepSeek V3.2 family including base, Speciale, and Exp variants
+- name: Llama-4-Scout
+  description: Llama 4-Scout multimodal instruction model
   models:
-  - name: DeepSeek-V3.2
-    model_path: deepseek-ai/DeepSeek-V3.2
+  - name: Llama-4-Scout-17B-16E-Instruct
+    model_path: meta-llama/Llama-4-Scout-17B-16E-Instruct
     attributes:
-      thinking_capability: hybrid
-      tool_parser: deepseekv32
-      reasoning_parser: deepseek-v3
+      thinking_capability: non_thinking
+      tool_parser: pythonic
+      reasoning_parser: null
       chat_template: null
     hardware:
-      H200:
+      H100:
         versions:
           v0.5.6:
             configurations:
@@ -19,41 +19,7 @@ families:
               attributes:
                 nodes: single
                 optimization: balanced
-                quantization: fp8
-              quantized_model_path: null
-              engine:
-                env_vars: null
-                tp: 8
-                dp: null
-                ep: null
-                enable_dp_attention: null
-                extra_args: []
-              prefill: null
-              decode: null
-            - name: high-throughput-dp
-              attributes:
-                nodes: single
-                optimization: high-throughput
-                quantization: fp8
-              quantized_model_path: null
-              engine:
-                env_vars: {}
-                tp: 8
-                dp: 8
-                ep: null
-                enable_dp_attention: true
-                extra_args: []
-              prefill: null
-              decode: null
-      B200:
-        versions:
-          v0.5.6:
-            configurations:
-            - name: default
-              attributes:
-                nodes: single
-                optimization: balanced
-                quantization: fp8
+                quantization: bf16
               quantized_model_path: null
               engine:
                 env_vars: {}
@@ -64,14 +30,6 @@ families:
                 extra_args: []
               prefill: null
               decode: null
-  - name: DeepSeek-V3.2-Exp
-    model_path: deepseek-ai/DeepSeek-V3.2-Exp
-    attributes:
-      thinking_capability: hybrid
-      tool_parser: deepseekv31
-      reasoning_parser: deepseek-v3
-      chat_template: ./examples/chat_template/tool_chat_template_deepseekv32.jinja
-    hardware:
       H200:
         versions:
           v0.5.6:
@@ -80,7 +38,7 @@ families:
               attributes:
                 nodes: single
                 optimization: balanced
-                quantization: fp8
+                quantization: bf16
               quantized_model_path: null
               engine:
                 env_vars: {}
@@ -99,6 +57,33 @@ families:
               attributes:
                 nodes: single
                 optimization: balanced
+                quantization: bf16
+              quantized_model_path: null
+              engine:
+                env_vars: {}
+                tp: 8
+                dp: null
+                ep: null
+                enable_dp_attention: null
+                extra_args: []
+              prefill: null
+              decode: null
+  - name: Llama-4-Scout-17B-16E-Instruct-FP8
+    model_path: meta-llama/Llama-4-Scout-17B-16E-Instruct
+    attributes:
+      thinking_capability: non_thinking
+      tool_parser: pythonic
+      reasoning_parser: null
+      chat_template: null
+    hardware:
+      H100:
+        versions:
+          v0.5.6:
+            configurations:
+            - name: default
+              attributes:
+                nodes: single
+                optimization: balanced
                 quantization: fp8
               quantized_model_path: null
               engine:
@@ -110,14 +95,6 @@ families:
                 extra_args: []
               prefill: null
               decode: null
-  - name: DeepSeek-V3.2-Speciale
-    model_path: deepseek-ai/DeepSeek-V3.2-Speciale
-    attributes:
-      thinking_capability: hybrid
-      tool_parser: null
-      reasoning_parser: deepseek-v3
-      chat_template: null
-    hardware:
       H200:
         versions:
           v0.5.6:

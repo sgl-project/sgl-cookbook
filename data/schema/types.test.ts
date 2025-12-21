@@ -23,8 +23,8 @@ import {
   EngineConfig,
 } from "./types";
 
-// Path to model YAML files
-const MODELS_DIR = path.join(__dirname, "..", "models");
+// Path to model YAML files (generated from src/)
+const MODELS_DIR = path.join(__dirname, "..", "models", "generated");
 
 /**
  * Load and parse a YAML file as CompanyConfig
@@ -70,7 +70,8 @@ function isValidConfigAttributes(attrs: unknown): attrs is ConfigAttributes {
     a.quantization !== "fp8" &&
     a.quantization !== "int4" &&
     a.quantization !== "bf16" &&
-    a.quantization !== "fp4"
+    a.quantization !== "fp4" &&
+    a.quantization !== "mxfp4"
   )
     return false;
 

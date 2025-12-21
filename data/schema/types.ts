@@ -112,7 +112,7 @@ export interface ConfigAttributes {
   /** Optimization target */
   optimization: "balanced" | "low-latency" | "high-throughput";
   /** Quantization format (required) */
-  quantization: "fp8" | "int4" | "bf16" | "fp4";
+  quantization: "fp8" | "int4" | "bf16" | "fp4" | "mxfp4";
 }
 
 /**

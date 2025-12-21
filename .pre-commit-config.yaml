@@ -8,12 +8,19 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
 
-  # Custom hook for validating model YAML files (TypeScript)
+  # Custom hook for compiling model configs
   - repo: local
     hooks:
+      - id: compile-model-configs
+        name: Compile Model Configuration YAML
+        entry: python3 data/scripts/compile_models.py
+        language: system
+        files: ^data/models/src/.*\.(yaml|yml)$
+        pass_filenames: false
+
       - id: validate-model-configs-ts
         name: Validate Model Configuration YAML (TypeScript)
         entry: bash -c 'cd data/schema && npm test'
         language: system
-        files: ^(data/models/.*\.(yaml|yml)|data/schema/types\.ts)$
+        files: ^(data/models/generated/.*\.(yaml|yml)|data/schema/types\.ts)$
         pass_filenames: false
