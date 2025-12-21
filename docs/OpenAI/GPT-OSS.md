@@ -51,9 +51,7 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 Reasoning Parser
 
-GPT-OSS supports thinking mode and non-thinking mode. Enable the reasoning parser during deployment to separate the thinking and the content sections.
-
-1. **Streaming with Thinking Process:**
+GPT-OSS supports reasoning mode. Enable the reasoning parser during deployment to separate the thinking and content sections:
 
 ```shell
 python -m sglang.launch_server \
@@ -156,111 +154,7 @@ The user asks: "Solve this problem step by step: What is 15% of 240?" So we need
 ---
 
 **Answer:** \(36\)
-```
-
-**Note:** The reasoning parser captures the model's step-by-step thinking process, allowing you to see how the model arrives at its conclusions.
-
-2. **Turn off Thinking:**
-
-```shell
-python -m sglang.launch_server \
-  --model openai/gpt-oss-120b \
-  --tp 8
-```
-
-```python
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="EMPTY"
-)
-
-# Turn off thinking process
-response = client.chat.completions.create(
-    model="openai/gpt-oss-120b",
-    messages=[
-        {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
-    ],
-    temperature=0.7,
-    max_tokens=2048,
-    stream=True,
-    extra_body={"chat_template_kwargs": {"enable_thinking": False}}
-)
-
-# Process the stream
-has_thinking = False
-has_answer = False
-thinking_started = False
-
-for chunk in response:
-    if chunk.choices and len(chunk.choices) > 0:
-        delta = chunk.choices[0].delta
-
-        # Print thinking process
-        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-            if not thinking_started:
-                print("=============== Thinking =================", flush=True)
-                thinking_started = True
-            has_thinking = True
-            print(delta.reasoning_content, end="", flush=True)
-
-        # Print answer content
-        if delta.content:
-            # Close thinking section and add content header
-            if has_thinking and not has_answer:
-                print("\n=============== Content =================", flush=True)
-                has_answer = True
-            print(delta.content, end="", flush=True)
-
-print()
-```
-
-**Output Example:**
-
-```
-<|channel|>analysis<|message|>The user asks: "Solve this problem step by step: What is 15% of 240?" They want step-by-step solution. Simple: 15% = 15/100 = 0.15. Multiply by 240: 240 * 0.15 = 36. Or compute 10% = 24, 5% = 12, sum = 36. Provide steps.<|end|><|start|>assistant<|channel|>final<|message|>**Step 1: Write the percentage as a fraction (or decimal).**
-
-\(15\%\) means “15 out of 100”, so
-
-\[
-15\% = \frac{15}{100}=0.15.
-\]
-
-**Step 2: Multiply this fraction (or decimal) by the number you’re finding the percent of.**
-
-We need \(15\%\) of \(240\):
-
-\[
-0.15 \times 240.
-\]
-
-**Step 3: Carry out the multiplication.**
-
-You can do it directly:
-
-\[
-240 \times 0.15 = 240 \times \frac{15}{100}
-               = \frac{240 \times 15}{100}
-               = \frac{3600}{100}
-               = 36.
-\]
-
-Or use the “10 % + 5 %” shortcut:
-
-- 10 % of 240 = \(0.10 \times 240 = 24\).
-- 5 % of 240 = half of 10 % = \(24 \div 2 = 12\).
-
-Add them: \(24 + 12 = 36\).
-
-**Answer:**
-
-\[
-\boxed{36}
-\]
-
-So 15 % of 240 is 36.
-```
+``` 
 
 #### 4.2.2 Tool Calling
 

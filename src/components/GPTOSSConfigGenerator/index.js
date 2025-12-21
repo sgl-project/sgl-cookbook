@@ -35,14 +35,14 @@ const GPTOSSConfigGenerator = () => {
           { id: 'bf16', label: 'BF16', default: false }
         ]
       },
-      thinking: {
-        name: 'thinking',
-        title: 'Thinking Capabilities',
+      reasoningParser: {
+        name: 'reasoningParser',
+        title: 'Reasoning Parser',
         items: [
-          { id: 'instruct', label: 'Instruct', subtitle: 'General Purpose', default: true },
-          { id: 'thinking', label: 'Thinking', subtitle: 'Reasoning / CoT', default: false }
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
         ],
-        commandRule: (value) => value === 'thinking' ? '--reasoning-parser gpt-oss' : null
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser gpt-oss' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -94,8 +94,8 @@ const GPTOSSConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, modelsize: modelSize, quantization, thinking } = values;
-      const commandKey = `${hardware}-${modelSize}-${quantization}-${thinking}`;
+      const { hardware, modelsize: modelSize, quantization, reasoningParser } = values;
+      const commandKey = `${hardware}-${modelSize}-${quantization}-${reasoningParser}`;
 
       const config = this.modelConfigs[modelSize];
       if (!config) {
