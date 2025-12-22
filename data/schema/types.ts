@@ -4,19 +4,19 @@
  * This file defines the TypeScript interfaces for the model configuration hierarchy.
  * It serves as the source of truth for the data structure.
  *
- * Hierarchy: Company -> Family -> Model -> Hardware -> Named Configuration
+ * Hierarchy: Vendor -> Family -> Model -> Hardware -> Named Configuration
  * Note: Version is now a top-level folder (e.g., data/models/generated/v0.5.6/)
  */
 
-// ============ Level 1: Root (Company File) ============
+// ============ Level 1: Root (Vendor File) ============
 /**
- * Root configuration for a model company/organization.
- * Each company has its own YAML file (e.g., deepseek.yaml, qwen.yaml)
+ * Root configuration for a model vendor/organization.
+ * Each vendor has its own YAML file (e.g., deepseek.yaml, qwen.yaml)
  */
-export interface CompanyConfig {
-  /** Company/organization identifier (e.g., "deepseek-ai", "Qwen", "meta-llama") */
-  company: string;
-  /** List of model families from this company */
+export interface VendorConfig {
+  /** Vendor identifier (e.g., "deepseek-ai", "qwen", "meta-llama") */
+  vendor: string;
+  /** List of model families from this vendor */
   families: ModelFamily[];
 }
 

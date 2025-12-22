@@ -1,7 +1,7 @@
 # Llama 4-Scout Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/llama4scout.yaml
 
-company: meta-llama
+vendor: meta-llama
 
 defaults:
   hardware:

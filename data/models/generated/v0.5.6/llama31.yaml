@@ -1,4 +1,4 @@
-company: meta-llama
+vendor: meta-llama
 families:
 - name: Llama-3.1
   description: Llama 3.1 70B Instruct model

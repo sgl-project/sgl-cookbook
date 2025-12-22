@@ -416,9 +416,21 @@ def build_family(company: str, family: dict, defaults: dict) -> dict:
 # =============================================================================
 
 
-def compile_config(source: dict) -> dict:
+def compile_config(source: dict, vendors: dict) -> dict:
     """Compile a simplified config into full schema format."""
-    company = source["company"]
+    # Support both 'vendor' (new) and 'company' (legacy) keys
+    vendor_id = source.get("vendor") or source.get("company")
+    if not vendor_id:
+        raise ValueError("Model config must specify 'vendor' or 'company'")
+
+    # Look up vendor to get huggingface_org (used for model paths)
+    if vendor_id in vendors:
+        company = vendors[vendor_id]["huggingface_org"]
+    else:
+        # Fallback: use vendor_id directly as company (for backwards compatibility)
+        print(f"  Warning: Vendor '{vendor_id}' not found in vendors.yaml, using as literal")
+        company = vendor_id
+
     defaults = source.get("defaults", {})
 
     families = []
@@ -426,7 +438,7 @@ def compile_config(source: dict) -> dict:
         families.append(build_family(company, family, defaults))
 
     return {
-        "company": company,
+        "vendor": vendor_id,
         "families": families,
     }
 
@@ -458,7 +470,28 @@ def save_yaml(data: dict, path: Path) -> None:
         )
 
 
-def compile_file(input_path: Path, output_path: Path, check_only: bool = False) -> bool:
+def load_vendors(models_dir: Path) -> dict:
+    """Load vendors from vendors.yaml file."""
+    vendors_path = models_dir / "vendors.yaml"
+    if not vendors_path.exists():
+        return {}
+
+    data = load_yaml(vendors_path)
+    vendors = data.get("vendors", {})
+
+    # Validate required fields
+    for vendor_id, vendor_info in vendors.items():
+        if "huggingface_org" not in vendor_info:
+            raise ValueError(
+                f"Vendor '{vendor_id}' missing required 'huggingface_org' field"
+            )
+
+    return vendors
+
+
+def compile_file(
+    input_path: Path, output_path: Path, vendors: dict, check_only: bool = False
+) -> bool:
     """
     Compile a single file.
 
@@ -467,7 +500,7 @@ def compile_file(input_path: Path, output_path: Path, check_only: bool = False) 
     print(f"Compiling {input_path.name}...")
 
     source = load_yaml(input_path)
-    compiled = compile_config(source)
+    compiled = compile_config(source, vendors)
 
     if check_only:
         if output_path.exists():
@@ -516,6 +549,10 @@ def main() -> int:
 
     args = parser.parse_args()
 
+    # Load vendors from models directory (parent of input-dir)
+    models_dir = args.input_dir.parent
+    vendors = load_vendors(models_dir)
+
     # Find input files
     if args.files:
         input_files = [Path(f) for f in args.files]
@@ -534,7 +571,7 @@ def main() -> int:
         # Preserve version subdirectory structure in output
         relative_path = input_path.relative_to(args.input_dir)
         output_path = args.output_dir / relative_path
-        if not compile_file(input_path, output_path, args.check):
+        if not compile_file(input_path, output_path, vendors, args.check):
             all_ok = False
 
     if args.check and not all_ok:

@@ -1,7 +1,7 @@
 # GLM-4.6V Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/glm46v.yaml
 
-company: zai-org
+vendor: zai-org
 
 defaults:
   hardware:

@@ -1,7 +1,7 @@
 # DeepSeek Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/deepseek.yaml
 
-company: deepseek-ai
+vendor: deepseek-ai
 
 defaults:
   hardware:

@@ -1,4 +1,4 @@
-company: openai
+vendor: openai
 families:
 - name: GPT-OSS
   description: GPT-OSS open-source models (120B and 20B MOE)

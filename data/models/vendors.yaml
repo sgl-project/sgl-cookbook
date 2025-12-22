@@ -1,0 +1,36 @@
+# Vendor Definitions
+# This file defines all model vendors/companies to avoid duplication across model files.
+# Model files should reference vendors by their ID using: vendor: <id>
+
+vendors:
+  deepseek-ai:
+    name: DeepSeek AI
+    huggingface_org: deepseek-ai
+
+  meta-llama:
+    name: Meta AI
+    huggingface_org: meta-llama
+
+  nvidia:
+    name: NVIDIA
+    huggingface_org: nvidia
+
+  openai:
+    name: OpenAI
+    huggingface_org: openai
+
+  qwen:
+    name: Qwen (Alibaba)
+    huggingface_org: Qwen
+
+  zai-org:
+    name: Zhipu AI
+    huggingface_org: zai-org
+
+  moonshotai:
+    name: Moonshot AI
+    huggingface_org: moonshotai
+
+  internlm:
+    name: InternLM (Shanghai AI Lab)
+    huggingface_org: internlm

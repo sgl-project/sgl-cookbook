@@ -1,4 +1,4 @@
-company: deepseek-ai
+vendor: deepseek-ai
 families:
 - name: DeepSeek-V3.2
   description: DeepSeek V3.2 family including base, Speciale, and Exp variants

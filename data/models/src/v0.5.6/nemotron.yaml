@@ -1,7 +1,7 @@
 # NVIDIA Nemotron Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/nemotron.yaml
 
-company: nvidia
+vendor: nvidia
 
 defaults:
   hardware:

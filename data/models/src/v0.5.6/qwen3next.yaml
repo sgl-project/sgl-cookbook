@@ -1,7 +1,7 @@
 # Qwen3-Next Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/qwen3next.yaml
 
-company: Qwen
+vendor: qwen
 
 defaults:
   hardware:

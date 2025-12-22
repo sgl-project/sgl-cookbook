@@ -1,4 +1,4 @@
-company: zai-org
+vendor: zai-org
 families:
 - name: GLM-4.6
   description: GLM-4.6 large language model with hybrid thinking

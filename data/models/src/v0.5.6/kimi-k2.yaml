@@ -1,7 +1,7 @@
 # Kimi-K2 Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/kimi-k2.yaml
 
-company: moonshotai
+vendor: moonshotai
 
 defaults:
   hardware:

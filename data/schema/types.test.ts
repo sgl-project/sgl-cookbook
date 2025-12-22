@@ -12,7 +12,7 @@ import * as path from "path";
 import * as yaml from "js-yaml";
 
 import {
-  CompanyConfig,
+  VendorConfig,
   ModelFamily,
   Model,
   ModelAttributes,
@@ -29,11 +29,11 @@ const VERSION = process.env.SGLANG_VERSION || "v0.5.6";
 const MODELS_DIR = path.join(__dirname, "..", "models", "generated", VERSION);
 
 /**
- * Load and parse a YAML file as CompanyConfig
+ * Load and parse a YAML file as VendorConfig
  */
-function loadYamlAsCompanyConfig(filePath: string): CompanyConfig {
+function loadYamlAsVendorConfig(filePath: string): VendorConfig {
   const content = fs.readFileSync(filePath, "utf-8");
-  return yaml.load(content) as CompanyConfig;
+  return yaml.load(content) as VendorConfig;
 }
 
 /**
@@ -104,14 +104,14 @@ function isValidEngineConfig(engine: unknown): engine is EngineConfig {
 }
 
 /**
- * Validate a CompanyConfig structure
+ * Validate a VendorConfig structure
  */
-function validateCompanyConfig(config: CompanyConfig, fileName: string): string[] {
+function validateVendorConfig(config: VendorConfig, fileName: string): string[] {
   const errors: string[] = [];
 
-  // Check company
-  if (typeof config.company !== "string" || !config.company) {
-    errors.push(`${fileName}: 'company' must be a non-empty string`);
+  // Check vendor
+  if (typeof config.vendor !== "string" || !config.vendor) {
+    errors.push(`${fileName}: 'vendor' must be a non-empty string`);
   }
 
   // Check families
@@ -232,8 +232,8 @@ function runTests(): void {
     console.log(`Validating ${fileName}...`);
 
     try {
-      const config = loadYamlAsCompanyConfig(filePath);
-      const errors = validateCompanyConfig(config, fileName);
+      const config = loadYamlAsVendorConfig(filePath);
+      const errors = validateVendorConfig(config, fileName);
 
       if (errors.length > 0) {
         console.log(`  FAILED with ${errors.length} error(s):`);

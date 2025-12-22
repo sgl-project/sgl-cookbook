@@ -1,7 +1,7 @@
 # GPT-OSS Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/gpt-oss.yaml
 
-company: openai
+vendor: openai
 
 defaults:
   hardware:

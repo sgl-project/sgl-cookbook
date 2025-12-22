@@ -3,7 +3,7 @@
 #
 # Based on src/components/Qwen3ConfigGenerator/index.js
 
-company: Qwen
+vendor: qwen
 
 defaults:
   hardware:

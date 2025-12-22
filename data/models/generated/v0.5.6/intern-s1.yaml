@@ -1,4 +1,4 @@
-company: internlm
+vendor: internlm
 families:
 - name: Intern
   description: Intern-S1 (235B MOE) and Intern-S1-mini (8B Dense) models

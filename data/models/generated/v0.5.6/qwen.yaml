@@ -1,4 +1,4 @@
-company: Qwen
+vendor: qwen
 families:
 - name: Qwen3
   description: Qwen3 family - advanced language model with strong reasoning capabilities

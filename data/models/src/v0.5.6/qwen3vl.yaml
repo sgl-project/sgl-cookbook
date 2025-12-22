@@ -1,7 +1,7 @@
 # Qwen3-VL Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/qwen3vl.yaml
 
-company: Qwen
+vendor: qwen
 
 defaults:
   hardware:

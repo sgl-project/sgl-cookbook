@@ -1,4 +1,4 @@
-company: meta-llama
+vendor: meta-llama
 families:
 - name: Llama-4-Scout
   description: Llama 4-Scout multimodal instruction model

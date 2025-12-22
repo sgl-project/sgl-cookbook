@@ -1,4 +1,4 @@
-company: zai-org
+vendor: zai-org
 families:
 - name: GLM-4.6V
   description: GLM-4.6V vision-language model family

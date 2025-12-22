@@ -1,7 +1,7 @@
 # Intern-S1 Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/intern-s1.yaml
 
-company: internlm
+vendor: internlm
 
 defaults:
   hardware:

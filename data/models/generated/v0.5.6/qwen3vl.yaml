@@ -1,4 +1,4 @@
-company: Qwen
+vendor: qwen
 families:
 - name: Qwen3-VL
   description: Qwen3-VL vision-language model family

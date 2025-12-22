@@ -1,4 +1,4 @@
-company: deepseek-ai
+vendor: deepseek-ai
 families:
 - name: DeepSeek-R1
   description: DeepSeek R1 reasoning model with extended thinking capabilities

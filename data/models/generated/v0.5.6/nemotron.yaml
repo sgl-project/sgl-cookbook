@@ -1,4 +1,4 @@
-company: nvidia
+vendor: nvidia
 families:
 - name: Nemotron-Nano-3
   description: NVIDIA Nemotron-3-Nano-30B-A3B model

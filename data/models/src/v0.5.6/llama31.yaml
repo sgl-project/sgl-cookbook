@@ -1,7 +1,7 @@
 # Llama 3.1 Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/llama31.yaml
 
-company: meta-llama
+vendor: meta-llama
 
 defaults:
   hardware:
