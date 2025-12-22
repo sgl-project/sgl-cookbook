@@ -1,0 +1,245 @@
+company: openai
+families:
+- name: GPT-OSS
+  description: GPT-OSS open-source models (120B and 20B MOE)
+  models:
+  - name: gpt-oss-120b
+    model_path: openai/gpt-oss-120b
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gpt-oss
+        reasoning_parser: gpt-oss
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+  - name: gpt-oss-120b-bf16
+    model_path: lmsys/gpt-oss-120b-bf16
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gpt-oss
+        reasoning_parser: gpt-oss
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+  - name: gpt-oss-20b
+    model_path: openai/gpt-oss-20b
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gpt-oss
+        reasoning_parser: gpt-oss
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+  - name: gpt-oss-20b-bf16
+    model_path: lmsys/gpt-oss-20b-bf16
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gpt-oss
+        reasoning_parser: gpt-oss
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null

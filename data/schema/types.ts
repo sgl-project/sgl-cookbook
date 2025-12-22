@@ -4,7 +4,8 @@
  * This file defines the TypeScript interfaces for the model configuration hierarchy.
  * It serves as the source of truth for the data structure.
  *
- * Hierarchy: Company -> Family -> Model -> Hardware -> Version -> Named Configuration
+ * Hierarchy: Company -> Family -> Model -> Hardware -> Named Configuration
+ * Note: Version is now a top-level folder (e.g., data/models/generated/v0.5.6/)
  */
 
 // ============ Level 1: Root (Company File) ============
@@ -48,9 +49,19 @@ export interface Model {
 }
 
 /**
- * Model-level attributes that apply across all hardware configurations
+ * Model-level attributes that apply across all hardware configurations.
+ * Organized by model type (llm, diffusion, etc.)
  */
 export interface ModelAttributes {
+  /** LLM-specific attributes */
+  llm: LLMAttributes;
+  // Future: diffusion?: DiffusionAttributes;
+}
+
+/**
+ * LLM-specific attributes (thinking capability, parsers, chat templates)
+ */
+export interface LLMAttributes {
   /** Thinking capability mode */
   thinking_capability: "non_thinking" | "thinking" | "hybrid";
   /** Tool call parser name (e.g., "deepseekv32"), null if not supported */
@@ -64,24 +75,15 @@ export interface ModelAttributes {
 // ============ Level 4: Hardware Config ============
 /**
  * Configuration for a specific hardware type (e.g., H100, H200, B200)
- * The key in the parent Record is the hardware name
+ * The key in the parent Record is the hardware name.
+ * Version is now a top-level folder (e.g., data/models/generated/v0.5.6/)
  */
 export interface HardwareConfig {
-  /** Version-specific configurations, keyed by SGLang version */
-  versions: Record<string, VersionConfig>;
-}
-
-// ============ Level 5: Version Config ============
-/**
- * Configuration for a specific SGLang version (e.g., v0.5.5, v0.5.6)
- * The key in the parent Record is the version string
- */
-export interface VersionConfig {
-  /** List of named configurations for this hardware/version combination */
+  /** List of named configurations for this hardware */
   configurations: NamedConfiguration[];
 }
 
-// ============ Level 6: Named Configuration ============
+// ============ Level 5: Named Configuration ============
 /**
  * A specific named configuration (e.g., "default", "low-latency-fp8", "high-throughput-dp")
  *

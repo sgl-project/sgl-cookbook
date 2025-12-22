@@ -104,13 +104,15 @@ def build_named_configuration(
     }
 
 
-def build_version_config(
-    defaults: dict,
+def build_hardware_config(
+    hw_name: str,
     hw_config: dict,
+    defaults: dict,
     quant: str,
     quant_overrides: dict | None = None,
 ) -> dict:
-    """Build version configuration with all named configurations."""
+    """Build hardware configuration with all named configurations."""
+    # Version is now a top-level folder, so we directly return configurations
     configurations = []
     for config_template in defaults.get("configurations", []):
         configurations.append(
@@ -119,25 +121,87 @@ def build_version_config(
     return {"configurations": configurations}
 
 
-def build_hardware_config(
-    hw_name: str,
-    hw_config: dict,
-    defaults: dict,
-    quant: str,
-    quant_overrides: dict | None = None,
-) -> dict:
-    """Build hardware configuration with all versions."""
-    versions = {}
-    for version in defaults.get("versions", ["v0.5.6"]):
-        versions[version] = build_version_config(
-            defaults, hw_config, quant, quant_overrides
-        )
-    return {"versions": versions}
-
-
 # =============================================================================
 # Model Builders
 # =============================================================================
+
+
+def get_llm_attr(obj: dict, key: str, default: Any = None) -> Any:
+    """Get an LLM attribute from either obj.llm.key or obj.key (for backwards compatibility)."""
+    llm = obj.get("llm", {})
+    if key in llm:
+        return llm[key]
+    return obj.get(key, default)
+
+
+def get_merged_hardware_config(
+    family: dict,
+    model_def: dict,
+    defaults: dict,
+) -> tuple[dict, list[str]]:
+    """
+    Merge hardware configs from family and model levels.
+
+    Returns (merged_hw_configs, hardware_list) where:
+    - merged_hw_configs: dict with 'default' and hardware-specific overrides
+    - hardware_list: list of hardware names to generate
+
+    Inheritance order (most specific wins):
+    1. model.hardware.{H100,H200,B200} - specific hardware override
+    2. model.hardware.default - model default
+    3. family.hardware.{H100,H200,B200} - family hardware override
+    4. family.hardware.default - family default
+    """
+    family_hw = family.get("hardware", {})
+    model_hw = model_def.get("hardware", {}) if isinstance(model_def, dict) else {}
+
+    # Get default configs from family and model
+    family_default = family_hw.get("default", {})
+    model_default = model_hw.get("default", {})
+
+    # Merge defaults: family.default -> model.default
+    merged_default = {**family_default, **model_default}
+
+    # Build merged hardware config
+    merged_hw_configs = {"default": merged_default}
+
+    # Collect all hardware-specific overrides from both family and model
+    all_hw_keys = set()
+    for key in family_hw:
+        if key != "default":
+            all_hw_keys.add(key)
+    for key in model_hw:
+        if key != "default":
+            all_hw_keys.add(key)
+
+    # Merge hardware-specific configs
+    for hw_name in all_hw_keys:
+        family_hw_specific = family_hw.get(hw_name, {})
+        model_hw_specific = model_hw.get(hw_name, {})
+        merged_hw_configs[hw_name] = {**family_hw_specific, **model_hw_specific}
+
+    # Determine hardware list:
+    # - If model has explicit hardware keys (not just default), use those
+    # - Else if family has explicit hardware keys (not just default), use those
+    # - Else if "default" exists anywhere, expand to all hardware from defaults.hardware
+    # - Else fall back to defaults.hardware
+    model_explicit_hw = [k for k in model_hw if k != "default"]
+    family_explicit_hw = [k for k in family_hw if k != "default"]
+
+    if model_explicit_hw:
+        # Model explicitly lists hardware (e.g., only H200/B200)
+        hardware_list = model_explicit_hw
+    elif family_explicit_hw and not model_default and not family_default:
+        # Family explicitly lists hardware without defaults
+        hardware_list = family_explicit_hw
+    elif merged_default or family_explicit_hw:
+        # Has default config, expand to all hardware
+        hardware_list = defaults.get("hardware", ["H200", "B200"])
+    else:
+        # Fallback
+        hardware_list = defaults.get("hardware", ["H200", "B200"])
+
+    return merged_hw_configs, hardware_list
 
 
 def build_model_attributes(
@@ -147,12 +211,12 @@ def build_model_attributes(
 ) -> dict:
     """Build model attributes from family defaults and model overrides."""
     # Determine thinking_capability based on:
-    # 1. Model-level override
-    # 2. Family-level default
+    # 1. Model-level override (model_def.llm.thinking_capability or model_def.thinking_capability)
+    # 2. Family-level default (family.llm.thinking_capability or family.thinking_capability)
     # 3. Infer from capability variant
-    thinking_cap = model_def.get(
-        "thinking_capability", family.get("thinking_capability")
-    )
+    thinking_cap = get_llm_attr(model_def, "thinking_capability")
+    if thinking_cap is None:
+        thinking_cap = get_llm_attr(family, "thinking_capability")
 
     # If not explicitly set, infer from capability
     if thinking_cap is None and capability:
@@ -161,9 +225,18 @@ def build_model_attributes(
         else:
             thinking_cap = "non_thinking"
 
-    # Get parsers from model or family
-    tool_parser = model_def.get("tool_parser", family.get("tool_parser"))
-    reasoning_parser = model_def.get("reasoning_parser", family.get("reasoning_parser"))
+    # Get parsers from model or family (check llm wrapper first)
+    tool_parser = get_llm_attr(model_def, "tool_parser")
+    if tool_parser is None:
+        tool_parser = get_llm_attr(family, "tool_parser")
+
+    reasoning_parser = get_llm_attr(model_def, "reasoning_parser")
+    if reasoning_parser is None:
+        reasoning_parser = get_llm_attr(family, "reasoning_parser")
+
+    chat_template = get_llm_attr(model_def, "chat_template")
+    if chat_template is None:
+        chat_template = get_llm_attr(family, "chat_template")
 
     # For instruct variants, typically no reasoning parser
     if capability == "instruct":
@@ -173,10 +246,12 @@ def build_model_attributes(
         reasoning_parser = None
 
     return {
-        "thinking_capability": thinking_cap,
-        "tool_parser": tool_parser,
-        "reasoning_parser": reasoning_parser,
-        "chat_template": model_def.get("chat_template", family.get("chat_template")),
+        "llm": {
+            "thinking_capability": thinking_cap,
+            "tool_parser": tool_parser,
+            "reasoning_parser": reasoning_parser,
+            "chat_template": chat_template,
+        }
     }
 
 
@@ -200,11 +275,9 @@ def generate_model_variants(
     # Get quantized paths if different paths per quantization
     quantized_paths = model_def.get("quantized_paths", {})
 
-    # Get hardware config
-    hw_configs = model_def.get("hardware", {})
-    hardware_list = list(hw_configs.keys()) if hw_configs else defaults.get(
-        "hardware", ["H200", "B200"]
-    )
+    # Get merged hardware config from family and model levels
+    hw_configs, hardware_list = get_merged_hardware_config(family, model_def, defaults)
+    default_hw_config = hw_configs.get("default", {})
 
     models = []
 
@@ -231,7 +304,8 @@ def generate_model_variants(
             # Build hardware configurations
             hardware = {}
             for hw_name in hardware_list:
-                hw_config = hw_configs.get(hw_name, {})
+                # Start with default config, then merge hardware-specific overrides
+                hw_config = {**default_hw_config, **hw_configs.get(hw_name, {})}
 
                 # Check hardware constraints (valid_quants)
                 valid_quants = hw_config.get("valid_quants")
@@ -272,11 +346,9 @@ def build_explicit_model(
     # Derive model_path if not specified
     model_path = model_def.get("model_path", f"{company}/{model_name}")
 
-    # Get hardware config
-    hw_configs = model_def.get("hardware", {})
-    hardware_list = list(hw_configs.keys()) if hw_configs else defaults.get(
-        "hardware", ["H200", "B200"]
-    )
+    # Get merged hardware config from family and model levels
+    hw_configs, hardware_list = get_merged_hardware_config(family, model_def, defaults)
+    default_hw_config = hw_configs.get("default", {})
 
     # Default quantization for explicit models
     quant = model_def.get("quantization", "fp8")
@@ -284,7 +356,8 @@ def build_explicit_model(
     # Build hardware configurations
     hardware = {}
     for hw_name in hardware_list:
-        hw_config = hw_configs.get(hw_name, {})
+        # Start with default config, then merge hardware-specific overrides
+        hw_config = {**default_hw_config, **hw_configs.get(hw_name, {})}
         hardware[hw_name] = build_hardware_config(hw_name, hw_config, defaults, quant)
 
     return {
@@ -425,7 +498,9 @@ def main() -> int:
     if args.files:
         input_files = [Path(f) for f in args.files]
     else:
+        # Search for YAML files in input-dir and all version subdirectories
         input_files = list(args.input_dir.glob("*.yaml"))
+        input_files.extend(args.input_dir.glob("*/*.yaml"))
 
     if not input_files:
         print(f"No YAML files found in {args.input_dir}")
@@ -434,7 +509,9 @@ def main() -> int:
     # Compile each file
     all_ok = True
     for input_path in input_files:
-        output_path = args.output_dir / input_path.name
+        # Preserve version subdirectory structure in output
+        relative_path = input_path.relative_to(args.input_dir)
+        output_path = args.output_dir / relative_path
         if not compile_file(input_path, output_path, args.check):
             all_ok = False
 

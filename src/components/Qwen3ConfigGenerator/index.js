@@ -233,11 +233,11 @@ const Qwen3ConfigGenerator = () => {
 
   // Get current model config
   const currentModelConfig = baseConfig.modelConfigs[values.modelsize];
-  
+
   // Dynamically adjust options based on model selection and filter by visibleWhen
   const displayOptions = useMemo(() => {
     const options = { ...baseConfig.options };
-    
+
     // If model doesn't have thinking variants, modify category options
     if (currentModelConfig && !currentModelConfig.hasThinkingVariants) {
       options.category = {
@@ -249,7 +249,7 @@ const Qwen3ConfigGenerator = () => {
         }))
       };
     }
-    
+
     // Filter options based on visibleWhen condition
     const filteredOptions = {};
     Object.entries(options).forEach(([key, option]) => {
@@ -272,7 +272,7 @@ const Qwen3ConfigGenerator = () => {
   const handleRadioChange = (optionName, itemId) => {
     setValues(prev => {
       const newValues = { ...prev, [optionName]: itemId };
-      
+
       // Auto-switch to 'base' category for models without thinking variants
       if (optionName === 'modelsize') {
         const modelConfig = baseConfig.modelConfigs[itemId];
@@ -283,7 +283,7 @@ const Qwen3ConfigGenerator = () => {
           }
         }
       }
-      
+
       // Reset reasoningParser when switching to 'instruct' category
       if (optionName === 'category' && itemId === 'instruct') {
         newValues.reasoningParser = 'disabled';

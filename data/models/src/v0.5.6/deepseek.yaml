@@ -5,7 +5,6 @@ company: deepseek-ai
 
 defaults:
   hardware: [H200, B200]
-  versions: [v0.5.6]
   configurations:
     - name: default
       nodes: single
@@ -23,16 +22,19 @@ defaults:
 families:
   - name: DeepSeek-V3.2
     description: DeepSeek V3.2 family including base, Speciale, and Exp variants
-    thinking_capability: hybrid
-    tool_parser: deepseekv32
-    reasoning_parser: deepseek-v3
+    llm:
+      thinking_capability: hybrid
+      tool_parser: deepseekv32
+      reasoning_parser: deepseek-v3
 
     models:
       - DeepSeek-V3.2
 
       - name: DeepSeek-V3.2-Exp
-        tool_parser: deepseekv31
-        chat_template: ./examples/chat_template/tool_chat_template_deepseekv32.jinja
+        llm:
+          tool_parser: deepseekv31
+          chat_template: ./examples/chat_template/tool_chat_template_deepseekv32.jinja
 
       - name: DeepSeek-V3.2-Speciale
-        tool_parser: null
+        llm:
+          tool_parser: null

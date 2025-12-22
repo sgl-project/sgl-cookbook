@@ -5,7 +5,6 @@ company: zai-org
 
 defaults:
   hardware: [H100, H200, B200]
-  versions: [v0.5.6]
   configurations:
     - name: default
       nodes: single
@@ -14,25 +13,22 @@ defaults:
 families:
   - name: GLM-4.6V
     description: GLM-4.6V vision-language model family
-    thinking_capability: hybrid
-    tool_parser: glm45
-    reasoning_parser: glm45
+    llm:
+      thinking_capability: hybrid
+      tool_parser: glm45
+      reasoning_parser: glm45
+    hardware:
+      default: { tp: 8 }
 
     models:
       # GLM-4.6V (106B)
       - base_name: GLM-4.6V
         quantizations: [bf16, fp8]
         capabilities: [base]
-        hardware:
-          H100: { tp: 8 }
-          H200: { tp: 8 }
-          B200: { tp: 8 }
 
-      # GLM-4.6V-Flash (9B)
+      # GLM-4.6V-Flash (9B) - override tp to 1
       - base_name: GLM-4.6V-Flash
         quantizations: [bf16, fp8]
         capabilities: [base]
         hardware:
-          H100: { tp: 1 }
-          H200: { tp: 1 }
-          B200: { tp: 1 }
+          default: { tp: 1 }

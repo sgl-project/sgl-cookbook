@@ -5,7 +5,6 @@ company: zai-org
 
 defaults:
   hardware: [H100, H200, B200]
-  versions: [v0.5.6]
   configurations:
     - name: default
       nodes: single
@@ -19,9 +18,12 @@ defaults:
 families:
   - name: GLM-4.6
     description: GLM-4.6 large language model with hybrid thinking
-    thinking_capability: hybrid
-    tool_parser: glm45
-    reasoning_parser: glm45
+    llm:
+      thinking_capability: hybrid
+      tool_parser: glm45
+      reasoning_parser: glm45
+    hardware:
+      default: { tp: 8 }
 
     models:
       # GLM-4.6 - bf16 not supported on H100 (too large)
@@ -33,7 +35,3 @@ families:
 
       - name: GLM-4.6-FP8
         quantization: fp8
-        hardware:
-          H100: { tp: 8 }
-          H200: { tp: 8 }
-          B200: { tp: 8 }

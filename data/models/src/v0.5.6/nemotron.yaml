@@ -5,7 +5,6 @@ company: nvidia
 
 defaults:
   hardware: [H200, B200]
-  versions: [v0.5.6]
   configurations:
     - name: default
       nodes: single
@@ -14,23 +13,20 @@ defaults:
 families:
   - name: Nemotron-Nano-3
     description: NVIDIA Nemotron-3-Nano-30B-A3B model
-    thinking_capability: hybrid
-    tool_parser: qwen3_coder
-    reasoning_parser: nano_v3
+    llm:
+      thinking_capability: hybrid
+      tool_parser: qwen3_coder
+      reasoning_parser: nano_v3
+    hardware:
+      default: { tp: 1 }
 
     models:
       # BF16 variant
       - name: NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
         model_path: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
         quantization: bf16
-        hardware:
-          H200: { tp: 1 }
-          B200: { tp: 1 }
 
       # FP8 variant
       - name: NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
         model_path: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
         quantization: fp8
-        hardware:
-          H200: { tp: 1 }
-          B200: { tp: 1 }

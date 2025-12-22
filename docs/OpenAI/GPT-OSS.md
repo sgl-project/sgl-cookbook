@@ -154,7 +154,7 @@ The user asks: "Solve this problem step by step: What is 15% of 240?" So we need
 ---
 
 **Answer:** \(36\)
-``` 
+```
 
 #### 4.2.2 Tool Calling
 

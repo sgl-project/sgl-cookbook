@@ -59,7 +59,7 @@ const DeepSeekConfigGenerator = () => {
 
     generateCommand: function(values) {
         const { hardware, modelname, strategy, reasoningParser, toolcall } = values;
-  
+
         // Validation: DeepSeek-V3.2-Speciale doesn't support tool calling
         if (modelname === 'v32speciale' && toolcall === 'enabled') {
             return `# Error: DeepSeek-V3.2-Speciale doesn't support tool calling\n# Please select "Disabled" for Tool Call Parser or choose a different model`;
@@ -100,7 +100,7 @@ const DeepSeekConfigGenerator = () => {
                 cmd += ` \\\n  --tool-call-parser deepseekv32`;
             }
         }
-  
+
         // Add reasoning-parser when enabled
         if (reasoningParser === 'enabled') {
             cmd += ` \\\n  --reasoning-parser deepseek-v3`;

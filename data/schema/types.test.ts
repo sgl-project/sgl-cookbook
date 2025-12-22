@@ -16,15 +16,17 @@ import {
   ModelFamily,
   Model,
   ModelAttributes,
+  LLMAttributes,
   HardwareConfig,
-  VersionConfig,
   NamedConfiguration,
   ConfigAttributes,
   EngineConfig,
 } from "./types";
 
 // Path to model YAML files (generated from src/)
-const MODELS_DIR = path.join(__dirname, "..", "models", "generated");
+// Version is now a top-level folder, default to v0.5.6
+const VERSION = process.env.SGLANG_VERSION || "v0.5.6";
+const MODELS_DIR = path.join(__dirname, "..", "models", "generated", VERSION);
 
 /**
  * Load and parse a YAML file as CompanyConfig
@@ -148,10 +150,12 @@ function validateCompanyConfig(config: CompanyConfig, fileName: string): string[
       // Check attributes
       if (!model.attributes) {
         errors.push(`${modelPrefix}: 'attributes' must be an object`);
+      } else if (!model.attributes.llm) {
+        errors.push(`${modelPrefix}: 'attributes.llm' must be an object`);
       } else {
-        const tc = model.attributes.thinking_capability;
+        const tc = model.attributes.llm.thinking_capability;
         if (tc !== "non_thinking" && tc !== "thinking" && tc !== "hybrid") {
-          errors.push(`${modelPrefix}: 'attributes.thinking_capability' must be one of: non_thinking, thinking, hybrid`);
+          errors.push(`${modelPrefix}: 'attributes.llm.thinking_capability' must be one of: non_thinking, thinking, hybrid`);
         }
       }
 
@@ -164,50 +168,41 @@ function validateCompanyConfig(config: CompanyConfig, fileName: string): string[
       for (const [hwName, hwConfig] of Object.entries(model.hardware)) {
         const hwPrefix = `${modelPrefix}.hardware.${hwName}`;
 
-        if (typeof hwConfig.versions !== "object" || hwConfig.versions === null) {
-          errors.push(`${hwPrefix}: 'versions' must be an object`);
+        if (!Array.isArray(hwConfig.configurations)) {
+          errors.push(`${hwPrefix}: 'configurations' must be an array`);
           continue;
         }
 
-        for (const [verName, verConfig] of Object.entries(hwConfig.versions)) {
-          const verPrefix = `${hwPrefix}.versions.${verName}`;
+        for (let ci = 0; ci < hwConfig.configurations.length; ci++) {
+          const cfg = hwConfig.configurations[ci];
+          const cfgPrefix = `${hwPrefix}.configurations[${ci}]`;
 
-          if (!Array.isArray(verConfig.configurations)) {
-            errors.push(`${verPrefix}: 'configurations' must be an array`);
-            continue;
+          // Check name
+          if (typeof cfg.name !== "string" || !cfg.name) {
+            errors.push(`${cfgPrefix}: 'name' must be a non-empty string`);
           }
 
-          for (let ci = 0; ci < verConfig.configurations.length; ci++) {
-            const cfg = verConfig.configurations[ci];
-            const cfgPrefix = `${verPrefix}.configurations[${ci}]`;
+          // Check attributes with enum validation
+          if (!isValidConfigAttributes(cfg.attributes)) {
+            errors.push(
+              `${cfgPrefix}: 'attributes' must have valid nodes, optimization, and quantization`
+            );
+          }
 
-            // Check name
-            if (typeof cfg.name !== "string" || !cfg.name) {
-              errors.push(`${cfgPrefix}: 'name' must be a non-empty string`);
+          // Check engine/prefill/decode (all use EngineConfig)
+          if (cfg.engine !== null && cfg.engine !== undefined) {
+            if (!isValidEngineConfig(cfg.engine)) {
+              errors.push(`${cfgPrefix}: 'engine' must be a valid EngineConfig with tp >= 1`);
             }
-
-            // Check attributes with enum validation
-            if (!isValidConfigAttributes(cfg.attributes)) {
-              errors.push(
-                `${cfgPrefix}: 'attributes' must have valid nodes, optimization, and quantization`
-              );
+          }
+          if (cfg.prefill !== null && cfg.prefill !== undefined) {
+            if (!isValidEngineConfig(cfg.prefill)) {
+              errors.push(`${cfgPrefix}: 'prefill' must be a valid EngineConfig with tp >= 1`);
             }
-
-            // Check engine/prefill/decode (all use EngineConfig)
-            if (cfg.engine !== null && cfg.engine !== undefined) {
-              if (!isValidEngineConfig(cfg.engine)) {
-                errors.push(`${cfgPrefix}: 'engine' must be a valid EngineConfig with tp >= 1`);
-              }
-            }
-            if (cfg.prefill !== null && cfg.prefill !== undefined) {
-              if (!isValidEngineConfig(cfg.prefill)) {
-                errors.push(`${cfgPrefix}: 'prefill' must be a valid EngineConfig with tp >= 1`);
-              }
-            }
-            if (cfg.decode !== null && cfg.decode !== undefined) {
-              if (!isValidEngineConfig(cfg.decode)) {
-                errors.push(`${cfgPrefix}: 'decode' must be a valid EngineConfig with tp >= 1`);
-              }
+          }
+          if (cfg.decode !== null && cfg.decode !== undefined) {
+            if (!isValidEngineConfig(cfg.decode)) {
+              errors.push(`${cfgPrefix}: 'decode' must be a valid EngineConfig with tp >= 1`);
             }
           }
         }
