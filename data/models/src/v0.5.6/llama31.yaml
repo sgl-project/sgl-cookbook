@@ -4,7 +4,9 @@
 company: meta-llama
 
 defaults:
-  hardware: [H100, H200]
+  hardware:
+    H100: { tp: 4 }
+    H200: { tp: 4 }
   configurations:
     - name: default
       nodes: single
@@ -22,8 +24,6 @@ families:
     description: Llama 3.1 70B Instruct model
     llm:
       thinking_capability: non_thinking
-    hardware:
-      default: { tp: 4 }
 
     models:
       - name: Llama-3.1-70B-Instruct

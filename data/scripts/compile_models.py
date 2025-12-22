@@ -27,10 +27,10 @@ import yaml
 # Variant Generation Constants
 # =============================================================================
 
-CAPABILITY_SUFFIXES = {
+# Only "base" has a default suffix (empty). Other capabilities like "instruct"
+# and "thinking" must be explicitly defined via model_name_suffix in src files.
+MODEL_NAME_SUFFIXES = {
     "base": "",
-    "instruct": "-Instruct-2507",
-    "thinking": "-Thinking-2507",
 }
 
 DEFAULT_QUANT_SUFFIXES = {
@@ -140,7 +140,7 @@ def get_merged_hardware_config(
     defaults: dict,
 ) -> tuple[dict, list[str]]:
     """
-    Merge hardware configs from family and model levels.
+    Merge hardware configs from file-level defaults, family, and model levels.
 
     Returns (merged_hw_configs, hardware_list) where:
     - merged_hw_configs: dict with 'default' and hardware-specific overrides
@@ -148,25 +148,38 @@ def get_merged_hardware_config(
 
     Inheritance order (most specific wins):
     1. model.hardware.{H100,H200,B200} - specific hardware override
-    2. model.hardware.default - model default
+    2. model.hardware.default - model default for all hardware
     3. family.hardware.{H100,H200,B200} - family hardware override
-    4. family.hardware.default - family default
+    4. family.hardware.default - family default for all hardware
+    5. defaults.hardware.{H100,H200,B200} - file-level per-hardware default
     """
+    # Get hardware configs from each level
+    # defaults.hardware can be either:
+    # - dict: { H100: { tp: 8 }, H200: { tp: 8 } } (new format with per-hw defaults)
+    # - list: [H100, H200, B200] (old format, just hardware names)
+    defaults_hw = defaults.get("hardware", {})
     family_hw = family.get("hardware", {})
     model_hw = model_def.get("hardware", {}) if isinstance(model_def, dict) else {}
 
-    # Get default configs from family and model
+    # Handle both old (list) and new (dict) formats for defaults.hardware
+    if isinstance(defaults_hw, list):
+        # Old format: list of hardware names, no per-hw defaults
+        file_level_hw_configs = {}
+        default_hardware_list = defaults_hw
+    else:
+        # New format: dict with per-hardware configs
+        file_level_hw_configs = defaults_hw
+        default_hardware_list = list(defaults_hw.keys())
+
+    # Get default configs from family and model (applies to all hardware)
     family_default = family_hw.get("default", {})
     model_default = model_hw.get("default", {})
 
-    # Merge defaults: family.default -> model.default
-    merged_default = {**family_default, **model_default}
+    # Build merged hardware config with file-level defaults as base
+    merged_hw_configs = {"default": {**family_default, **model_default}}
 
-    # Build merged hardware config
-    merged_hw_configs = {"default": merged_default}
-
-    # Collect all hardware-specific overrides from both family and model
-    all_hw_keys = set()
+    # Collect all hardware-specific keys from all levels
+    all_hw_keys = set(default_hardware_list)
     for key in family_hw:
         if key != "default":
             all_hw_keys.add(key)
@@ -174,17 +187,28 @@ def get_merged_hardware_config(
         if key != "default":
             all_hw_keys.add(key)
 
-    # Merge hardware-specific configs
+    # Merge hardware-specific configs with inheritance chain
+    # Order: file-level hw -> family default -> family hw -> model default -> model hw
     for hw_name in all_hw_keys:
+        # Start with file-level per-hardware default
+        file_hw_config = file_level_hw_configs.get(hw_name, {})
+        # Then family-level per-hardware override
         family_hw_specific = family_hw.get(hw_name, {})
+        # Then model-level per-hardware override
         model_hw_specific = model_hw.get(hw_name, {})
-        merged_hw_configs[hw_name] = {**family_hw_specific, **model_hw_specific}
+        # Merge: file -> family_default -> family_hw -> model_default -> model_hw
+        merged_hw_configs[hw_name] = {
+            **file_hw_config,
+            **family_default,
+            **family_hw_specific,
+            **model_default,
+            **model_hw_specific,
+        }
 
     # Determine hardware list:
     # - If model has explicit hardware keys (not just default), use those
     # - Else if family has explicit hardware keys (not just default), use those
-    # - Else if "default" exists anywhere, expand to all hardware from defaults.hardware
-    # - Else fall back to defaults.hardware
+    # - Else use all hardware from defaults.hardware
     model_explicit_hw = [k for k in model_hw if k != "default"]
     family_explicit_hw = [k for k in family_hw if k != "default"]
 
@@ -194,12 +218,9 @@ def get_merged_hardware_config(
     elif family_explicit_hw and not model_default and not family_default:
         # Family explicitly lists hardware without defaults
         hardware_list = family_explicit_hw
-    elif merged_default or family_explicit_hw:
-        # Has default config, expand to all hardware
-        hardware_list = defaults.get("hardware", ["H200", "B200"])
     else:
-        # Fallback
-        hardware_list = defaults.get("hardware", ["H200", "B200"])
+        # Use all hardware from file-level defaults
+        hardware_list = default_hardware_list
 
     return merged_hw_configs, hardware_list
 
@@ -281,15 +302,15 @@ def generate_model_variants(
 
     models = []
 
-    # Get custom capability suffixes if defined at family or model level
-    cap_suffixes = model_def.get("capability_suffix", family.get("capability_suffix", CAPABILITY_SUFFIXES))
+    # Get model name suffixes (for capability variants) from model or family level
+    name_suffixes = model_def.get("model_name_suffix", family.get("model_name_suffix", MODEL_NAME_SUFFIXES))
 
     for capability in capabilities:
         for quant in quantizations:
             # Build model name
-            cap_suffix = cap_suffixes.get(capability, CAPABILITY_SUFFIXES.get(capability, ""))
+            name_suffix = name_suffixes.get(capability, MODEL_NAME_SUFFIXES.get(capability, ""))
             quant_suffix = quant_suffixes.get(quant, DEFAULT_QUANT_SUFFIXES.get(quant, ""))
-            model_name = f"{family_name}-{base_name}{cap_suffix}{quant_suffix}"
+            model_name = f"{family_name}-{base_name}{name_suffix}{quant_suffix}"
 
             # Determine model path
             if quantized_paths and quant in quantized_paths:
@@ -298,8 +319,9 @@ def generate_model_variants(
                 # Default: company/model_name
                 model_path = f"{company}/{model_name}"
 
-            # Get quantization-specific overrides (e.g., fp8: { ep: 2 })
-            quant_overrides = model_def.get(quant, {})
+            # Get quantization-specific overrides (e.g., quant_overrides: { fp8: { ep: 2 } })
+            quant_overrides_section = model_def.get("quant_overrides", {})
+            quant_overrides = quant_overrides_section.get(quant, {})
 
             # Build hardware configurations
             hardware = {}

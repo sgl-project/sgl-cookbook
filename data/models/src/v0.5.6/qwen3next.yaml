@@ -4,7 +4,10 @@
 company: Qwen
 
 defaults:
-  hardware: [H100, H200, B200]
+  hardware:
+    H100: { tp: 4 }
+    H200: { tp: 2 }
+    B200: { tp: 2 }
   configurations:
     - name: default
       nodes: single
@@ -16,14 +19,9 @@ families:
     llm:
       tool_parser: qwen
       reasoning_parser: qwen3
-    # Custom capability suffixes for Next models
-    capability_suffix:
+    model_name_suffix:
       instruct: "-Instruct"
       thinking: "-Thinking"
-    hardware:
-      default: { tp: 4 }
-      H200: { tp: 2 }
-      B200: { tp: 2 }
 
     models:
       # Qwen3-Next-80B-A3B with Instruct and Thinking variants

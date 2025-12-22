@@ -4,7 +4,9 @@
 company: nvidia
 
 defaults:
-  hardware: [H200, B200]
+  hardware:
+    H200: { tp: 1 }
+    B200: { tp: 1 }
   configurations:
     - name: default
       nodes: single
@@ -17,8 +19,6 @@ families:
       thinking_capability: hybrid
       tool_parser: qwen3_coder
       reasoning_parser: nano_v3
-    hardware:
-      default: { tp: 1 }
 
     models:
       # BF16 variant

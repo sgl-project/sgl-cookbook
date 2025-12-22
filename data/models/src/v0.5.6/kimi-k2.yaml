@@ -4,7 +4,9 @@
 company: moonshotai
 
 defaults:
-  hardware: [H200, B200]
+  hardware:
+    H200: { tp: 8, ep: 4 }
+    B200: { tp: 8, ep: 4 }
   configurations:
     - name: default
       nodes: single
@@ -21,8 +23,6 @@ families:
     llm:
       tool_parser: kimi_k2
       reasoning_parser: kimi_k2
-    hardware:
-      default: { tp: 8, ep: 4 }
 
     models:
       # Kimi-K2-Instruct - non-thinking model

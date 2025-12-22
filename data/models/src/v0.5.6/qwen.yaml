@@ -6,7 +6,10 @@
 company: Qwen
 
 defaults:
-  hardware: [H100, H200, B200]
+  hardware:
+    H100: { tp: 1 }
+    H200: { tp: 1 }
+    B200: { tp: 1 }
   configurations:
     - name: default
       nodes: single
@@ -19,8 +22,10 @@ families:
     llm:
       tool_parser: qwen
       reasoning_parser: qwen3
-    hardware:
-      default: { tp: 1 }
+    model_name_suffix:
+      base: ""
+      instruct: "-Instruct-2507"
+      thinking: "-Thinking-2507"
 
     models:
       # Large MoE models (235B) - override tp=8, ep=2 for fp8
@@ -29,8 +34,9 @@ families:
         capabilities: [base, instruct, thinking]
         hardware:
           default: { tp: 8 }
-        fp8:
-          ep: 2
+        quant_overrides:
+          fp8:
+            ep: 2
 
       # Medium MoE models (30B)
       - base_name: 30B-A3B
@@ -40,15 +46,12 @@ families:
       # Dense models - base capability only
       - base_name: 32B
         quantizations: [bf16, fp8]
-        capabilities: [base]
 
       - base_name: 14B
         quantizations: [bf16, fp8]
-        capabilities: [base]
 
       - base_name: 8B
         quantizations: [bf16, fp8]
-        capabilities: [base]
 
       # 4B model - has instruct and thinking
       - base_name: 4B
@@ -57,8 +60,6 @@ families:
 
       - base_name: 1.7B
         quantizations: [bf16, fp8]
-        capabilities: [base]
 
       - base_name: 0.6B
         quantizations: [bf16, fp8]
-        capabilities: [base]

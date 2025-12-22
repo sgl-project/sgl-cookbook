@@ -4,7 +4,9 @@
 company: deepseek-ai
 
 defaults:
-  hardware: [H200, B200]
+  hardware:
+    H200: { tp: 8 }
+    B200: { tp: 8 }
   configurations:
     - name: default
       nodes: single
