@@ -119,18 +119,72 @@ export interface ConfigAttributes {
 
 /**
  * Engine/runtime configuration. Used for unified config, prefill, and decode phases.
+ *
+ * These fields map directly to SGLang server command-line arguments.
+ * See: https://docs.sglang.ai/advanced_features/server_arguments.html
  */
 export interface EngineConfig {
-  /** Environment variables to set */
+  /**
+   * Environment variables to set before launching the server.
+   * Common examples:
+   * - SGL_ENABLE_TORCH_COMPILE: "1" - Enable torch.compile optimization
+   * - CUDA_DEVICE_MAX_CONNECTIONS: "1" - Optimize CUDA connections
+   * - NCCL_DEBUG: "WARN" - NCCL debugging level
+   */
   env_vars?: Record<string, string> | null;
-  /** Tensor Parallelism degree */
+
+  /**
+   * Tensor Parallelism degree - splits model weights across multiple GPUs.
+   *
+   * @maps_to --tp-size, --tensor-parallel-size
+   * @example tp: 8 means split model across 8 GPUs
+   * @usage Use when model is too large for a single GPU's memory
+   */
   tp: number;
-  /** Data Parallelism degree, null if not used */
+
+  /**
+   * Data Parallelism degree - runs multiple independent model replicas.
+   *
+   * @maps_to --dp-size, --data-parallel-size
+   * @example dp: 2 with tp: 2 uses 4 GPUs total (2 replicas, each on 2 GPUs)
+   * @usage Better for throughput when there's sufficient GPU memory.
+   *        Can be combined with tensor parallelism.
+   * @note For best performance with DP, use SGLang Router instead of dp_size parameter.
+   */
   dp?: number | null;
-  /** Expert Parallelism degree (for MoE models), null if not used */
+
+  /**
+   * Expert Parallelism degree for MoE (Mixture of Experts) models.
+   *
+   * @maps_to --ep-size, --expert-parallel-size, --ep
+   * @usage Distributes MoE experts across GPUs. Commonly used with FP8 quantization
+   *        for better memory efficiency on models like DeepSeek, Qwen MoE.
+   */
   ep?: number | null;
-  /** Enable DP attention optimization */
+
+  /**
+   * Enable DP attention optimization - uses Data Parallelism for attention
+   * and Tensor Parallelism for FFN layers.
+   *
+   * @maps_to --enable-dp-attention
+   * @requires tp size must equal dp size (e.g., tp: 8, dp: 8)
+   * @supported DeepSeek-V2/V3, Qwen 2/3 MoE models
+   * @benefits Reduces KV cache duplication, allowing larger batch sizes.
+   *           Improves peak throughput in high batch size scenarios.
+   * @tradeoffs Not recommended for low-latency, small-batch use cases.
+   *
+   * @example
+   * // High-throughput config for DeepSeek on 8x H200
+   * { tp: 8, dp: 8, enable_dp_attention: true }
+   */
   enable_dp_attention?: boolean | null;
-  /** Additional command-line arguments */
+
+  /**
+   * Additional command-line arguments passed directly to the SGLang server.
+   *
+   * @example ["--enable-mixed-precision", "--chunked-prefill-size", "4096"]
+   * @usage For advanced options not covered by other fields.
+   *        See SGLang docs for all available arguments.
+   */
   extra_args?: string[] | null;
 }

@@ -328,6 +328,45 @@ families:
 | `env_vars` | dict | {} | Environment variables |
 | `extra_args` | list | [] | Additional CLI arguments |
 
+### SGLang Server Argument Mapping
+
+These configuration fields map directly to SGLang server command-line arguments:
+
+| Config Field | SGLang CLI Argument | Description |
+|--------------|---------------------|-------------|
+| `tp` | `--tp-size`, `--tensor-parallel-size` | Splits model weights across GPUs |
+| `dp` | `--dp-size`, `--data-parallel-size` | Runs multiple model replicas |
+| `ep` | `--ep-size`, `--expert-parallel-size`, `--ep` | Distributes MoE experts across GPUs |
+| `enable_dp_attention` | `--enable-dp-attention` | DP for attention, TP for FFN |
+| `extra_args` | *(passed directly)* | Additional CLI arguments |
+
+**Example: Translating config to CLI**
+
+Given this YAML configuration:
+```yaml
+configurations:
+  - name: high-throughput-dp
+    optimization: high-throughput
+    tp: 8
+    dp: 8
+    enable_dp_attention: true
+    extra_args: ["--chunked-prefill-size", "4096"]
+```
+
+The equivalent SGLang server launch command would be:
+```bash
+python -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2 \
+  --tp-size 8 \
+  --dp-size 8 \
+  --enable-dp-attention \
+  --chunked-prefill-size 4096
+```
+
+For detailed documentation on all SGLang server arguments, see:
+- [SGLang Server Arguments](https://docs.sglang.ai/advanced_features/server_arguments.html)
+- [SGLang DeepSeek Reference](https://docs.sglang.ai/references/deepseek.html)
+
 ### Family Fields
 
 | Field | Type | Description |
