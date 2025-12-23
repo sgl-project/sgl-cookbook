@@ -91,7 +91,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ## Reference
 
-- [Parallelism Configuration Guide](./reference/parallelism-config) - Understanding tp, dp, ep, and enable_dp_attention
+- [Server arguments](./reference/server_arguments.md) - Understanding all the arguments
 
 ## 🚀 Quick Start
 
