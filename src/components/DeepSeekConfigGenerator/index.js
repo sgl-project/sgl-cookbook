@@ -8,7 +8,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const DeepSeekConfigGenerator = () => {
   const config = {
     modelFamily: 'deepseek-ai',
-  
+
     options: {
         hardware: {
             name: 'hardware',
@@ -56,27 +56,27 @@ const DeepSeekConfigGenerator = () => {
             ]
         }
     },
-  
+
     generateCommand: function(values) {
         const { hardware, modelname, strategy, reasoningParser, toolcall } = values;
-  
+
         // Validation: DeepSeek-V3.2-Speciale doesn't support tool calling
         if (modelname === 'v32speciale' && toolcall === 'enabled') {
             return `# Error: DeepSeek-V3.2-Speciale doesn't support tool calling\n# Please select "Disabled" for Tool Call Parser or choose a different model`;
         }
-  
+
         // Model name mapping
         const modelMap = {
             'v32': 'DeepSeek-V3.2',
             'v32exp': 'DeepSeek-V3.2-Exp',
             'v32speciale': 'DeepSeek-V3.2-Speciale'
         };
-  
+
         const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
-  
+
         let cmd = 'python3 -m sglang.launch_server \\\n';
         cmd += `  --model-path ${modelName}`;
-  
+
         // Strategy configurations
         const strategyArray = Array.isArray(strategy) ? strategy : [];
         // TP is mandatory
@@ -91,7 +91,7 @@ const DeepSeekConfigGenerator = () => {
         if (strategyArray.includes('mtp')) {
             cmd += ` \\\n  --speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4`;
         }
-  
+
         // Add tool-call-parser if enabled (not supported for Speciale)
         if (toolcall === 'enabled' && modelname !== 'v32speciale') {
             if (modelname === 'v32exp') {
@@ -100,23 +100,22 @@ const DeepSeekConfigGenerator = () => {
                 cmd += ` \\\n  --tool-call-parser deepseekv32`;
             }
         }
-  
+
         // Add reasoning-parser when enabled
         if (reasoningParser === 'enabled') {
             cmd += ` \\\n  --reasoning-parser deepseek-v3`;
         }
-  
+
         // Add chat-template if tool calling is enabled (only for v32exp)
         if (toolcall === 'enabled' && modelname === 'v32exp') {
             cmd += ` \\\n  --chat-template ./examples/chat_template/tool_chat_template_deepseekv32.jinja`;
         }
-  
+
         return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
 export default DeepSeekConfigGenerator;
-

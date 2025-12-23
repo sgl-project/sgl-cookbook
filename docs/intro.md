@@ -89,6 +89,10 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 - [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron3-Nano)
 
+## Reference
+
+- [Server arguments](./reference/server_arguments.md) - Understanding all the arguments
+
 ## 🚀 Quick Start
 
 1. Browse the recipe index above to find your model

@@ -1,0 +1,57 @@
+# Qwen3-VL Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/qwen3vl.yaml
+
+vendor: qwen
+
+defaults:
+  hardware:
+    H100: { tp: 1 }
+    H200: { tp: 1 }
+    B200: { tp: 1 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Qwen3-VL
+    description: Qwen3-VL vision-language model family
+    llm:
+      tool_parser: qwen
+      reasoning_parser: qwen3
+    model_name_suffix:
+      instruct: "-Instruct"
+      thinking: "-Thinking"
+
+    models:
+      # Large MoE models (235B) - override tp=8, ep=2 for fp8
+      - base_name: 235B-A22B
+        quantizations: [bf16, fp8]
+        capabilities: [instruct, thinking]
+        hardware:
+          default: { tp: 8 }
+        quant_overrides:
+          fp8:
+            ep: 2
+
+      # Medium MoE models (30B)
+      - base_name: 30B-A3B
+        quantizations: [bf16, fp8]
+        capabilities: [instruct, thinking]
+
+      # Dense models
+      - base_name: 32B
+        quantizations: [bf16, fp8]
+        capabilities: [instruct, thinking]
+
+      - base_name: 8B
+        quantizations: [bf16, fp8]
+        capabilities: [instruct, thinking]
+
+      - base_name: 4B
+        quantizations: [bf16, fp8]
+        capabilities: [instruct, thinking]
+
+      - base_name: 2B
+        quantizations: [bf16, fp8]
+        capabilities: [instruct, thinking]

@@ -1,0 +1,33 @@
+# GLM-4.6V Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/glm46v.yaml
+
+vendor: zai-org
+
+defaults:
+  hardware:
+    H100: { tp: 8 }
+    H200: { tp: 8 }
+    B200: { tp: 8 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: GLM-4.6V
+    description: GLM-4.6V vision-language model family
+    llm:
+      thinking_capability: hybrid
+      tool_parser: glm45
+      reasoning_parser: glm45
+
+    models:
+      # GLM-4.6V (106B)
+      - base_name: GLM-4.6V
+        quantizations: [bf16, fp8]
+
+      # GLM-4.6V-Flash (9B) - override tp to 1
+      - base_name: GLM-4.6V-Flash
+        quantizations: [bf16, fp8]
+        hardware:
+          default: { tp: 1 }

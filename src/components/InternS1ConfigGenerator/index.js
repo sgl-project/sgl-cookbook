@@ -8,7 +8,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const InternS1ConfigGenerator = () => {
   const config = {
     modelFamily: 'Intern',
-    
+
     options: {
       hardware: {
         name: 'hardware',
@@ -52,7 +52,7 @@ const InternS1ConfigGenerator = () => {
         ]
       }
     },
-    
+
     modelConfigs: {
       'S1': {
         baseName: 'S1',
@@ -69,55 +69,54 @@ const InternS1ConfigGenerator = () => {
         b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       }
     },
-    
+
     generateCommand: function(values) {
       const { hardware, modelsize, quantization, reasoning_parser, toolcall } = values;
-      
+
       const modelConfig = this.modelConfigs[modelsize];
       if (!modelConfig) {
         return `# Error: Unknown model size: ${modelsize}`;
       }
-      
+
       const hwConfig = modelConfig[hardware];
       if (!hwConfig) {
         return `# Error: Unknown hardware platform: ${hardware}`;
       }
-      
+
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
       const modelName = `internlm/Intern-${modelConfig.baseName}${quantSuffix}`;
-      
+
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-      
+
       if (hwConfig.tp > 1) {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
       }
-      
+
       let ep = hwConfig.ep;
       if (quantization === 'fp8' && hwConfig.tp === 8) {
         ep = 2;
       }
-      
+
       if (ep > 0) {
         cmd += ` \\\n  --ep ${ep}`;
       }
-      
+
       if (reasoning_parser === 'enabled') {
         cmd += ` \\\n  --reasoning-parser interns1`;
       }
-      
+
       if (toolcall === 'enabled') {
         cmd += ` \\\n  --tool-call-parser interns1`;
       }
-      
+
       cmd += ` \\\n  --trust-remote-code`;
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
 export default InternS1ConfigGenerator;
-

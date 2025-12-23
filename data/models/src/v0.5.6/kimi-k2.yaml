@@ -1,0 +1,36 @@
+# Kimi-K2 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/kimi-k2.yaml
+
+vendor: moonshotai
+
+defaults:
+  hardware:
+    H200: { tp: 8, ep: 4 }
+    B200: { tp: 8, ep: 4 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+    - name: high-throughput-dp
+      nodes: single
+      optimization: high-throughput
+      dp: 4
+      enable_dp_attention: true
+
+families:
+  - name: Kimi-K2
+    description: Kimi-K2 family with Instruct and Thinking variants
+    llm:
+      tool_parser: kimi_k2
+      reasoning_parser: kimi_k2
+
+    models:
+      # Kimi-K2-Instruct - non-thinking model
+      - name: Kimi-K2-Instruct
+        llm:
+          thinking_capability: non_thinking
+
+      # Kimi-K2-Thinking - thinking model
+      - name: Kimi-K2-Thinking
+        llm:
+          thinking_capability: thinking

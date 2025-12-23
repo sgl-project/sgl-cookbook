@@ -97,4 +97,3 @@ const Devstral2ConfigGenerator = () => {
 };
 
 export default Devstral2ConfigGenerator;
-

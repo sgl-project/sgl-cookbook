@@ -1,0 +1,42 @@
+# DeepSeek Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/deepseek.yaml
+
+vendor: deepseek-ai
+
+defaults:
+  hardware:
+    H200: { tp: 8 }
+    B200: { tp: 8 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      quantization: fp8
+      tp: 8
+    - name: high-throughput-dp
+      nodes: single
+      optimization: high-throughput
+      quantization: fp8
+      tp: 8
+      dp: 8
+      enable_dp_attention: true
+
+families:
+  - name: DeepSeek-V3.2
+    description: DeepSeek V3.2 family including base, Speciale, and Exp variants
+    llm:
+      thinking_capability: hybrid
+      tool_parser: deepseekv32
+      reasoning_parser: deepseek-v3
+
+    models:
+      - DeepSeek-V3.2
+
+      - name: DeepSeek-V3.2-Exp
+        llm:
+          tool_parser: deepseekv31
+          chat_template: ./examples/chat_template/tool_chat_template_deepseekv32.jinja
+
+      - name: DeepSeek-V3.2-Speciale
+        llm:
+          tool_parser: null
