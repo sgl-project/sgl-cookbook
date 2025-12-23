@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import styles from '../ConfigGenerator/styles.module.css';
+import styles from '../../../../src/components/ConfigGenerator/styles.module.css';
 
 const Wan2_2ConfigGenerator = () => {
   const baseConfig = {
