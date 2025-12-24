@@ -523,7 +523,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 1000 \
@@ -535,7 +535,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 1
   Successful requests:                     10
@@ -575,7 +575,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 1000 \
@@ -587,7 +587,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 16
   Successful requests:                     80
@@ -627,7 +627,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 1000 \
@@ -639,7 +639,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 100
   Successful requests:                     500
@@ -682,7 +682,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 1000 \
@@ -694,7 +694,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 1
   Successful requests:                     10
@@ -734,7 +734,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 1000 \
@@ -746,7 +746,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 16
   Successful requests:                     80
@@ -786,7 +786,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 1000 \
@@ -798,7 +798,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 64
   Successful requests:                     320
@@ -841,7 +841,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 8000 \
@@ -853,7 +853,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 1
   Successful requests:                     10
@@ -893,7 +893,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 8000 \
@@ -905,7 +905,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 16
   Successful requests:                     80
@@ -945,7 +945,7 @@ python -m sglang.launch_server \
 
   ```bash
   python -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --model zai-org/GLM-4.5V \
   --dataset-name random \
   --random-input-len 8000 \
@@ -957,7 +957,7 @@ python -m sglang.launch_server \
 
   ```
   ============ Serving Benchmark Result ============
-  Backend:                                 sglang
+  Backend:                                 sglang-oai-chat
   Traffic request rate:                    inf
   Max request concurrency:                 64
   Successful requests:                     320
