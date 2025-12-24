@@ -164,4 +164,12 @@ sglang generate \
 ```
 result:
 ```
+[12-24 16:56:17] [DenoisingStage] average time per step: 12.9365 seconds
+[12-24 16:56:17] [DenoisingStage] finished in 349.2883 seconds
+[12-24 16:56:17] [DecodingStage] started...
+[12-24 16:56:21] [DecodingStage] finished in 4.2784 seconds
+[12-24 16:56:24] Output saved to outputs/A_cat_walks_on_the_grass_realistic_20251224-165025_f5e8be33.mp4
+[12-24 16:56:24] Pixel data generated successfully in 358.56 seconds
+[12-24 16:56:24] Completed batch processing. Generated 1 outputs in 358.56 seconds.
+[12-24 16:56:24] Memory usage - Max peak: 62626.41 MB, Avg peak: 62626.41 MB
 ```
