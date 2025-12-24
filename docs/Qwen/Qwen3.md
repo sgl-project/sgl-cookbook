@@ -49,7 +49,7 @@ import Qwen3ConfigGenerator from '@site/src/components/Qwen3ConfigGenerator';
   - `--speculative-num-steps 3`: Number of speculative verification rounds
   - `--speculative-eagle-topk 1`: Top-k sampling for draft tokens
   - `--speculative-num-draft-tokens 4`: Number of draft tokens per step
-  - `--speculative-draft-model-path`: The path of the draft model weights. This can be a local folder or a Hugging Face repo ID.
+  - `--speculative-draft-model-path`: The path of the draft model weights. This can be a local folder or a Hugging Face repo ID such as [`lmsys/SGLang-EAGLE3-Qwen3-235B-A22B-Instruct-2507-SpecForge-Meituan`](https://huggingface.co/lmsys/SGLang-EAGLE3-Qwen3-235B-A22B-Instruct-2507-SpecForge-Meituan).
 
 ## 4. Model Invocation
 
