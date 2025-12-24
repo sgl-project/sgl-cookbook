@@ -28,19 +28,19 @@ const Wan2_2ConfigGenerator = () => {
         name: 'modelsize',
         title: 'Model Size',
         items: [
-          { 
-            id: '14b', 
-            label: '14B', 
-            subtitle: 'Diffusers (A14B)', 
-            default: true, 
-            validTasks: ['i2v', 't2v'] 
+          {
+            id: '14b',
+            label: '14B',
+            subtitle: 'Diffusers (A14B)',
+            default: true,
+            validTasks: ['i2v', 't2v']
           },
-          { 
-            id: '5b', 
-            label: '5B', 
-            subtitle: 'Diffusers', 
-            default: false, 
-            validTasks: ['ti2v'] 
+          {
+            id: '5b',
+            label: '5B',
+            subtitle: 'Diffusers',
+            default: false,
+            validTasks: ['ti2v']
           }
         ]
       }
@@ -92,7 +92,7 @@ const Wan2_2ConfigGenerator = () => {
     // Only show sizes that include the current task in their 'validTasks' array
     options.modelsize = {
       ...baseConfig.options.modelsize,
-      items: baseConfig.options.modelsize.items.filter(item => 
+      items: baseConfig.options.modelsize.items.filter(item =>
         item.validTasks.includes(currentTask)
       )
     };
@@ -122,7 +122,7 @@ const Wan2_2ConfigGenerator = () => {
 
   return (
     <div className={styles.configContainer}>
-      
+
       {Object.entries(displayOptions).map(([key, option], index) => (
         <div key={key} className={styles.optionCard}>
           <div className={styles.optionTitle}>
@@ -133,8 +133,8 @@ const Wan2_2ConfigGenerator = () => {
             {option.items.map(item => {
               const isChecked = values[option.name] === item.id;
               // Some logic could disable items, currently handled by filtering
-              const isDisabled = false; 
-              
+              const isDisabled = false;
+
               return (
                 <label
                   key={item.id}

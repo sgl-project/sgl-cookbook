@@ -52,6 +52,8 @@ Current supported optimzation all listed [here](https://github.com/sgl-project/s
 ## 4. Model Invocation
 
 ### 4.1 Basic Usage
+For more API usage and request examples, please refer to:
+[SGLang Diffusion OpenAI API](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/openai_api.md)
 
 #### 4.1.1 Launch a server and then send requests
 ```
@@ -93,10 +95,73 @@ sglang generate "${SERVER_ARGS[@]}" "${SAMPLING_ARGS[@]}"
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 Multi-Modal Inputs
-** TODO **
+#### 4.2.1 Cache-DiT Acceleration
+SGLang integrates [Cache-DiT](https://github.com/vipshop/cache-dit), a caching acceleration engine for Diffusion Transformers (DiT), to achieve up to 7.4x inference speedup with minimal quality loss. You can set `SGLANG_CACHE_DIT_ENABLED=True` to enable it. For more details, please refer to the SGLang Cache-DiT [documentation](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/cache_dit.md).
 
+**Basic Usage**
+```
+SGLANG_CACHE_DIT_ENABLED=true sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
+```
+**Advanced Usage**
+- DBCache Parameters: DBCache controls block-level caching behavior:
+
+  | Parameter | Env Variable              | Default | Description                              |
+  |-----------|---------------------------|---------|------------------------------------------|
+  | Fn        | `SGLANG_CACHE_DIT_FN`     | 1       | Number of first blocks to always compute |
+  | Bn        | `SGLANG_CACHE_DIT_BN`     | 0       | Number of last blocks to always compute  |
+  | W         | `SGLANG_CACHE_DIT_WARMUP` | 4       | Warmup steps before caching starts       |
+  | R         | `SGLANG_CACHE_DIT_RDT`    | 0.24    | Residual difference threshold            |
+  | MC        | `SGLANG_CACHE_DIT_MC`     | 3       | Maximum continuous cached steps          |
+
+- TaylorSeer Configuration: TaylorSeer improves caching accuracy using Taylor expansion:
+
+  | Parameter | Env Variable                  | Default | Description                     |
+  |-----------|-------------------------------|---------|---------------------------------|
+  | Enable    | `SGLANG_CACHE_DIT_TAYLORSEER` | false   | Enable TaylorSeer calibrator    |
+  | Order     | `SGLANG_CACHE_DIT_TS_ORDER`   | 1       | Taylor expansion order (1 or 2) |
+Combined Configuration Example:
+```
+SGLANG_CACHE_DIT_ENABLED=true \
+SGLANG_CACHE_DIT_FN=2 \
+SGLANG_CACHE_DIT_BN=1 \
+SGLANG_CACHE_DIT_WARMUP=4 \
+SGLANG_CACHE_DIT_RDT=0.4 \
+SGLANG_CACHE_DIT_MC=4 \
+SGLANG_CACHE_DIT_TAYLORSEER=true \
+SGLANG_CACHE_DIT_TS_ORDER=2 \
+sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
+```
+
+#### 4.2.2 GPU Optimization
+
+- `--dit-cpu-offload`: Use CPU offload for DiT inference. Enable if run out of memory with FSDP.
+- `--text-encoder-cpu-offload`: Use CPU offload for text encoder inference. Enable if run out of memory with FSDP.
+- `--image-encoder-cpu-offload`: Use CPU offload for image encoder inference. Enable if run out of memory with FSDP.
+- `--vae-cpu-offload`: Use CPU offload for VAE. Enable if run out of memory.
+- `--pin-cpu-memory`: Pin memory for CPU offload. Only added as a temp workaround if it throws "CUDA error: invalid argument".
 
 ## 5. Benchmark
+Test Environment:
+- Hardware: NVIDIA B200 GPU (1x)
+- Model: Wan-AI/Wan2.2-T2V-A14B-Diffusers
+- sglang diffusion version: 0.5.6.post2
 
-**TODO**
+### 5.1 Speedup Benchmark
+#### 5.1.1 Generate a video
+Example input: `A cat walks on the grass, realistic`
+
+server command:
+```
+sglang generate \
+  --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers \
+  --text-encoder-cpu-offload   --pin-cpu-memory \
+  --num-gpus 1 \
+  --prompt "A cat walks on the grass, realistic" \
+  --num-frames 81 \
+  --height 720 \
+  --width 1280 \
+  --num-inference-steps 27
+```
+result:
+```
+```
