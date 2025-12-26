@@ -1,0 +1,30 @@
+# Llama 3.1 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/llama31.yaml
+
+vendor: meta-llama
+
+defaults:
+  hardware:
+    H100: { tp: 4 }
+    H200: { tp: 4 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+    - name: throughput-optimized
+      nodes: single
+      optimization: high-throughput
+      enable_dp_attention: true
+    - name: latency-optimized
+      nodes: single
+      optimization: low-latency
+
+families:
+  - name: Llama-3.1
+    description: Llama 3.1 70B Instruct model
+    llm:
+      thinking_capability: non_thinking
+
+    models:
+      - name: Llama-3.1-70B-Instruct
+        quantization: bf16

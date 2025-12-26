@@ -1,0 +1,65 @@
+# Qwen Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/qwen.yaml
+#
+# Based on src/components/Qwen3ConfigGenerator/index.js
+
+vendor: qwen
+
+defaults:
+  hardware:
+    H100: { tp: 1 }
+    H200: { tp: 1 }
+    B200: { tp: 1 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Qwen3
+    description: Qwen3 family - advanced language model with strong reasoning capabilities
+    # thinking_capability is inferred from capability variant (base/instruct/thinking)
+    llm:
+      tool_parser: qwen
+      reasoning_parser: qwen3
+    model_name_suffix:
+      base: ""
+      instruct: "-Instruct-2507"
+      thinking: "-Thinking-2507"
+
+    models:
+      # Large MoE models (235B) - override tp=8, ep=2 for fp8
+      - base_name: 235B-A22B
+        quantizations: [bf16, fp8]
+        capabilities: [base, instruct, thinking]
+        hardware:
+          default: { tp: 8 }
+        quant_overrides:
+          fp8:
+            ep: 2
+
+      # Medium MoE models (30B)
+      - base_name: 30B-A3B
+        quantizations: [bf16, fp8]
+        capabilities: [base, instruct, thinking]
+
+      # Dense models - base capability only
+      - base_name: 32B
+        quantizations: [bf16, fp8]
+
+      - base_name: 14B
+        quantizations: [bf16, fp8]
+
+      - base_name: 8B
+        quantizations: [bf16, fp8]
+
+      # 4B model - has instruct and thinking
+      - base_name: 4B
+        quantizations: [bf16, fp8]
+        capabilities: [base, instruct, thinking]
+
+      - base_name: 1.7B
+        quantizations: [bf16, fp8]
+
+      - base_name: 0.6B
+        quantizations: [bf16, fp8]

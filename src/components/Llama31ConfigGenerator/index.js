@@ -7,7 +7,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const Llama31ConfigGenerator = () => {
   const config = {
     modelFamily: 'meta-llama',
-    
+
     options: {
       hardware: {
         name: 'hardware',
@@ -27,14 +27,14 @@ const Llama31ConfigGenerator = () => {
         ]
       }
     },
-    
+
     generateCommand: function(values) {
       const { hardware, optimization } = values;
-      
+
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model meta-llama/Llama-3.1-70B-Instruct \\\n`;
       cmd += `  --tp 4`;
-      
+
       if (optimization === 'throughput') {
         cmd += ` \\\n  --enable-dp-attention \\\n`;
         cmd += `  --mem-fraction-static 0.85`;
@@ -50,16 +50,15 @@ const Llama31ConfigGenerator = () => {
         cmd += `  --context-length 32768 \\\n`;
         cmd += `  --quantization fp8`;
       }
-      
+
       cmd += ` \\\n  --host 0.0.0.0 \\\n`;
       cmd += `  --port 8000`;
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
 export default Llama31ConfigGenerator;
-

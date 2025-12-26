@@ -7,7 +7,7 @@ import ConfigGenerator from '../ConfigGenerator';
 const NemotronNano3ConfigGenerator = () => {
   const config = {
     modelFamily: 'nvidia',
-    
+
     options: {
       hardware: {
         name: 'hardware',
@@ -76,19 +76,19 @@ const NemotronNano3ConfigGenerator = () => {
         placeholder: '30000'
       }
     },
-    
+
     generateCommand: function(values) {
       const { hardware, modelVariant, tp, kvcache, thinking, toolcall, host, port } = values;
-      
+
       // Default to FP8 if not selected
       const variant = modelVariant || 'fp8';
       const baseName = 'NVIDIA-Nemotron-3-Nano-30B-A3B';
-      
+
       const modelName =
         variant === 'bf16'
           ? `${this.modelFamily}/${baseName}-BF16`
           : `${this.modelFamily}/${baseName}-FP8`;
-      
+
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelName} \\\n`;
       cmd += `  --trust-remote-code \\\n`;
@@ -105,14 +105,14 @@ const NemotronNano3ConfigGenerator = () => {
         }
       }
 
-      
+
       cmd += `  --host ${host || '0.0.0.0'} \\\n`;
       cmd += `  --port ${port || '30000'}`;
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 

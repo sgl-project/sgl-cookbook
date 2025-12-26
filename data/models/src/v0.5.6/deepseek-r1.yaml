@@ -1,0 +1,42 @@
+# DeepSeek-R1 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/deepseek-r1.yaml
+
+vendor: deepseek-ai
+
+defaults:
+  hardware:
+    H100: { tp: 8 }
+    H200: { tp: 8 }
+    B200: { tp: 8 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+    - name: high-throughput-dp
+      nodes: single
+      optimization: high-throughput
+      dp: 8
+      enable_dp_attention: true
+
+families:
+  - name: DeepSeek-R1
+    description: DeepSeek R1 reasoning model with extended thinking capabilities
+    llm:
+      thinking_capability: thinking
+      tool_parser: deepseekv3
+      reasoning_parser: deepseek-r1
+      chat_template: examples/chat_template/tool_chat_template_deepseekr1.jinja
+
+    models:
+      # DeepSeek-R1-0528 FP8 - all hardware
+      - name: DeepSeek-R1-0528
+        model_path: deepseek-ai/DeepSeek-R1-0528
+        quantization: fp8
+
+      # DeepSeek-R1-0528 FP4 - only H200/B200 supported
+      - name: DeepSeek-R1-0528-FP4
+        model_path: nvidia/DeepSeek-R1-0528-FP4-v2
+        quantization: fp4
+        hardware:
+          H200: { tp: 8 }
+          B200: { tp: 8 }

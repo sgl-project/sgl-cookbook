@@ -1,0 +1,31 @@
+# Llama 4-Scout Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/llama4scout.yaml
+
+vendor: meta-llama
+
+defaults:
+  hardware:
+    H100: { tp: 8 }
+    H200: { tp: 8 }
+    B200: { tp: 8 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Llama-4-Scout
+    description: Llama 4-Scout multimodal instruction model
+    llm:
+      thinking_capability: non_thinking
+      tool_parser: pythonic
+
+    models:
+      # Llama-4-Scout-17B-16E-Instruct - single model, different quantizations
+      - name: Llama-4-Scout-17B-16E-Instruct
+        model_path: meta-llama/Llama-4-Scout-17B-16E-Instruct
+        quantization: bf16
+
+      - name: Llama-4-Scout-17B-16E-Instruct-FP8
+        model_path: meta-llama/Llama-4-Scout-17B-16E-Instruct
+        quantization: fp8

@@ -22,6 +22,14 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ## Guides
 
+### Qwen
+
+- [x] [Qwen3](./Qwen/Qwen3)
+- [x] [Qwen3-VL](./Qwen/Qwen3-VL)
+- [x] [Qwen3-Next](./Qwen/Qwen3-Next)
+- [ ] [Qwen3-Coder-480B-A35B](./Qwen/Qwen3-Coder-480B-A35B)
+- [ ] [Qwen2.5-VL](./Qwen/Qwen2.5-VL)
+
 ### DeepSeek
 
 - [x] [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2)
@@ -29,10 +37,11 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [ ] [DeepSeek-V3](./DeepSeek/DeepSeek-V3)
 - [x] [DeepSeek-R1](/docs/DeepSeek/DeepSeek-R1)
 
-### Ernie
+### Llama
 
-- [ ] [Ernie4.5](./Ernie/Ernie4.5)
-- [ ] [Ernie4.5-VL](./Ernie/Ernie4.5-VL)
+- [ ] [Llama4-Scout](./Llama/Llama4-Scout)
+- [ ] [Llama3.3-70B](./Llama/Llama3.3-70B)
+- [ ] [Llama3.1](./Llama/Llama3.1)
 
 ### GLM
 
@@ -40,6 +49,28 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [ ] [GLM-4.5V](./GLM/GLM-4.5V)
 - [x] [GLM-4.6](./GLM/GLM-4.6)
 - [x] [GLM-4.6V](./GLM/GLM-4.6V)
+
+### OpenAI
+
+- [x] [gpt-oss](./OpenAI/GPT-OSS)
+
+### Moonshotai
+
+- [x] [Kimi-K2](./Moonshotai/Kimi-K2)
+- [ ] [Kimi-Linear](./Moonshotai/Kimi-Linear)
+
+### MiniMax
+
+- [ ] [MiniMax-M2](./MiniMax/MiniMax-M2)
+
+### NVIDIA
+
+- [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron3-Nano)
+
+### Ernie
+
+- [ ] [Ernie4.5](./Ernie/Ernie4.5)
+- [ ] [Ernie4.5-VL](./Ernie/Ernie4.5-VL)
 
 ### InternVL
 
@@ -53,41 +84,18 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 - [ ] [Jina-reranker-m0](./Jina/Jina-reranker-m0)
 
-### Llama
+### Benchmarks
 
-- [ ] [Llama4-Scout](./Llama/Llama4-Scout)
-- [ ] [Llama3.3-70B](./Llama/Llama3.3-70B)
-- [ ] [Llama3.1](./Llama/Llama3.1)
-
-### MiniMax
-
-- [ ] [MiniMax-M2](./MiniMax/MiniMax-M2)
+- [x] [SpecBundle](./Benchmarks/SpecBundle.md)
 
 ### Mistral
 
-- [x] [Devstral 2](./Mistral/Devstral-2)
 - [ ] [Mistral-3](./Mistral/Mistral-3)
+- [x] [Devstral 2](./Mistral/Devstral-2)
 
-### OpenAI
+## Reference
 
-- [ ] [gpt-oss](./OpenAI/GPT-OSS)
-
-### Qwen
-
-- [x] [Qwen3](./Qwen/Qwen3)
-- [x] [Qwen3-VL](./Qwen/Qwen3-VL)
-- [x] [Qwen3-Next](./Qwen/Qwen3-Next)
-- [ ] [Qwen3-Coder-480B-A35B](./Qwen/Qwen3-Coder-480B-A35B)
-- [ ] [Qwen2.5-VL](./Qwen/Qwen2.5-VL)
-
-### Moonshotai
-
-- [x] [Kimi-K2](./Moonshotai/Kimi-K2)
-- [ ] [Kimi-Linear](./Moonshotai/Kimi-Linear)
-
-### NVIDIA
-
-- [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron3-Nano)
+- [Server arguments](./reference/server_arguments.md) - Understanding all the arguments
 
 ## 🚀 Quick Start
 
