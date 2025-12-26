@@ -41,12 +41,12 @@ import Wan2_2ConfigGenerator from '@site/src/components/Wan2_2ConfigGenerator';
 
 Current supported optimzation all listed [here](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/support_matrix.md).
 
---vae-path: Path to a custom VAE model or HuggingFace model ID (e.g., fal/FLUX.2-Tiny-AutoEncoder). If not specified, the VAE will be loaded from the main model path.
---num-gpus {NUM_GPUS}: Number of GPUs to use
---tp-size {TP_SIZE}: Tensor parallelism size (only for the encoder; should not be larger than 1 if text encoder offload is enabled, as layer-wise offload plus prefetch is faster)
---sp-degree {SP_SIZE}: Sequence parallelism size (typically should match the number of GPUs)
---ulysses-degree {ULYSSES_DEGREE}: The degree of DeepSpeed-Ulysses-style SP in USP
---ring-degree {RING_DEGREE}: The degree of ring attention-style SP in USP
+- `--vae-path`: Path to a custom VAE model or HuggingFace model ID (e.g., fal/FLUX.2-Tiny-AutoEncoder). If not specified, the VAE will be loaded from the main model path.
+- `--num-gpus {NUM_GPUS}`: Number of GPUs to use
+- `--tp-size {TP_SIZE}`: Tensor parallelism size (only for the encoder; should not be larger than 1 if text encoder offload is enabled, as layer-wise offload plus prefetch is faster)
+- `--sp-degree {SP_SIZE}`: Sequence parallelism size (typically should match the number of GPUs)
+- `--ulysses-degree {ULYSSES_DEGREE}`: The degree of DeepSpeed-Ulysses-style SP in USP
+- `--ring-degree {RING_DEGREE}`: The degree of ring attention-style SP in USP
 
 
 ## 4. Model Invocation
@@ -57,7 +57,7 @@ For more API usage and request examples, please refer to:
 
 #### 4.1.1 Launch a server and then send requests
 ```
-sglang serve --model-path black-forest-labs/FLUX.1-dev --port 3000
+sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers --port 3000
 
 curl http://127.0.0.1:3000/v1/images/generations \
   -o >(jq -r '.data[0].b64_json' | base64 --decode > example.png) \
@@ -148,28 +148,78 @@ Test Environment:
 
 ### 5.1 Speedup Benchmark
 #### 5.1.1 Generate a video
-Example input: `A cat walks on the grass, realistic`
+**Server Command**:
+```
+sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
+```
+**Benchmark Command**:
+```
+python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
+    --backend sglang-video --dataset vbench --task t2v --num-prompts 1 --max-concurrency 1
+```
+**Result**:
+```
+================= Serving Benchmark Result =================
+Backend:                                 sglang-video
+Model:                                   Wan-AI/Wan2.2-T2V-A14B-Diffusers
+Dataset:                                 vbench
+Task:                                    t2v
+--------------------------------------------------
+Benchmark duration (s):                  630.43
+Request rate:                            inf
+Max request concurrency:                 1
+Successful requests:                     1/1
+--------------------------------------------------
+Request throughput (req/s):              0.00
+Latency Mean (s):                        630.4277
+Latency Median (s):                      630.4277
+Latency P99 (s):                         630.4277
+--------------------------------------------------
+Peak Memory Max (MB):                    62627.41
+Peak Memory Mean (MB):                   62627.41
+Peak Memory Median (MB):                 62627.41
 
-server command:
+============================================================
 ```
-sglang generate \
-  --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers \
-  --text-encoder-cpu-offload   --pin-cpu-memory \
-  --num-gpus 1 \
-  --prompt "A cat walks on the grass, realistic" \
-  --num-frames 81 \
-  --height 720 \
-  --width 1280 \
-  --num-inference-steps 27
+#### 5.1.2 Generate videos with high concurrency
+**Server Command**:
 ```
-result:
+SGLANG_CACHE_DIT_ENABLED=true \
+SGLANG_CACHE_DIT_FN=2 \
+SGLANG_CACHE_DIT_BN=1 \
+SGLANG_CACHE_DIT_WARMUP=4 \
+SGLANG_CACHE_DIT_RDT=0.4 \
+SGLANG_CACHE_DIT_MC=4 \
+SGLANG_CACHE_DIT_TAYLORSEER=true \
+SGLANG_CACHE_DIT_TS_ORDER=2 \
+sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
 ```
-[12-24 16:56:17] [DenoisingStage] average time per step: 12.9365 seconds
-[12-24 16:56:17] [DenoisingStage] finished in 349.2883 seconds
-[12-24 16:56:17] [DecodingStage] started...
-[12-24 16:56:21] [DecodingStage] finished in 4.2784 seconds
-[12-24 16:56:24] Output saved to outputs/A_cat_walks_on_the_grass_realistic_20251224-165025_f5e8be33.mp4
-[12-24 16:56:24] Pixel data generated successfully in 358.56 seconds
-[12-24 16:56:24] Completed batch processing. Generated 1 outputs in 358.56 seconds.
-[12-24 16:56:24] Memory usage - Max peak: 62626.41 MB, Avg peak: 62626.41 MB
+**Benchmark Command**:
+```
+python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
+    --backend sglang-video --dataset vbench --task t2v --num-prompts 20 --max-concurrency 20
+```
+**Result**:
+```
+================= Serving Benchmark Result =================
+Backend:                                 sglang-video
+Model:                                   Wan-AI/Wan2.2-T2V-A14B-Diffusers
+Dataset:                                 vbench
+Task:                                    t2v
+--------------------------------------------------
+Benchmark duration (s):                  5163.21
+Request rate:                            inf
+Max request concurrency:                 20
+Successful requests:                     20/20
+--------------------------------------------------
+Request throughput (req/s):              0.00
+Latency Mean (s):                        2739.7695
+Latency Median (s):                      2742.0673
+Latency P99 (s):                         5121.6331
+--------------------------------------------------
+Peak Memory Max (MB):                    72523.56
+Peak Memory Mean (MB):                   70253.34
+Peak Memory Median (MB):                 70824.46
+
+============================================================
 ```
