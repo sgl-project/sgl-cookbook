@@ -63,7 +63,10 @@ import GLM46VConfigGenerator from '@site/src/components/GLM46VConfigGenerator';
 <GLM46VConfigGenerator />
 
 ### 3.2 Configuration Tips
-For more detailed configuration tips, please refer to [GLM-4.5V/GLM-4.6V Usage](https://docs.sglang.io/basic_usage/glmv.html).
+- **TTFT Optimization** : Set `SGLANG_USE_CUDA_IPC_TRANSPORT=1` to use CUDA IPC for transferring multimodal features, which significantly improves TTFT. This consumes additional memory and may require adjusting `--mem-fraction-static` and/or `--max-running-requests`. (additional memory is proportional to image size * number of images in current running requests.)
+- **TP=8 Configuration**: When using Tensor Parallelism (TP) of 8, the vision attention's 12 heads cannot be evenly divided. You can resolve this by adding `--mm-enable-dp-encoder` (which the generator above handles automatically).
+- **Fast Model Loading**: For large models (like the 106B version), you can speed up model loading by using `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'`.
+- For more detailed configuration tips, please refer to [GLM-4.5V/GLM-4.6V Usage](https://docs.sglang.io/basic_usage/glmv.html).
 
 ## 4. Example APIs
 
@@ -151,7 +154,7 @@ print(response)
 
 ### Tool Call Example
 
-### Payload
+#### API Payload
 ```python
 from openai import OpenAI
 import argparse
@@ -238,7 +241,7 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content.strip())
 ```
 
-### Output
+#### Output
 
 ```shell
 The weather in Beijing today (November 7, 2025) is sunny with a temperature of 2°C.
@@ -250,8 +253,16 @@ Yes, the tool returned an image (the SGL logo).
 
 ### 5.1. Text Benchmark: Latency, Throughput and Accuracy
 
+#### Command
 ```shell
 python3 ./benchmark/gsm8k/bench_sglang.py
+```
+#### Result Output
+```shell
+Accuracy: 0.925
+Invalid: 0.000
+Latency: 15.327 s
+Output throughput: 1788.375 token/s
 ```
 
 ### 5.2. Multimodal Benchmark - Latency and Throughput
@@ -259,7 +270,7 @@ python3 ./benchmark/gsm8k/bench_sglang.py
 #### Command
 ```shell
 python3 -m sglang.bench_serving \
-  --backend sglang \
+  --backend sglang-oai-chat \
   --port 30000 \
   --model zai-org/GLM-4.6V \
   --dataset-name image \
@@ -268,46 +279,46 @@ python3 -m sglang.bench_serving \
   --random-input-len 128 \
   --random-output-len 1024 \
   --num-prompts 128 \
-  --max-concurrency 4
+  --max-concurrency 8
 ```
 
-#### Response
+#### Result Output
 ```shell
 ============ Serving Benchmark Result ============
-Backend:                                 sglang
+Backend:                                 sglang-oai-chat
 Traffic request rate:                    inf
-Max request concurrency:                 64
+Max request concurrency:                 8
 Successful requests:                     128
-Benchmark duration (s):                  30.60
-Total input tokens:                      315362
-Total input text tokens:                 8674
+Benchmark duration (s):                  89.27
+Total input tokens:                      315390
+Total input text tokens:                 8702
 Total input vision tokens:               306688
-Total generated tokens:                  63692
-Total generated tokens (retokenized):    63662
-Request throughput (req/s):              4.18
-Input token throughput (tok/s):          10305.12
-Output token throughput (tok/s):         2081.27
-Peak output token throughput (tok/s):    3007.00
-Peak concurrent requests:                71
-Total token throughput (tok/s):          12386.39
-Concurrency:                             48.29
+Total generated tokens:                  66020
+Total generated tokens (retokenized):    31037
+Request throughput (req/s):              1.43
+Input token throughput (tok/s):          3533.17
+Output token throughput (tok/s):         739.59
+Peak output token throughput (tok/s):    823.00
+Peak concurrent requests:                12
+Total token throughput (tok/s):          4272.76
+Concurrency:                             7.67
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   11546.09
-Median E2E Latency (ms):                 11856.43
+Mean E2E Latency (ms):                   5349.20
+Median E2E Latency (ms):                 5380.98
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          286.91
-Median TTFT (ms):                        259.37
-P99 TTFT (ms):                           575.39
+Mean TTFT (ms):                          1724.04
+Median TTFT (ms):                        1688.16
+P99 TTFT (ms):                           6152.34
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          22.87
-Median TPOT (ms):                        23.48
-P99 TPOT (ms):                           25.89
+Mean TPOT (ms):                          8.15
+Median TPOT (ms):                        7.77
+P99 TPOT (ms):                           23.97
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           22.67
-Median ITL (ms):                         20.01
-P95 ITL (ms):                            68.51
-P99 ITL (ms):                            74.81
-Max ITL (ms):                            189.34
+Mean ITL (ms):                           10.00
+Median ITL (ms):                         8.44
+P95 ITL (ms):                            9.23
+P99 ITL (ms):                            116.02
+Max ITL (ms):                            173.48
 ==================================================
 ```
 
@@ -319,7 +330,7 @@ Max ITL (ms):                            189.34
 python3 benchmark/mmmu/bench_sglang.py --response-answer-regex "<\|begin_of_box\|>(.*)<\|end_of_box\|>" --port 30000 --concurrency 64 --extra-request-body '{"max_tokens": 4096}'
 ```
 
-#### Response
+#### Result Output
 ```shell
 Benchmark time: 487.2229107860476
 answers saved to: ./answer_sglang.json

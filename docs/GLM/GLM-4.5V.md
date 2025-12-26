@@ -33,8 +33,10 @@ import GLM45VConfigGenerator from '@site/src/components/GLM45VConfigGenerator';
 <GLM45VConfigGenerator />
 
 ### 3.2 Configuration Tips
-
-For more detailed configuration tips, please refer to [GLM-4.5V/GLM-4.6V Usage](https://docs.sglang.io/basic_usage/glmv.html).
+- **TTFT Optimization** : Set `SGLANG_USE_CUDA_IPC_TRANSPORT=1` to use CUDA IPC for transferring multimodal features, which significantly improves TTFT. This consumes additional memory and may require adjusting `--mem-fraction-static` and/or `--max-running-requests`. (additional memory is proportional to image size * number of images in current running requests.)
+- **TP=8 Configuration**: When using Tensor Parallelism (TP) of 8, the vision attention's 12 heads cannot be evenly divided. You can resolve this by adding `--mm-enable-dp-encoder`.
+- **Fast Model Loading**: For large models (like the 106B version), you can speed up model loading by using `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'`.
+- For more detailed configuration tips, please refer to [GLM-4.5V/GLM-4.6V Usage](https://docs.sglang.io/basic_usage/glmv.html).
 
 ## 4. Model Invocation
 
