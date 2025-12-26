@@ -63,7 +63,7 @@ DeepSeek-R1 supports advanced reasoning capabilities with built-in thinking proc
 python -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-R1-0528 \
   --reasoning-parser deepseek-r1 \
-  --tp 8 \
+  --tp 8
 ```
 
 **Streaming with Thinking Process:**
@@ -140,7 +140,7 @@ python -m sglang.launch_server \
   --reasoning-parser deepseek-r1 \
   --tool-call-parser deepseekv3 \
   --chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja \
-  --tp 8 \
+  --tp 8
 ```
 
 **Python Example (with Thinking Process):**

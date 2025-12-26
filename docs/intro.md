@@ -63,6 +63,11 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 - [ ] [MiniMax-M2](./MiniMax/MiniMax-M2)
 
+### Mistral
+
+- [x] [Devstral 2](./Mistral/Devstral-2)
+- [ ] [Mistral-3](./Mistral/Mistral-3)
+
 ### OpenAI
 
 - [ ] [gpt-oss](./OpenAI/GPT-OSS)
