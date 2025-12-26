@@ -1,0 +1,204 @@
+name: Schema CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/models/**'
+      - 'data/schema/**'
+      - 'data/scripts/**'
+      - '.github/workflows/schema-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'data/models/**'
+      - 'data/schema/**'
+      - 'data/scripts/**'
+      - '.github/workflows/schema-ci.yml'
+
+jobs:
+  typescript-validation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: data/schema
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: data/schema/package.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check generated model configs are up-to-date
+        timeout-minutes: 2
+        working-directory: .
+        run: python3 data/scripts/compile_models.py --check
+
+      - name: Validate YAML against TypeScript types
+        timeout-minutes: 2
+        run: npm test
+
+  # Show diff of generated configs in PR
+  config-diff:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr-branch
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base-branch
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Generate fresh configs from PR source
+        working-directory: pr-branch
+        run: |
+          # Save current generated configs
+          cp -r data/models/generated data/models/generated-from-pr
+
+          # Regenerate from src
+          python3 data/scripts/compile_models.py
+
+          # Check if regenerated matches what's in PR
+          if ! diff -rq data/models/generated data/models/generated-from-pr > /dev/null 2>&1; then
+            echo "::warning::Generated configs in PR don't match what would be generated from src files"
+            echo "REGENERATE_DIFF=true" >> $GITHUB_ENV
+          fi
+
+      - name: Show diff - PR generated vs regenerated from src
+        if: env.REGENERATE_DIFF == 'true'
+        working-directory: pr-branch
+        run: |
+          echo "## Generated configs in PR vs freshly regenerated from src"
+          echo ""
+          echo "The generated configs committed in this PR differ from what the compiler produces."
+          echo "Please run \`python3 data/scripts/compile_models.py\` and commit the results."
+          echo ""
+          echo '```diff'
+          diff -ru data/models/generated-from-pr data/models/generated || true
+          echo '```'
+
+      - name: Show diff - PR vs base branch
+        run: |
+          echo "## Config changes: PR vs base branch"
+          echo ""
+
+          # Check if there are any differences
+          if diff -rq base-branch/data/models/generated pr-branch/data/models/generated > /dev/null 2>&1; then
+            echo "No changes to generated model configs."
+          else
+            echo "The following changes will be made to the generated model configs:"
+            echo ""
+            echo '```diff'
+            diff -ru base-branch/data/models/generated pr-branch/data/models/generated || true
+            echo '```'
+          fi
+
+      - name: Create PR comment with diff summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+
+            // Get diff between base and PR
+            let diff = '';
+            try {
+              diff = execSync('diff -ru base-branch/data/models/generated pr-branch/data/models/generated || true', {
+                encoding: 'utf-8',
+                maxBuffer: 1024 * 1024 * 10 // 10MB buffer
+              });
+            } catch (e) {
+              diff = e.stdout || '';
+            }
+
+            // Count changed files
+            let changedFiles = [];
+            try {
+              const diffOutput = execSync('diff -rq base-branch/data/models/generated pr-branch/data/models/generated || true', {
+                encoding: 'utf-8'
+              });
+              changedFiles = diffOutput.split('\n').filter(line => line.trim());
+            } catch (e) {
+              // ignore
+            }
+
+            if (changedFiles.length === 0) {
+              console.log('No changes to generated configs');
+              return;
+            }
+
+            // Truncate diff if too long
+            const maxDiffLength = 60000;
+            let truncated = false;
+            if (diff.length > maxDiffLength) {
+              diff = diff.substring(0, maxDiffLength);
+              truncated = true;
+            }
+
+            const body = `## Model Config Changes
+
+            This PR modifies **${changedFiles.length}** generated config file(s).
+
+            <details>
+            <summary>Click to expand diff</summary>
+
+            \`\`\`diff
+            ${diff}
+            \`\`\`
+            ${truncated ? '\n*Diff truncated due to size limits*' : ''}
+
+            </details>
+
+            ---
+            *Generated by Schema CI workflow*`;
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('## Model Config Changes')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }

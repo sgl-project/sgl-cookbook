@@ -1,0 +1,30 @@
+# Qwen3-Next Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/qwen3next.yaml
+
+vendor: qwen
+
+defaults:
+  hardware:
+    H100: { tp: 4 }
+    H200: { tp: 2 }
+    B200: { tp: 2 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Qwen3-Next
+    description: Qwen3-Next 80B MOE model with speculative decoding support
+    llm:
+      tool_parser: qwen
+      reasoning_parser: qwen3
+    model_name_suffix:
+      instruct: "-Instruct"
+      thinking: "-Thinking"
+
+    models:
+      # Qwen3-Next-80B-A3B with Instruct and Thinking variants
+      - base_name: 80B-A3B
+        quantizations: [bf16, fp8]
+        capabilities: [instruct, thinking]

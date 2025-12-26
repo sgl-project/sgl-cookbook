@@ -20,7 +20,7 @@ const YourModelConfigGenerator = () => {
       return 'your-command';
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
@@ -79,18 +79,18 @@ Write the logic to generate commands based on user selections:
 generateCommand: function(values) {
   // Extract values
   const { hardware, features, modelPath } = values;
-  
+
   // Start building command
   let cmd = 'python3 -m sglang.launch_server';
   cmd += ` --model ${modelPath}`;
-  
+
   // Handle radio button (single value)
   if (hardware === 'gpu_a') {
     cmd += ' --device-type gpu_a';
   } else if (hardware === 'gpu_b') {
     cmd += ' --device-type gpu_b';
   }
-  
+
   // Handle checkboxes (array of values)
   const featureArray = Array.isArray(features) ? features : [];
   if (featureArray.includes('feature1')) {
@@ -99,7 +99,7 @@ generateCommand: function(values) {
   if (featureArray.includes('feature2')) {
     cmd += ' --enable-feature2';
   }
-  
+
   return cmd;
 }
 ```
@@ -168,26 +168,26 @@ const ExampleConfigGenerator = () => {
         placeholder: 'Enter model path from Hugging Face...'
       }
     },
-    
+
     generateCommand: function(values) {
       const { hardware, quantization, parallelism, modelPath } = values;
       const parallelismArray = Array.isArray(parallelism) ? parallelism : [];
-      
+
       // Validation example
       if (hardware === 'a100' && quantization === 'int4') {
         return '# Error: A100 does not support INT4 quantization\n' +
                '# Please choose FP16 or INT8, or use H100 hardware';
       }
-      
+
       // Build command
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelPath}`;
-      
+
       // Add quantization
       if (quantization !== 'fp16') {
         cmd += ` \\\n  --quantization ${quantization}`;
       }
-      
+
       // Add parallelism strategies
       if (parallelismArray.includes('tp')) {
         cmd += ' \\\n  --tp 8';
@@ -198,16 +198,16 @@ const ExampleConfigGenerator = () => {
       if (parallelismArray.includes('pp')) {
         cmd += ' \\\n  --pp 2';
       }
-      
+
       // Hardware-specific options
       if (hardware === 'h100') {
         cmd += ' \\\n  --enable-h100-optimizations';
       }
-      
+
       return cmd;
     }
   };
-  
+
   return <ConfigGenerator config={config} />;
 };
 
@@ -236,7 +236,7 @@ export default ExampleConfigGenerator;
 ```javascript
 generateCommand: function(values) {
   const { hardware, quantization } = values;
-  
+
   // Only add EP for specific hardware
   if (hardware === 'b200' && values.parallelism.includes('ep')) {
     cmd += ' --ep 8';
@@ -261,20 +261,19 @@ const modelPath = modelMap[values.modelSize];
 generateCommand: function(values) {
   // Multiple validation checks
   const errors = [];
-  
+
   if (values.hardware === 'a100' && values.quantization === 'int4') {
     errors.push('A100 does not support INT4');
   }
-  
+
   if (values.batchSize > 128 && !values.features.includes('optimization')) {
     errors.push('Large batch sizes require optimization enabled');
   }
-  
+
   if (errors.length > 0) {
     return '# Errors:\n' + errors.map(e => `# - ${e}`).join('\n');
   }
-  
+
   // ... normal command generation
 }
 ```
-

@@ -88,7 +88,7 @@ thinking_started = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -96,7 +96,7 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print answer content
         if delta.content:
             # Close thinking section and add content header
@@ -191,7 +191,7 @@ has_thinking = False
 for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
-    
+
         # Print thinking process
         if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
             if not thinking_started:
@@ -199,19 +199,19 @@ for chunk in response:
                 thinking_started = True
             has_thinking = True
             print(delta.reasoning_content, end="", flush=True)
-    
+
         # Print tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             # Close thinking section if needed
             if has_thinking and thinking_started:
                 print("\n=============== Content =================", flush=True)
                 thinking_started = False
-        
+
             for tool_call in delta.tool_calls:
                 if tool_call.function:
                     print(f"🔧 Tool Call: {tool_call.function.name}")
                     print(f"   Arguments: {tool_call.function.arguments}")
-    
+
         # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
@@ -653,7 +653,7 @@ Max ITL (ms):                            155.65
 
 **Scenario 3: Summarization (8K/1K)**
 
-- Low 
+- Low
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \

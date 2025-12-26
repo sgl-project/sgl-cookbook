@@ -79,16 +79,16 @@ curl -s http://localhost:{30000}/v1/chat/completions \\
     "model": "default",
     "messages": [
       {{
-        "role": "user", 
+        "role": "user",
         "content": [
           {{
-            "type": "image_url", 
+            "type": "image_url",
             "image_url": {{
               "url": "/home/jobuser/sgl_logo.png"
             }}
           }},
           {{
-            "type": "text", 
+            "type": "text",
             "text": "What is the image"
           }}
         ]
@@ -120,16 +120,16 @@ curl -s http://localhost:{30000}/v1/chat/completions \\
     "model": "default",
     "messages": [
       {{
-        "role": "user", 
+        "role": "user",
         "content": [
           {{
-            "type": "video_url", 
+            "type": "video_url",
             "video_url": {{
               "url": "/home/jobuser/jobs_presenting_ipod.mp4"
             }}
           }},
           {{
-            "type": "text", 
+            "type": "text",
             "text": "What is the image"
           }}
         ]
@@ -242,7 +242,7 @@ print(response.choices[0].message.content.strip())
 ### Output
 
 ```shell
-The weather in Beijing today (November 7, 2025) is sunny with a temperature of 2°C.  
+The weather in Beijing today (November 7, 2025) is sunny with a temperature of 2°C.
 
 Yes, the tool returned an image (the SGL logo).
 ```
@@ -275,40 +275,40 @@ python3 -m sglang.bench_serving \
 #### Response
 ```shell
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 64        
-Successful requests:                     128       
-Benchmark duration (s):                  30.60     
-Total input tokens:                      315362    
-Total input text tokens:                 8674      
-Total input vision tokens:               306688    
-Total generated tokens:                  63692     
-Total generated tokens (retokenized):    63662     
-Request throughput (req/s):              4.18      
-Input token throughput (tok/s):          10305.12  
-Output token throughput (tok/s):         2081.27   
-Peak output token throughput (tok/s):    3007.00   
-Peak concurrent requests:                71        
-Total token throughput (tok/s):          12386.39  
-Concurrency:                             48.29     
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     128
+Benchmark duration (s):                  30.60
+Total input tokens:                      315362
+Total input text tokens:                 8674
+Total input vision tokens:               306688
+Total generated tokens:                  63692
+Total generated tokens (retokenized):    63662
+Request throughput (req/s):              4.18
+Input token throughput (tok/s):          10305.12
+Output token throughput (tok/s):         2081.27
+Peak output token throughput (tok/s):    3007.00
+Peak concurrent requests:                71
+Total token throughput (tok/s):          12386.39
+Concurrency:                             48.29
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   11546.09  
-Median E2E Latency (ms):                 11856.43  
+Mean E2E Latency (ms):                   11546.09
+Median E2E Latency (ms):                 11856.43
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          286.91    
-Median TTFT (ms):                        259.37    
-P99 TTFT (ms):                           575.39    
+Mean TTFT (ms):                          286.91
+Median TTFT (ms):                        259.37
+P99 TTFT (ms):                           575.39
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          22.87     
-Median TPOT (ms):                        23.48     
-P99 TPOT (ms):                           25.89     
+Mean TPOT (ms):                          22.87
+Median TPOT (ms):                        23.48
+P99 TPOT (ms):                           25.89
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           22.67     
-Median ITL (ms):                         20.01     
-P95 ITL (ms):                            68.51     
-P99 ITL (ms):                            74.81     
-Max ITL (ms):                            189.34    
+Mean ITL (ms):                           22.67
+Median ITL (ms):                         20.01
+P95 ITL (ms):                            68.51
+P99 ITL (ms):                            74.81
+Max ITL (ms):                            189.34
 ==================================================
 ```
 

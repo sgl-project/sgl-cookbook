@@ -8,7 +8,7 @@ The BF16 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16`) is designed as a
 
 At a high level:
 
-- **Hybrid layer stack (Mamba2 + MoE + attention):** The network is composed of interleaved layers that are *either* Mamba2, *or* MoE feed-forward, *or* attention-only. 
+- **Hybrid layer stack (Mamba2 + MoE + attention):** The network is composed of interleaved layers that are *either* Mamba2, *or* MoE feed-forward, *or* attention-only.
 - **Non-uniform layer ordering:** The order and mix of these specialized layers is not a simple, rigid pattern, enabling the model to trade off sequence modeling, routing capacity, and expressivity across depth.
 - **Deployment-friendly precision:** Use BF16 for accuracy-sensitive and evaluation workloads; use FP8 for latency- and throughput-critical serving on recent NVIDIA GPUs.
 
@@ -40,15 +40,15 @@ import NemotronNano3ConfigGenerator from '@site/src/components/NemotronConfigGen
 
 
 - **Attention backend**:
-  
+
     **H200/B200**: use flashinfer attention backend by default.
-  
+
 - **TP support**:
-  
+
     To set tp size, use `--tp <1|2|4|8>`.
 
 - **FP8 KV cache**:
-   
+
     To enable fp8 kv cache, please append `--kv-cache-dtype fp8_e4m3`.
 
 ---
@@ -377,7 +377,3 @@ lm_eval --model local-completions --tasks gsm8k --model_args "model=nvidia/NVIDI
 |gsm8k|      3|flexible-extract|     5|exact_match|↑  |0.5603|±  |0.0137|
 |     |       |strict-match    |     5|exact_match|↑  |0.8453|±  |0.0100|
 ```
-
-
-
-

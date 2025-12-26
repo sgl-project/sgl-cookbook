@@ -1,0 +1,108 @@
+vendor: meta-llama
+families:
+- name: Llama-3.1
+  description: Llama 3.1 70B Instruct model
+  models:
+  - name: Llama-3.1-70B-Instruct
+    model_path: meta-llama/Llama-3.1-70B-Instruct
+    attributes:
+      llm:
+        thinking_capability: non_thinking
+        tool_parser: null
+        reasoning_parser: null
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: throughput-optimized
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: latency-optimized
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: throughput-optimized
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: latency-optimized
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null

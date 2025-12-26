@@ -1,0 +1,17 @@
+{
+  "name": "model-config-schema",
+  "version": "1.0.0",
+  "description": "TypeScript schema and validation for model configuration YAML files",
+  "private": true,
+  "scripts": {
+    "test": "npx ts-node types.test.ts",
+    "validate": "npx ts-node types.test.ts"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.0.0",
+    "js-yaml": "^4.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}
