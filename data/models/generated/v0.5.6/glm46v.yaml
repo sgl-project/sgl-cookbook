@@ -3,8 +3,8 @@ families:
 - name: GLM-4.6V
   description: GLM-4.6V vision-language model family
   models:
-  - name: GLM-4.6V-GLM-4.6V
-    model_path: zai-org/GLM-4.6V-GLM-4.6V
+  - name: GLM-4.6V
+    model_path: zai-org/GLM-4.6V
     attributes:
       llm:
         thinking_capability: hybrid
@@ -63,8 +63,8 @@ families:
             extra_args: []
           prefill: null
           decode: null
-  - name: GLM-4.6V-GLM-4.6V-FP8
-    model_path: zai-org/GLM-4.6V-GLM-4.6V-FP8
+  - name: GLM-4.6V-FP8
+    model_path: zai-org/GLM-4.6V-FP8
     attributes:
       llm:
         thinking_capability: hybrid
@@ -123,8 +123,8 @@ families:
             extra_args: []
           prefill: null
           decode: null
-  - name: GLM-4.6V-GLM-4.6V-Flash
-    model_path: zai-org/GLM-4.6V-GLM-4.6V-Flash
+  - name: GLM-4.6V-Flash
+    model_path: zai-org/GLM-4.6V-Flash
     attributes:
       llm:
         thinking_capability: hybrid
@@ -183,8 +183,8 @@ families:
             extra_args: []
           prefill: null
           decode: null
-  - name: GLM-4.6V-GLM-4.6V-Flash-FP8
-    model_path: zai-org/GLM-4.6V-GLM-4.6V-Flash-FP8
+  - name: GLM-4.6V-Flash-FP8
+    model_path: zai-org/GLM-4.6V-Flash-FP8
     attributes:
       llm:
         thinking_capability: hybrid
