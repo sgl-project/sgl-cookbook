@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Wan2.2
 
 ## 1. Model Introduction
