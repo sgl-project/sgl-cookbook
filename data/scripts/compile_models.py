@@ -310,7 +310,11 @@ def generate_model_variants(
             # Build model name
             name_suffix = name_suffixes.get(capability, MODEL_NAME_SUFFIXES.get(capability, ""))
             quant_suffix = quant_suffixes.get(quant, DEFAULT_QUANT_SUFFIXES.get(quant, ""))
-            model_name = f"{family_name}-{base_name}{name_suffix}{quant_suffix}"
+            # Handle empty base_name (model name matches family name)
+            if base_name:
+                model_name = f"{family_name}-{base_name}{name_suffix}{quant_suffix}"
+            else:
+                model_name = f"{family_name}{name_suffix}{quant_suffix}"
 
             # Determine model path
             if quantized_paths and quant in quantized_paths:

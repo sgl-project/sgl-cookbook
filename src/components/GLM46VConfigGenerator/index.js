@@ -52,20 +52,6 @@ const GLM46VConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: false }
         ],
         commandRule: (value) => value === 'enabled' ? '--tool-call-parser glm45' : null
-      },
-      host: {
-        name: 'host',
-        title: 'Host',
-        type: 'text',
-        default: '0.0.0.0',
-        placeholder: '0.0.0.0'
-      },
-      port: {
-        name: 'port',
-        title: 'Port',
-        type: 'text',
-        default: '30000',
-        placeholder: '30000'
       }
     },
 
@@ -112,6 +98,9 @@ const GLM46VConfigGenerator = () => {
 
       if (hwConfig.tp > 1) {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
+        if (hwConfig.tp === 8) {
+          cmd += ` \\\n  --mm-enable-dp-encoder`;
+        }
       }
 
       for (const [key, option] of Object.entries(this.options)) {
@@ -124,10 +113,6 @@ const GLM46VConfigGenerator = () => {
           }
         }
       }
-
-      const host = values.host || CONFIG.options.host.default;
-      const port = values.port || CONFIG.options.port.default;
-      cmd += ` \\\n  --host ${host} \\\n  --port ${port}`;
 
       return cmd;
     }
