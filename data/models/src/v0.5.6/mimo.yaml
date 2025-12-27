@@ -20,10 +20,9 @@ families:
     llm:
       tool_parser: mimo
       reasoning_parser: qwen3
-    
+
     models:
       - base_name: MiMo-V2-Flash
         quantizations: [bf16]
         hardware:
           default: { tp: 8, dp: 2 }
-
