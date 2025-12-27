@@ -22,12 +22,12 @@ families:
       reasoning_parser: glm45
 
     models:
-      # GLM-4.6V (106B)
-      - base_name: GLM-4.6V
+      # GLM-4.6V (106B) - base model uses empty base_name since it matches family name
+      - base_name: ""
         quantizations: [bf16, fp8]
 
       # GLM-4.6V-Flash (9B) - override tp to 1
-      - base_name: GLM-4.6V-Flash
+      - base_name: Flash
         quantizations: [bf16, fp8]
         hardware:
           default: { tp: 1 }
