@@ -32,7 +32,7 @@ const sidebars = {
           type: 'category',
           label: 'Wan',
           items: [
-           'diffusion/docs/models/Wan/Wan2.2'
+           'diffusion/models/Wan/Wan2.2'
           ],
         },
       ],
