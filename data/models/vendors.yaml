@@ -34,3 +34,7 @@ vendors:
   internlm:
     name: InternLM (Shanghai AI Lab)
     huggingface_org: internlm
+
+  xiaomi:
+    name: Xiaomi
+    huggingface_org: XiaomiMiMo
