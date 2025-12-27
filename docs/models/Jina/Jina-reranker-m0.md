@@ -17,7 +17,7 @@ git checkout -b add-jina-reranker-m0-guide
 
 ## 📚 Reference
 
-- [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2.md)
+- [DeepSeek-V3.2](../DeepSeek/DeepSeek-V3_2.md)
 
 ---
 

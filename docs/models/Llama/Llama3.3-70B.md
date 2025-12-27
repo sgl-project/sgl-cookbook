@@ -17,7 +17,7 @@ git checkout -b add-llama3-3-70b-guide
 
 ## 📚 Reference
 
-- [Qwen3](/docs/Qwen/Qwen3.md)
+- [Qwen3](../Qwen/Qwen3.md)
 
 ---
 

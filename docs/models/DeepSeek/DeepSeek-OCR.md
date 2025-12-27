@@ -17,7 +17,7 @@ git checkout -b add-deepseek-ocr-guide
 
 ## 📚 Reference
 
-- [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2.md)
+- [DeepSeek-V3.2](./DeepSeek-V3_2.md)
 
 ---
 

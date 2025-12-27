@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@diffusion/*": ["docs/diffusion/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}
+

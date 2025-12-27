@@ -33,7 +33,7 @@ The Wan2.2 series offers models in various sizes, architectures and input types,
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size.
 
-import Wan2_2ConfigGenerator from '@site/src/components/Wan2_2ConfigGenerator';
+import Wan2_2ConfigGenerator from '@diffusion/src/Wan2_2ConfigGenerator';
 
 <Wan2_2ConfigGenerator />
 
@@ -48,14 +48,15 @@ Current supported optimzation all listed [here](https://github.com/sgl-project/s
 - `--ulysses-degree {ULYSSES_DEGREE}`: The degree of DeepSpeed-Ulysses-style SP in USP
 - `--ring-degree {RING_DEGREE}`: The degree of ring attention-style SP in USP
 
-
 ## 4. Model Invocation
 
 ### 4.1 Basic Usage
+
 For more API usage and request examples, please refer to:
 [SGLang Diffusion OpenAI API](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/openai_api.md)
 
 #### 4.1.1 Launch a server and then send requests
+
 ```
 sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers --port 3000
 
@@ -71,7 +72,9 @@ curl http://127.0.0.1:3000/v1/images/generations \
     "response_format": "b64_json"
   }'
 ```
+
 #### 4.1.2 Generate a video without launching a server
+
 ```
 SERVER_ARGS=(
   --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
@@ -96,17 +99,21 @@ sglang generate "${SERVER_ARGS[@]}" "${SAMPLING_ARGS[@]}"
 ### 4.2 Advanced Usage
 
 #### 4.2.1 Cache-DiT Acceleration
+
 SGLang integrates [Cache-DiT](https://github.com/vipshop/cache-dit), a caching acceleration engine for Diffusion Transformers (DiT), to achieve up to 7.4x inference speedup with minimal quality loss. You can set `SGLANG_CACHE_DIT_ENABLED=True` to enable it. For more details, please refer to the SGLang Cache-DiT [documentation](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/cache_dit.md).
 
 **Basic Usage**
+
 ```
 SGLANG_CACHE_DIT_ENABLED=true sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
 ```
+
 **Advanced Usage**
+
 - DBCache Parameters: DBCache controls block-level caching behavior:
 
   | Parameter | Env Variable              | Default | Description                              |
-  |-----------|---------------------------|---------|------------------------------------------|
+  | --------- | ------------------------- | ------- | ---------------------------------------- |
   | Fn        | `SGLANG_CACHE_DIT_FN`     | 1       | Number of first blocks to always compute |
   | Bn        | `SGLANG_CACHE_DIT_BN`     | 0       | Number of last blocks to always compute  |
   | W         | `SGLANG_CACHE_DIT_WARMUP` | 4       | Warmup steps before caching starts       |
@@ -116,10 +123,12 @@ SGLANG_CACHE_DIT_ENABLED=true sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-D
 - TaylorSeer Configuration: TaylorSeer improves caching accuracy using Taylor expansion:
 
   | Parameter | Env Variable                  | Default | Description                     |
-  |-----------|-------------------------------|---------|---------------------------------|
+  | --------- | ----------------------------- | ------- | ------------------------------- |
   | Enable    | `SGLANG_CACHE_DIT_TAYLORSEER` | false   | Enable TaylorSeer calibrator    |
   | Order     | `SGLANG_CACHE_DIT_TS_ORDER`   | 1       | Taylor expansion order (1 or 2) |
-Combined Configuration Example:
+
+  Combined Configuration Example:
+
 ```
 SGLANG_CACHE_DIT_ENABLED=true \
 SGLANG_CACHE_DIT_FN=2 \
@@ -141,23 +150,32 @@ sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
 - `--pin-cpu-memory`: Pin memory for CPU offload. Only added as a temp workaround if it throws "CUDA error: invalid argument".
 
 ## 5. Benchmark
+
 Test Environment:
+
 - Hardware: NVIDIA B200 GPU (1x)
 - Model: Wan-AI/Wan2.2-T2V-A14B-Diffusers
 - sglang diffusion version: 0.5.6.post2
 
 ### 5.1 Speedup Benchmark
+
 #### 5.1.1 Generate a video
+
 **Server Command**:
+
 ```
 sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
 ```
+
 **Benchmark Command**:
+
 ```
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task t2v --num-prompts 1 --max-concurrency 1
 ```
+
 **Result**:
+
 ```
 ================= Serving Benchmark Result =================
 Backend:                                 sglang-video
@@ -181,8 +199,11 @@ Peak Memory Median (MB):                 62627.41
 
 ============================================================
 ```
+
 #### 5.1.2 Generate videos with high concurrency
+
 **Server Command**:
+
 ```
 SGLANG_CACHE_DIT_ENABLED=true \
 SGLANG_CACHE_DIT_FN=2 \
@@ -194,12 +215,16 @@ SGLANG_CACHE_DIT_TAYLORSEER=true \
 SGLANG_CACHE_DIT_TS_ORDER=2 \
 sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
 ```
+
 **Benchmark Command**:
+
 ```
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task t2v --num-prompts 20 --max-concurrency 20
 ```
+
 **Result**:
+
 ```
 ================= Serving Benchmark Result =================
 Backend:                                 sglang-video

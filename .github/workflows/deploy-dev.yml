@@ -1,7 +1,13 @@
-name: Deploy Docusaurus
+name: Deploy doc to Development
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main"
+        type: string
 
 jobs:
   build-deploy:
@@ -10,6 +16,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -26,9 +34,9 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      - name: Deploy to Vercel
+      - name: Deploy to Vercel Development
         run: |
-          vercel deploy build --prod \
+          vercel deploy build \
             --yes \
             --force \
             --scope ${{ secrets.VERCEL_ORG_ID }} \

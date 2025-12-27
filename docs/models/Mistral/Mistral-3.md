@@ -37,4 +37,4 @@ git checkout -b add-mistral-3-guide
 
 ## Reference
 
-- [Devstral 2](/docs/Mistral/Devstral-2.md)
+- [Devstral 2](./Devstral-2.md)

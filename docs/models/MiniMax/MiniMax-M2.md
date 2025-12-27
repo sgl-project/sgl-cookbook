@@ -17,7 +17,7 @@ git checkout -b add-minimax-m2-guide
 
 ## 📚 Reference
 
-- [Kimi-K2](/docs/Moonshotai/Kimi-K2.md)
+- [Kimi-K2](../Moonshotai/Kimi-K2.md)
 
 ---
 

@@ -17,7 +17,7 @@ git checkout -b add-glm-4-5-guide
 
 ## 📚 Reference
 
-- [GLM-4.6](/docs/GLM/GLM-4.6.md)
+- [GLM-4.6](./GLM-4.6.md)
 
 ---
 
