@@ -3,7 +3,6 @@ name: Deploy doc to Development
 on:
   workflow_dispatch:
 
-
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -12,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: ${{ github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
