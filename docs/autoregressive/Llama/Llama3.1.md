@@ -38,18 +38,146 @@ Tool Call parser: Does it work?
 
 ### 4.2 Advanced Usage
 #### 4.2.1 Tool Calling
-Llama3 supports tool calling capabilities. First, enable the tool call parser:
+Llama3 supports tool calling capabilities. First, start the server with tool call parser enabled:
 
 ```shell
 python -m sglang.launch_server \
-  --model  \
-  --tool-call-parser qwen3 \
+  --model  Meta-Llama/Llama-3.1-405B-Instruct \
+  --tool-call-parser llama3 \
   --tp 8 \
   --host 0.0.0.0 \
   --port 8000
 ```
 
-Can use normal as well as pythonic (can just link to it instead of duplicating here)
+**Python Example**
+
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key="None", base_url=f"http://0.0.0.0:8000/v1")
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the weather in a given location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "The city to find the weather for, e.g. 'San Francisco'",
+                    },
+                    "unit": {
+                        "type": "string",
+                        "description": "The unit to fetch the temperature in",
+                        "enum": ["celsius", "fahrenheit"],
+                    },
+                },
+                "required": ["city", "unit"],
+            },
+        },
+    }
+]
+
+response = client.chat.completions.create(
+    model="meta-llama/Llama-3.1-8B-Instruct",
+    messages=[
+        {
+            "role": "user",
+            "content": "What's the weather like in Boston today?",
+        }
+    ],
+    temperature=0.7,
+    stream=True,
+    tools=tools,
+)
+
+
+arguments = []
+
+tool_calls_accumulator = {}
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+
+        if hasattr(delta, 'tool_calls') and delta.tool_calls:
+            for tool_call in delta.tool_calls:
+                index = tool_call.index
+                if index not in tool_calls_accumulator:
+                    tool_calls_accumulator[index] = {
+                        'name': None,
+                        'arguments': ''
+                    }
+
+                if tool_call.function:
+                    if tool_call.function.name:
+                        tool_calls_accumulator[index]['name'] = tool_call.function.name
+                    if tool_call.function.arguments:
+                        tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
+
+        # Print content
+        if delta.content:
+            print(delta.content, end="", flush=True)
+
+# Print accumulated tool calls
+for index, tool_call in sorted(tool_calls_accumulator.items()):
+    print(f"🔧 Tool Call: {tool_call['name']}")
+    print(f"   Arguments: {tool_call['arguments']}")
+
+print()
+```
+
+Reference: [SGLang Tool Parser Documentation](https://docs.sglang.io/advanced_features/tool_parser.html#OpenAI-Compatible-API)
+
+**Output Example**
+```
+🔧 Tool Call: get_weather
+   Arguments: {"city": "Boston", "unit": "fahrenheit"}
+```
+
+**Handling Tool Call Results**
+After getting the tool call, you can execute the function:
+
+```python
+def get_weather(location, unit="celsius"):
+    # Your actual weather API call here
+    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
+
+# Send tool result back to the model
+messages = [
+    {"role": "user", "content": "What's the weather like in Boston today?"},
+    {
+        "role": "assistant",
+        "content": None,
+        "tool_calls": [{
+            "id": "call_123",
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "arguments": '{"location": "Boston", "unit": "fahrenheit"}'
+            }
+        }]
+    },
+    {
+        "role": "tool",
+        "tool_call_id": "call_123",
+        "content": get_weather("Boston", "fahrenheit")
+    }
+]
+
+final_response = client.chat.completions.create(
+    model="Meta-Llama/Llama-3.1-405B-Instruct",
+    messages=messages,
+    temperature=0.7
+)
+
+print(final_response.choices[0].message.content)
+# Output: "The current weather in Boston is **22°C** and **sunny**. A perfect day to spend outside"
+```
+
 
 ## 5. Benchmark
 
