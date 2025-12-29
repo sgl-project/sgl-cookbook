@@ -1,4 +1,4 @@
-name: Deploy Docusaurus
+name: Deploy doc to Production
 
 on:
   workflow_dispatch:
