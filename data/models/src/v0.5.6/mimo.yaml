@@ -20,6 +20,7 @@ families:
     llm:
       tool_parser: mimo
       reasoning_parser: qwen3
+      thinking_capability: thinking
 
     models:
       - base_name: MiMo-V2-Flash
