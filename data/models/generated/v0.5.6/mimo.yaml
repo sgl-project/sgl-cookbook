@@ -1,0 +1,31 @@
+vendor: xiaomi
+families:
+- name: MiMo
+  description: Xiaomi MiMo-V2-Flash - Inference-centric model with SWA and MTP
+  models:
+  - name: MiMo-MiMo-V2-Flash
+    model_path: XiaomiMiMo/MiMo-MiMo-V2-Flash
+    attributes:
+      llm:
+        thinking_capability: thinking
+        tool_parser: mimo
+        reasoning_parser: null
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 2
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
