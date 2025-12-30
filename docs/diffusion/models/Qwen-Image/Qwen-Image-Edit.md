@@ -34,7 +34,7 @@ Qwen-Image-Edit-2511 is a 20B parameter model optimized for image editing tasks.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform.
 
-import QwenImageEditConfigGenerator from '@site/src/components/QwenImageEditConfigGenerator';
+import QwenImageEditConfigGenerator from '@diffusion/src/QwenImageEditConfigGenerator';
 
 <QwenImageEditConfigGenerator />
 
