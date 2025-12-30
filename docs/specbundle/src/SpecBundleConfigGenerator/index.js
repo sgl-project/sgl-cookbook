@@ -179,7 +179,6 @@ const SpecbundleConfigGenerator = () => {
 
   return (
     <div className={styles.configContainer}>
-      <h2 style={{textAlign:'center', marginBottom: '30px'}}>Eagle3 Benchmark Command Generator</h2>
       {Object.entries(displayOptions).map(([key, option], index) => (
         <div key={key} className={styles.optionCard}>
           <div className={styles.optionTitle}>

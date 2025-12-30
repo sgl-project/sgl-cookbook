@@ -27,6 +27,14 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'SpecBundle',
+      items: [
+        {type: 'doc', label: 'Supported Models', id: 'specbundle/supported_models'},
+        {type: 'doc', label: 'Usage', id: 'specbundle/usage'},
+      ],
+    },
+    {
+      type: 'category',
       label: 'Diffusion Models',
       items: [
         {
