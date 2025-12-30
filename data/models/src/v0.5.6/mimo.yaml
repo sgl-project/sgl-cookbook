@@ -1,0 +1,29 @@
+# MiMo Model Configurations
+# This file is compiled to data/models/generated/mimo.yaml
+
+vendor: xiaomi
+
+defaults:
+  hardware:
+    H200: { tp: 8 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      quantization: bf16
+      tp: 8
+      dp: 2
+
+families:
+  - name: MiMo
+    description: Xiaomi MiMo-V2-Flash - Inference-centric model with SWA and MTP
+    llm:
+      tool_parser: mimo
+      reasoning_parser: qwen3
+      thinking_capability: thinking
+
+    models:
+      - base_name: MiMo-V2-Flash
+        quantizations: [bf16]
+        hardware:
+          default: { tp: 8, dp: 2 }
