@@ -71,7 +71,6 @@ const FluxConfigGenerator = () => {
           <div className={styles.optionItems}>
             {option.items.map(item => {
               const isChecked = values[option.name] === item.id;
-              
               return (
                 <label
                   key={item.id}
