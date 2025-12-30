@@ -21,7 +21,8 @@ const sidebars = {
       type: 'category',
       label: 'Benchmarks',
       items: [
-        'benchmarks/SpecBundle',
+        {type: 'doc', label: 'LLM Benchmark', id: 'benchmarks/lm_benchmark'},
+        {type: 'doc', label: 'Diffusion Model Benchmark', id: 'benchmarks/diffusion_model_benchmark'},
       ],
     },
     {
