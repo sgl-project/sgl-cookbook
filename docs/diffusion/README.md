@@ -42,7 +42,8 @@ sgl-cookbook/docs/diffusion/
 │   ├── FLUX/               # FLUX series models docs
 │   ├── Qwen_Image/         # Qwen-Image series models docs
 │   ├── stable_diffusion/   # Stable Diffusion series models docs
-│   └── Wan/                # Wan series models docs
+│   ├── Wan/                # Wan series models docs
+│   └── ...
 ├── src/                    # Diffusion model serving visualizations code
 └── assets/
     └── output_examples/   # Curated generation examples

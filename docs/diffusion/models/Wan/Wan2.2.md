@@ -149,6 +149,9 @@ sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
 - `--vae-cpu-offload`: Use CPU offload for VAE. Enable if run out of memory.
 - `--pin-cpu-memory`: Pin memory for CPU offload. Only added as a temp workaround if it throws "CUDA error: invalid argument".
 
+#### 4.2.3 Lora Supported
+**TODO**
+
 ## 5. Benchmark
 
 Test Environment:
