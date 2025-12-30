@@ -43,7 +43,7 @@ FLUX models are optimized for high-quality image generation. The recommended lau
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform and model version.
 
-import FluxConfigGenerator from '@site/src/components/FluxConfigGenerator';
+import FluxConfigGenerator from '@diffusion/src/FluxConfigGenerator';
 
 <FluxConfigGenerator />
 
