@@ -86,7 +86,8 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### Benchmarks
 
-- [x] [SpecBundle](./benchmarks/SpecBundle.md)
+- [x] [LLM Benchmark](./benchmarks/lm_benchmark.md)
+- [x] [Diffusion Model Benchmark](./benchmarks/diffusion_model_benchmark.md)
 
 ### Mistral
 
