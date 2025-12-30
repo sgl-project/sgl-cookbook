@@ -65,9 +65,10 @@ const config = {
         configureWebpack(config, isServer, utils) {
           return {
             resolve: {
-              alias: {
-                '@diffusion': path.resolve(__dirname, 'docs', 'diffusion'),
-              },
+            alias: {
+              '@diffusion': path.resolve(__dirname, 'docs', 'diffusion'),
+              '@specbundle': path.resolve(__dirname, 'docs', 'specbundle'),
+            },
             },
           };
         },

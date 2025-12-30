@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@diffusion/*": ["docs/diffusion/*"]
+      "@diffusion/*": ["docs/diffusion/*"],
+      "@specbundle/*": ["docs/specbundle/*"]
     }
   },
   "exclude": ["node_modules"]
