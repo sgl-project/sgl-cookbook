@@ -24,74 +24,75 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### Qwen
 
-- [x] [Qwen3](./Qwen/Qwen3)
-- [x] [Qwen3-VL](./Qwen/Qwen3-VL)
-- [x] [Qwen3-Next](./Qwen/Qwen3-Next)
-- [ ] [Qwen3-Coder-480B-A35B](./Qwen/Qwen3-Coder-480B-A35B)
-- [ ] [Qwen2.5-VL](./Qwen/Qwen2.5-VL)
+- [x] [Qwen3](./models/Qwen/Qwen3)
+- [x] [Qwen3-VL](./models/Qwen/Qwen3-VL)
+- [x] [Qwen3-Next](./models/Qwen/Qwen3-Next)
+- [ ] [Qwen3-Coder-480B-A35B](./models/Qwen/Qwen3-Coder-480B-A35B)
+- [ ] [Qwen2.5-VL](./models/Qwen/Qwen2.5-VL)
 
 ### DeepSeek
 
-- [x] [DeepSeek-V3.2](/docs/DeepSeek/DeepSeek-V3_2)
-- [ ] [DeepSeek-V3.1](./DeepSeek/DeepSeek-V3_1)
-- [ ] [DeepSeek-V3](./DeepSeek/DeepSeek-V3)
-- [x] [DeepSeek-R1](/docs/DeepSeek/DeepSeek-R1)
+- [x] [DeepSeek-V3.2](./models/DeepSeek/DeepSeek-V3_2)
+- [ ] [DeepSeek-V3.1](./models/DeepSeek/DeepSeek-V3_1)
+- [ ] [DeepSeek-V3](./models/DeepSeek/DeepSeek-V3)
+- [x] [DeepSeek-R1](./models/DeepSeek/DeepSeek-R1)
 
 ### Llama
 
-- [ ] [Llama4-Scout](./Llama/Llama4-Scout)
-- [ ] [Llama3.3-70B](./Llama/Llama3.3-70B)
-- [ ] [Llama3.1](./Llama/Llama3.1)
+- [ ] [Llama4-Scout](./models/Llama/Llama4-Scout)
+- [ ] [Llama3.3-70B](./models/Llama/Llama3.3-70B)
+- [ ] [Llama3.1](./models/Llama/Llama3.1)
 
 ### GLM
 
-- [ ] [Glyph](./GLM/Glyph)
-- [ ] [GLM-4.5V](./GLM/GLM-4.5V)
-- [x] [GLM-4.6](./GLM/GLM-4.6)
-- [x] [GLM-4.6V](./GLM/GLM-4.6V)
+- [ ] [Glyph](./models/GLM/Glyph)
+- [ ] [GLM-4.5V](./models/GLM/GLM-4.5V)
+- [x] [GLM-4.6](./models/GLM/GLM-4.6)
+- [x] [GLM-4.6V](./models/GLM/GLM-4.6V)
 
 ### OpenAI
 
-- [x] [gpt-oss](./OpenAI/GPT-OSS)
+- [x] [gpt-oss](./models/OpenAI/GPT-OSS)
 
 ### Moonshotai
 
-- [x] [Kimi-K2](./Moonshotai/Kimi-K2)
-- [ ] [Kimi-Linear](./Moonshotai/Kimi-Linear)
+- [x] [Kimi-K2](./models/Moonshotai/Kimi-K2)
+- [ ] [Kimi-Linear](./models/Moonshotai/Kimi-Linear)
 
 ### MiniMax
 
-- [ ] [MiniMax-M2](./MiniMax/MiniMax-M2)
+- [ ] [MiniMax-M2](./models/MiniMax/MiniMax-M2)
 
 ### NVIDIA
 
-- [x] [Nemotron-Nano-3-30B-A3B](./NVIDIA/Nemotron3-Nano)
+- [x] [Nemotron-Nano-3-30B-A3B](./models/NVIDIA/Nemotron3-Nano)
 
 ### Ernie
 
-- [ ] [Ernie4.5](./Ernie/Ernie4.5)
-- [ ] [Ernie4.5-VL](./Ernie/Ernie4.5-VL)
+- [ ] [Ernie4.5](./models/Ernie/Ernie4.5)
+- [ ] [Ernie4.5-VL](./models/Ernie/Ernie4.5-VL)
 
 ### InternVL
 
-- [ ] [InternVL3.5](./InternVL/InternVL3_5)
+- [ ] [InternVL3.5](./models/InternVL/InternVL3_5)
 
 ### InternLM
 
-- [ ] [Intern-S1](./InternLM/Intern-S1)
+- [ ] [Intern-S1](./models/InternLM/Intern-S1)
 
 ### Jina AI
 
-- [ ] [Jina-reranker-m0](./Jina/Jina-reranker-m0)
+- [ ] [Jina-reranker-m0](./models/Jina/Jina-reranker-m0)
 
 ### Benchmarks
 
-- [x] [SpecBundle](./benchmarks/SpecBundle.md)
+- [x] [LLM Benchmark](./benchmarks/lm_benchmark.md)
+- [x] [Diffusion Model Benchmark](./benchmarks/diffusion_model_benchmark.md)
 
 ### Mistral
 
-- [ ] [Mistral-3](./Mistral/Mistral-3)
-- [x] [Devstral 2](./Mistral/Devstral-2)
+- [ ] [Mistral-3](./models/Mistral/Mistral-3)
+- [x] [Devstral 2](./models/Mistral/Devstral-2)
 
 ## Reference
 
