@@ -9,19 +9,23 @@
 Run a benchmark on a local server (port 30000) generating 1 videos/images from the `vbench` dataset.
 
 ```
-# For text to video:
+# For text to video: such as Wan2.2-T2V-A14B-Diffusers
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task t2v --num-prompts 1 --max-concurrency 1
-# For image to video:
+
+# For image to video: such as Wan2.2-I2V-A14B-Diffusers
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task i2v --num-prompts 1 --max-concurrency 1
-# For image-text to video:
+
+# For image-text to video: such as Wan2.2-TI2V-5B-Diffusers
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task ti2v --num-prompts 1 --max-concurrency 1
-# For text to image:
+
+# For text to image: such as Qwen-Image
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-image --dataset vbench --task t2i --num-prompts 1 --max-concurrency 1
-# For image-text to image:
+
+# For image-text to image: such as Qwen-Image-Edit
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-image --dataset vbench --task ti2i --num-prompts 1 --max-concurrency 1
 ```
@@ -31,19 +35,23 @@ python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
 Run a benchmark on a local server (port 30000) generating 20 videos/images from the `vbench` dataset.
 
 ```
-# For text to video:
+# For text to video: such as Wan2.2-T2V-A14B-Diffusers
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task t2v --num-prompts 20 --max-concurrency 20
-# For image to video:
+
+# For image to video: such as Wan2.2-I2V-A14B-Diffusers
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task i2v --num-prompts 20 --max-concurrency 20
-# For image-text to video:
+
+# For image-text to video: such as Wan2.2-TI2V-5B-Diffusers
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task ti2v --num-prompts 20 --max-concurrency 20
-# For text to image:
+
+# For text to image: such as Qwen-Image
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-image --dataset vbench --task t2i --num-prompts 20 --max-concurrency 20
-# For image-text to image:
+
+# For image-text to image: such as Qwen-Image-Edit
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-image --dataset vbench --task ti2i --num-prompts 20 --max-concurrency 20
 ```
@@ -64,7 +72,7 @@ python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
 
 | Argument         | Choices                      | Description                                                                                                                                                 |
 | ---------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--task`         | `t2v`, `i2v`, `ti2v`, `ti2i` | Defines the generation task:<br />• `t2v`: Text-to-Video<br />• `i2v`: Image-to-Video<br />• `ti2v`: Text+Image-to-Video<br />• `ti2i`: Text+Image-to-Image |
+| `--task`         | `t2v`, `i2v`, `ti2v`, `t2i`, `ti2i` | Defines the generation task:<br />• `t2v`: Text-to-Video<br />• `i2v`: Image-to-Video<br />• `ti2v`: Text+Image-to-Video<br />• `t2i`: Text-to-image<br />• `ti2i`: Text+Image-to-Image |
 | `--dataset`      | `vbench`, `random`           | The source of prompts/inputs.                                                                                                                               |
 | `--dataset-path` | `None`                       | (Optional) Path to a local dataset file if not using built-in presets.                                                                                      |
 | `--num-prompts`  | `None`                       | The total number of prompts/requests to execute during the benchmark.                                                                                       |
