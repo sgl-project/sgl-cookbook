@@ -149,8 +149,17 @@ sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers
 - `--vae-cpu-offload`: Use CPU offload for VAE. Enable if run out of memory.
 - `--pin-cpu-memory`: Pin memory for CPU offload. Only added as a temp workaround if it throws "CUDA error: invalid argument".
 
-#### 4.2.3 Lora Supported
-**TODO**
+#### 4.2.3 Supported LoRA Registry
+| origin model  |  supported LoRA  |
+| -------- | ------- |
+| [Wan-AI/Wan2.2-I2V-A14B-Diffusers](https://huggingface.co/Wan-AI/Wan2.2-I2V-A14B-Diffusers) | [lightx2v/Wan2.2-Distill-Loras](https://huggingface.co/lightx2v/Wan2.2-Distill-Loras) |
+| [Wan-AI/Wan2.2-T2V-A14B-Diffusers](https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B-Diffusers) | [Cseti/wan2.2-14B-Arcane_Jinx-lora-v1](https://huggingface.co/Cseti/wan2.2-14B-Arcane_Jinx-lora-v1) |
+**Example**:
+```
+sglang serve --model-path Wan-AI/Wan2.2-T2V-A14B-Diffusers --port 3000 \
+    --lora-path Cseti/wan2.2-14B-Arcane_Jinx-lora-v1
+```
+
 
 ## 5. Benchmark
 
