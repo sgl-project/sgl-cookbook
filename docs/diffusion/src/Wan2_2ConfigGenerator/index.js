@@ -86,8 +86,7 @@ const Wan2_2ConfigGenerator = () => {
 
       let command = `sglang serve \\
   --model-path ${config.repoId} \\
-  --pin-cpu-memory \\
-  --offload_model True \\
+  --dit-layerwise-offload true \\
   --ulysses-degree=2 \\
   --ring-degree=2`;
 
@@ -207,7 +206,7 @@ const Wan2_2ConfigGenerator = () => {
         <div className={styles.optionCard}>
           <div className={styles.optionTitle}>
             <span className={styles.optionNumber}>5</span>
-            Select LoRA Model
+            Select LoRA Model(The part of all the supported lora models)
           </div>
           <div className={styles.optionItems}>
             {availableLoras.map(lora => {
