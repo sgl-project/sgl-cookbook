@@ -105,7 +105,7 @@ const Wan2_2ConfigGenerator = () => {
       const defaultItem = option.items.find(item => item.default);
       initialState[key] = defaultItem ? defaultItem.id : option.items[0].id;
     });
-    initialState.selectedLoraPath = 'none'; 
+    initialState.selectedLoraPath = 'none';
     return initialState;
   };
 
@@ -199,15 +199,15 @@ const Wan2_2ConfigGenerator = () => {
               No LoRA models available for this model.
             </div>
           )}
-          
+
           {availableLoras.map(lora => {
             const isSelected = values.selectedLoraPath === lora.path;
             return (
               <label
                 key={lora.id}
                 className={`${styles.optionLabel} ${isSelected ? styles.checked : ''}`}
-                /* 
-                   Using onClick on the label to handle the toggle. 
+                /*
+                   Using onClick on the label to handle the toggle.
                    Preventing default helps avoid double-firing with the radio input.
                 */
                 onClick={(e) => {
