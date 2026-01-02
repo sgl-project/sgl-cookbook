@@ -318,8 +318,6 @@ We use SGLang's built-in benchmarking tool to conduct performance evaluation on 
 python3 -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-V3.2-Exp \
   --tp 8 \
-  --dp 8 \
-  --enable-dp-attention \
   --speculative-algorithm EAGLE \
   --speculative-num-steps 3 \
   --speculative-eagle-topk 1 \
@@ -346,41 +344,43 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang
-Traffic request rate:                    inf
-Max request concurrency:                 1
-Successful requests:                     10
-Benchmark duration (s):                  41.23
-Total input tokens:                      1972
-Total input text tokens:                 1972
-Total input vision tokens:               0
-Total generated tokens:                  2784
-Total generated tokens (retokenized):    2775
-Request throughput (req/s):              0.24
-Input token throughput (tok/s):          47.83
-Output token throughput (tok/s):         67.53
-Peak output token throughput (tok/s):    110.00
-Peak concurrent requests:                3
-Total token throughput (tok/s):          115.36
-Concurrency:                             1.00
-Accept length:                           2.52
+Backend:                                 sglang    
+Traffic request rate:                    inf       
+Max request concurrency:                 1         
+Successful requests:                     10        
+Benchmark duration (s):                  29.11     
+Total input tokens:                      1972      
+Total input text tokens:                 1972      
+Total input vision tokens:               0         
+Total generated tokens:                  2784      
+Total generated tokens (retokenized):    2777      
+Request throughput (req/s):              0.34      
+Input token throughput (tok/s):          67.73     
+Output token throughput (tok/s):         95.62     
+Peak output token throughput (tok/s):    157.00    
+Peak concurrent requests:                3         
+Total token throughput (tok/s):          163.36    
+Concurrency:                             1.00      
+Accept length:                           2.46      
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   4120.71
-Median E2E Latency (ms):                 4713.16
+Mean E2E Latency (ms):                   2909.74   
+Median E2E Latency (ms):                 3088.27   
+P90 E2E Latency (ms):                    4200.62   
+P99 E2E Latency (ms):                    5588.52   
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          165.02
-Median TTFT (ms):                        163.64
-P99 TTFT (ms):                           199.88
+Mean TTFT (ms):                          317.58    
+Median TTFT (ms):                        191.31    
+P99 TTFT (ms):                           740.79    
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          13.14
-Median TPOT (ms):                        13.60
-P99 TPOT (ms):                           17.71
+Mean TPOT (ms):                          9.09      
+Median TPOT (ms):                        9.25      
+P99 TPOT (ms):                           11.73     
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           14.28
-Median ITL (ms):                         12.10
-P95 ITL (ms):                            36.23
-P99 ITL (ms):                            36.87
-Max ITL (ms):                            37.53
+Mean ITL (ms):                           9.35      
+Median ITL (ms):                         7.64      
+P95 ITL (ms):                            22.81     
+P99 ITL (ms):                            23.33     
+Max ITL (ms):                            31.45     
 ==================================================
 ```
 
