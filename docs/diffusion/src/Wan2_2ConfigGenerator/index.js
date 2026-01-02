@@ -56,14 +56,14 @@ const Wan2_2ConfigGenerator = () => {
     },
 
     modelConfigs: {
-      'i2v-14b': { 
+      'i2v-14b': {
         repoId: 'Wan-AI/Wan2.2-I2V-A14B-Diffusers',
         supportedLoras: [
           { id: 'distill', path: 'lightx2v/Wan2.2-Distill-Loras' },
           // You can add more LoRAs here for I2V in the future
         ]
       },
-      't2v-14b': { 
+      't2v-14b': {
         repoId: 'Wan-AI/Wan2.2-T2V-A14B-Diffusers',
         supportedLoras: [
           { id: 'arcane', path: 'Cseti/wan2.2-14B-Arcane_Jinx-lora-v1' }
@@ -71,9 +71,9 @@ const Wan2_2ConfigGenerator = () => {
           // { id: 'other', label: 'Other Style', path: 'Example/Other-LoRA' }
         ]
       },
-      'ti2v-5b': { 
+      'ti2v-5b': {
         repoId: 'Wan-AI/Wan2.2-TI2V-5B-Diffusers',
-        supportedLoras: [] 
+        supportedLoras: []
       }
     },
 
@@ -107,7 +107,7 @@ const Wan2_2ConfigGenerator = () => {
       const defaultItem = option.items.find(item => item.default);
       initialState[key] = defaultItem ? defaultItem.id : option.items[0].id;
     });
-    initialState.selectedLoraPath = ''; 
+    initialState.selectedLoraPath = '';
     return initialState;
   };
 
@@ -163,7 +163,7 @@ const Wan2_2ConfigGenerator = () => {
       {/* Block 1-4: Standard Options */}
       {Object.entries(baseConfig.options).map(([key, option], index) => {
         // Filter model size items based on task
-        const itemsToDisplay = key === 'modelsize' 
+        const itemsToDisplay = key === 'modelsize'
           ? option.items.filter(item => item.validTasks.includes(values.task))
           : option.items;
 
