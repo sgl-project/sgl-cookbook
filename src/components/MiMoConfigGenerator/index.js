@@ -70,7 +70,7 @@ const MiMoConfigGenerator = () => {
 
         // MTP/Speculative settings
         if (strategyArray.includes('mtp')) {
-            cmd += ` \\\n  --speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4 \\\n  --enable-mtp`;
+            cmd += ` \\\n  --speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4 \\\n  --enable-multi-layer-eagle`;
         }
 
         // Reasoning Parser
