@@ -92,9 +92,9 @@ python bench_eagle3.py \
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate test command for your model and benchmark.
 
-import SpecbundleConfigGenerator from '@specbundle/src/SpecBundleConfigGenerator';
+import SpecBundleConfigGenerator from '@site/src/components/SpecBundleConfigGenerator';
 
-<SpecbundleConfigGenerator />
+<SpecBundleConfigGenerator />
 
 It will generate a json file, content is listed below:
 

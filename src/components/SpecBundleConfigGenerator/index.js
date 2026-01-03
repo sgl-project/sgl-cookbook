@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import styles from '../../../../src/components/ConfigGenerator/styles.module.css';
+import styles from '../ConfigGenerator/styles.module.css';
 
-const SpecbundleConfigGenerator = () => {
+const SpecBundleConfigGenerator = () => {
   const baseConfig = {
     options: {
       mode: {
@@ -182,7 +182,7 @@ const SpecbundleConfigGenerator = () => {
       {Object.entries(displayOptions).map(([key, option], index) => (
         <div key={key} className={styles.optionCard}>
           <div className={styles.optionTitle}>
-            <span className={styles.optionNumber}>{index + 1}</span> {option.title}
+            {option.title}
           </div>
 
           {/* Render Radio Group */}
@@ -271,4 +271,4 @@ const SpecbundleConfigGenerator = () => {
   );
 };
 
-export default SpecbundleConfigGenerator;
+export default SpecBundleConfigGenerator;
