@@ -159,6 +159,13 @@ const sidebars = {
             'models/Mistral/Devstral-2',
           ],
         },
+        {
+          type: 'category',
+          label: 'Xiaomi',
+          items: [
+            'models/Xiaomi/MiMo-V2-Flash',
+          ],
+        },
       ],
     },
   ],
