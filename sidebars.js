@@ -41,14 +41,30 @@ const sidebars = {
           type: 'category',
           label: 'Wan',
           items: [
-           'diffusion/models/Wan/Wan2.2'
+            'diffusions/Wan/Wan2.2',
+            'diffusions/Wan/Wan2.1',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Qwen-Image',
+          items: [
+            'diffusions/Qwen-Image/Qwen-Image',
+            'diffusions/Qwen-Image/Qwen-Image-Edit',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Z-Image',
+          items: [
+            'diffusions/Z-Image/Z-Image-Turbo',
           ],
         },
       ],
     },
     {
       type: 'category',
-      label: 'LLMs(VLMs)',
+      label: 'LLMs & VLMs',
       collapsed: false,
       items: [
         {
@@ -159,6 +175,13 @@ const sidebars = {
             'models/Mistral/Devstral-2',
           ],
         },
+        {
+          type: 'category',
+          label: 'Xiaomi',
+          items: [
+            'models/Xiaomi/MiMo-V2-Flash',
+          ],
+        }
       ],
     },
   ],
