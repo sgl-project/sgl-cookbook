@@ -1,41 +1,29 @@
 .configContainer {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 12px;
 }
 
 .optionCard {
   background: var(--ifm-background-surface-color);
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--ifm-color-emphasis-300);
-  flex: 1 1 calc(50% - 6px);
-  min-width: 400px;
+  padding: 16px 20px;
+  border-left: 4px solid #D45D44;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-left: 4px solid #D45D44;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 .optionTitle {
   font-size: 14px;
   font-weight: 600;
   color: var(--ifm-font-color-base);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-}
-
-.optionNumber {
-  background: #667eea;
-  color: white;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-  font-size: 12px;
+  min-width: 140px;
+  flex-shrink: 0;
 }
 
 .optionItems {
@@ -43,6 +31,7 @@
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
+  flex: 1;
 }
 
 .hiddenInput {
@@ -63,38 +52,41 @@
 
 .textInput:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #D45D44;
+  box-shadow: 0 0 0 3px rgba(212, 93, 68, 0.1);
 }
 
 .optionLabel {
-  padding: 8px 18px;
-  border: 2px solid var(--ifm-color-emphasis-300);
-  border-radius: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 4px;
   cursor: pointer;
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
   font-weight: 500;
   font-size: 13px;
-  transition: all 0.3s;
+  transition: all 0.2s;
   background: var(--ifm-background-surface-color);
   color: var(--ifm-font-color-base);
   user-select: none;
-  flex-shrink: 0;
+  min-width: 60px;
+  text-align: center;
 }
 
 .optionLabel:hover {
-  border-color: #667eea;
+  border-color: #D45D44;
 }
 
 .optionLabel.checked {
-  background: #dc3545;
+  background: #D45D44;
   color: white;
-  border-color: #d55816;
+  border-color: #D45D44;
 }
 
 .optionLabel.disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 .optionLabel.disabled:hover {
@@ -114,31 +106,39 @@
 
 .commandCard {
   background: var(--ifm-background-surface-color);
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--ifm-color-emphasis-300);
-  flex: 1 1 100%;
-  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-left: 4px solid #D45D44;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 .commandTitle {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--ifm-font-color-base);
-  margin-bottom: 10px;
+  min-width: 140px;
+  flex-shrink: 0;
 }
 
 .commandDisplay {
-  padding: 16px;
-  background: #2d3748;
+  flex: 1;
+  padding: 12px 16px;
+  background: #f5f5f5;
   border-radius: 6px;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
   font-size: 13px;
   line-height: 1.7;
-  color: #e2e8f0;
+  color: #333;
   white-space: pre-wrap;
   overflow-x: auto;
-  border: none;
+  border: 1px solid var(--ifm-color-emphasis-300);
   margin: 0;
+}
+
+[data-theme='dark'] .commandDisplay {
+  background: #2d3748;
+  color: #e2e8f0;
 }

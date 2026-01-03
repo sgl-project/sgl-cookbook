@@ -298,10 +298,9 @@ const Qwen3ConfigGenerator = () => {
 
   return (
     <div className={styles.configContainer}>
-      {Object.entries(displayOptions).map(([key, option], index) => (
+      {Object.entries(displayOptions).map(([key, option]) => (
         <div key={key} className={styles.optionCard}>
           <div className={styles.optionTitle}>
-            <span className={styles.optionNumber}>{index + 1}</span>
             {option.title}
           </div>
           <div className={styles.optionItems}>

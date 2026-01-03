@@ -123,10 +123,9 @@ const Wan2_2ConfigGenerator = () => {
   return (
     <div className={styles.configContainer}>
 
-      {Object.entries(displayOptions).map(([key, option], index) => (
+      {Object.entries(displayOptions).map(([key, option]) => (
         <div key={key} className={styles.optionCard}>
           <div className={styles.optionTitle}>
-            <span className={styles.optionNumber}>{index + 1}</span>
             {option.title}
           </div>
           <div className={styles.optionItems}>
@@ -161,7 +160,7 @@ const Wan2_2ConfigGenerator = () => {
       ))}
 
       <div className={styles.commandCard}>
-        <div className={styles.commandTitle}>Generated Command</div>
+        <div className={styles.commandTitle}>Run this Command:</div>
         <pre className={styles.commandDisplay}>{command}</pre>
       </div>
     </div>

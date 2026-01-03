@@ -60,25 +60,11 @@ const NemotronNano3ConfigGenerator = () => {
           { id: 'enabled', label: 'Enabled', default: false }
         ],
         commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen3_coder' : null
-      },
-      host: {
-        name: 'host',
-        title: 'Host',
-        type: 'text',
-        default: '0.0.0.0',
-        placeholder: '0.0.0.0'
-      },
-      port: {
-        name: 'port',
-        title: 'Port',
-        type: 'text',
-        default: '30000',
-        placeholder: '30000'
       }
     },
 
     generateCommand: function(values) {
-      const { hardware, modelVariant, tp, kvcache, thinking, toolcall, host, port } = values;
+      const { hardware, modelVariant, tp, kvcache, thinking, toolcall } = values;
 
       // Default to FP8 if not selected
       const variant = modelVariant || 'fp8';
@@ -105,9 +91,11 @@ const NemotronNano3ConfigGenerator = () => {
         }
       }
 
-
-      cmd += `  --host ${host || '0.0.0.0'} \\\n`;
-      cmd += `  --port ${port || '30000'}`;
+      // Remove trailing backslash from last option
+      cmd = cmd.trimEnd();
+      if (cmd.endsWith('\\')) {
+        cmd = cmd.slice(0, -1).trimEnd();
+      }
 
       return cmd;
     }
