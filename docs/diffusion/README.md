@@ -23,30 +23,20 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 3. Adapt configurations to your specific hardware and requirements
 4. Join our community to share feedback and improvements
 
-
 The sglang diffusion cookbook directory structure are shown below:
+
 ```
 sgl-cookbook/docs/diffusion/
-├── README.md              # Main cookbook
-├── examples/              # Usage scripts per model
-│   ├── flux1_basic.py
-│   ├── sdxl_turbo.py
-│   ├── wan21_video.py
-│   └── ...
-├── benchmarks/             # Benchmark scripts
-│   ├── bench_image.py
-│   ├── bench_video.py
-│   ├── compare_backends.py
-│   └── run_all.sh
-├── docs/                   # Diffusion model docs
-│   ├── FLUX/               # FLUX series models docs
-│   ├── Qwen_Image/         # Qwen-Image series models docs
-│   ├── stable_diffusion/   # Stable Diffusion series models docs
-│   ├── Wan/                # Wan series models docs
-│   └── ...
-├── src/                    # Diffusion model serving visualizations code
-└── assets/
-    └── output_examples/   # Curated generation examples
+├── README.md              # Main cookbook (this file)
+├── Qwen-Image/            # Qwen-Image series models docs
+│   ├── Qwen-Image.md
+│   └── Qwen-Image-Edit.md
+├── Wan/                   # Wan series models docs
+│   ├── Wan2.1.md
+│   └── Wan2.2.md
+├── Z-Image/               # Z-Image series models docs
+│   └── Z-Image-Turbo.md
+└── ...
 ```
 
 ## 🤝 Contributing

@@ -11,8 +11,7 @@ const Wan2_2ConfigGenerator = () => {
         title: 'Hardware Platform',
         items: [
           { id: 'b200', label: 'B200', default: true },
-          { id: 'h100', label: 'H100', default: false },
-          { id: 'h800', label: 'H800', default: false }
+          { id: 'h200', label: 'H200', default: false },
         ]
       },
       task: {
@@ -30,7 +29,7 @@ const Wan2_2ConfigGenerator = () => {
         items: [
           {
             id: '14b',
-            label: '14B',
+            label: 'A14B',
             subtitle: 'Diffusers (A14B)',
             default: true,
             validTasks: ['i2v', 't2v']
@@ -43,32 +42,60 @@ const Wan2_2ConfigGenerator = () => {
             validTasks: ['ti2v']
           }
         ]
+      },
+      bestPractice: {
+        name: 'bestPractice',
+        title: 'Sequence Parallelism',
+        items: [
+          { id: 'off', label: 'Standard', default: true },
+          { id: 'on', label: 'Best Practice (4 GPUs)', default: false }
+        ]
       }
     },
 
-    // Model ID mapping based on user provided list
     modelConfigs: {
-      'i2v-14b': { repoId: 'Wan-AI/Wan2.2-I2V-A14B-Diffusers' },
-      't2v-14b': { repoId: 'Wan-AI/Wan2.2-T2V-A14B-Diffusers' },
-      'ti2v-5b': { repoId: 'Wan-AI/Wan2.2-TI2V-5B-Diffusers' }
+      'i2v-14b': {
+        repoId: 'Wan-AI/Wan2.2-I2V-A14B-Diffusers',
+        supportedLoras: [
+          { id: 'distill', path: 'lightx2v/Wan2.2-Distill-Loras' }
+        ]
+      },
+      't2v-14b': {
+        repoId: 'Wan-AI/Wan2.2-T2V-A14B-Diffusers',
+        supportedLoras: [
+          { id: 'arcane', path: 'Cseti/wan2.2-14B-Arcane_Jinx-lora-v1' }
+        ]
+      },
+      'ti2v-5b': {
+        repoId: 'Wan-AI/Wan2.2-TI2V-5B-Diffusers',
+        supportedLoras: []
+      }
     },
 
     generateCommand: function(values) {
-      const { task, modelsize } = values;
+      const { task, modelsize, selectedLoraPath, bestPractice } = values;
       const configKey = `${task}-${modelsize}`;
       const config = this.modelConfigs[configKey];
 
-      if (!config) {
-        return `# Error: Invalid combination - ${task} does not support ${modelsize} model size.`;
+      if (!config) return `# Error: Invalid configuration`;
+
+      let command = `sglang serve \\
+  --model-path ${config.repoId} \\
+  --dit-layerwise-offload true`;
+      // Add Best Practice parameters if enabled
+      if (bestPractice === 'on') {
+        command += ` \\
+  --num-gpus 4 \\
+  --ulysses-degree 4`;
       }
 
-      // Standard Wan2.2 launch arguments
-      return `sglang serve \\
-  --model-path ${config.repoId} \\
-  --pin-cpu-memory \\
-  --offload_model True \\
-  --ulysses-degree=2 \\
-  --ring-degree=2`;
+      // Only add --lora-path if a LoRA is selected and it's not 'none'
+      if (selectedLoraPath && selectedLoraPath !== 'none') {
+        command += ` \\
+  --lora-path ${selectedLoraPath}`;
+      }
+
+      return command;
     }
   };
 
@@ -78,89 +105,131 @@ const Wan2_2ConfigGenerator = () => {
       const defaultItem = option.items.find(item => item.default);
       initialState[key] = defaultItem ? defaultItem.id : option.items[0].id;
     });
+    initialState.selectedLoraPath = 'none';
     return initialState;
   };
 
   const [values, setValues] = useState(getInitialState);
 
-  // Filter available options based on logic
-  const displayOptions = useMemo(() => {
-    const options = { ...baseConfig.options };
-    const currentTask = values.task;
-
-    // Filter model sizes based on the selected task
-    // Only show sizes that include the current task in their 'validTasks' array
-    options.modelsize = {
-      ...baseConfig.options.modelsize,
-      items: baseConfig.options.modelsize.items.filter(item =>
-        item.validTasks.includes(currentTask)
-      )
-    };
-
-    return options;
-  }, [values.task]);
+  const availableLoras = useMemo(() => {
+    const configKey = `${values.task}-${values.modelsize}`;
+    return baseConfig.modelConfigs[configKey]?.supportedLoras || [];
+  }, [values.task, values.modelsize]);
 
   const handleRadioChange = (optionName, itemId) => {
     setValues(prev => {
       const newValues = { ...prev, [optionName]: itemId };
-
-      // Logic to auto-switch Model Size when Task changes
-      // Because 5B is exclusive to TI2V, and 14B is exclusive to I2V/T2V
       if (optionName === 'task') {
-        if (itemId === 'ti2v') {
-          newValues.modelsize = '5b';
-        } else {
-          newValues.modelsize = '14b';
-        }
+        newValues.modelsize = (itemId === 'ti2v') ? '5b' : '14b';
       }
 
+      // Sync Check: If the model changes, reset LoRA to none if the old one isn't supported
+      const configKey = `${newValues.task}-${newValues.modelsize}`;
+      const nextSupported = baseConfig.modelConfigs[configKey]?.supportedLoras || [];
+      const isValid = nextSupported.some(l => l.path === prev.selectedLoraPath);
+      if (!isValid) {
+        newValues.selectedLoraPath = 'none';
+      }
       return newValues;
     });
+  };
+
+  /**
+   * Toggle Logic:
+   * If the clicked LoRA is already selected, set it to 'none' (deselect).
+   * Otherwise, select the new LoRA path.
+   */
+  const handleLoraToggle = (path) => {
+    setValues(prev => ({
+      ...prev,
+      selectedLoraPath: prev.selectedLoraPath === path ? 'none' : path
+    }));
   };
 
   const command = baseConfig.generateCommand(values);
 
   return (
     <div className={styles.configContainer}>
+      {/* Blocks 1-3: Hardware, Task, Model Size */}
+      {Object.entries(baseConfig.options).map(([key, option], index) => {
+        const itemsToDisplay = key === 'modelsize'
+          ? option.items.filter(item => item.validTasks.includes(values.task))
+          : option.items;
 
-      {Object.entries(displayOptions).map(([key, option]) => (
-        <div key={key} className={styles.optionCard}>
-          <div className={styles.optionTitle}>
-            {option.title}
+        return (
+          <div key={key} className={styles.optionCard}>
+            <div className={styles.optionTitle}>
+              {option.title}
+            </div>
+            <div className={styles.optionItems}>
+              {itemsToDisplay.map(item => {
+                const isChecked = values[key] === item.id;
+                return (
+                  <label
+                    key={item.id}
+                    className={`${styles.optionLabel} ${isChecked ? styles.checked : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name={option.name}
+                      checked={isChecked}
+                      onChange={() => handleRadioChange(key, item.id)}
+                      className={styles.hiddenInput}
+                    />
+                    {item.label}
+                    {item.subtitle && <small className={styles.subtitle}>{item.subtitle}</small>}
+                  </label>
+                );
+              })}
+            </div>
           </div>
-          <div className={styles.optionItems}>
-            {option.items.map(item => {
-              const isChecked = values[option.name] === item.id;
-              // Some logic could disable items, currently handled by filtering
-              const isDisabled = false;
+        );
+      })}
 
-              return (
-                <label
-                  key={item.id}
-                  className={`${styles.optionLabel} ${isChecked ? styles.checked : ''} ${isDisabled ? styles.disabled : ''}`}
-                >
-                  <input
-                    type="radio"
-                    name={option.name}
-                    value={item.id}
-                    checked={isChecked}
-                    disabled={isDisabled}
-                    onChange={() => handleRadioChange(option.name, item.id)}
-                    className={styles.hiddenInput}
-                  />
-                  {item.label}
-                  {item.subtitle && (
-                    <small className={styles.subtitle}>{item.subtitle}</small>
-                  )}
-                </label>
-              );
-            })}
-          </div>
+      {/* Block 4: Select LoRA Model with Toggle behavior */}
+      <div className={styles.optionCard}>
+        <div className={styles.optionTitle}>
+          Select LoRA Model (Only some of the supported LoRAs are listed here)
         </div>
-      ))}
+        <div className={styles.optionItems}>
+          {availableLoras.length === 0 && (
+            <div style={{ color: '#999', fontSize: '0.9rem', padding: '10px' }}>
+              No LoRA models available for this model.
+            </div>
+          )}
+
+          {availableLoras.map(lora => {
+            const isSelected = values.selectedLoraPath === lora.path;
+            return (
+              <label
+                key={lora.id}
+                className={`${styles.optionLabel} ${isSelected ? styles.checked : ''}`}
+                /*
+                   Using onClick on the label to handle the toggle.
+                   Preventing default helps avoid double-firing with the radio input.
+                */
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLoraToggle(lora.path);
+                }}
+              >
+                <input
+                  type="radio"
+                  name="loraModelSelection"
+                  checked={isSelected}
+                  readOnly // We use the label's onClick instead
+                  className={styles.hiddenInput}
+                />
+                {lora.label}
+                <small className={styles.subtitle}>{lora.path}</small>
+              </label>
+            );
+          })}
+        </div>
+      </div>
 
       <div className={styles.commandCard}>
-        <div className={styles.commandTitle}>Run this Command:</div>
+        <div className={styles.commandTitle}>Generated Command</div>
         <pre className={styles.commandDisplay}>{command}</pre>
       </div>
     </div>

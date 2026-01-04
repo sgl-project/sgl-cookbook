@@ -42,8 +42,8 @@ const sidebars = {
           type: 'category',
           label: 'Wan',
           items: [
-            'diffusion/Wan/Wan2.2',
             'diffusion/Wan/Wan2.1',
+            'diffusion/Wan/Wan2.2',
           ],
         },
         {
