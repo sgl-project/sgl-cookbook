@@ -72,7 +72,7 @@ const sidebars = {
     },
     {
       type: 'category',
-      label: 'LLMs & VLMs',
+      label: 'Autoregressive Models',
       collapsed: false,
       items: [
         {
