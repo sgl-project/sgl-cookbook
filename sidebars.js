@@ -40,6 +40,13 @@ const sidebars = {
         'diffusion/README',
         {
           type: 'category',
+          label: 'FLUX',
+          items: [
+            'diffusion/FLUX/FLUX',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Wan',
           items: [
             'diffusion/Wan/Wan2.1',
