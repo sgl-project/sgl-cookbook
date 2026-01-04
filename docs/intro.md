@@ -25,101 +25,101 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Qwen-Image
 
-- [ ] [Qwen-Image](./diffusions/Qwen-Image/Qwen-Image.md)
-- [ ] [Qwen-Image-Edit](./diffusions/Qwen-Image/Qwen-Image-Edit.md)
+- [ ] [Qwen-Image](./diffusion/Qwen-Image/Qwen-Image.md)
+- [ ] [Qwen-Image-Edit](./diffusion/Qwen-Image/Qwen-Image-Edit.md)
 
 #### Wan
 
-- [ ] [Wan2.1](./diffusions/Wan/Wan2.1.md)
-- [X] [Wan2.2](./diffusions/Wan/Wan2.2.md)
+- [ ] [Wan2.1](./diffusion/Wan/Wan2.1.md)
+- [X] [Wan2.2](./diffusion/Wan/Wan2.2.md)
 
 #### Z-Image
 
-- [ ] [Z-Image](./diffusions/Z-Image/Z-Image-Turbo.md)
+- [ ] [Z-Image](./diffusion/Z-Image/Z-Image-Turbo.md)
 
 ### LLMs & VLMs
 
 #### Qwen
 
-- [X] [Qwen3](./models/Qwen/Qwen3.md)
-- [X] [Qwen3-VL](./models/Qwen/Qwen3-VL.md)
-- [X] [Qwen3-Next](./models/Qwen/Qwen3-Next.md)
-- [ ] [Qwen3-Coder-480B-A35B](./models/Qwen/Qwen3-Coder-480B-A35B.md)
-- [ ] [Qwen2.5-VL](./models/Qwen/Qwen2.5-VL.md)
+- [X] [Qwen3](./autoregressive/Qwen/Qwen3.md)
+- [X] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
+- [X] [Qwen3-Next](./autoregressive/Qwen/Qwen3-Next.md)
+- [ ] [Qwen3-Coder-480B-A35B](./autoregressive/Qwen/Qwen3-Coder-480B-A35B.md)
+- [ ] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
 
 #### DeepSeek
 
-- [X] [DeepSeek-V3.2](./models/DeepSeek/DeepSeek-V3_2.md)
-- [ ] [DeepSeek-V3.1](./models/DeepSeek/DeepSeek-V3_1.md)
-- [ ] [DeepSeek-V3](./models/DeepSeek/DeepSeek-V3.md)
-- [X] [DeepSeek-R1](./models/DeepSeek/DeepSeek-R1.md)
+- [X] [DeepSeek-V3.2](./autoregressive/DeepSeek/DeepSeek-V3_2.md)
+- [ ] [DeepSeek-V3.1](./autoregressive/DeepSeek/DeepSeek-V3_1.md)
+- [ ] [DeepSeek-V3](./autoregressive/DeepSeek/DeepSeek-V3.md)
+- [X] [DeepSeek-R1](./autoregressive/DeepSeek/DeepSeek-R1.md)
 
 #### Llama
 
-- [ ] [Llama4-Scout](./models/Llama/Llama4-Scout.md)
-- [ ] [Llama3.3-70B](./models/Llama/Llama3.3-70B.md)
-- [ ] [Llama3.1](./models/Llama/Llama3.1.md)
+- [ ] [Llama4-Scout](./autoregressive/Llama/Llama4-Scout.md)
+- [ ] [Llama3.3-70B](./autoregressive/Llama/Llama3.3-70B.md)
+- [ ] [Llama3.1](./autoregressive/Llama/Llama3.1.md)
 
 #### GLM
 
-- [ ] [Glyph](./models/GLM/Glyph.md)
-- [X] [GLM-4.5V](./models/GLM/GLM-4.5V.md)
-- [X] [GLM-4.6](./models/GLM/GLM-4.6.md)
-- [X] [GLM-4.6V](./models/GLM/GLM-4.6V.md)
+- [ ] [Glyph](./autoregressive/GLM/Glyph.md)
+- [X] [GLM-4.5V](./autoregressive/GLM/GLM-4.5V.md)
+- [X] [GLM-4.6](./autoregressive/GLM/GLM-4.6.md)
+- [X] [GLM-4.6V](./autoregressive/GLM/GLM-4.6V.md)
 
 #### OpenAI
 
-- [X] [gpt-oss](./models/OpenAI/GPT-OSS.md)
+- [X] [gpt-oss](./autoregressive/OpenAI/GPT-OSS.md)
 
 #### Moonshotai
 
-- [X] [Kimi-K2](./models/Moonshotai/Kimi-K2.md)
-- [ ] [Kimi-Linear](./models/Moonshotai/Kimi-Linear.md)
+- [X] [Kimi-K2](./autoregressive/Moonshotai/Kimi-K2.md)
+- [ ] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
 
 #### MiniMax
 
-- [ ] [MiniMax-M2](./models/MiniMax/MiniMax-M2.md)
+- [ ] [MiniMax-M2](./autoregressive/MiniMax/MiniMax-M2.md)
 
 #### NVIDIA
 
-- [X] [Nemotron-Nano-3-30B-A3B](./models/NVIDIA/Nemotron3-Nano.md)
+- [X] [Nemotron-Nano-3-30B-A3B](./autoregressive/NVIDIA/Nemotron3-Nano.md)
 
 #### Ernie
 
-- [ ] [Ernie4.5](./models/Ernie/Ernie4.5.md)
-- [ ] [Ernie4.5-VL](./models/Ernie/Ernie4.5-VL.md)
+- [ ] [Ernie4.5](./autoregressive/Ernie/Ernie4.5.md)
+- [ ] [Ernie4.5-VL](./autoregressive/Ernie/Ernie4.5-VL.md)
 
 #### InternVL
 
-- [ ] [InternVL3.5](./models/InternVL/InternVL3_5.md)
+- [ ] [InternVL3.5](./autoregressive/InternVL/InternVL3_5.md)
 
 #### InternLM
 
-- [ ] [Intern-S1](./models/InternLM/Intern-S1.md)
+- [ ] [Intern-S1](./autoregressive/InternLM/Intern-S1.md)
 
 #### Jina AI
 
-- [ ] [Jina-reranker-m0](./models/Jina/Jina-reranker-m0.md)
+- [ ] [Jina-reranker-m0](./autoregressive/Jina/Jina-reranker-m0.md)
 
 #### Mistral
 
-- [ ] [Mistral-3](./models/Mistral/Mistral-3.md)
-- [X] [Devstral 2](./models/Mistral/Devstral-2.md)
+- [ ] [Mistral-3](./autoregressive/Mistral/Mistral-3.md)
+- [X] [Devstral 2](./autoregressive/Mistral/Devstral-2.md)
 
 
 #### Xiaomi
 
-- [X] [MiMo-V2-Flash](./models/Xiaomi/MiMo-V2-Flash.md)
+- [X] [MiMo-V2-Flash](./autoregressive/Xiaomi/MiMo-V2-Flash.md)
 
 ### Benchmarks
 
-- [X] [Diffusion Model Benchmark](./benchmarks/diffusion_model_benchmark.md)
-- [X] [LLM Benchmark](./benchmarks/lm_benchmark.md)
+- [X] [Diffusion Model Benchmark](./base/benchmarks/diffusion_model_benchmark.md)
+- [X] [LLM Benchmark](./base/benchmarks/lm_benchmark.md)
 
 
 ## Reference
 
-- [Server arguments](./reference/server_arguments.md) - Understanding all the arguments
+- [Server arguments](./base/reference/server_arguments.md) - Understanding all the arguments
 
 ## 🚀 Quick Start
 
