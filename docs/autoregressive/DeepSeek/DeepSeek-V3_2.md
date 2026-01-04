@@ -82,7 +82,6 @@ has_answer = False
 thinking_started = False
 
 for chunk in response:
-    print(chunk)
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
 
