@@ -33,11 +33,7 @@ The Wan2.2 series offers models in various sizes, architectures and input types,
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size.
 
-<<<<<<<< HEAD:docs/diffusion/models/Wan/Wan2.2.md
-import Wan2_2ConfigGenerator from '@diffusion/src/Wan2_2ConfigGenerator';
-========
 import Wan2_2ConfigGenerator from '@site/src/components/diffusion/Wan2_2ConfigGenerator';
->>>>>>>> upstream/main:docs/diffusion/Wan/Wan2.2.md
 
 <Wan2_2ConfigGenerator />
 
