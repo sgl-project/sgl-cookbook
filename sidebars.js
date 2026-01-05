@@ -19,144 +19,181 @@ const sidebars = {
     'intro',
     {
       type: 'category',
-      label: 'Benchmarks',
-      items: [
-        {type: 'doc', label: 'LLM Benchmark', id: 'benchmarks/lm_benchmark'},
-        {type: 'doc', label: 'Diffusion Model Benchmark', id: 'benchmarks/diffusion_model_benchmark'},
-      ],
-    },
-    {
-      type: 'category',
-      label: 'SpecBundle',
-      items: [
-        {type: 'doc', label: 'Supported Models', id: 'specbundle/supported_models'},
-        {type: 'doc', label: 'Usage', id: 'specbundle/usage'},
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Diffusion Models',
-      items: [
-        {
-          type: 'category',
-          label: 'Wan',
-          items: [
-           'diffusion/models/Wan/Wan2.2'
-          ],
-        },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'LLMs(VLMs)',
+      label: 'Autoregressive Models',
       collapsed: false,
       items: [
         {
           type: 'category',
           label: 'Qwen',
           items: [
-            'models/Qwen/Qwen3',
-            'models/Qwen/Qwen3-Next',
-            'models/Qwen/Qwen3-VL',
-            'models/Qwen/Qwen3-Coder-480B-A35B',
-            'models/Qwen/Qwen2.5-VL',
+            'autoregressive/Qwen/Qwen3',
+            'autoregressive/Qwen/Qwen3-Next',
+            'autoregressive/Qwen/Qwen3-VL',
+            'autoregressive/Qwen/Qwen3-Coder-480B-A35B',
+            'autoregressive/Qwen/Qwen2.5-VL',
           ],
         },
         {
           type: 'category',
           label: 'DeepSeek',
           items: [
-            'models/DeepSeek/DeepSeek-V3_2',
-            'models/DeepSeek/DeepSeek-V3_1',
-            'models/DeepSeek/DeepSeek-V3',
-            'models/DeepSeek/DeepSeek-R1',
-            'models/DeepSeek/DeepSeek-OCR',
+            'autoregressive/DeepSeek/DeepSeek-V3_2',
+            'autoregressive/DeepSeek/DeepSeek-V3_1',
+            'autoregressive/DeepSeek/DeepSeek-V3',
+            'autoregressive/DeepSeek/DeepSeek-R1',
+            'autoregressive/DeepSeek/DeepSeek-OCR',
           ],
         },
         {
           type: 'category',
           label: 'Llama',
           items: [
-            'models/Llama/Llama4-Scout',
-            'models/Llama/Llama3.3-70B',
-            'models/Llama/Llama3.1',
+            'autoregressive/Llama/Llama4-Scout',
+            'autoregressive/Llama/Llama3.3-70B',
+            'autoregressive/Llama/Llama3.1',
           ],
         },
         {
           type: 'category',
           label: 'GLM',
           items: [
-            'models/GLM/Glyph',
-            'models/GLM/GLM-4.5V',
-            'models/GLM/GLM-4.6',
-            'models/GLM/GLM-4.6V',
-            'models/GLM/GLM-4.5',
+            'autoregressive/GLM/Glyph',
+            'autoregressive/GLM/GLM-4.5V',
+            'autoregressive/GLM/GLM-4.6',
+            'autoregressive/GLM/GLM-4.6V',
+            'autoregressive/GLM/GLM-4.5',
           ],
         },
         {
           type: 'category',
           label: 'OpenAI',
           items: [
-            'models/OpenAI/GPT-OSS',
+            'autoregressive/OpenAI/GPT-OSS',
           ],
         },
         {
           type: 'category',
           label: 'Moonshotai',
           items: [
-            'models/Moonshotai/Kimi-K2',
-            'models/Moonshotai/Kimi-Linear',
+            'autoregressive/Moonshotai/Kimi-K2',
+            'autoregressive/Moonshotai/Kimi-Linear',
           ],
         },
         {
           type: 'category',
           label: 'MiniMax',
           items: [
-            'models/MiniMax/MiniMax-M2',
+            'autoregressive/MiniMax/MiniMax-M2',
           ],
         },
         {
           type: 'category',
           label: 'NVIDIA',
           items: [
-            'models/NVIDIA/Nemotron3-Nano',
+            'autoregressive/NVIDIA/Nemotron3-Nano',
           ],
         },
         {
           type: 'category',
           label: 'Ernie',
           items: [
-            'models/Ernie/Ernie4.5',
-            'models/Ernie/Ernie4.5-VL',
+            'autoregressive/Ernie/Ernie4.5',
+            'autoregressive/Ernie/Ernie4.5-VL',
           ],
         },
         {
           type: 'category',
           label: 'InternVL',
           items: [
-            'models/InternVL/InternVL3_5',
+            'autoregressive/InternVL/InternVL3_5',
           ],
         },
         {
           type: 'category',
           label: 'InternLM',
           items: [
-            'models/InternLM/Intern-S1',
+            'autoregressive/InternLM/Intern-S1',
           ],
         },
         {
           type: 'category',
           label: 'Jina AI',
           items: [
-            'models/Jina/Jina-reranker-m0',
+            'autoregressive/Jina/Jina-reranker-m0',
           ],
         },
         {
           type: 'category',
           label: 'Mistral',
           items: [
-            'models/Mistral/Mistral-3',
-            'models/Mistral/Devstral-2',
+            'autoregressive/Mistral/Mistral-3',
+            'autoregressive/Mistral/Devstral-2',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Xiaomi',
+          items: [
+            'autoregressive/Xiaomi/MiMo-V2-Flash',
+          ],
+        }
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Diffusion Models',
+      items: [
+        'diffusion/README',
+        {
+          type: 'category',
+          label: 'FLUX',
+          items: [
+            'diffusion/FLUX/FLUX',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Wan',
+          items: [
+            'diffusion/Wan/Wan2.1',
+            'diffusion/Wan/Wan2.2',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Qwen-Image',
+          items: [
+            'diffusion/Qwen-Image/Qwen-Image',
+            'diffusion/Qwen-Image/Qwen-Image-Edit',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Z-Image',
+          items: [
+            'diffusion/Z-Image/Z-Image-Turbo',
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Others',
+      items: [
+        {
+          type: 'category',
+          label: 'SpecBundle',
+          items: [
+            {type: 'doc', label: 'Supported Models', id: 'specbundle/supported_models'},
+            {type: 'doc', label: 'Usage', id: 'specbundle/usage'},
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Benchmarks',
+          items: [
+            {type: 'doc', label: 'LLM Benchmark', id: 'base/benchmarks/lm_benchmark'},
+            {type: 'doc', label: 'Diffusion Model Benchmark', id: 'base/benchmarks/diffusion_model_benchmark'},
           ],
         },
       ],

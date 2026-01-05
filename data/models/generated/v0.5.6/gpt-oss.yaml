@@ -7,7 +7,7 @@ families:
     model_path: openai/gpt-oss-120b
     attributes:
       llm:
-        thinking_capability: hybrid
+        thinking_capability: thinking
         tool_parser: gpt-oss
         reasoning_parser: gpt-oss
         chat_template: null
@@ -67,7 +67,7 @@ families:
     model_path: lmsys/gpt-oss-120b-bf16
     attributes:
       llm:
-        thinking_capability: hybrid
+        thinking_capability: thinking
         tool_parser: gpt-oss
         reasoning_parser: gpt-oss
         chat_template: null
@@ -127,7 +127,7 @@ families:
     model_path: openai/gpt-oss-20b
     attributes:
       llm:
-        thinking_capability: hybrid
+        thinking_capability: thinking
         tool_parser: gpt-oss
         reasoning_parser: gpt-oss
         chat_template: null
@@ -187,7 +187,7 @@ families:
     model_path: lmsys/gpt-oss-20b-bf16
     attributes:
       llm:
-        thinking_capability: hybrid
+        thinking_capability: thinking
         tool_parser: gpt-oss
         reasoning_parser: gpt-oss
         chat_template: null

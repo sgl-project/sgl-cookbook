@@ -17,7 +17,7 @@ families:
   - name: GPT-OSS
     description: GPT-OSS open-source models (120B and 20B MOE)
     llm:
-      thinking_capability: hybrid
+      thinking_capability: thinking
       tool_parser: gpt-oss
       reasoning_parser: gpt-oss
 
