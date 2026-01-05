@@ -178,18 +178,24 @@ const sidebars = {
     },
     {
       type: 'category',
-      label: 'SpecBundle',
+      label: 'Others',
       items: [
-        {type: 'doc', label: 'Supported Models', id: 'specbundle/supported_models'},
-        {type: 'doc', label: 'Usage', id: 'specbundle/usage'},
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Benchmarks',
-      items: [
-        {type: 'doc', label: 'LLM Benchmark', id: 'base/benchmarks/lm_benchmark'},
-        {type: 'doc', label: 'Diffusion Model Benchmark', id: 'base/benchmarks/diffusion_model_benchmark'},
+        {
+          type: 'category',
+          label: 'SpecBundle',
+          items: [
+            {type: 'doc', label: 'Supported Models', id: 'specbundle/supported_models'},
+            {type: 'doc', label: 'Usage', id: 'specbundle/usage'},
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Benchmarks',
+          items: [
+            {type: 'doc', label: 'LLM Benchmark', id: 'base/benchmarks/lm_benchmark'},
+            {type: 'doc', label: 'Diffusion Model Benchmark', id: 'base/benchmarks/diffusion_model_benchmark'},
+          ],
+        },
       ],
     },
   ],
