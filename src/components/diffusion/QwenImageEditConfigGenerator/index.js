@@ -20,8 +20,6 @@ const QwenImageEditConfigGenerator = () => {
     generateCommand: function(values) {
       return `sglang serve \\
   --model-path Qwen/Qwen-Image-Edit-2511 \\
-  --pin-cpu-memory \\
-  --offload_model True \\
   --ulysses-degree=1 \\
   --ring-degree=1`;
     }

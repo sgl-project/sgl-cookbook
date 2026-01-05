@@ -36,8 +36,6 @@ const FluxConfigGenerator = () => {
 
       return `sglang serve \\
   --model-path ${config.repoId} \\
-  --pin-cpu-memory \\
-  --offload_model True \\
   --ulysses-degree=1 \\
   --ring-degree=1`;
     }
