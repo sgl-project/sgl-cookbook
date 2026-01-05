@@ -19,59 +19,6 @@ const sidebars = {
     'intro',
     {
       type: 'category',
-      label: 'Benchmarks',
-      items: [
-        {type: 'doc', label: 'LLM Benchmark', id: 'base/benchmarks/lm_benchmark'},
-        {type: 'doc', label: 'Diffusion Model Benchmark', id: 'base/benchmarks/diffusion_model_benchmark'},
-      ],
-    },
-    {
-      type: 'category',
-      label: 'SpecBundle',
-      items: [
-        {type: 'doc', label: 'Supported Models', id: 'specbundle/supported_models'},
-        {type: 'doc', label: 'Usage', id: 'specbundle/usage'},
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Diffusion Models',
-      items: [
-        'diffusion/README',
-        {
-          type: 'category',
-          label: 'FLUX',
-          items: [
-            'diffusion/FLUX/FLUX',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Wan',
-          items: [
-            'diffusion/Wan/Wan2.1',
-            'diffusion/Wan/Wan2.2',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Qwen-Image',
-          items: [
-            'diffusion/Qwen-Image/Qwen-Image',
-            'diffusion/Qwen-Image/Qwen-Image-Edit',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Z-Image',
-          items: [
-            'diffusion/Z-Image/Z-Image-Turbo',
-          ],
-        },
-      ],
-    },
-    {
-      type: 'category',
       label: 'Autoregressive Models',
       collapsed: false,
       items: [
@@ -190,6 +137,65 @@ const sidebars = {
             'autoregressive/Xiaomi/MiMo-V2-Flash',
           ],
         }
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Diffusion Models',
+      items: [
+        'diffusion/README',
+        {
+          type: 'category',
+          label: 'FLUX',
+          items: [
+            'diffusion/FLUX/FLUX',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Wan',
+          items: [
+            'diffusion/Wan/Wan2.1',
+            'diffusion/Wan/Wan2.2',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Qwen-Image',
+          items: [
+            'diffusion/Qwen-Image/Qwen-Image',
+            'diffusion/Qwen-Image/Qwen-Image-Edit',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Z-Image',
+          items: [
+            'diffusion/Z-Image/Z-Image-Turbo',
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Others',
+      items: [
+        {
+          type: 'category',
+          label: 'SpecBundle',
+          items: [
+            {type: 'doc', label: 'Supported Models', id: 'specbundle/supported_models'},
+            {type: 'doc', label: 'Usage', id: 'specbundle/usage'},
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Benchmarks',
+          items: [
+            {type: 'doc', label: 'LLM Benchmark', id: 'base/benchmarks/lm_benchmark'},
+            {type: 'doc', label: 'Diffusion Model Benchmark', id: 'base/benchmarks/diffusion_model_benchmark'},
+          ],
+        },
       ],
     },
   ],
