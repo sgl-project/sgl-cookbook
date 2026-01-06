@@ -46,26 +46,83 @@ DEFAULT_QUANT_SUFFIXES = {
 # =============================================================================
 
 
+def merge_extra_args(hw_args: list, config_args: list) -> list:
+    """
+    Merge extra_args from hardware config and config template.
+
+    Hardware args come first, then config args are appended. Arguments starting
+    with '--' are treated as keys. If a key exists in hw_args, the corresponding
+    key-value pair from config_args is skipped to avoid duplicates.
+
+    Args:
+        hw_args: Hardware-specific extra arguments (higher priority)
+        config_args: Config template extra arguments
+
+    Returns:
+        Merged list of extra arguments with hw_args taking precedence
+    """
+    if not config_args:
+        return list(hw_args)
+    if not hw_args:
+        return list(config_args)
+
+    # Extract keys (args starting with --) from hw_args
+    hw_keys = {arg for arg in hw_args if isinstance(arg, str) and arg.startswith("--")}
+
+    # Start with all hw_args
+    result = list(hw_args)
+
+    # Add config_args, skipping key-value pairs where key is already in hw_args
+    i = 0
+    while i < len(config_args):
+        arg = config_args[i]
+        if isinstance(arg, str) and arg.startswith("--"):
+            if arg not in hw_keys:
+                # Add the key
+                result.append(arg)
+                # Add the value if present (next arg that doesn't start with --)
+                if i + 1 < len(config_args):
+                    next_arg = config_args[i + 1]
+                    if not (isinstance(next_arg, str) and next_arg.startswith("--")):
+                        result.append(next_arg)
+                        i += 1
+            else:
+                # Skip this key and its value
+                if i + 1 < len(config_args):
+                    next_arg = config_args[i + 1]
+                    if not (isinstance(next_arg, str) and next_arg.startswith("--")):
+                        i += 1  # Skip the value too
+        i += 1
+
+    return result
+
+
 def build_engine_config(
     hw_config: dict,
     config_template: dict,
     quant: str | None = None,
     quant_overrides: dict | None = None,
 ) -> dict:
-    """Build a full engine configuration block."""
-    # Start with config_template defaults (e.g., from "default" or "high-throughput-dp")
-    # Then override with hardware-specific config
+    """
+    Build a full engine configuration block.
 
-    # Get tp: hardware config overrides config template
-    tp = hw_config.get("tp", config_template.get("tp", 8))
+    Args:
+        hw_config: Hardware-specific configuration (tp, extra_args, etc.)
+        config_template: Named configuration template (default, tp2, speculative-mtp, etc.)
+        quant: Quantization type (bf16, fp8, etc.)
+        quant_overrides: Per-quantization overrides (e.g., fp8: { ep: 2 })
 
-    # Merge extra_args from both hardware config and config template
-    # Hardware-specific args come first, then config template args
+    Returns:
+        Engine configuration dict with tp, dp, ep, extra_args, etc.
+    """
+    # Get tp: config template overrides hardware config when explicitly specified
+    # This allows named configs like "tp2", "tp4", "tp8" to set specific tp values
+    tp = config_template.get("tp", hw_config.get("tp", 8))
+
+    # Merge extra_args: hardware args take precedence for duplicate keys
     hw_extra_args = hw_config.get("extra_args", [])
     config_extra_args = config_template.get("extra_args", [])
-    merged_extra_args = list(hw_extra_args) + [
-        arg for arg in config_extra_args if arg not in hw_extra_args
-    ]
+    merged_extra_args = merge_extra_args(hw_extra_args, config_extra_args)
 
     # Build base engine config from config template, overridden by hardware config
     engine = {
@@ -92,11 +149,34 @@ def build_named_configuration(
     hw_config: dict,
     quant: str,
     quant_overrides: dict | None = None,
+    speculative_draft_model: str | None = None,
 ) -> dict:
-    """Build a full named configuration block."""
+    """
+    Build a full named configuration block.
+
+    Args:
+        config_template: Named configuration template (default, tp2, speculative-eagle3, etc.)
+        hw_config: Hardware-specific configuration
+        quant: Quantization type (bf16, fp8, etc.)
+        quant_overrides: Per-quantization overrides
+        speculative_draft_model: Path to speculative draft model. When provided and
+            the config name contains "speculative", adds --speculative-draft-model-path
+            to extra_args.
+
+    Returns:
+        Full configuration block with attributes, engine config, etc.
+    """
     engine_config = build_engine_config(
         hw_config, config_template, quant, quant_overrides
     )
+
+    # Add speculative draft model to extra_args for speculative configurations
+    config_name = config_template.get("name", "")
+    if speculative_draft_model and "speculative" in config_name.lower():
+        engine_config["extra_args"].extend([
+            "--speculative-draft-model-path",
+            speculative_draft_model,
+        ])
 
     return {
         "name": config_template["name"],
@@ -118,13 +198,29 @@ def build_hardware_config(
     defaults: dict,
     quant: str,
     quant_overrides: dict | None = None,
+    speculative_draft_model: str | None = None,
 ) -> dict:
-    """Build hardware configuration with all named configurations."""
+    """
+    Build hardware configuration with all named configurations.
+
+    Args:
+        hw_name: Hardware name (H100, H200, B200, etc.)
+        hw_config: Hardware-specific configuration
+        defaults: File-level defaults including configurations list
+        quant: Quantization type
+        quant_overrides: Per-quantization overrides
+        speculative_draft_model: Path to speculative draft model
+
+    Returns:
+        Hardware configuration dict with list of named configurations
+    """
     # Version is now a top-level folder, so we directly return configurations
     configurations = []
     for config_template in defaults.get("configurations", []):
         configurations.append(
-            build_named_configuration(config_template, hw_config, quant, quant_overrides)
+            build_named_configuration(
+                config_template, hw_config, quant, quant_overrides, speculative_draft_model
+            )
         )
     return {"configurations": configurations}
 
@@ -290,7 +386,18 @@ def generate_model_variants(
     model_def: dict,
     defaults: dict,
 ) -> list[dict]:
-    """Generate model variants from a base model definition with capabilities/quantizations."""
+    """
+    Generate model variants from a base model definition with capabilities/quantizations.
+
+    Args:
+        company: HuggingFace organization (e.g., 'deepseek-ai', 'nvidia')
+        family: Model family configuration
+        model_def: Model definition with base_name, capabilities, quantizations, etc.
+        defaults: File-level defaults including hardware and configurations
+
+    Returns:
+        List of expanded model configurations
+    """
     base_name = model_def["base_name"]
     family_name = family["name"]
 
@@ -303,6 +410,9 @@ def generate_model_variants(
 
     # Get quantized paths if different paths per quantization
     quantized_paths = model_def.get("quantized_paths", {})
+
+    # Get speculative draft model if present
+    speculative_draft_model = model_def.get("speculative_draft_model")
 
     # Get merged hardware config from family and model levels
     hw_configs, hardware_list = get_merged_hardware_config(family, model_def, defaults)
@@ -347,19 +457,26 @@ def generate_model_variants(
                     continue  # Skip this hardware for this quantization
 
                 hardware[hw_name] = build_hardware_config(
-                    hw_name, hw_config, defaults, quant, quant_overrides
+                    hw_name, hw_config, defaults, quant, quant_overrides,
+                    speculative_draft_model=speculative_draft_model
                 )
 
             # Skip if no valid hardware
             if not hardware:
                 continue
 
-            models.append({
+            result = {
                 "name": model_name,
                 "model_path": model_path,
                 "attributes": build_model_attributes(family, model_def, capability),
                 "hardware": hardware,
-            })
+            }
+
+            # Add optional speculative_draft_model if present
+            if speculative_draft_model:
+                result["speculative_draft_model"] = speculative_draft_model
+
+            models.append(result)
 
     return models
 
@@ -370,7 +487,18 @@ def build_explicit_model(
     model_def: dict | str,
     defaults: dict,
 ) -> dict:
-    """Build a single explicit model (no variant generation)."""
+    """
+    Build a single explicit model (no variant generation).
+
+    Args:
+        company: HuggingFace organization (e.g., 'deepseek-ai', 'nvidia')
+        family: Model family configuration
+        model_def: Model definition dict or string (just the name)
+        defaults: File-level defaults including hardware and configurations
+
+    Returns:
+        Full model configuration dict
+    """
     # Handle string-only model definition (just the name)
     if isinstance(model_def, str):
         model_def = {"name": model_def}
@@ -387,12 +515,22 @@ def build_explicit_model(
     # Default quantization for explicit models
     quant = model_def.get("quantization", "fp8")
 
+    # Get speculative draft model if present
+    speculative_draft_model = model_def.get("speculative_draft_model")
+
+    # Get quantization-specific overrides (e.g., quant_overrides: { fp8: { ep: 2 } })
+    quant_overrides_section = model_def.get("quant_overrides", {})
+    quant_overrides = quant_overrides_section.get(quant, {})
+
     # Build hardware configurations
     hardware = {}
     for hw_name in hardware_list:
         # Start with default config, then merge hardware-specific overrides
         hw_config = {**default_hw_config, **hw_configs.get(hw_name, {})}
-        hardware[hw_name] = build_hardware_config(hw_name, hw_config, defaults, quant)
+        hardware[hw_name] = build_hardware_config(
+            hw_name, hw_config, defaults, quant, quant_overrides,
+            speculative_draft_model=speculative_draft_model
+        )
 
     result = {
         "name": model_name,
@@ -402,8 +540,8 @@ def build_explicit_model(
     }
 
     # Add optional speculative_draft_model if present
-    if "speculative_draft_model" in model_def:
-        result["speculative_draft_model"] = model_def["speculative_draft_model"]
+    if speculative_draft_model:
+        result["speculative_draft_model"] = speculative_draft_model
 
     return result
 

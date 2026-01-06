@@ -40,7 +40,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 2
             dp: null
             ep: null
             enable_dp_attention: null
@@ -58,7 +58,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 4
             dp: null
             ep: null
             enable_dp_attention: null
@@ -76,7 +76,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 8
             dp: null
             ep: null
             enable_dp_attention: null
@@ -132,7 +132,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 2
             dp: null
             ep: null
             enable_dp_attention: null
@@ -150,7 +150,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 4
             dp: null
             ep: null
             enable_dp_attention: null
@@ -168,7 +168,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 8
             dp: null
             ep: null
             enable_dp_attention: null
@@ -233,7 +233,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 2
             dp: null
             ep: null
             enable_dp_attention: null
@@ -251,7 +251,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 4
             dp: null
             ep: null
             enable_dp_attention: null
@@ -269,7 +269,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 8
             dp: null
             ep: null
             enable_dp_attention: null
@@ -325,7 +325,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 2
             dp: null
             ep: null
             enable_dp_attention: null
@@ -343,7 +343,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 4
             dp: null
             ep: null
             enable_dp_attention: null
@@ -361,7 +361,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 1
+            tp: 8
             dp: null
             ep: null
             enable_dp_attention: null
