@@ -11,6 +11,41 @@ defaults:
     - name: default
       nodes: single
       optimization: balanced
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: tp2
+      nodes: single
+      optimization: balanced
+      tp: 2
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: tp4
+      nodes: single
+      optimization: balanced
+      tp: 4
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: tp8
+      nodes: single
+      optimization: balanced
+      tp: 8
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: default-kv-bf16
+      nodes: single
+      optimization: balanced
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - bf16
 
 families:
   - name: Nemotron-Nano-3

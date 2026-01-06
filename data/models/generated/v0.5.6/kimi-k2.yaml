@@ -24,9 +24,10 @@ families:
             env_vars: {}
             tp: 8
             dp: null
-            ep: 4
+            ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -39,9 +40,26 @@ families:
             env_vars: {}
             tp: 8
             dp: 4
-            ep: 4
+            ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       B200:
@@ -56,9 +74,10 @@ families:
             env_vars: {}
             tp: 8
             dp: null
-            ep: 4
+            ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -71,9 +90,26 @@ families:
             env_vars: {}
             tp: 8
             dp: 4
-            ep: 4
+            ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
   - name: Kimi-K2-Thinking
@@ -97,9 +133,10 @@ families:
             env_vars: {}
             tp: 8
             dp: null
-            ep: 4
+            ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -112,9 +149,26 @@ families:
             env_vars: {}
             tp: 8
             dp: 4
-            ep: 4
+            ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       B200:
@@ -129,9 +183,10 @@ families:
             env_vars: {}
             tp: 8
             dp: null
-            ep: 4
+            ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -144,8 +199,25 @@ families:
             env_vars: {}
             tp: 8
             dp: 4
-            ep: 4
+            ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null

@@ -12,6 +12,37 @@ defaults:
     - name: default
       nodes: single
       optimization: balanced
+      extra_args:
+        - --enable-multimodal
+        - --context-length
+        - "65536"
+        - --dtype
+        - bfloat16
+        - --trust-remote-code
+    - name: speculative-eagle3
+      nodes: single
+      optimization: low-latency
+      extra_args:
+        - --enable-multimodal
+        - --context-length
+        - "65536"
+        - --dtype
+        - bfloat16
+        - --trust-remote-code
+        - --speculative-algorithm
+        - EAGLE3
+        - --speculative-draft-model-path
+        - lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
+        - --mem-fraction-static
+        - "0.75"
+        - --cuda-graph-max-bs
+        - "2"
 
 families:
   - name: Llama-4-Scout

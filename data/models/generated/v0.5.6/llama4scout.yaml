@@ -26,7 +26,48 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-draft-model-path
+            - lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --mem-fraction-static
+            - '0.75'
+            - --cuda-graph-max-bs
+            - '2'
           prefill: null
           decode: null
       H200:
@@ -43,7 +84,48 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-draft-model-path
+            - lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --mem-fraction-static
+            - '0.75'
+            - --cuda-graph-max-bs
+            - '2'
           prefill: null
           decode: null
       B200:
@@ -60,7 +142,48 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-draft-model-path
+            - lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --mem-fraction-static
+            - '0.75'
+            - --cuda-graph-max-bs
+            - '2'
           prefill: null
           decode: null
   - name: Llama-4-Scout-17B-16E-Instruct-FP8
@@ -86,7 +209,48 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-draft-model-path
+            - lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --mem-fraction-static
+            - '0.75'
+            - --cuda-graph-max-bs
+            - '2'
           prefill: null
           decode: null
       H200:
@@ -103,7 +267,48 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-draft-model-path
+            - lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --mem-fraction-static
+            - '0.75'
+            - --cuda-graph-max-bs
+            - '2'
           prefill: null
           decode: null
       B200:
@@ -120,6 +325,47 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-multimodal
+            - --context-length
+            - '65536'
+            - --dtype
+            - bfloat16
+            - --trust-remote-code
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-draft-model-path
+            - lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --mem-fraction-static
+            - '0.75'
+            - --cuda-graph-max-bs
+            - '2'
           prefill: null
           decode: null

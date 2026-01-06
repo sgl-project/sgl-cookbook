@@ -41,7 +41,9 @@ families:
             dp: null
             ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --mem-fraction-static
+            - '0.85'
           prefill: null
           decode: null
         - name: latency-optimized
@@ -56,7 +58,26 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --disable-shared-experts-fusion
+            - --max-running-requests
+            - '64'
+            - --mem-fraction-static
+            - '0.85'
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --context-length
+            - '32768'
+            - --quantization
+            - fp8
           prefill: null
           decode: null
       H200:
@@ -88,7 +109,9 @@ families:
             dp: null
             ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --mem-fraction-static
+            - '0.85'
           prefill: null
           decode: null
         - name: latency-optimized
@@ -103,6 +126,25 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --disable-shared-experts-fusion
+            - --max-running-requests
+            - '64'
+            - --mem-fraction-static
+            - '0.85'
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --context-length
+            - '32768'
+            - --quantization
+            - fp8
           prefill: null
           decode: null
