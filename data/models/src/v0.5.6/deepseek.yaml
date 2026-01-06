@@ -20,6 +20,26 @@ defaults:
       tp: 8
       dp: 8
       enable_dp_attention: true
+    - name: high-throughput-ep
+      nodes: single
+      optimization: high-throughput
+      quantization: fp8
+      tp: 8
+      ep: 8
+    - name: speculative-mtp
+      nodes: single
+      optimization: low-latency
+      quantization: fp8
+      tp: 8
+      extra_args:
+        - --speculative-algorithm
+        - EAGLE
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
 
 families:
   - name: DeepSeek-V3.2

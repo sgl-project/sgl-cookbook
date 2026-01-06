@@ -12,6 +12,8 @@ defaults:
     - name: default
       nodes: single
       optimization: balanced
+      extra_args:
+        - --trust-remote-code
 
 families:
   - name: Intern

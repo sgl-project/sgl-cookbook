@@ -26,7 +26,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --mm-enable-dp-encoder
           prefill: null
           decode: null
       H200:
@@ -43,7 +44,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --mm-enable-dp-encoder
           prefill: null
           decode: null
       B200:
@@ -60,7 +62,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --mm-enable-dp-encoder
           prefill: null
           decode: null
   - name: GLM-4.6V-FP8
@@ -86,7 +89,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --mm-enable-dp-encoder
           prefill: null
           decode: null
       H200:
@@ -103,7 +107,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --mm-enable-dp-encoder
           prefill: null
           decode: null
       B200:
@@ -120,7 +125,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --mm-enable-dp-encoder
           prefill: null
           decode: null
   - name: GLM-4.6V-Flash

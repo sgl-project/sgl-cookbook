@@ -26,7 +26,82 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp2
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp4
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp8
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: default-kv-bf16
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - bf16
           prefill: null
           decode: null
       B200:
@@ -43,7 +118,82 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp2
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp4
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp8
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: default-kv-bf16
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - bf16
           prefill: null
           decode: null
   - name: NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
@@ -69,7 +219,82 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp2
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp4
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp8
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: default-kv-bf16
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - bf16
           prefill: null
           decode: null
       B200:
@@ -86,6 +311,81 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp2
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp4
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: tp8
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: default-kv-bf16
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - bf16
           prefill: null
           decode: null

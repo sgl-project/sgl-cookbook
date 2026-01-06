@@ -26,7 +26,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       H200:
@@ -43,7 +44,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       B200:
@@ -60,7 +62,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
   - name: Intern-S1-FP8
@@ -86,7 +89,8 @@ families:
             dp: null
             ep: 2
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       H200:
@@ -103,7 +107,8 @@ families:
             dp: null
             ep: 2
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       B200:
@@ -120,7 +125,8 @@ families:
             dp: null
             ep: 2
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
   - name: Intern-S1-mini
@@ -146,7 +152,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       H200:
@@ -163,7 +170,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       B200:
@@ -180,7 +188,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
   - name: Intern-S1-mini-FP8
@@ -206,7 +215,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       H200:
@@ -223,7 +233,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null
       B200:
@@ -240,6 +251,7 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --trust-remote-code
           prefill: null
           decode: null

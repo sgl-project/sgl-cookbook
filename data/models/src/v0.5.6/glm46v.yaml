@@ -5,9 +5,9 @@ vendor: zai-org
 
 defaults:
   hardware:
-    H100: { tp: 8 }
-    H200: { tp: 8 }
-    B200: { tp: 8 }
+    H100: { tp: 8, extra_args: ["--mm-enable-dp-encoder"] }
+    H200: { tp: 8, extra_args: ["--mm-enable-dp-encoder"] }
+    B200: { tp: 8, extra_args: ["--mm-enable-dp-encoder"] }
   configurations:
     - name: default
       nodes: single
@@ -26,8 +26,8 @@ families:
       - base_name: ""
         quantizations: [bf16, fp8]
 
-      # GLM-4.6V-Flash (9B) - override tp to 1
+      # GLM-4.6V-Flash (9B) - override tp to 1, no mm-enable-dp-encoder
       - base_name: Flash
         quantizations: [bf16, fp8]
         hardware:
-          default: { tp: 1 }
+          default: { tp: 1, extra_args: [] }

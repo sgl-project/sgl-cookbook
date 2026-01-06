@@ -29,6 +29,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -46,6 +69,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       B200:
         configurations:
         - name: default
@@ -61,6 +107,29 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
   - name: Qwen3-Next-80B-A3B-Instruct-FP8
@@ -89,6 +158,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -106,6 +198,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       B200:
         configurations:
         - name: default
@@ -121,6 +236,29 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
   - name: Qwen3-Next-80B-A3B-Thinking
@@ -149,6 +287,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -166,6 +327,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       B200:
         configurations:
         - name: default
@@ -181,6 +365,29 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
   - name: Qwen3-Next-80B-A3B-Thinking-FP8
@@ -209,6 +416,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -226,6 +456,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       B200:
         configurations:
         - name: default
@@ -241,5 +494,28 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null

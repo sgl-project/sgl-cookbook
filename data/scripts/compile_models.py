@@ -59,6 +59,14 @@ def build_engine_config(
     # Get tp: hardware config overrides config template
     tp = hw_config.get("tp", config_template.get("tp", 8))
 
+    # Merge extra_args from both hardware config and config template
+    # Hardware-specific args come first, then config template args
+    hw_extra_args = hw_config.get("extra_args", [])
+    config_extra_args = config_template.get("extra_args", [])
+    merged_extra_args = list(hw_extra_args) + [
+        arg for arg in config_extra_args if arg not in hw_extra_args
+    ]
+
     # Build base engine config from config template, overridden by hardware config
     engine = {
         "env_vars": hw_config.get("env_vars", config_template.get("env_vars", {})),
@@ -68,7 +76,7 @@ def build_engine_config(
         "enable_dp_attention": hw_config.get(
             "enable_dp_attention", config_template.get("enable_dp_attention")
         ),
-        "extra_args": hw_config.get("extra_args", config_template.get("extra_args", [])),
+        "extra_args": merged_extra_args,
     }
 
     # Apply quantization-specific overrides (e.g., fp8: { ep: 2 })
@@ -386,12 +394,18 @@ def build_explicit_model(
         hw_config = {**default_hw_config, **hw_configs.get(hw_name, {})}
         hardware[hw_name] = build_hardware_config(hw_name, hw_config, defaults, quant)
 
-    return {
+    result = {
         "name": model_name,
         "model_path": model_path,
         "attributes": build_model_attributes(family, model_def),
         "hardware": hardware,
     }
+
+    # Add optional speculative_draft_model if present
+    if "speculative_draft_model" in model_def:
+        result["speculative_draft_model"] = model_def["speculative_draft_model"]
+
+    return result
 
 
 def build_family(company: str, family: dict, defaults: dict) -> dict:
