@@ -2,9 +2,14 @@
 
 ## 1. Model Introduction
 
-The DeepSeek-V3 series includes three model variants, each optimized for different use cases:
+[DeepSeek V3](https://huggingface.co/deepseek-ai/DeepSeek-V3) is a large-scale Mixture-of-Experts (MoE) language model developed by DeepSeek, designed to deliver strong general-purpose reasoning, coding, and tool-augmented capabilities with high training and inference efficiency. As the latest generation in the DeepSeek model family, DeepSeek V3 introduces systematic architectural and training innovations that significantly improve performance across reasoning, mathematics, coding, and long-context understanding, while maintaining a competitive compute cost.
 
+Key highlights include:
 
+- **Efficient MoE architecture**: DeepSeek V3 adopts a fine-grained Mixture-of-Experts design with a large number of experts and sparse activation, enabling high model capacity while keeping inference and training costs manageable.
+- **Advanced reasoning and coding**: The model demonstrates strong performance on mathematical reasoning, logical inference, and real-world coding benchmarks, benefiting from improved data curation and training strategies.
+- **Long-context capability**: DeepSeek V3 supports extended context lengths, allowing it to handle long documents, complex multi-step reasoning, and agent-style workflows more effectively.
+- **Tool use and function calling**: The model is trained to support structured outputs and tool invocation, enabling seamless integration with external tools and agent frameworks during inference.
 
 ## 2. SGLang Installation
 
