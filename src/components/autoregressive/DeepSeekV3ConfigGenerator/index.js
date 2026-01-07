@@ -13,7 +13,9 @@ const DeepSeekV3ConfigGenerator = () => {
           { id: 'h100', label: 'H100', default: false },
           { id: 'h200', label: 'H200', default: false },
           { id: 'b200', label: 'B200', default: true },
-          { id: 'mi300x', label: 'MI300X', default: false }
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       quantization: {
@@ -63,7 +65,7 @@ const DeepSeekV3ConfigGenerator = () => {
       // Validation checks
       // Check H100 compatibility - H100 only supports FP8
       if ((hardware === 'h100' || hardware === 'mi300x') && quantization === 'fp4') {
-        return '# Error: H100 and MI300X only supports FP8 quantization\n# Please select FP8 quantization or use B200 hardware';
+        return '# Error: H100 and MI300X only supports FP8 quantization\n# Please select FP8 quantization or use B200/MI355X hardware';
       }
 
       // Model path based on quantization
@@ -71,7 +73,7 @@ const DeepSeekV3ConfigGenerator = () => {
       if (quantization === 'fp8') {
         modelPath = 'deepseek-ai/DeepSeek-V3';
       } else if (quantization === 'fp4') {
-        modelPath = 'nvidia/DeepSeek-V3-FP4-v2';
+        modelPath = 'nvidia/DeepSeek-V3-0324-NVFP4';
       }
 
       let cmd = 'python3 -m sglang.launch_server \\\n';
