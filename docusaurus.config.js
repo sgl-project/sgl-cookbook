@@ -83,6 +83,13 @@ const config = {
         content: 'B137E28CCDDFD715',
       },
     },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'google-site-verification',
+        content: 'fE6yfJhRYZw5wDa8b-KyjhoGyUUXcRV5gyanHUoDmV4',
+      },
+    },
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
