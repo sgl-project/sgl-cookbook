@@ -13,7 +13,9 @@ const Llama31ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'h100', label: 'H100', default: true }
+          { id: 'h100', label: 'H100', default: true },
+          { id: 'h200', label: 'H200', default: false },
+          { id: 'b200', label: 'B200', default: false },
         ]
       },
       modelsize: {
@@ -67,12 +69,18 @@ const Llama31ConfigGenerator = () => {
 
       // Collect command args to avoid stray blank lines
       const args = [];
-      args.push(`--model ${modelName}`);
+      args.push(`--model-path ${modelName}`);
 
-      // Tensor parallel: include only for 405B on H100
-      if (hardware === 'h100' && modelsize === '405b') {
+      // Tensor parallel
+      if (modelsize === '405b'){
         args.push(`--tp 8`);
       }
+      if (hardware === 'h100' || hardware=== 'h200') {
+        if (modelsize === '70b') {
+          args.push(`--tp 2`);
+        }
+      }
+
 
       if (optimization === 'throughput') {
         args.push(`--enable-dp-attention`);
@@ -82,6 +90,11 @@ const Llama31ConfigGenerator = () => {
         args.push(`--speculative-num-steps 3`);
         args.push(`--speculative-eagle-topk 1`);
         args.push(`--speculative-num-draft-tokens 4`);
+        if ( modelsize === '8b' && category === 'instruct') {
+          args.push(`--speculative-draft-model-path yuhuili/EAGLE3-LLaMA3.1-Instruct-8B`);
+        } else{
+          args.push(`--speculative-draft-model-path \${EAGLE3_MODEL_PATH}`);
+        }
         args.push(`--disable-shared-experts-fusion`);
         args.push(`--max-running-requests 64`);
         args.push(`--mem-fraction-static 0.85`);
@@ -91,13 +104,10 @@ const Llama31ConfigGenerator = () => {
 
       if (toolcall === 'enabled') {
         // Llama tool-call parser
-        args.push(`--tool-call-parser llama`);
+        args.push(`--tool-call-parser llama3`);
       }
 
-      args.push(`--host 0.0.0.0`);
-      args.push(`--port 8000`);
-
-      let cmd = 'python3 -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  ${args.join(' \\\n  ')}`;
 
       return cmd;

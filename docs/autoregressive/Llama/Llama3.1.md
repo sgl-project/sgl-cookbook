@@ -32,7 +32,7 @@ TODO:
 The TP size is set to the minimum required for the selected model size.
 :::
 
-import Llama31ConfigGenerator from '@site/src/components/Llama31ConfigGenerator';
+import Llama31ConfigGenerator from '@site/src/components/autoregressive/Llama31ConfigGenerator';
 
 <Llama31ConfigGenerator />
 ### 3.2 Configuration Tips
@@ -46,11 +46,9 @@ TODO
 SGLang exposes an OpenAI-compatible endpoint. First, start the server
 
 ```shell
-python -m sglang.launch_server \
-  --model  Meta-Llama/Llama-3.1-405B-Instruct \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+sglang serve \
+  --model-path  Meta-Llama/Llama-3.1-405B-Instruct \
+  --tp 8
 ```
 
 ```python
@@ -126,12 +124,10 @@ def exponential_backoff_retry(url, method, retries=3, backoff_factor=1, max_dela
 Llama3 supports tool calling capabilities. First, start the server with tool call parser enabled:
 
 ```shell
-python -m sglang.launch_server \
-  --model  Meta-Llama/Llama-3.1-405B-Instruct \
+sglang serve \
+  --model-path  Meta-Llama/Llama-3.1-405B-Instruct \
   --tool-call-parser llama3 \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 **Python Example**
@@ -284,8 +280,8 @@ We use SGLang's built-in benchmarking tool to conduct performance evaluation on 
 - Model Deployment Command:
 
 ```shell
-python -m sglang.launch_server \
-  --model Meta-Llama/Llama-3.1-70B \
+sglang serve \
+  --model-path Meta-Llama/Llama-3.1-70B \
   --tp 8
 ```
 
@@ -293,7 +289,7 @@ python -m sglang.launch_server \
 - Benchmark Command:
 
 ```shell
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model Meta-Llama/Llama-3.1-70B \
   --dataset-name random \
@@ -345,9 +341,9 @@ Max ITL (ms):                            21.95
 
 ##### 5.1.1.2 Medium Concurrency
 ```shell
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
-  --model Meta-Llama/Llama-3.1-70B \
+  --model-path Meta-Llama/Llama-3.1-70B \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -398,9 +394,9 @@ Max ITL (ms):                            478.92
 
 ##### 5.1.1.3 High Concurrency
 ```shell
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
-  --model Meta-Llama/Llama-3.1-70B \
+  --model-path Meta-Llama/Llama-3.1-70B \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -452,9 +448,9 @@ Max ITL (ms):                            1107.09
 #### 5.1.2 Summarization Scenario Benchmark
 ##### 5.1.2.1 Low Concurrency
 ```shell
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
-  --model Meta-Llama/Llama-3.1-70B\
+  --model-path Meta-Llama/Llama-3.1-70B\
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
@@ -503,9 +499,9 @@ Max ITL (ms):                            23.08
 
 ##### 5.1.2.2 Medium Concurrency
 ```shell
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
-  --model Meta-Llama/Llama-3.1-70B \
+  --model-path Meta-Llama/Llama-3.1-70B \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
@@ -554,9 +550,9 @@ Max ITL (ms):                            2529.51
 
 ##### 5.1.2.3 High Concurrency
 ```shell
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
-  --model Meta-Llama/Llama-3.1-70B \
+  --model-path Meta-Llama/Llama-3.1-70B \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
