@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styles from './styles.module.css';
 
 /**
@@ -18,6 +18,8 @@ const ConfigGenerator = ({ config }) => {
   const getInitialState = () => {
     const initialState = {};
     Object.entries(config.options).forEach(([key, option]) => {
+      // Only initialize visible or default-visible options
+      // But to be safe, we init all — visibility only affects rendering
       if (option.type === 'checkbox') {
         initialState[key] = option.items
           .filter(item => item.default)
@@ -65,11 +67,22 @@ const ConfigGenerator = ({ config }) => {
     }));
   };
 
+  // ✅ Filter visible options based on visibleIf
+  const visibleOptions = useMemo(() => {
+    return Object.entries(config.options).filter(([key, option]) => {
+      if (typeof option.visibleIf === 'function') {
+        return option.visibleIf(values);
+      }
+      return true; // 默认可见
+    });
+  }, [config.options, values]);
+
   const command = config.generateCommand ? config.generateCommand(values) : '';
 
   return (
     <div className={styles.configContainer}>
-      {Object.entries(config.options).map(([key, option]) => (
+      {/* ✅ Render only visible options */}
+      {visibleOptions.map(([key, option]) => (
         <div key={key} className={styles.optionCard}>
           <div className={styles.optionTitle}>
             {option.title}

@@ -10,7 +10,7 @@ These models bring open intelligence to all, with several new features and impro
 - **Tool Use**: Llama 3.1 is trained to interact with a search engine, python interpreter and mathematical engine, and also improves zero-shot tool use capabilities to interact with potentially unseen tools.
 - **Multilinguality**: Llama 3.1 supports 7 languages in addition to English: French, German, Hindi, Italian, Portuguese, Spanish, and Thai.
 
-For further details, please refer to the [Llama 3.1 blog](https://ai.meta.com/blog/meta-llama-3-1/) and the [Llama 3.1 model card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md)
+For further details, please refer to the [Llama 3.1 blog](https://ai.meta.com/blog/meta-llama-3-1/) and the [Llama 3.1 model card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md).note
 
 ## 2. SGLang Installation
 SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
@@ -20,25 +20,19 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 ## 3. Model Deployment
 This section provides deployment configurations optimized for different hardware platforms and use cases.
 
-:::note
-TODO:
-- Quantization: Check if provided
-:::
-
 ### 3.1 Basic Configuration
 **Interactive Command Generator**: Use the configuration selector below to generate a launch command for Llama 3.1 collection of models.
-
-:::note
-The TP size is set to the minimum required for the selected model size.
-:::
 
 import Llama31ConfigGenerator from '@site/src/components/autoregressive/Llama31ConfigGenerator';
 
 <Llama31ConfigGenerator />
 ### 3.2 Configuration Tips
-:::note
-TODO
-:::
+- **Speculative Decoding**: Using Speculative Decoding for latency-sensitive scenarios.
+  - `--speculative-algorithm EAGLE3`: Speculative decoding algorithm
+  - `--speculative-num-steps 3`: Number of speculative verification rounds
+  - `--speculative-eagle-topk 1`: Top-k sampling for draft tokens
+  - `--speculative-num-draft-tokens 4`: Number of draft tokens per step
+  - `--speculative-draft-model-path`: The path of the draft model weights. This can be a local folder or a Hugging Face repo ID such as [`yuhuili/EAGLE3-LLaMA3.1-Instruct-8B`](https://huggingface.co/yuhuili/EAGLE3-LLaMA3.1-Instruct-8B).
 
 ## 4. Model Invocation
 
@@ -264,9 +258,6 @@ print(final_response.choices[0].message.content)
 
 ### 5.1 Speed Benchmark
 **Test Environment:**
-:::note
-Re-run experiments on H100x8
-:::
 
 - Hardware: NVIDIA A100 GPU (8x)
 - Model: Meta-Llama/Llama-3.1-70B

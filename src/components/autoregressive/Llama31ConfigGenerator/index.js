@@ -35,6 +35,15 @@ const Llama31ConfigGenerator = () => {
           { id: 'instruct', label: 'Instruct', default: true }
         ]
       },
+      quantization: {
+        name: 'quantization',
+        title: 'Quantization',
+        visibleIf: (values) => values.modelsize === '405b', // 只有选了 405b 才显示
+        items: [
+          { id: 'bf16', label: 'BF16', default: true },
+          { id: 'fp8', label: 'FP8', default: false }
+        ]
+      },
       toolcall: {
         name: 'toolcall',
         title: 'Tool Call Parser',
@@ -55,7 +64,7 @@ const Llama31ConfigGenerator = () => {
     },
 
     generateCommand: function(values) {
-      const { hardware, optimization, modelsize, category, toolcall } = values;
+      const { hardware, optimization, modelsize, category, toolcall, quantization } = values;
 
       // Compute model name based on size and category
       const sizeMap = {
@@ -69,7 +78,11 @@ const Llama31ConfigGenerator = () => {
 
       // Collect command args to avoid stray blank lines
       const args = [];
-      args.push(`--model-path ${modelName}`);
+      if (quantization === 'fp8') {
+        args.push(`--model-path ${modelName}-FP8`);
+      }else{
+        args.push(`--model-path ${modelName}`);
+      }
 
       // Tensor parallel
       if (modelsize === '405b'){
@@ -86,7 +99,7 @@ const Llama31ConfigGenerator = () => {
         args.push(`--enable-dp-attention`);
         args.push(`--mem-fraction-static 0.85`);
       } else if (optimization === 'latency') {
-        args.push(`--speculative-algorithm EAGLE`);
+        args.push(`--speculative-algorithm EAGLE3`);
         args.push(`--speculative-num-steps 3`);
         args.push(`--speculative-eagle-topk 1`);
         args.push(`--speculative-num-draft-tokens 4`);
