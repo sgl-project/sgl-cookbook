@@ -14,8 +14,8 @@ This generation delivers comprehensive upgrades across the board:
 - **Broader multilingual knowledge**: Substantial gains in long-tail knowledge coverage across multiple languages.
 - **More helpful & aligned responses**: Markedly better alignment with user preferences in subjective and open-ended tasks, enabling higher-quality, more useful text generation.
 - **Extended context length**: Enhanced capabilities in understanding and reasoning over 256K-token long contexts.
-- **Stronger agent interaction capabilities**: Improved tool use and search-based agent performance
-- **Flexible deployment options**: Available in Dense and MoE architectures that scale from edge to cloud, with Instruct and reasoning-enhanced Thinking editions
+- **Stronger agent interaction capabilities**: Improved tool use and search-based agent performance.
+- **Flexible deployment options**: Available in Dense and MoE architectures that scale from edge to cloud, with Instruct and reasoning-enhanced Thinking editions.
 
 For more details, please refer to the [official Qwen3 GitHub Repository](https://github.com/QwenLM/Qwen3).
 
@@ -31,7 +31,7 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-The Qwen3 series offers models in various sizes and architectures, optimized for different hardware platforms. The recommended launch configurations vary by hardware and model size.
+The Qwen3 series offers models in various sizes and architectures, optimized for different hardware platforms including NVIDIA and AMD GPUs. The recommended launch configurations vary by hardware and model size.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, quantization method, and thinking capabilities.
 
@@ -159,7 +159,7 @@ Qwen3 supports tool calling capabilities. Enable the tool call parser:
 python -m sglang.launch_server \
   --model Qwen/Qwen3-235B-A22B-Thinking-2507 \
   --reasoning-parser qwen3 \
-  --tool-call-parser qwen3 \
+  --tool-call-parser qwen3_coder \
   --tp 8 \
   --host 0.0.0.0 \
   --port 8000
@@ -314,7 +314,7 @@ messages = [
 ]
 
 final_response = client.chat.completions.create(
-    model="Qwen/Qwen3-235B-A22B-Instruct-2507",
+    model="Qwen/Qwen3-235B-A22B-Thinking-2507",
     messages=messages,
     temperature=0.7
 )
