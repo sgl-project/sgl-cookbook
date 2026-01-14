@@ -1,5 +1,11 @@
-# DeepSeek-R1 Configuration Lookup
-# This is the authoritative source for all UI options and config parameters
+# DeepSeek-R1 Optimal Configurations
+# Source file for pre-tuned, benchmarked deployment configurations
+#
+# This is the authoritative source for UI options and optimal config parameters.
+# Compiled to: data/optimal-configs/generated/v0.5.6/deepseek-r1.json
+
+model: deepseek-r1
+version: v0.5.6
 
 # UI Options Configuration for Advanced (Optimal) Config Generator
 ui_options:
@@ -183,7 +189,7 @@ configs:
       stream_interval: 10
       decode_log_interval: 1
 
-# Validation rules
+# Validation rules for invalid combinations
 validation:
   - hardware: h200
     quantization: fp4

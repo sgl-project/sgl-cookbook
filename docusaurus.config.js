@@ -73,6 +73,7 @@ const config = {
             alias: {
               '@diffusion': path.resolve(__dirname, 'docs', 'diffusion'),
               '@specbundle': path.resolve(__dirname, 'docs', 'specbundle'),
+              '@optimal-configs': path.resolve(__dirname, 'data', 'optimal-configs', 'generated'),
             },
             },
           };
