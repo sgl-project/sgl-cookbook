@@ -19,6 +19,10 @@ vendors:
     name: OpenAI
     huggingface_org: openai
 
+  mistralai:
+    name: Mistral AI
+    huggingface_org: mistralai
+
   qwen:
     name: Qwen (Alibaba)
     huggingface_org: Qwen
