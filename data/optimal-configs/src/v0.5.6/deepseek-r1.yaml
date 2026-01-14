@@ -1,13 +1,6 @@
-# DeepSeek-R1 Optimal Configurations
-# Source file for pre-tuned, benchmarked deployment configurations
-#
-# This is the authoritative source for UI options and optimal config parameters.
-# Compiled to: data/optimal-configs/generated/v0.5.6/deepseek-r1.json
-
 model: deepseek-r1
 version: v0.5.6
 
-# UI Options Configuration for Advanced (Optimal) Config Generator
 ui_options:
   hardware:
     - id: b200
@@ -43,9 +36,7 @@ ui_options:
       label: "8 GPUs"
       default: true
 
-# Configuration entries with embedded parameters
 configs:
-  # B200 FP4 4 GPU - Low Latency
   - hardware: b200
     quantization: fp4
     gpu_count: 4
@@ -61,7 +52,6 @@ configs:
       enable_symm_mem: true
       stream_interval: 10
 
-  # B200 FP4 4 GPU - High Throughput
   - hardware: b200
     quantization: fp4
     gpu_count: 4
@@ -77,7 +67,6 @@ configs:
       enable_symm_mem: true
       stream_interval: 10
 
-  # B200 FP4 8 GPU - Low Latency
   - hardware: b200
     quantization: fp4
     gpu_count: 8
@@ -95,7 +84,6 @@ configs:
       enable_symm_mem: true
       stream_interval: 10
 
-  # B200 FP4 8 GPU - High Throughput
   - hardware: b200
     quantization: fp4
     gpu_count: 8
@@ -113,7 +101,6 @@ configs:
       enable_symm_mem: true
       stream_interval: 10
 
-  # B200 FP8 8 GPU - Low Latency
   - hardware: b200
     quantization: fp8
     gpu_count: 8
@@ -132,7 +119,6 @@ configs:
       stream_interval: 30
       fp8_gemm_backend: flashinfer_trtllm
 
-  # B200 FP8 8 GPU - High Throughput
   - hardware: b200
     quantization: fp8
     gpu_count: 8
@@ -151,7 +137,6 @@ configs:
       stream_interval: 30
       fp8_gemm_backend: flashinfer_trtllm
 
-  # H200 FP8 8 GPU - Low Latency
   - hardware: h200
     quantization: fp8
     gpu_count: 8
@@ -170,7 +155,6 @@ configs:
       stream_interval: 10
       decode_log_interval: 1
 
-  # H200 FP8 8 GPU - High Throughput
   - hardware: h200
     quantization: fp8
     gpu_count: 8
@@ -189,7 +173,6 @@ configs:
       stream_interval: 10
       decode_log_interval: 1
 
-# Validation rules for invalid combinations
 validation:
   - hardware: h200
     quantization: fp4
