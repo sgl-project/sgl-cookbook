@@ -258,45 +258,24 @@ print()
    Arguments: {"location": "Beijing"}
 ```
 
+## 5.Benchmark
 
-## AMD GPU Support 
-
-## 1. Model Deployment
-
-This section provides deployment configurations optimized for different hardware platforms and use cases.
-
-
-### 1.1 Basic Usage
-
-For basic API usage and request examples, please refer to:
-
-- [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
-
-### 1.2 Advanced Usage
-
-
-```shell
-python3 -m sglang.launch_server \
-  --model-path mistralai/Devstral-2-123B-Instruct-2512 \
-  --tp 8 \
-  --trust-remote-code \
-  --port 8888
-```
-
-## 2.Benchmark
-
-### 2.1 Benchmark Commands
+### 5.1 Speed Benchmark
+**Test Environment**:
+- Hardware: xxx
+- Model: Devstral-2-123B-Instruct-2512
+- Tensor Parallelism: 8
+- sglang version: xxx
+  
+#### 5.1.1 Benchmark Commands
 
 **Scenario 1: Chat (1K/1K) - Most Important**
 
 - **Model Deployment**
-
 ```bash
 python3 -m sglang.launch_server \
   --model-path mistralai/Devstral-2-123B-Instruct-2512 \
-  --tp 8 \
-  --trust-remote-code \
-  --port 8888
+  --tp 8
 ```
 
 - Low Concurrency (Latency-Optimized)
@@ -310,8 +289,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf \
-  --port 8888
+  --request-rate inf
 ```
 
 ```
@@ -364,8 +342,7 @@ python -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf \
-  --port 8888
+  --request-rate inf
 ```
 
 ```
@@ -418,8 +395,7 @@ python -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf \
-  --port 8888
+  --request-rate inf
 ```
 
 ```
@@ -461,37 +437,11 @@ Max ITL (ms):                            616.73
 ==================================================
 ```
 
-
-
-#### 2.2 Understanding the Results
-
-**Key Metrics:**
-
-- **Request Throughput (req/s)**: Number of requests processed per second
-- **Output Token Throughput (tok/s)**: Total tokens generated per second
-- **Mean TTFT (ms)**: Time to First Token - measures responsiveness
-- **Mean TPOT (ms)**: Time Per Output Token - measures generation speed
-- **Mean ITL (ms)**: Inter-Token Latency - measures streaming consistency
-
-**Why These Configurations Matter:**
-
-- **1K/1K (Chat)**: Represents the most common conversational AI workload. This is the highest priority scenario for most deployments.
-- **1K/8K (Reasoning)**: Tests long-form generation capabilities crucial for complex reasoning, code generation, and detailed explanations.
-- **8K/1K (Summarization)**: Evaluates performance with large context inputs, essential for RAG systems, document Q&A, and summarization tasks.
-- **Variable Concurrency**: Captures the Pareto frontier - the optimal trade-off between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
-
-**Interpreting Results:**
-
-- Compare your results against baseline numbers for your hardware
-- Higher throughput at same latency = better performance
-- Lower TTFT = more responsive user experience
-- Lower TPOT = faster generation speed
-
-### 2.3 Accuracy Benchmark
+### 5.2 Accuracy Benchmark
 
 Document model accuracy on standard benchmarks:
 
-#### 2.3.1 GSM8K Benchmark
+#### 5.2.1 GSM8K Benchmark
 
 - Benchmark Command
 
@@ -499,8 +449,7 @@ Document model accuracy on standard benchmarks:
 python3 benchmark/gsm8k/bench_sglang.py \
   --num-shots 8 \
   --num-questions 1316 \
-  --parallel 1316 \
-  --port 8888
+  --parallel 1316
 ```
 
 **Test Results:**
