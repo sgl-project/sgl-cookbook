@@ -1,0 +1,190 @@
+# DeepSeek-R1 Configuration Lookup
+# This is the authoritative source for all UI options and config parameters
+
+# UI Options Configuration for Advanced (Optimal) Config Generator
+ui_options:
+  hardware:
+    - id: b200
+      label: B200
+      default: true
+    - id: h200
+      label: H200
+      default: false
+
+  quantization:
+    - id: fp8
+      label: FP8
+      default: true
+    - id: fp4
+      label: FP4
+      default: false
+
+  scenario:
+    - id: low-latency
+      label: "Low Latency"
+      subtitle: "Concurrency 4-8"
+      default: true
+    - id: high-throughput
+      label: "High Throughput"
+      subtitle: "Concurrency 16-128"
+      default: false
+
+  gpu_count:
+    - id: 4
+      label: "4 GPUs"
+      default: false
+    - id: 8
+      label: "8 GPUs"
+      default: true
+
+# Configuration entries with embedded parameters
+configs:
+  # B200 FP4 4 GPU - Low Latency
+  - hardware: b200
+    quantization: fp4
+    gpu_count: 4
+    scenario: low-latency
+    parameters:
+      model_path: nvidia/DeepSeek-R1-0528-FP4-v2
+      tensor_parallel_size: 4
+      cuda_graph_max_bs: 256
+      max_running_requests: 256
+      mem_fraction_static: 0.85
+      ep_size: 4
+      scheduler_recv_interval: 10
+      enable_symm_mem: true
+      stream_interval: 10
+
+  # B200 FP4 4 GPU - High Throughput
+  - hardware: b200
+    quantization: fp4
+    gpu_count: 4
+    scenario: high-throughput
+    parameters:
+      model_path: nvidia/DeepSeek-R1-0528-FP4-v2
+      tensor_parallel_size: 4
+      cuda_graph_max_bs: 256
+      max_running_requests: 256
+      mem_fraction_static: 0.85
+      ep_size: 4
+      scheduler_recv_interval: 30
+      enable_symm_mem: true
+      stream_interval: 10
+
+  # B200 FP4 8 GPU - Low Latency
+  - hardware: b200
+    quantization: fp4
+    gpu_count: 8
+    scenario: low-latency
+    parameters:
+      model_path: nvidia/DeepSeek-R1-0528-FP4-v2
+      tensor_parallel_size: 8
+      cuda_graph_max_bs: 256
+      max_running_requests: 256
+      mem_fraction_static: 0.85
+      kv_cache_dtype: fp8_e4m3
+      chunked_prefill_size: 16384
+      ep_size: 8
+      scheduler_recv_interval: 10
+      enable_symm_mem: true
+      stream_interval: 10
+
+  # B200 FP4 8 GPU - High Throughput
+  - hardware: b200
+    quantization: fp4
+    gpu_count: 8
+    scenario: high-throughput
+    parameters:
+      model_path: nvidia/DeepSeek-R1-0528-FP4-v2
+      tensor_parallel_size: 8
+      cuda_graph_max_bs: 256
+      max_running_requests: 256
+      mem_fraction_static: 0.85
+      kv_cache_dtype: fp8_e4m3
+      chunked_prefill_size: 16384
+      ep_size: 8
+      scheduler_recv_interval: 30
+      enable_symm_mem: true
+      stream_interval: 10
+
+  # B200 FP8 8 GPU - Low Latency
+  - hardware: b200
+    quantization: fp8
+    gpu_count: 8
+    scenario: low-latency
+    parameters:
+      env_vars: SGLANG_ENABLE_JIT_DEEPGEMM=false
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      tensor_parallel_size: 8
+      cuda_graph_max_bs: 128
+      max_running_requests: 128
+      mem_fraction_static: 0.82
+      kv_cache_dtype: fp8_e4m3
+      chunked_prefill_size: 32768
+      max_prefill_tokens: 32768
+      scheduler_recv_interval: 10
+      stream_interval: 30
+      fp8_gemm_backend: flashinfer_trtllm
+
+  # B200 FP8 8 GPU - High Throughput
+  - hardware: b200
+    quantization: fp8
+    gpu_count: 8
+    scenario: high-throughput
+    parameters:
+      env_vars: SGLANG_ENABLE_JIT_DEEPGEMM=false
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      tensor_parallel_size: 8
+      cuda_graph_max_bs: 128
+      max_running_requests: 128
+      mem_fraction_static: 0.82
+      kv_cache_dtype: fp8_e4m3
+      chunked_prefill_size: 32768
+      max_prefill_tokens: 32768
+      scheduler_recv_interval: 30
+      stream_interval: 30
+      fp8_gemm_backend: flashinfer_trtllm
+
+  # H200 FP8 8 GPU - Low Latency
+  - hardware: h200
+    quantization: fp8
+    gpu_count: 8
+    scenario: low-latency
+    parameters:
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      disable_radix_cache: true
+      max_running_requests: 256
+      cuda_graph_max_bs: 256
+      chunked_prefill_size: 32768
+      max_prefill_tokens: 32768
+      mem_fraction_static: 0.82
+      attention_backend: flashinfer
+      stream_interval: 10
+      decode_log_interval: 1
+
+  # H200 FP8 8 GPU - High Throughput
+  - hardware: h200
+    quantization: fp8
+    gpu_count: 8
+    scenario: high-throughput
+    parameters:
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      disable_radix_cache: true
+      max_running_requests: 512
+      cuda_graph_max_bs: 512
+      chunked_prefill_size: 32768
+      max_prefill_tokens: 32768
+      mem_fraction_static: 0.82
+      attention_backend: flashinfer
+      stream_interval: 10
+      decode_log_interval: 1
+
+# Validation rules
+validation:
+  - hardware: h200
+    quantization: fp4
+    error: "FP4 is only available for B200 hardware. Please select FP8 quantization."

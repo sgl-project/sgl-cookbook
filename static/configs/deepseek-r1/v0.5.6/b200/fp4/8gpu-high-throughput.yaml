@@ -1,0 +1,23 @@
+# DeepSeek-R1 FP4 on B200 (8 GPU) - High Throughput Configuration
+# Optimized for: Maximum QPS, batch processing, high concurrency
+# Hardware: 8x NVIDIA B200
+# Source: SGLang Cookbook v0.5.6
+
+model_path: nvidia/DeepSeek-R1-0528-FP4-v2
+trust_remote_code: true
+tensor_parallel_size: 8
+data_parallel_size: 1
+cuda_graph_max_bs: 256
+max_running_requests: 256
+mem_fraction_static: 0.85
+kv_cache_dtype: fp8_e4m3
+chunked_prefill_size: 16384
+ep_size: 8
+quantization: modelopt_fp4
+enable_flashinfer_allreduce_fusion: true
+scheduler_recv_interval: 30
+enable_symm_mem: true
+disable_radix_cache: true
+attention_backend: trtllm_mla
+moe_runner_backend: flashinfer_trtllm
+stream_interval: 10
