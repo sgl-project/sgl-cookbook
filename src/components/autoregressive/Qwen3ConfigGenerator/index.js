@@ -78,7 +78,7 @@ const Qwen3ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
         ],
-        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen' : null
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen25' : null
       }
     },
 

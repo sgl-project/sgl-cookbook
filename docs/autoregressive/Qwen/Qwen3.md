@@ -159,7 +159,7 @@ Qwen3 supports tool calling capabilities. Enable the tool call parser:
 python -m sglang.launch_server \
   --model Qwen/Qwen3-235B-A22B-Thinking-2507 \
   --reasoning-parser qwen3 \
-  --tool-call-parser qwen3_coder \
+  --tool-call-parser qwen25 \
   --tp 8 \
   --host 0.0.0.0 \
   --port 8000
