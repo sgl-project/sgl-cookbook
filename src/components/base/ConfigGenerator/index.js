@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styles from './styles.module.css';
 
 /**
@@ -18,6 +18,8 @@ const ConfigGenerator = ({ config }) => {
   const getInitialState = () => {
     const initialState = {};
     Object.entries(config.options).forEach(([key, option]) => {
+      // Only initialize visible or default-visible options
+      // But to be safe, we init all — visibility only affects rendering
       if (option.type === 'checkbox') {
         initialState[key] = option.items
           .filter(item => item.default)
