@@ -18,7 +18,10 @@ const Devstral2ConfigGenerator = () => {
         items: [
           { id: 'b200', label: 'B200', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'h100', label: 'H100', default: false }
+          { id: 'h100', label: 'H100', default: false },
+          { id: 'mi300x', label: 'mi300x', default: false },
+          { id: 'mi325x', label: 'mi325x', default: false },
+          { id: 'mi355x', label: 'mi355x', default: false }
         ]
       },
       model: {
@@ -50,12 +53,12 @@ const Devstral2ConfigGenerator = () => {
     modelConfigs: {
       small: {
         modelId: 'mistralai/Devstral-Small-2-24B-Instruct-2512',
-        tpByHardware: { h100: 1, h200: 1, b200: 1 },
+        tpByHardware: { h100: 1, h200: 1, b200: 1, mi300x: 1, mi325x: 1, mi355x: 1},
         allowedWeights: ['fp8']
       },
       large: {
         modelId: 'mistralai/Devstral-2-123B-Instruct-2512',
-        tpByHardware: { h100: 4, h200: 2, b200: 2 },
+        tpByHardware: { h100: 4, h200: 2, b200: 2, mi300x: 2, mi325x: 2, mi355x: 2},
         allowedWeights: ['fp8']
       }
     },
