@@ -15,7 +15,10 @@ const Llama4ScoutConfigGenerator = () => {
         items: [
           { id: 'b200', label: 'B200', default: false },
           { id: 'h100', label: 'H100', default: true },
-          { id: 'h200', label: 'H200', default: false }
+          { id: 'h200', label: 'H200', default: false },
+          { id: 'mi300x', label: 'mi300x', default: false },
+          { id: 'mi325x', label: 'mi325x', default: false },
+          { id: 'mi355x', label: 'mi355x', default: false }	
         ]
       },
       quantization: {
@@ -67,6 +70,8 @@ const Llama4ScoutConfigGenerator = () => {
       if (hardware === 'h100' || hardware === 'h200') {
         cmd += ` \\\n  --tp 8`;
       } else if (hardware === 'b200') {
+        cmd += ` \\\n  --tp 8`;
+      }else if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
         cmd += ` \\\n  --tp 8`;
       }
 
