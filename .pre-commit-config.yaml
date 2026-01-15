@@ -24,3 +24,17 @@ repos:
         language: system
         files: ^(data/models/generated/.*\.(yaml|yml)|data/schema/types\.ts)$
         pass_filenames: false
+
+      - id: compile-optimal-configs
+        name: Compile Optimal Configuration YAML
+        entry: bash -c 'source .venv/bin/activate 2>/dev/null || true && python3 data/scripts/compile_optimal_configs.py'
+        language: system
+        files: ^data/optimal-configs/src/.*\.(yaml|yml)$
+        pass_filenames: false
+
+      - id: validate-optimal-configs-ts
+        name: Validate Optimal Configuration (TypeScript)
+        entry: bash -c 'cd data/schema && npm run test:optimal'
+        language: system
+        files: ^(data/optimal-configs/generated/.*\.json|data/schema/optimal-config.*\.ts)$
+        pass_filenames: false
