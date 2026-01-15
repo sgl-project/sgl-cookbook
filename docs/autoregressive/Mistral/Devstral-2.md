@@ -257,3 +257,206 @@ print()
 🔧 Tool Call: get_weather
    Arguments: {"location": "Beijing"}
 ```
+
+## 5.Benchmark
+
+### 5.1 Speed Benchmark
+**Test Environment**:
+- Hardware: xxx
+- Model: Devstral-2-123B-Instruct-2512
+- Tensor Parallelism: 8
+- sglang version: xxx
+  
+#### 5.1.1 Benchmark Commands
+
+**Scenario 1: Chat (1K/1K) - Most Important**
+
+- **Model Deployment**
+```bash
+python3 -m sglang.launch_server \
+  --model-path mistralai/Devstral-2-123B-Instruct-2512 \
+  --tp 8
+```
+
+- Low Concurrency (Latency-Optimized)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model mistralai/Devstral-2-123B-Instruct-2512 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  94.30
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total input vision tokens:               0
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4206
+Request throughput (req/s):              0.11
+Input token throughput (tok/s):          64.70
+Output token throughput (tok/s):         44.75
+Peak output token throughput (tok/s):    82.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          109.44
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   9427.59
+Median E2E Latency (ms):                 5637.23
+---------------Time to First Token----------------
+Mean TTFT (ms):                          4253.85
+Median TTFT (ms):                        116.95
+P99 TTFT (ms):                           37764.48
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          12.28
+Median TPOT (ms):                        12.29
+P99 TPOT (ms):                           12.30
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           12.29
+Median ITL (ms):                         12.29
+P95 ITL (ms):                            12.38
+P99 ITL (ms):                            12.42
+Max ITL (ms):                            12.90
+==================================================
+```
+
+- Medium Concurrency (Balanced)
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model mistralai/Devstral-2-123B-Instruct-2512 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  52.11
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total input vision tokens:               0
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40761
+Request throughput (req/s):              1.54
+Input token throughput (tok/s):          761.31
+Output token throughput (tok/s):         783.13
+Peak output token throughput (tok/s):    1120.00
+Peak concurrent requests:                20
+Total token throughput (tok/s):          1544.44
+Concurrency:                             13.60
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   8856.19
+Median E2E Latency (ms):                 9314.71
+---------------Time to First Token----------------
+Mean TTFT (ms):                          398.80
+Median TTFT (ms):                        127.81
+P99 TTFT (ms):                           1500.32
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          17.32
+Median TPOT (ms):                        16.90
+P99 TPOT (ms):                           32.78
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           16.61
+Median ITL (ms):                         14.26
+P95 ITL (ms):                            15.07
+P99 ITL (ms):                            114.46
+Max ITL (ms):                            1224.45
+==================================================
+```
+
+- High Concurrency (Throughput-Optimized)
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model mistralai/Devstral-2-123B-Instruct-2512 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  116.08
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total input vision tokens:               0
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    252523
+Request throughput (req/s):              4.31
+Input token throughput (tok/s):          2152.21
+Output token throughput (tok/s):         2176.60
+Peak output token throughput (tok/s):    3600.00
+Peak concurrent requests:                107
+Total token throughput (tok/s):          4328.81
+Concurrency:                             92.42
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   21456.71
+Median E2E Latency (ms):                 20126.82
+---------------Time to First Token----------------
+Mean TTFT (ms):                          291.60
+Median TTFT (ms):                        199.24
+P99 TTFT (ms):                           866.02
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          42.42
+Median TPOT (ms):                        45.18
+P99 TPOT (ms):                           53.32
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           41.97
+Median ITL (ms):                         27.59
+P95 ITL (ms):                            130.43
+P99 ITL (ms):                            137.87
+Max ITL (ms):                            616.73
+==================================================
+```
+
+### 5.2 Accuracy Benchmark
+
+Document model accuracy on standard benchmarks:
+
+#### 5.2.1 GSM8K Benchmark
+
+- Benchmark Command
+
+```bash
+python3 benchmark/gsm8k/bench_sglang.py \
+  --num-shots 8 \
+  --num-questions 1316 \
+  --parallel 1316
+```
+
+**Test Results:**
+
+```
+Accuracy: 0.922
+Invalid: 0.000
+Latency: 35.800 s
+Output throughput: 4507.697 token/s
+```
