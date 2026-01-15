@@ -5,6 +5,7 @@ import { findConfig, generateCommandFromConfig, validateSelection, shouldShowEle
 const DeepSeekR1AdvancedConfigGenerator = () => {
   // Build UI options dynamically from lookup.yaml
   if (!lookupData || !lookupData.ui_options) {
+    console.error('DeepSeekR1AdvancedConfigGenerator: Failed to load configuration data. lookupData:', lookupData);
     return <div>Error: Configuration data not loaded. Please refresh the page.</div>;
   }
 
@@ -60,7 +61,8 @@ const DeepSeekR1AdvancedConfigGenerator = () => {
         items: [],
         getDynamicItems: (values) => {
           const availableGpuCounts = getAvailableGpuCounts(values.hardware, values.quantization);
-          const allGpuCounts = [4, 8]; // All possible GPU counts
+          // Derive all possible GPU counts from ui_options
+          const allGpuCounts = uiOptions.gpu_count.map(opt => typeof opt.id === 'number' ? opt.id : parseInt(opt.id, 10));
 
           return allGpuCounts.map((count, idx) => {
             const isAvailable = availableGpuCounts.includes(count);

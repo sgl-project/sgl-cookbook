@@ -1,7 +1,5 @@
-// Configuration loader - reads from authoritative lookup.yaml
-import lookupDataImport from './configs';
-
-const lookupData = lookupDataImport;
+// Configuration loader - reads from authoritative optimal config JSON
+import lookupData from '@optimal-configs/v0.5.6/deepseek-r1.json';
 
 /**
  * Find the appropriate config based on user selections

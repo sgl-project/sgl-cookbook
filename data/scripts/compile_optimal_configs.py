@@ -10,24 +10,39 @@ Usage:
 
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 
 import yaml
 
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
+
 
 def load_yaml(path: Path) -> dict:
     """Load a YAML file."""
-    with open(path) as f:
-        return yaml.safe_load(f)
+    try:
+        with open(path) as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        logger.error(f"YAML file not found: {path}")
+        raise
+    except yaml.YAMLError as e:
+        logger.error(f"Failed to parse YAML file {path}: {e}")
+        raise
 
 
 def save_json(data: dict, path: Path) -> None:
     """Save data to a JSON file."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-        f.write("\n")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+    except OSError as e:
+        logger.error(f"Failed to write JSON file {path}: {e}")
+        raise
 
 
 def add_metadata(source: dict, input_path: Path) -> dict:
