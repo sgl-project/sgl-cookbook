@@ -81,11 +81,20 @@ const GLM45VConfigGenerator = () => {
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
       const modelName = `zai-org/${config.baseName}${quantSuffix}`;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
-      cmd += `  --model ${modelName}`;
+      // Check if AMD hardware
+      const isAMD = ['mi300x', 'mi325x', 'mi355x'].includes(hardware);
 
-      if (hwConfig.tp > 1) {
-        cmd += ` \\\n  --tp ${hwConfig.tp}`;
+      let cmd = '';
+      if (isAMD) {
+        cmd = 'SGLANG_USE_AITER=0 python3 -m sglang.launch_server \\\n';
+        cmd += `  --model-path ${modelName}`;
+        cmd += ` \\\n  --tp-size ${hwConfig.tp}`;
+      } else {
+        cmd = 'python -m sglang.launch_server \\\n';
+        cmd += `  --model ${modelName}`;
+        if (hwConfig.tp > 1) {
+          cmd += ` \\\n  --tp ${hwConfig.tp}`;
+        }
       }
 
       for (const [key, option] of Object.entries(this.options)) {

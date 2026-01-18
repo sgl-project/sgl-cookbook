@@ -38,3 +38,12 @@ vendors:
   xiaomi:
     name: Xiaomi
     huggingface_org: XiaomiMiMo
+
+  # Diffusion Model Vendors
+  black-forest-labs:
+    name: Black Forest Labs
+    huggingface_org: black-forest-labs
+
+  wan-ai:
+    name: Wan AI
+    huggingface_org: Wan-AI

@@ -2,10 +2,10 @@ import React from 'react';
 import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
- * GLM-4.6 Configuration Generator
- * Supports GLM-4.6 model deployment configuration
+ * GLM-4.7 Configuration Generator
+ * Supports GLM-4.7 model deployment configuration
  */
-const GLM46ConfigGenerator = () => {
+const GLM47ConfigGenerator = () => {
   const config = {
     modelFamily: 'zai-org',
 
@@ -14,10 +14,7 @@ const GLM46ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'h100', label: 'H100', default: true },
-          { id: 'h200', label: 'H200', default: false },
-          { id: 'b200', label: 'B200', default: false },
-          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi300x', label: 'MI300X', default: true },
           { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi355x', label: 'MI355X', default: false }
         ]
@@ -48,7 +45,7 @@ const GLM46ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
         ],
-        commandRule: (value) => value === 'enabled' ? '--reasoning-parser glm45' : null
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser glm47' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -57,35 +54,23 @@ const GLM46ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
         ],
-        commandRule: (value) => value === 'enabled' ? '--tool-call-parser glm45' : null
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser glm47' : null
       }
     },
 
-    specialCommands: {
-      'h100-bf16-tp': '# Error: GLM-4.6 in BF16 precision requires more VRAM than 8*H100\n# Please use H200/B200 or select FP8 quantization',
-      'h100-bf16-dp': '# Error: GLM-4.6 in BF16 precision requires more VRAM than 8*H100\n# Please use H200/B200 or select FP8 quantization',
-      'h100-bf16-ep': '# Error: GLM-4.6 in BF16 precision requires more VRAM than 8*H100\n# Please use H200/B200 or select FP8 quantization',
-      'h100-bf16-mtp': '# Error: GLM-4.6 in BF16 precision requires more VRAM than 8*H100\n# Please use H200/B200 or select FP8 quantization'
-    },
+    specialCommands: {},
 
     generateCommand: function (values) {
       const { hardware, quantization, strategy, thinking, toolcall } = values;
 
       const strategyArray = Array.isArray(strategy) ? strategy : [];
 
-      // Check for H100 + BF16 error
-      if (hardware === 'h100' && quantization === 'bf16') {
-        return '# Error: GLM-4.6 in BF16 precision requires more VRAM than 8*H100\n# Please use H200/B200 or select FP8 quantization';
-      }
-
       const modelSuffix = quantization === 'fp8' ? '-FP8' : '';
-      const modelName = `${this.modelFamily}/GLM-4.6${modelSuffix}`;
+      const modelName = `${this.modelFamily}/GLM-4.7${modelSuffix}`;
 
       // Determine TP value based on hardware and quantization
-      let tpValue = 8; // Default for NVIDIA GPUs
-      if (hardware === 'mi300x' || hardware === 'mi325x') {
-        tpValue = 4; // MI300X/MI325X: TP=4 for both BF16 and FP8
-      } else if (hardware === 'mi355x') {
+      let tpValue = 4; // Default for MI300X and MI325X
+      if (hardware === 'mi355x') {
         tpValue = quantization === 'fp8' ? 2 : 4; // MI355X: TP=2 for FP8, TP=4 for BF16
       }
 
@@ -114,12 +99,12 @@ const GLM46ConfigGenerator = () => {
 
       // Add tool call parser if enabled
       if (toolcall === 'enabled') {
-        cmd += ` \\\n  --tool-call-parser glm45`;
+        cmd += ` \\\n  --tool-call-parser glm47`;
       }
 
       // Add thinking parser if enabled
       if (thinking === 'enabled') {
-        cmd += ` \\\n  --reasoning-parser glm45`;
+        cmd += ` \\\n  --reasoning-parser glm47`;
       }
 
       return cmd;
@@ -129,4 +114,4 @@ const GLM46ConfigGenerator = () => {
   return <ConfigGenerator config={config} />;
 };
 
-export default GLM46ConfigGenerator;
+export default GLM47ConfigGenerator;
