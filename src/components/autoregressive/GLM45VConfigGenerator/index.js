@@ -18,7 +18,6 @@ const GLM45VConfigGenerator = () => {
           { id: 'h100', label: 'H100', default: false },
           { id: 'h200', label: 'H200', default: false },
           { id: 'mi300x', label: 'MI300X', default: false },
-          { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
@@ -56,8 +55,7 @@ const GLM45VConfigGenerator = () => {
         h200: { tp: 4, bf16: true, fp8: true },
         b200: { tp: 4, bf16: true, fp8: true },
         mi300x: { tp: 4, bf16: true, fp8: true },
-        mi325x: { tp: 4, bf16: true, fp8: true },
-        mi355x: { tp: 2, bf16: true, fp8: true }
+        mi355x: { tp: 4, bf16: true, fp8: true }
     },
 
     specialCommands: {},
