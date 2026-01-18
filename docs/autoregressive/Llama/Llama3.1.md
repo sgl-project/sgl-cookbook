@@ -27,12 +27,24 @@ import Llama31ConfigGenerator from '@site/src/components/autoregressive/Llama31C
 
 <Llama31ConfigGenerator />
 ### 3.2 Configuration Tips
-- **Speculative Decoding**: Using Speculative Decoding for latency-sensitive scenarios.
+
+**Speculative Decoding (NVIDIA GPUs):**
+- Using Speculative Decoding for latency-sensitive scenarios:
   - `--speculative-algorithm EAGLE3`: Speculative decoding algorithm
   - `--speculative-num-steps 3`: Number of speculative verification rounds
   - `--speculative-eagle-topk 1`: Top-k sampling for draft tokens
   - `--speculative-num-draft-tokens 4`: Number of draft tokens per step
   - `--speculative-draft-model-path`: The path of the draft model weights. This can be a local folder or a Hugging Face repo ID such as [`yuhuili/EAGLE3-LLaMA3.1-Instruct-8B`](https://huggingface.co/yuhuili/EAGLE3-LLaMA3.1-Instruct-8B).
+
+**AMD GPU Deployment:**
+- **Hardware-Aware TP**: MI355X (256GB memory) supports lower TP values compared to MI300X/MI325X (192GB)
+- **Verified TP Configurations**:
+  - MI300X/MI325X: 405B BF16 (TP=8), 405B FP8 (TP=4), 70B/8B (TP=1)
+  - MI355X: 405B BF16 (TP=4), 405B FP8 (TP=2), 70B/8B (TP=1)
+- **FP8 Model Variants**:
+  - 405B: Use Meta's official `meta-llama/Llama-3.1-405B-Instruct-FP8`
+  - 70B/8B: Use AMD's optimized `amd/Llama-3.1-{size}-Instruct-FP8-KV`
+- **Tool Calling**: Enable with `--tool-call-parser llama3` for Instruct models
 
 ## 4. Model Invocation
 

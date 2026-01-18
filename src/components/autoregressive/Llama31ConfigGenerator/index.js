@@ -16,6 +16,9 @@ const Llama31ConfigGenerator = () => {
           { id: 'h100', label: 'H100', default: true },
           { id: 'h200', label: 'H200', default: false },
           { id: 'b200', label: 'B200', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -38,7 +41,11 @@ const Llama31ConfigGenerator = () => {
       quantization: {
         name: 'quantization',
         title: 'Quantization',
-        visibleIf: (values) => values.modelsize === '405b', // 只有选了 405b 才显示
+        visibleIf: (values) => {
+          // Show for 405B on all platforms, or for any size on AMD GPUs
+          const isAMD = values.hardware === 'mi300x' || values.hardware === 'mi325x' || values.hardware === 'mi355x';
+          return values.modelsize === '405b' || isAMD;
+        },
         items: [
           { id: 'bf16', label: 'BF16', default: true },
           { id: 'fp8', label: 'FP8', default: false }
@@ -66,7 +73,9 @@ const Llama31ConfigGenerator = () => {
     generateCommand: function(values) {
       const { hardware, optimization, modelsize, category, toolcall, quantization } = values;
 
-      // Compute model name based on size and category
+      const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x';
+
+      // Model size mapping
       const sizeMap = {
         '8b': '8B',
         '70b': '70B',
@@ -74,49 +83,93 @@ const Llama31ConfigGenerator = () => {
       };
       const sizeToken = sizeMap[modelsize] || '70B';
       const categorySuffix = category === 'instruct' ? '-Instruct' : '';
-      const modelName = `meta-llama/Llama-3.1-${sizeToken}${categorySuffix}`;
 
-      // Collect command args to avoid stray blank lines
+      // Determine model path
+      let modelPath;
+      if (quantization === 'fp8' && category === 'instruct') {
+        if (modelsize === '405b') {
+          // Meta official FP8 for 405B
+          modelPath = `meta-llama/Llama-3.1-${sizeToken}${categorySuffix}-FP8`;
+        } else if (isAMD) {
+          // AMD FP8-KV variants for 70B/8B on AMD GPUs
+          modelPath = `amd/Llama-3.1-${sizeToken}${categorySuffix}-FP8-KV`;
+        } else {
+          modelPath = `meta-llama/Llama-3.1-${sizeToken}${categorySuffix}`;
+        }
+      } else {
+        modelPath = `meta-llama/Llama-3.1-${sizeToken}${categorySuffix}`;
+      }
+
+      // Determine TP size
+      let tpSize;
+      if (isAMD) {
+        // AMD GPU TP configuration
+        const amdTpConfig = {
+          'mi300x': {
+            '405b': { bf16: 8, fp8: 4 },
+            '70b': { bf16: 1, fp8: 1 },
+            '8b': { bf16: 1, fp8: 1 }
+          },
+          'mi325x': {
+            '405b': { bf16: 8, fp8: 4 },
+            '70b': { bf16: 1, fp8: 1 },
+            '8b': { bf16: 1, fp8: 1 }
+          },
+          'mi355x': {
+            '405b': { bf16: 4, fp8: 2 },
+            '70b': { bf16: 1, fp8: 1 },
+            '8b': { bf16: 1, fp8: 1 }
+          }
+        };
+        tpSize = quantization === 'fp8'
+          ? amdTpConfig[hardware][modelsize].fp8
+          : amdTpConfig[hardware][modelsize].bf16;
+      } else {
+        // NVIDIA GPU TP configuration
+        if (modelsize === '405b') {
+          tpSize = 8;
+        } else if (modelsize === '70b' && (hardware === 'h100' || hardware === 'h200')) {
+          tpSize = 2;
+        }
+      }
+
+      // Build command args
       const args = [];
-      if (quantization === 'fp8') {
-        args.push(`--model-path ${modelName}-FP8`);
-      }else{
-        args.push(`--model-path ${modelName}`);
+      args.push(`--model-path ${modelPath}`);
+
+      if (tpSize) {
+        args.push(`--tp ${tpSize}`);
       }
 
-      // Tensor parallel
-      if (modelsize === '405b'){
-        args.push(`--tp 8`);
+      // Add quantization flag only if not using FP8 variant model
+      if (quantization === 'fp8' && category !== 'instruct') {
+        args.push(`--quantization fp8`);
       }
-      if (hardware === 'h100' || hardware=== 'h200') {
-        if (modelsize === '70b') {
-          args.push(`--tp 2`);
+
+      // NVIDIA-specific optimizations
+      if (!isAMD) {
+        if (optimization === 'throughput') {
+          args.push(`--enable-dp-attention`);
+          args.push(`--mem-fraction-static 0.85`);
+        } else if (optimization === 'latency') {
+          args.push(`--speculative-algorithm EAGLE3`);
+          args.push(`--speculative-num-steps 3`);
+          args.push(`--speculative-eagle-topk 1`);
+          args.push(`--speculative-num-draft-tokens 4`);
+          if (modelsize === '8b' && category === 'instruct') {
+            args.push(`--speculative-draft-model-path yuhuili/EAGLE3-LLaMA3.1-Instruct-8B`);
+          } else {
+            args.push(`--speculative-draft-model-path \${EAGLE3_MODEL_PATH}`);
+          }
+          args.push(`--disable-shared-experts-fusion`);
+          args.push(`--max-running-requests 64`);
+          args.push(`--mem-fraction-static 0.85`);
+          args.push(`--kv-cache-dtype fp8_e4m3`);
+          args.push(`--context-length 32768`);
         }
-      }
-
-
-      if (optimization === 'throughput') {
-        args.push(`--enable-dp-attention`);
-        args.push(`--mem-fraction-static 0.85`);
-      } else if (optimization === 'latency') {
-        args.push(`--speculative-algorithm EAGLE3`);
-        args.push(`--speculative-num-steps 3`);
-        args.push(`--speculative-eagle-topk 1`);
-        args.push(`--speculative-num-draft-tokens 4`);
-        if ( modelsize === '8b' && category === 'instruct') {
-          args.push(`--speculative-draft-model-path yuhuili/EAGLE3-LLaMA3.1-Instruct-8B`);
-        } else{
-          args.push(`--speculative-draft-model-path \${EAGLE3_MODEL_PATH}`);
-        }
-        args.push(`--disable-shared-experts-fusion`);
-        args.push(`--max-running-requests 64`);
-        args.push(`--mem-fraction-static 0.85`);
-        args.push(`--kv-cache-dtype fp8_e4m3`);
-        args.push(`--context-length 32768`);
       }
 
       if (toolcall === 'enabled') {
-        // Llama tool-call parser
         args.push(`--tool-call-parser llama3`);
       }
 
