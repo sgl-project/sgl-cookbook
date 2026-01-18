@@ -16,7 +16,10 @@ const GLM46ConfigGenerator = () => {
         items: [
           { id: 'h100', label: 'H100', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'b200', label: 'B200', default: false }
+          { id: 'b200', label: 'B200', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       quantization: {
@@ -68,8 +71,9 @@ const GLM46ConfigGenerator = () => {
     generateCommand: function (values) {
       const { hardware, quantization, strategy, thinking, toolcall } = values;
 
-      // Check for H100 + BF16 error
       const strategyArray = Array.isArray(strategy) ? strategy : [];
+
+      // Check for H100 + BF16 error
       if (hardware === 'h100' && quantization === 'bf16') {
         return '# Error: GLM-4.6 in BF16 precision requires more VRAM than 8*H100\n# Please use H200/B200 or select FP8 quantization';
       }
@@ -77,11 +81,24 @@ const GLM46ConfigGenerator = () => {
       const modelSuffix = quantization === 'fp8' ? '-FP8' : '';
       const modelName = `${this.modelFamily}/GLM-4.6${modelSuffix}`;
 
+      // Determine TP value based on hardware and quantization
+      let tpValue = 8; // Default for NVIDIA GPUs
+      if (hardware === 'mi300x' || hardware === 'mi325x') {
+        tpValue = 4; // MI300X/MI325X: TP=4 for both BF16 and FP8
+      } else if (hardware === 'mi355x') {
+        tpValue = quantization === 'fp8' ? 2 : 4; // MI355X: TP=2 for FP8, TP=4 for BF16
+      }
+
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
 
       // TP is mandatory
-      cmd += ` \\\n  --tp 8`;
+      cmd += ` \\\n  --tp ${tpValue}`;
+
+      // MI300X/MI325X BF16 requires extra flags
+      if ((hardware === 'mi300x' || hardware === 'mi325x') && quantization === 'bf16') {
+        cmd += ` \\\n  --max-context-length 8192 \\\n  --mem-fraction-static 0.9`;
+      }
 
       // Strategy-specific parameters
       if (strategyArray.includes('dp')) {

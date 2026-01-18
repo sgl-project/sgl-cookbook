@@ -285,7 +285,7 @@ This section uses **industry-standard configurations** for comparable benchmark 
 
 **Test Environment:**
 
-- Hardware: NVIDIA B200 GPU (8x)
+- Hardware: NVIDIA B200 GPU (8x), AMD MI300X (8x), AMD MI325X (8x), AMD MI355X (8x)
 - Model: GLM-4.6
 - Tensor Parallelism: 8
 - SGLang Version: 0.5.6.post1
