@@ -18,7 +18,7 @@ const Qwen3NextConfigGenerator = () => {
           { id: 'h200', label: 'H200', default: false },
           { id: 'h100', label: 'H100', default: false },
           { id: 'mi300x', label: 'MI300X', default: false },
-          { id: 'mi355', label: 'MI355X', default: false }
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -73,7 +73,7 @@ const Qwen3NextConfigGenerator = () => {
         h200: { tp: 2, ep: 0, bf16: true, fp8: true },
         b200: { tp: 2, ep: 0, bf16: true, fp8: true },
         mi300x: { tp: 2, ep: 0, bf16: true, fp8: true },
-        mi355: { tp: 2, ep: 0, bf16: true, fp8: true }
+        mi355x: { tp: 2, ep: 0, bf16: true, fp8: true }
       }
     },
 
@@ -122,7 +122,7 @@ const Qwen3NextConfigGenerator = () => {
       }
 
       // AMD GPUs require triton attention backend
-      if (hardware === 'mi300x' || hardware === 'mi355') {
+      if (hardware === 'mi300x' || hardware === 'mi355x') {
         cmd += ` \\\n  --attention-backend triton`;
       }
 
