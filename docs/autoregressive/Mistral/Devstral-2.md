@@ -259,7 +259,7 @@ print()
 ```
 
 
-## AMD GPU Support 
+## AMD GPU Support
 
 ## 1. Model Deployment
 
