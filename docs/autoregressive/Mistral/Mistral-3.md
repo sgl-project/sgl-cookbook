@@ -1,43 +1,6 @@
----
-sidebar_position: 2
----
 
 # Mistral 3
 
-:::info Community contribution welcome
-This guide is currently under development. If you have experience deploying **Mistral 3** with SGLang, please help us complete this documentation.
-
-To contribute, fork the repo, edit this page, and open a PR.
-:::
-
-## 1. Model Introduction
-
-This page will cover practical deployment configs and usage patterns for **Mistral 3** with SGLang.
-
-## 2. SGLang Installation
-
-Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
-
-## 3. Model Deployment
-
-Coming soon: recommended launch configs (TP/PP, quantization, context length) and tuning tips.
-
-## 4. Model Invocation
-
-Coming soon: OpenAI-compatible API examples and tool-calling notes.
-
-## Contributing
-
-```shell
-git clone https://github.com/YOUR_USERNAME/sgl-cookbook.git
-cd sgl-cookbook
-git checkout -b add-mistral-3-guide
-# Edit this file and submit a PR
-```
-
-## Reference
-
-- [Devstral 2](./Devstral-2.md)
 ## AMD GPU Support
 
 ## 1. Model Introduction
@@ -84,16 +47,27 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 
 This section provides deployment configurations optimized for different hardware platforms and use cases.
 
+### 3.1 Basic Configuration
 
-### 3.1 Basic Usage
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities.
+
+import Ministral3ConfigGenerator from '@site/src/components/autoregressive/Ministral3ConfigGenerator';
+
+
+<Ministral3ConfigGenerator />
+
+### 3.2 Configuration Tips
+For more detailed configuration tips, please refer to [Mistral-3 Usage](https://cookbook.sglang.io/docs/autoregressive/Mistral/Mistral-3).
+
+### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
 
-### 3.2 Advanced Usage
+### 4.2 Advanced Usage
 
-#### 3.2.1 
+#### 4.2.1 
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -111,14 +85,14 @@ docker run -d -it --ipc=host --network=host --privileged \
   /bin/bash
 ```
 
-#### 3.2.2 Pre-installation steps inside the docker
+#### 4.2.2 Pre-installation steps inside the docker
 
 ```shell
 pip install mistral-common --upgrade
 pip install git+https://github.com/huggingface/transformers.git
 ```
 
-#### 3.2.3 Launch the server
+#### 4.2.3 Launch the server
 ```shell
 python3 -m sglang.launch_server \
   --model-path mistralai/Ministral-3-14B-Instruct-2512 \
