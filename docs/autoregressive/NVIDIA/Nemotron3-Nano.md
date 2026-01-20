@@ -15,7 +15,10 @@ At a high level:
 
 ## 2. SGLang Installation
 
-Refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
+Refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html), or install nightly wheel through:
+```bash
+uv pip install sglang==0.5.6.post3.dev1278+gad1b4e472 --extra-index-url https://sgl-project.github.io/whl/nightly/
+```
 
 
 ## 3. Model Deployment
