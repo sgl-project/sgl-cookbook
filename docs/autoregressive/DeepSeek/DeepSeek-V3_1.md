@@ -820,7 +820,41 @@ python -m sglang.bench_serving \
 ```
 
 ```
-
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     320
+Benchmark duration (s):                  282.55
+Total input tokens:                      1273893
+Total input text tokens:                 1273893
+Total input vision tokens:               0
+Total generated tokens:                  170000
+Total generated tokens (retokenized):   169081
+Request throughput (req/s):              1.13
+Input token throughput (tok/s):          4508.6
+Output token throughput (tok/s):         601.67
+Peak output token throughput (tok/s):   1216
+Peak concurrent requests:                68
+Total token throughput (tok/s):         5110.27
+Concurrency:                            59.81
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                  52810.32
+Median E2E Latency (ms):                50981.81
+---------------Time to First Token----------------
+Mean TTFT (ms):                         786.69
+Median TTFT (ms):                       499.38
+P99 TTFT (ms):                          2925.98
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                         97.93
+Median TPOT (ms):                       103.45
+P99 TPOT (ms):                          157.84
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                          98.11
+Median ITL (ms):                        55.7
+P95 ITL (ms):                           240.71
+P99 ITL (ms):                          1114.36
+==================================================
 ```
 
 #### 5.1.5 Understanding the Results
