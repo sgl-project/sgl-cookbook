@@ -63,6 +63,7 @@ const sidebars = {
             'autoregressive/GLM/GLM-4.6V',
             'autoregressive/GLM/GLM-4.5',
             'autoregressive/GLM/GLM-4.7',
+            'autoregressive/GLM/GLM-4.7-Flash',
           ],
         },
         {

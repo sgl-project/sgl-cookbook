@@ -53,6 +53,8 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [X] [GLM-4.6](./autoregressive/GLM/GLM-4.6.md)
 - [X] [GLM-4.6V](./autoregressive/GLM/GLM-4.6V.md)
 - [X] [GLM-4.7](./autoregressive/GLM/GLM-4.7.md)
+- [X] [GLM-4.7-Flash](./autoregressive/GLM/GLM-4.7-Flash.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+
 
 #### OpenAI
 
