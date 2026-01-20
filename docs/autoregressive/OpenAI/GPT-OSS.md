@@ -4,7 +4,7 @@
 
 [GPT-OSS](https://huggingface.co/openai/gpt-oss-20b) is an advanced large language model developed by OpenAI designed for power reasoning, agentic tasks, and versatile developer use cases. It has versions with two model sizes.
 
-- **gpt-oss-120b** — for production, general purpose, high reasoning use cases that fit into a single 80GB GPU (like NVIDIA H100 or AMD MI300X) (117B parameters with 5.1B active parameters)
+- **gpt-oss-120b** — for production, general purpose, high reasoning use cases that fit into a single 80GB GPU (like NVIDIA H100 80GB or AMD MI300X 192GB) (117B parameters with 5.1B active parameters)
 - **gpt-oss-20b** — for lower latency, and local or specialized use cases (21B parameters with 3.6B active parameters)
 
 GPT-OSS introduces several groundbreaking innovations:
@@ -13,7 +13,7 @@ GPT-OSS introduces several groundbreaking innovations:
 - **Full chain-of-thought**: Gain complete access to the model’s reasoning process, facilitating easier debugging and increased trust in outputs. It’s not intended to be shown to end users.
 - **Fine-tunable**: Fully customize models to your specific use case through parameter fine-tuning.
 - **Agentic capabilities**: Use the models’ native capabilities for function calling, web browsing, Python code execution, and Structured Outputs.
-- **MXFP4 quantization**: The models were post-trained with MXFP4 quantization of the MoE weights, making gpt-oss-120b run on a single 80GB GPU (like NVIDIA H100 or AMD MI300X) and the gpt-oss-20b model run within 16GB of memory. All evals were performed with the same MXFP4 quantization.
+- **MXFP4 quantization**: The models were post-trained with MXFP4 quantization of the MoE weights, making gpt-oss-120b run on a single 80GB GPU (like NVIDIA H100 80GB or AMD MI300X 192GB) and the gpt-oss-20b model run within 16GB of memory. All evals were performed with the same MXFP4 quantization.
 
 ## 2.SGLang Installation
 
@@ -397,7 +397,7 @@ messages = [
 ]
 
 final_response = client.chat.completions.create(
-    model="Qwen/Qwen3-Next-80B-A3B-Thinking",
+    model="openai/gpt-oss-120b",
     messages=messages,
     temperature=0.7
 )
