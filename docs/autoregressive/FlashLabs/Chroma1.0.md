@@ -78,6 +78,8 @@ docker run -d \
   --gpus all \
   -p 8000:8000 \
   -w /app/Chroma-SGLang \
+  -v "your_Chroma-SGLang_path":/app/Chroma-SGLang \
+  -v "your_chroma_path":/model \
   -e CHROMA_MODEL_PATH="your_chroma_path" \
   -e DP_SIZE="1" \
   flashlabs/chroma:latest \
