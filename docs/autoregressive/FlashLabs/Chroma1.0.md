@@ -80,7 +80,7 @@ docker run -d \
   -w /app/Chroma-SGLang \
   -v "your_Chroma-SGLang_path":/app/Chroma-SGLang \
   -v "your_chroma_path":/model \
-  -e CHROMA_MODEL_PATH="your_chroma_path" \
+  -e CHROMA_MODEL_PATH=/model \
   -e DP_SIZE="1" \
   flashlabs/chroma:latest \
   /opt/conda/bin/python -m uvicorn api_server:app \
