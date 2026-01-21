@@ -40,15 +40,8 @@ Download the **Chroma-4B** weights from Hugging Face. You can choose one of the 
 
 **Method 1: Using Python (Recommended)**
 
-```python
-from huggingface_hub import snapshot_download
-
-snapshot_download(
-    repo_id="FlashLabs/Chroma-4B",
-    local_dir="Chroma-4B",
-    local_dir_use_symlinks=False,
-    resume_download=True
-)
+```bash
+huggingface-cli download FlashLabs/Chroma-4B --local-dir Chroma-4B
 ```
 
 **Method 2: Using Git Clone**
