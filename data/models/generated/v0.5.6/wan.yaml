@@ -48,7 +48,8 @@ families:
             - --num-gpus
             - '4'
             - --ulysses-degree
-            - '4'
+            - '2'
+            - --enable-cfg-parallel
           prefill: null
           decode: null
       H200:
@@ -84,7 +85,8 @@ families:
             - --num-gpus
             - '4'
             - --ulysses-degree
-            - '4'
+            - '2'
+            - --enable-cfg-parallel
           prefill: null
           decode: null
   - name: Wan2.2-T2V-A14B-Diffusers
@@ -132,7 +134,8 @@ families:
             - --num-gpus
             - '4'
             - --ulysses-degree
-            - '4'
+            - '2'
+            - --enable-cfg-parallel
           prefill: null
           decode: null
       H200:
@@ -168,7 +171,8 @@ families:
             - --num-gpus
             - '4'
             - --ulysses-degree
-            - '4'
+            - '2'
+            - --enable-cfg-parallel
           prefill: null
           decode: null
   - name: Wan2.2-TI2V-5B-Diffusers
@@ -217,7 +221,8 @@ families:
             - --num-gpus
             - '4'
             - --ulysses-degree
-            - '4'
+            - '2'
+            - --enable-cfg-parallel
           prefill: null
           decode: null
       H200:
