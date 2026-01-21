@@ -191,5 +191,3 @@ curl -X POST http://localhost:8000/v1/chat/completions \
     "return_audio": true
   }' | jq -r '.audio' | base64 -d > output.wav
 ```
-
-
