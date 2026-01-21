@@ -99,6 +99,11 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 - [X] [MiMo-V2-Flash](./autoregressive/Xiaomi/MiMo-V2-Flash.md)
 
+
+#### FlashLabs
+
+- [X] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md)<span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+
 ### Diffusion Models
 
 
