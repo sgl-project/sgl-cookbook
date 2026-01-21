@@ -28,7 +28,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [X] [Qwen3](./autoregressive/Qwen/Qwen3.md)
 - [X] [Qwen3-Next](./autoregressive/Qwen/Qwen3-Next.md)
 - [X] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
-- [ ] [Qwen3-Coder-480B-A35B](./autoregressive/Qwen/Qwen3-Coder-480B-A35B.md)
+- [ ] [Qwen3-Coder](./autoregressive/Qwen/Qwen3-Coder.md)
 - [ ] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
 
 #### DeepSeek
