@@ -258,48 +258,16 @@ print()
    Arguments: {"location": "Beijing"}
 ```
 
+## 5.Benchmark
 
-## AMD GPU Support 
+### 5.1 Speed Benchmark
+Test Environment:
 
-## 1. Model Deployment
+- Hardware: xxx (8x)
+- Tensor Parallelism: xxx
+- Model: xxx
+- sglang version: x.x.x
 
-This section provides deployment configurations optimized for different hardware platforms and use cases.
-
-
-### 1.1 Basic Usage
-
-For basic API usage and request examples, please refer to:
-
-- [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
-
-### 1.2 Advanced Usage
-
-
-```shell
-python3 -m sglang.launch_server \
-  --model-path mistralai/Devstral-2-123B-Instruct-2512 \
-  --tp 8 \
-  --trust-remote-code \
-  --port 8888
-```
-
-## 2. Model Deployment
-
-This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
-
-### 2.1 Basic Configuration
-
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities.
-
-import Devstral2ConfigGenerator from '@site/src/components/autoregressive/Devstral2ConfigGenerator';
-
-<Devstral2ConfigGenerator />
-
-
-
-## 3.Benchmark
-
-### 3.1 Benchmark Commands
 
 **Scenario 1: Chat (1K/1K) - Most Important**
 
@@ -475,37 +443,11 @@ Max ITL (ms):                            616.73
 ==================================================
 ```
 
-
-
-#### 3.2 Understanding the Results
-
-**Key Metrics:**
-
-- **Request Throughput (req/s)**: Number of requests processed per second
-- **Output Token Throughput (tok/s)**: Total tokens generated per second
-- **Mean TTFT (ms)**: Time to First Token - measures responsiveness
-- **Mean TPOT (ms)**: Time Per Output Token - measures generation speed
-- **Mean ITL (ms)**: Inter-Token Latency - measures streaming consistency
-
-**Why These Configurations Matter:**
-
-- **1K/1K (Chat)**: Represents the most common conversational AI workload. This is the highest priority scenario for most deployments.
-- **1K/8K (Reasoning)**: Tests long-form generation capabilities crucial for complex reasoning, code generation, and detailed explanations.
-- **8K/1K (Summarization)**: Evaluates performance with large context inputs, essential for RAG systems, document Q&A, and summarization tasks.
-- **Variable Concurrency**: Captures the Pareto frontier - the optimal trade-off between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
-
-**Interpreting Results:**
-
-- Compare your results against baseline numbers for your hardware
-- Higher throughput at same latency = better performance
-- Lower TTFT = more responsive user experience
-- Lower TPOT = faster generation speed
-
-### 3.3 Accuracy Benchmark
+### 5.2 Accuracy Benchmark
 
 Document model accuracy on standard benchmarks:
 
-#### 3.3.1 GSM8K Benchmark
+#### 5.2.1 GSM8K Benchmark
 
 - Benchmark Command
 
