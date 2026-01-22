@@ -261,10 +261,10 @@ print()
 ## 5.Benchmark
 
 ### 5.1 Speed Benchmark
-Test Environment:
+**Test Environment**:
 
 - Hardware: xxx (8x)
-- Tensor Parallelism: xxx
+- Tensor Parallelism: 8
 - Model: xxx
 - sglang version: x.x.x
 
