@@ -258,6 +258,7 @@ families:
             - --num-gpus
             - '4'
             - --ulysses-degree
-            - '4'
+            - '2'
+            - --enable-cfg-parallel
           prefill: null
           decode: null
