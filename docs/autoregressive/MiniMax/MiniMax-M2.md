@@ -1,27 +1,6 @@
 # MiniMax-M2
 
-## 📝 Community Contribution Welcome
 
-This guide is currently under development. We welcome community contributions!
-
-If you have experience deploying **MiniMax-M2** with SGLang, please help us complete this documentation.
-
-## 🚀 How to Contribute
-
-```shell
-git clone https://github.com/YOUR_USERNAME/sglang-cookbook.git
-cd sglang-cookbook
-git checkout -b add-minimax-m2-guide
-# Edit this file and submit a PR
-```
-
-## 📚 Reference
-
-- [Kimi-K2](../Moonshotai/Kimi-K2.md)
-
----
-
-**Let's build this together!** 🌟
 ## AMD GPU Support
 
 ## 1. Model Introduction
@@ -138,4 +117,197 @@ python3 -m sglang.launch_server \
     --reasoning-parser minimax-append-think \
     --port 8000 \
     --mem-fraction-static 0.85
+```
+## 4. Benchmark
+### 4.1 Speed Benchmark
+
+
+Test Environment:
+
+Hardware: AMD MI300X GPU 
+
+Model: MiniMax-M2.1
+
+Tensor Parallelism: 4
+
+sglang version: 0.5.7
+
+- **Model Deployment**
+
+```bash
+python3 -m sglang.launch_server \
+    --model-path MiniMaxAI/MiniMax-M2.1 \
+    --tp-size 4 \
+    --tool-call-parser minimax-m2 \
+    --reasoning-parser minimax-append-think \
+    --trust-remote-code \
+    --mem-fraction-static 0.85
+```
+
+
+
+### 4.1.1 Low Concurrency (Latency-Optimized)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.1 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --request-rate inf 
+	  
+```
+
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  138.49
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total input vision tokens:               0
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4220
+Request throughput (req/s):              0.07
+Input token throughput (tok/s):          44.05
+Output token throughput (tok/s):         30.47
+Peak output token throughput (tok/s):    46.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          74.53
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   13844.96
+Median E2E Latency (ms):                 10379.28
+---------------Time to First Token----------------
+Mean TTFT (ms):                          4489.71
+Median TTFT (ms):                        382.24
+P99 TTFT (ms):                           37978.20
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          22.21
+Median TPOT (ms):                        22.23
+P99 TPOT (ms):                           22.24
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           22.22
+Median ITL (ms):                         22.24
+P95 ITL (ms):                            22.34
+P99 ITL (ms):                            22.39
+Max ITL (ms):                            23.61
+==================================================
+```
+
+
+
+### 4.1.2 Medium Concurrency (Balanced)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.1 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf 
+
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  79.85
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total input vision tokens:               0
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40801
+Request throughput (req/s):              1.00
+Input token throughput (tok/s):          496.81
+Output token throughput (tok/s):         511.05
+Peak output token throughput (tok/s):    703.00
+Peak concurrent requests:                20
+Total token throughput (tok/s):          1007.86
+Concurrency:                             13.71
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   13683.48
+Median E2E Latency (ms):                 14324.05
+---------------Time to First Token----------------
+Mean TTFT (ms):                          329.71
+Median TTFT (ms):                        147.43
+P99 TTFT (ms):                           898.91
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          26.93
+Median TPOT (ms):                        26.52
+P99 TPOT (ms):                           38.01
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           26.23
+Median ITL (ms):                         23.44
+P95 ITL (ms):                            24.30
+P99 ITL (ms):                            123.34
+Max ITL (ms):                            632.37
+==================================================
+```
+
+
+### 4.1.3 High Concurrency (Throughput-Optimized)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.1 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100 \
+  --request-rate inf 
+```
+
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  153.81
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total input vision tokens:               0
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    252540
+Request throughput (req/s):              3.25
+Input token throughput (tok/s):          1624.24
+Output token throughput (tok/s):         1642.64
+Peak output token throughput (tok/s):    2600.00
+Peak concurrent requests:                107
+Total token throughput (tok/s):          3266.88
+Concurrency:                             91.12
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   28030.32
+Median E2E Latency (ms):                 26911.51
+---------------Time to First Token----------------
+Mean TTFT (ms):                          505.29
+Median TTFT (ms):                        182.64
+P99 TTFT (ms):                           1815.81
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          55.04
+Median TPOT (ms):                        57.64
+P99 TPOT (ms):                           69.84
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           54.58
+Median ITL (ms):                         38.94
+P95 ITL (ms):                            140.77
+P99 ITL (ms):                            149.16
+Max ITL (ms):                            956.82
+==================================================
 ```
