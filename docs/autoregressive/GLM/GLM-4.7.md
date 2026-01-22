@@ -1,24 +1,34 @@
-# GLM-4.5
+# GLM-4.7
 
 ## 1. Model Introduction
 
-[GLM-4.5](https://huggingface.co/zai-org/GLM-4.5) is a powerful language model developed by Zhipu AI, featuring advanced capabilities in reasoning, function calling, and multi-modal understanding.
+[GLM-4.7](https://huggingface.co/zai-org/GLM-4.7) is the latest and most powerful language model in the GLM series developed by Zhipu AI, featuring state-of-the-art capabilities in reasoning, function calling, and multi-modal understanding.
+
+As the newest iteration in the GLM series, GLM-4.7 achieves significant improvements across all domains:
+
+- **Extended Context Window**: Expanded context window supporting even longer documents and complex multi-turn conversations
+- **Enhanced Reasoning**: Improved reasoning capabilities with better chain-of-thought processing
+- **Superior Coding**: Significantly improved code generation and understanding, with better real-world application performance
+- **Advanced Tool Use**: More robust tool calling and agent capabilities for complex workflows
+- **Optimized Performance**: Better throughput and latency characteristics across all hardware platforms
+
+For more details, please refer to the [official GLM-4.7 documentation](https://docs.z.ai/guides/llm/glm-4.7).
 
 **Key Features:**
 
-- **Advanced Reasoning**: Built-in reasoning capabilities for complex problem-solving
+- **State-of-the-Art Reasoning**: Enhanced reasoning capabilities for the most complex problem-solving tasks
 - **Multiple Quantizations**: BF16 and FP8 variants for different performance/memory trade-offs
 - **Hardware Optimization**: Specifically tuned for AMD MI300X/MI325X/MI355X GPUs
 - **High Performance**: Optimized for both throughput and latency scenarios
 
 **Available Models:**
 
-- **BF16 (Full precision)**: [zai-org/GLM-4.5](https://huggingface.co/zai-org/GLM-4.5) - Recommended for MI300X/MI325X/MI355X
-- **FP8 (8-bit quantized)**: [zai-org/GLM-4.5-FP8](https://huggingface.co/zai-org/GLM-4.5-FP8) - Recommended for MI300X/MI325X/MI355X
+- **BF16 (Full precision)**: [zai-org/GLM-4.7](https://huggingface.co/zai-org/GLM-4.7) - Recommended for MI300X/MI325X/MI355X
+- **FP8 (8-bit quantized)**: [zai-org/GLM-4.7-FP8](https://huggingface.co/zai-org/GLM-4.7-FP8) - Recommended for MI300X/MI325X/MI355X
 
 **License:**
 
-Please refer to the [official GLM-4.5 model card](https://huggingface.co/zai-org/GLM-4.5) for license details.
+Please refer to the [official GLM-4.7 model card](https://huggingface.co/zai-org/GLM-4.7) for license details.
 
 ## 2. SGLang Installation
 
@@ -34,13 +44,13 @@ This section provides deployment configurations optimized for different hardware
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, deployment strategy, and thinking capabilities.
 
-import GLM45ConfigGenerator from '@site/src/components/autoregressive/GLM45ConfigGenerator';
+import GLM47ConfigGenerator from '@site/src/components/autoregressive/GLM47ConfigGenerator';
 
-<GLM45ConfigGenerator />
+<GLM47ConfigGenerator />
 
 ### 3.2 Configuration Tips
 
-For more detailed configuration tips, please refer to [GLM-4.5/GLM-4.6 Usage](https://docs.sglang.io/basic_usage/glm45.html).
+For more detailed configuration tips, please refer to [GLM-4.7 Usage](https://docs.sglang.io/basic_usage/glm47.html).
 
 ## 4. Model Invocation
 
@@ -54,12 +64,12 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 Reasoning Parser
 
-GLM-4.5 supports Thinking mode by default. Enable the reasoning parser during deployment to separate the thinking and the content sections:
+GLM-4.7 supports Thinking mode by default. Enable the reasoning parser during deployment to separate the thinking and the content sections:
 
 ```shell
 python -m sglang.launch_server \
-  --model zai-org/GLM-4.5 \
-  --reasoning-parser glm45 \
+  --model zai-org/GLM-4.7 \
+  --reasoning-parser glm47 \
   --tp 8 \
   --host 0.0.0.0 \
   --port 8000
@@ -77,7 +87,7 @@ client = OpenAI(
 
 # Enable streaming to see the thinking process in real-time
 response = client.chat.completions.create(
-    model="zai-org/GLM-4.5",
+    model="zai-org/GLM-4.7",
     messages=[
         {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
     ],
@@ -131,13 +141,13 @@ The answer is 36. To find 15% of 240, we multiply 240 by 0.15, which equals 36.
 
 #### 4.2.2 Tool Calling
 
-GLM-4.5 supports tool calling capabilities. Enable the tool call parser:
+GLM-4.7 supports tool calling capabilities. Enable the tool call parser:
 
 ```shell
 python -m sglang.launch_server \
-  --model zai-org/GLM-4.5 \
-  --reasoning-parser glm45 \
-  --tool-call-parser glm45 \
+  --model zai-org/GLM-4.7 \
+  --reasoning-parser glm47 \
+  --tool-call-parser glm47 \
   --tp 8 \
   --host 0.0.0.0 \
   --port 8000
@@ -181,7 +191,7 @@ tools = [
 
 # Make request with streaming to see thinking process
 response = client.chat.completions.create(
-    model="zai-org/GLM-4.5",
+    model="zai-org/GLM-4.7",
     messages=[
         {"role": "user", "content": "What's the weather in Beijing?"}
     ],
@@ -237,6 +247,52 @@ Tool Call: get_weather
    Arguments: {"location": "Beijing", "unit": "celsius"}
 ```
 
+**Note:**
+
+- The reasoning parser shows how the model decides to use a tool
+- Tool calls are clearly marked with the function name and arguments
+- You can then execute the function and send the result back to continue the conversation
+
+**Handling Tool Call Results:**
+
+```python
+# After getting the tool call, execute the function
+def get_weather(location, unit="celsius"):
+    # Your actual weather API call here
+    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
+
+# Send tool result back to the model
+messages = [
+    {"role": "user", "content": "What's the weather in Beijing?"},
+    {
+        "role": "assistant",
+        "content": None,
+        "tool_calls": [{
+            "id": "call_123",
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "arguments": '{"location": "Beijing", "unit": "celsius"}'
+            }
+        }]
+    },
+    {
+        "role": "tool",
+        "tool_call_id": "call_123",
+        "content": get_weather("Beijing", "celsius")
+    }
+]
+
+final_response = client.chat.completions.create(
+    model="zai-org/GLM-4.7",
+    messages=messages,
+    temperature=0.7
+)
+
+print(final_response.choices[0].message.content)
+# Output: "The weather in Beijing is currently 22°C and sunny."
+```
+
 ## 5. Benchmark
 
 This section uses **industry-standard configurations** for comparable benchmark results.
@@ -246,7 +302,7 @@ This section uses **industry-standard configurations** for comparable benchmark 
 **Test Environment:**
 
 - Hardware: AMD MI300X (8x), AMD MI325X (8x), AMD MI355X (8x)
-- Model: GLM-4.5
+- Model: GLM-4.7
 - Tensor Parallelism: 8
 - SGLang Version: 0.5.6.post1
 
@@ -289,7 +345,7 @@ For each concurrency level, configure `num_prompts` to simulate realistic user l
 - **Model Deployment**
 ```bash
 python -m sglang.launch_server \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --tp 8
 ```
 
@@ -299,7 +355,7 @@ python -m sglang.launch_server \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -312,7 +368,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -325,7 +381,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -341,7 +397,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 8000 \
@@ -354,7 +410,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 8000 \
@@ -367,7 +423,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 8000 \
@@ -382,7 +438,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
@@ -395,7 +451,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \
@@ -408,7 +464,7 @@ python -m sglang.bench_serving \
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-4.5 \
+  --model zai-org/GLM-4.7 \
   --dataset-name random \
   --random-input-len 8000 \
   --random-output-len 1000 \

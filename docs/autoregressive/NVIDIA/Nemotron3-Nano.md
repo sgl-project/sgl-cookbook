@@ -4,7 +4,7 @@
 
 `NVIDIA Nemotron3-Nano` is a 30B-parameter hybrid LLM that mixes Mixture-of-Experts (MoE) feed-forward layers, Mamba2 sequence-modeling layers, and standard self-attention layers in a single stack rather than classic “attention + MLP” transformer blocks.
 
-The BF16 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16`) is designed as a high-fidelity reference model, while the FP8 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8`) targets optimized inference performance on modern NVIDIA GPUs.
+The BF16 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16`) is designed as a high-fidelity reference model. For optimized inference performance on modern NVIDIA GPUs, the FP8 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8`) and the NVFP4 variant (`nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-NVFP4`) are supported.
 
 At a high level:
 
@@ -12,17 +12,14 @@ At a high level:
 - **Non-uniform layer ordering:** The order and mix of these specialized layers is not a simple, rigid pattern, enabling the model to trade off sequence modeling, routing capacity, and expressivity across depth.
 - **Deployment-friendly precision:** Use BF16 for accuracy-sensitive and evaluation workloads; use FP8 for latency- and throughput-critical serving on recent NVIDIA GPUs.
 
----
 
 ## 2. SGLang Installation
 
-SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
-
-For a quick start, please install the nightly wheel for SGLang:
+Refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html), or install nightly wheel through:
 ```bash
-pip install sglang==0.5.6.post2.dev7852+g8102e36b5 --extra-index-url https://sgl-project.github.io/whl/nightly/
+uv pip install sglang==0.5.6.post3.dev1278+gad1b4e472 --extra-index-url https://sgl-project.github.io/whl/nightly/
 ```
----
+
 
 ## 3. Model Deployment
 
@@ -51,7 +48,6 @@ import NemotronNano3ConfigGenerator from '@site/src/components/autoregressive/Ne
 
     To enable fp8 kv cache, please append `--kv-cache-dtype fp8_e4m3`.
 
----
 
 ## 4. Model Invocation
 

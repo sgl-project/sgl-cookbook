@@ -525,4 +525,3 @@ Invalid: 0.000
 Latency: 35.800 s
 Output throughput: 4507.697 token/s
 ```
-
