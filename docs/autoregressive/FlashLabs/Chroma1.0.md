@@ -2,7 +2,7 @@
 
 ## 1. Model Introduction
 
-[Chroma 1.0](https://github.com/FlashLabs-Corp/FlashLabs-Chroma) is an open-source end-to-end speech conversation model developed by FlashLabs, focusing on the following core capabilities:
+[Chroma 1.0](https://github.com/FlashLabs-AI-Corp/FlashLabs-Chroma) is an open-source end-to-end speech conversation model developed by FlashLabs, focusing on the following core capabilities:
 
 - **Real-time Speech Generation**: Supports low-latency speech synthesis, suitable for real-time conversational scenarios.
 - **Customized Voice Cloning**: Capable of cloning and replicating specific speaker voice characteristics.
@@ -59,7 +59,7 @@ git clone https://huggingface.co/FlashLabs/Chroma-4B Chroma-4B
 ### Step 3: Download Chroma Codes (SGLang version)
 
 ```bash
-git clone https://github.com/FlashLabs-Corp/Chroma-SGLang.git
+git clone https://github.com/FlashLabs-AI-Corp/Chroma-SGLang.git
 
 cd Chroma-SGLang
 ```
