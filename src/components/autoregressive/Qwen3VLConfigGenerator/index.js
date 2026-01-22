@@ -16,7 +16,9 @@ const Qwen3VLConfigGenerator = () => {
         items: [
           { id: 'b200', label: 'B200', default: true },
           { id: 'h100', label: 'H100', default: false },
-          { id: 'h200', label: 'H200', default: false }
+          { id: 'h200', label: 'H200', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -65,42 +67,54 @@ const Qwen3VLConfigGenerator = () => {
         isMOE: true,
         h100: { tp: 8, ep: 0, bf16: true, fp8: true },
         h200: { tp: 8, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 8, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 8, ep: 0, bf16: true, fp8: true },
+        mi300x: { tp: 8, ep: 0, bf16: true, fp8: true },
+        mi355x: { tp: 8, ep: 0, bf16: true, fp8: true }
       },
       '30b': {
         baseName: '30B-A3B',
         isMOE: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '32b': {
         baseName: '32B',
         isMOE: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '8b': {
         baseName: '8B',
         isMOE: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '4b': {
         baseName: '4B',
         isMOE: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '2b': {
         baseName: '2B',
         isMOE: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
+        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
       }
     },
 
@@ -145,6 +159,12 @@ const Qwen3VLConfigGenerator = () => {
 
       if (ep > 0) {
         cmd += ` \\\n  --ep ${ep}`;
+      }
+
+      if (hardware === 'mi300x' || hardware === 'mi355x') {
+        if (modelSize === '32b' && quantization === 'bf16') {
+          cmd += ` \\\n  --context-length 65536 `;
+        }
       }
 
       for (const [key, option] of Object.entries(this.options)) {

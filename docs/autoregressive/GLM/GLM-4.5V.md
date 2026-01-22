@@ -4,6 +4,8 @@
 
 [GLM-4.5V](https://huggingface.co/zai-org/GLM-4.5V) is a state-of-the-art multimodal vision-language model from ZhipuAI, built on the next-generation flagship text foundation model GLM-4.5-Air (106B parameters, 12B active). It achieves SOTA performance among models of the same scale across 42 public vision-language benchmarks. Through efficient hybrid training, GLM-4.5V focuses on real-world usability and enables full-spectrum vision reasoning across diverse visual content types.
 
+**Hardware Support:** NVIDIA B200/H100/H200, AMD MI300X/MI325X/MI355X
+
 GLM-4.5V introduces several key features:
 
 - **Image Reasoning & Grounding** Scene understanding, complex multi-image analysis, and spatial recognition with precise visual element localization. Supports bounding box predictions with normalized coordinates (0-1000) for accurate object detection.

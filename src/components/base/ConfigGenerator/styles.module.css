@@ -3,23 +3,22 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
 .optionCard {
   background: var(--ifm-background-surface-color);
-  padding: 16px 20px;
-  border-left: 4px solid #D45D44;
+  padding: 8px 12px;
   border: 1px solid var(--ifm-color-emphasis-200);
-  border-left: 4px solid #D45D44;
-  border-radius: 8px;
+  border-left: 3px solid #D45D44;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
 }
 
 .optionTitle {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ifm-font-color-base);
   min-width: 140px;
@@ -28,7 +27,8 @@
 
 .optionItems {
   display: flex;
-  gap: 8px;
+  row-gap: 2px;
+  column-gap: 6px;
   flex-wrap: wrap;
   align-items: center;
   flex: 1;
@@ -57,21 +57,23 @@
 }
 
 .optionLabel {
-  padding: 8px 16px;
+  padding: 4px 10px;
   border: 1px solid var(--ifm-color-emphasis-300);
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   font-weight: 500;
   font-size: 13px;
   transition: all 0.2s;
   background: var(--ifm-background-surface-color);
   color: var(--ifm-font-color-base);
   user-select: none;
-  min-width: 60px;
+  min-width: 45px;
   text-align: center;
+  flex: 1;
 }
 
 .optionLabel:hover {
@@ -96,8 +98,9 @@
 .subtitle {
   display: block;
   color: var(--ifm-color-emphasis-600);
-  font-size: 10px;
-  margin-top: 2px;
+  font-size: 9px;
+  margin-top: 1px;
+  line-height: 1.1;
 }
 
 .optionLabel.checked .subtitle {
@@ -106,17 +109,17 @@
 
 .commandCard {
   background: var(--ifm-background-surface-color);
-  padding: 16px 20px;
+  padding: 8px 12px;
   border: 1px solid var(--ifm-color-emphasis-200);
-  border-left: 4px solid #D45D44;
-  border-radius: 8px;
+  border-left: 3px solid #D45D44;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
 }
 
 .commandTitle {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ifm-font-color-base);
   min-width: 140px;
@@ -125,12 +128,12 @@
 
 .commandDisplay {
   flex: 1;
-  padding: 12px 16px;
+  padding: 8px 12px;
   background: #f5f5f5;
-  border-radius: 6px;
+  border-radius: 3px;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.4;
   color: #333;
   white-space: pre-wrap;
   overflow-x: auto;
@@ -141,4 +144,88 @@
 [data-theme='dark'] .commandDisplay {
   background: #2d3748;
   color: #e2e8f0;
+}
+
+/* Slider styles */
+.sliderContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ifm-color-emphasis-200);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #D45D44;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #D45D44;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #b84d37;
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #b84d37;
+  transform: scale(1.1);
+}
+
+.sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.sliderLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.sliderValue {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ifm-font-color-base);
+}
+
+.sliderAnnotation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 9px;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.sliderAnnotation span {
+  display: block;
 }

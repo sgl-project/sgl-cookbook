@@ -22,10 +22,10 @@ const config = {
   },
 
   // Set the production url of your site here
-  url: 'https://cookbook-sg-lang.vercel.app',
+  url: 'https://cookbook.sglang.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: process.env.BASE_URL || '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -55,6 +55,11 @@ const config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          filename: 'sitemap.xml',
+        },
       }),
     ],
   ],
@@ -68,6 +73,7 @@ const config = {
             alias: {
               '@diffusion': path.resolve(__dirname, 'docs', 'diffusion'),
               '@specbundle': path.resolve(__dirname, 'docs', 'specbundle'),
+              '@optimal-configs': path.resolve(__dirname, 'data', 'optimal-configs', 'generated'),
             },
             },
           };
@@ -81,6 +87,13 @@ const config = {
       attributes: {
         name: 'algolia-site-verification',
         content: 'B137E28CCDDFD715',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'google-site-verification',
+        content: 'fE6yfJhRYZw5wDa8b-KyjhoGyUUXcRV5gyanHUoDmV4',
       },
     },
   ],

@@ -35,15 +35,23 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and deployment strategy.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate a basic deployment command for your hardware platform, quantization method, and deployment strategy.
 
-import DeepSeekR1ConfigGenerator from '@site/src/components/autoregressive/DeepSeekR1ConfigGenerator';
+import { DeepSeekR1BasicConfigGenerator } from '@site/src/components/autoregressive/DeepSeekR1ConfigGenerator';
 
-<DeepSeekR1ConfigGenerator />
+<DeepSeekR1BasicConfigGenerator />
 
-### 3.2 Configuration Tips
+### 3.2 Optimal Configurations
 
-For more detailed configuration tips, please refer to [DeepSeek V3/V3.1/R1 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
+Pareto-optimal configurations for B200 and H200 hardware.
+
+import { DeepSeekR1AdvancedConfigGenerator } from '@site/src/components/autoregressive/DeepSeekR1ConfigGenerator';
+
+<DeepSeekR1AdvancedConfigGenerator />
+
+### 3.3 Configuration Tips
+
+For more detailed configuration tips and advanced tuning, please refer to [DeepSeek V3/V3.1/R1 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
 
 ## 4. Model Invocation
 

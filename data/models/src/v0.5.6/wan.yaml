@@ -1,0 +1,63 @@
+# Wan2.2 Video Diffusion Model Configurations
+# This file is compiled to data/models/generated/v0.5.6/wan.yaml
+
+vendor: wan-ai
+
+defaults:
+  hardware:
+    B200: { tp: 1 }
+    H200: { tp: 1 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      quantization: bf16
+      tp: 1
+    - name: sequence-parallel
+      nodes: single
+      optimization: high-throughput
+      quantization: bf16
+      tp: 4
+      extra_args:
+        - --num-gpus
+        - "4"
+        - --ulysses-degree
+        - '2'
+        - --enable-cfg-parallel
+
+families:
+  - name: Wan2.2
+    description: Wan2.2 video generation models supporting I2V, T2V, and TI2V tasks
+    diffusion:
+      model_type: video
+      supports_lora: true
+      dit_layerwise_offload: true
+
+    models:
+      # Image-to-Video (I2V) model - A14B
+      - name: Wan2.2-I2V-A14B-Diffusers
+        quantization: bf16
+        diffusion:
+          model_type: video
+          task_types:
+            - image-to-video
+          supports_lora: true
+
+      # Text-to-Video (T2V) model - A14B
+      - name: Wan2.2-T2V-A14B-Diffusers
+        quantization: bf16
+        diffusion:
+          model_type: video
+          task_types:
+            - text-to-video
+          supports_lora: true
+
+      # Text/Image-to-Video (TI2V) model - 5B
+      - name: Wan2.2-TI2V-5B-Diffusers
+        quantization: bf16
+        diffusion:
+          model_type: video
+          task_types:
+            - text-to-video
+            - image-to-video
+          supports_lora: false
