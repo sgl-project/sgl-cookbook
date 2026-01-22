@@ -21,51 +21,40 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ## Guides
 
-### Diffusion Models
-
-#### Qwen-Image
-
-- [ ] [Qwen-Image](./diffusion/Qwen-Image/Qwen-Image.md)
-- [ ] [Qwen-Image-Edit](./diffusion/Qwen-Image/Qwen-Image-Edit.md)
-
-#### Wan
-
-- [ ] [Wan2.1](./diffusion/Wan/Wan2.1.md)
-- [X] [Wan2.2](./diffusion/Wan/Wan2.2.md)
-
-#### Z-Image
-
-- [ ] [Z-Image](./diffusion/Z-Image/Z-Image-Turbo.md)
-
-### LLMs & VLMs
+### Autoregressive Models
 
 #### Qwen
 
 - [X] [Qwen3](./autoregressive/Qwen/Qwen3.md)
-- [X] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
 - [X] [Qwen3-Next](./autoregressive/Qwen/Qwen3-Next.md)
+- [X] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
 - [ ] [Qwen3-Coder-480B-A35B](./autoregressive/Qwen/Qwen3-Coder-480B-A35B.md)
 - [ ] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
 
 #### DeepSeek
 
 - [X] [DeepSeek-V3.2](./autoregressive/DeepSeek/DeepSeek-V3_2.md)
-- [ ] [DeepSeek-V3.1](./autoregressive/DeepSeek/DeepSeek-V3_1.md)
-- [ ] [DeepSeek-V3](./autoregressive/DeepSeek/DeepSeek-V3.md)
+- [X] [DeepSeek-V3.1](./autoregressive/DeepSeek/DeepSeek-V3_1.md)
+- [X] [DeepSeek-V3](./autoregressive/DeepSeek/DeepSeek-V3.md)
 - [X] [DeepSeek-R1](./autoregressive/DeepSeek/DeepSeek-R1.md)
+- [X] [DeepSeek-OCR](./autoregressive/DeepSeek/DeepSeek-OCR.md)
 
 #### Llama
 
 - [ ] [Llama4-Scout](./autoregressive/Llama/Llama4-Scout.md)
-- [ ] [Llama3.3-70B](./autoregressive/Llama/Llama3.3-70B.md)
-- [ ] [Llama3.1](./autoregressive/Llama/Llama3.1.md)
+- [X] [Llama3.3-70B](./autoregressive/Llama/Llama3.3-70B.md)
+- [X] [Llama3.1](./autoregressive/Llama/Llama3.1.md)
 
 #### GLM
 
-- [ ] [Glyph](./autoregressive/GLM/Glyph.md)
+- [ ] [GLM-Glyph](./autoregressive/GLM/Glyph.md)
+- [X] [GLM-4.5](./autoregressive/GLM/GLM-4.5.md)
 - [X] [GLM-4.5V](./autoregressive/GLM/GLM-4.5V.md)
 - [X] [GLM-4.6](./autoregressive/GLM/GLM-4.6.md)
 - [X] [GLM-4.6V](./autoregressive/GLM/GLM-4.6V.md)
+- [X] [GLM-4.7](./autoregressive/GLM/GLM-4.7.md)
+- [X] [GLM-4.7-Flash](./autoregressive/GLM/GLM-4.7-Flash.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+
 
 #### OpenAI
 
@@ -106,16 +95,40 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [ ] [Mistral-3](./autoregressive/Mistral/Mistral-3.md)
 - [X] [Devstral 2](./autoregressive/Mistral/Devstral-2.md)
 
-
 #### Xiaomi
 
 - [X] [MiMo-V2-Flash](./autoregressive/Xiaomi/MiMo-V2-Flash.md)
+
+
+#### FlashLabs
+
+- [X] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md)<span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+
+### Diffusion Models
+
+
+#### FLUX
+
+- [X] [FLUX](./diffusion/FLUX/FLUX.md)
+
+#### Qwen-Image
+
+- [ ] [Qwen-Image](./diffusion/Qwen-Image/Qwen-Image.md)
+- [X] [Qwen-Image-Edit](./diffusion/Qwen-Image/Qwen-Image-Edit.md)
+
+#### Wan
+
+- [ ] [Wan2.1](./diffusion/Wan/Wan2.1.md)
+- [X] [Wan2.2](./diffusion/Wan/Wan2.2.md)
+
+#### Z-Image
+
+- [ ] [Z-Image](./diffusion/Z-Image/Z-Image-Turbo.md)
 
 ### Benchmarks
 
 - [X] [Diffusion Model Benchmark](./base/benchmarks/diffusion_model_benchmark.md)
 - [X] [LLM Benchmark](./base/benchmarks/lm_benchmark.md)
-
 
 ## Reference
 

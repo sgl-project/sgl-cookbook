@@ -1,0 +1,37 @@
+# FLUX Diffusion Model Configurations
+# This file is compiled to data/models/generated/v0.5.6/flux.yaml
+
+vendor: black-forest-labs
+
+defaults:
+  hardware:
+    B200: { tp: 1 }
+    H200: { tp: 1 }
+    H100: { tp: 1 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      quantization: bf16
+      tp: 1
+
+families:
+  - name: FLUX
+    description: FLUX image generation models from Black Forest Labs
+    diffusion:
+      model_type: image
+      task_types:
+        - text-to-image
+      ulysses_degree: 1
+      ring_degree: 1
+
+    models:
+      - name: FLUX.1-dev
+        quantization: bf16
+        diffusion:
+          model_type: image
+
+      - name: FLUX.2-dev
+        quantization: bf16
+        diffusion:
+          model_type: image
