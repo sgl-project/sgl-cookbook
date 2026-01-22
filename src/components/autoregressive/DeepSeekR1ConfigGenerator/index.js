@@ -13,7 +13,9 @@ const DeepSeekR1ConfigGenerator = () => {
           { id: 'h100', label: 'H100', default: false },
           { id: 'h200', label: 'H200', default: false },
           { id: 'b200', label: 'B200', default: true },
-          { id: 'mi300x', label: 'MI300X', default: false }
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       quantization: {
@@ -63,7 +65,7 @@ const DeepSeekR1ConfigGenerator = () => {
       // Validation checks
       // Check H100 compatibility - H100 only supports FP8
       if ((hardware === 'h100' || hardware === 'mi300x') && quantization === 'fp4') {
-        return '# Error: H100 and MI300X only supports FP8 quantization\n# Please select FP8 quantization or use B200 hardware';
+        return '# Error: H100 and MI300X only supports FP8 quantization\n# Please select FP8 quantization or use B200 and MI355X hardware';
       }
 
       // Model path based on quantization
