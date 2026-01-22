@@ -1,27 +1,3 @@
-# Llama4-Scout Usage Guide
-
-## 📝 Community Contribution Welcome
-
-This guide is currently under development. We welcome community contributions!
-
-If you have experience deploying **Llama4-Scout** with SGLang, please help us complete this documentation.
-
-## 🚀 How to Contribute
-
-```shell
-git clone https://github.com/YOUR_USERNAME/sglang-cookbook.git
-cd sglang-cookbook
-git checkout -b add-llama4-scout-guide
-# Edit this file and submit a PR
-```
-
-## 📚 Reference
-
-- [Qwen3](../Qwen/Qwen3.md)
-
----
-
-**Let's build this together!** 🌟
 ## AMD GPU Support
 
 ## 1. Model Introduction
@@ -41,7 +17,7 @@ The efficient Llama 4 Scout also has 17B active parameters out of ~109B total, u
 Both models leverage early fusion for native multimodality, enabling them to process text and image inputs. Maverick and Scout are both trained on up to 40 trillion tokens on data encompassing 200 languages (with specific fine-tuning support for 12 languages including Arabic, Spanish, German, and Hindi).
 
 
-- **Hardware Optimization**: Specifically tuned for  AMD MI300X GPUs
+- **Hardware Optimization**: Specifically tuned for  AMD MI400X GPUs
 - **High Performance**: Optimized for both throughput and latency scenarios
 
 **Available Models:**
@@ -64,20 +40,34 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 
 ## 3. Model Deployment
 
+This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
+
+### 3.1 Basic Configuration
+
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities.
+
+import Llama4ScoutConfigGenerator from '@site/src/components/autoregressive/Llama4ScoutConfigGenerator';
+
+<Llama4ScoutConfigGenerator />
+
+
+
+## 4. Model Invocation
+
 This section provides deployment configurations optimized for different hardware platforms and use cases.
 
 
-### 3.1 Basic Usage
+### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
 
-### 3.2 Advanced Usage
+### 4.2 Advanced Usage
 
-#### 3.2.1 
+#### 4.2.1 
 ```shell
-docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
+docker pull lmsysorg/sglang:v0.5.7-rocm700-mi40x
 ```
 
 ```shell
@@ -89,12 +79,12 @@ docker run -d -it --ipc=host --network=host --privileged \
   -v /:/work \
   -e SHELL=/bin/bash \
   --name Llama4 \
-  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
+  lmsysorg/sglang:v0.5.7-rocm700-mi40x \
   /bin/bash
 ```
 
 
-#### 3.2.2 Launch the server
+#### 4.2.2 Launch the server
 
 Run the following command to start the SGLang server. SGLang will automatically download and cache the Llama-4-Scout model from Hugging Face.
 
@@ -103,11 +93,199 @@ Run the following command to start the SGLang server. SGLang will automatically 
 8-GPU deployment command:
 
 ```bash
-python3 -m sglang.launch_server \
+python4 -m sglang.launch_server \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
-  --host 0.0.0.0 \
-  --trust-remote-code \
-  --port 8000 
+  --trust-remote-code 
+
+```
+
+
+
+## 5. Benchmark
+### 5.1 Speed Benchmark
+Test Environment:
+
+Hardware: AMD MI300X GPU 
+
+Model: Llama-4-Scout
+
+Tensor Parallelism: 4
+
+sglang version: 0.5.7
+
+
+
+
+- **Model Deployment**
+
+```bash
+python4 -m sglang.launch_server \
+  --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
+  --tp 8 \
+  --context-length 1000000 \
+  --trust-remote-code 
+
+```
+
+### 5.1.1 Low Concurrency (Latency-Optimized)
+
+```bash
+python4 -m sglang.bench_serving \
+  --backend sglang \
+  --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --request-rate inf 
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  74.62
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total input vision tokens:               0
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4211
+Request throughput (req/s):              0.14
+Input token throughput (tok/s):          82.88
+Output token throughput (tok/s):         57.42
+Peak output token throughput (tok/s):    146.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          140.20
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   7459.48
+Median E2E Latency (ms):                 4489.77
+---------------Time to First Token----------------
+Mean TTFT (ms):                          4246.98
+Median TTFT (ms):                        68.57
+P99 TTFT (ms):                           48091.05
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          7.49
+Median TPOT (ms):                        7.40
+P99 TPOT (ms):                           7.40
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           7.49
+Median ITL (ms):                         7.49
+P95 ITL (ms):                            7.47
+P99 ITL (ms):                            7.52
+Max ITL (ms):                            10.44
+==================================================
+```
+
+
+
+### 5.1.2 Medium Concurrency (Balanced)
+
+```bash
+python4 -m sglang.bench_serving \
+  --backend sglang \
+  --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf 
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  45.41
+Total input tokens:                      49668
+Total input text tokens:                 49668
+Total input vision tokens:               0
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40516
+Request throughput (req/s):              2.26
+Input token throughput (tok/s):          1120.46
+Output token throughput (tok/s):         1152.47
+Peak output token throughput (tok/s):    1520.00
+Peak concurrent requests:                21
+Total token throughput (tok/s):          2272.84
+Concurrency:                             14.76
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   6089.22
+Median E2E Latency (ms):                 6568.80
+---------------Time to First Token----------------
+Mean TTFT (ms):                          124.44
+Median TTFT (ms):                        87.42
+P99 TTFT (ms):                           268.72
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          11.88
+Median TPOT (ms):                        12.00
+P99 TPOT (ms):                           15.49
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           11.72
+Median ITL (ms):                         10.54
+P95 ITL (ms):                            11.22
+P99 ITL (ms):                            67.88
+Max ITL (ms):                            74.05
+==================================================
+```
+
+### 5.1.3 High Concurrency (Throughput-Optimized)
+
+```bash
+python4 -m sglang.bench_serving \
+  --backend sglang \
+  --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100 \
+  --request-rate inf 
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  85.84
+Total input tokens:                      249841
+Total input text tokens:                 249841
+Total input vision tokens:               0
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    250498
+Request throughput (req/s):              5.84
+Input token throughput (tok/s):          2910.84
+Output token throughput (tok/s):         2944.82
+Peak output token throughput (tok/s):    4100.00
+Peak concurrent requests:                110
+Total token throughput (tok/s):          5854.65
+Concurrency:                             92.24
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   15844.00
+Median E2E Latency (ms):                 15262.56
+---------------Time to First Token----------------
+Mean TTFT (ms):                          204.46
+Median TTFT (ms):                        129.96
+P99 TTFT (ms):                           528.54
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          41.56
+Median TPOT (ms):                        42.90
+P99 TPOT (ms):                           47.48
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           40.99
+Median ITL (ms):                         24.46
+P95 ITL (ms):                            84.46
+P99 ITL (ms):                            87.64
+Max ITL (ms):                            226.06
+==================================================
 ```
