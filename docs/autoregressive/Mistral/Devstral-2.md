@@ -283,9 +283,23 @@ python3 -m sglang.launch_server \
   --port 8888
 ```
 
-## 2.Benchmark
+## 2. Model Deployment
 
-### 2.1 Benchmark Commands
+This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
+
+### 2.1 Basic Configuration
+
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities.
+
+import Devstral2ConfigGenerator from '@site/src/components/autoregressive/Devstral2ConfigGenerator';
+
+<Devstral2ConfigGenerator />
+
+
+
+## 3.Benchmark
+
+### 3.1 Benchmark Commands
 
 **Scenario 1: Chat (1K/1K) - Most Important**
 
@@ -463,7 +477,7 @@ Max ITL (ms):                            616.73
 
 
 
-#### 2.2 Understanding the Results
+#### 3.2 Understanding the Results
 
 **Key Metrics:**
 
@@ -487,11 +501,11 @@ Max ITL (ms):                            616.73
 - Lower TTFT = more responsive user experience
 - Lower TPOT = faster generation speed
 
-### 2.3 Accuracy Benchmark
+### 3.3 Accuracy Benchmark
 
 Document model accuracy on standard benchmarks:
 
-#### 2.3.1 GSM8K Benchmark
+#### 3.3.1 GSM8K Benchmark
 
 - Benchmark Command
 
@@ -511,3 +525,4 @@ Invalid: 0.000
 Latency: 35.800 s
 Output throughput: 4507.697 token/s
 ```
+
