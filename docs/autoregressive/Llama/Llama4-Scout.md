@@ -93,7 +93,7 @@ Run the following command to start the SGLang server. SGLang will automatically 
 8-GPU deployment command:
 
 ```bash
-python4 -m sglang.launch_server \
+python3 -m sglang.launch_server \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
@@ -111,7 +111,7 @@ Hardware: AMD MI300X GPU
 
 Model: Llama-4-Scout
 
-Tensor Parallelism: 4
+Tensor Parallelism: 8
 
 sglang version: 0.5.7
 
@@ -121,7 +121,7 @@ sglang version: 0.5.7
 - **Model Deployment**
 
 ```bash
-python4 -m sglang.launch_server \
+python3 -m sglang.launch_server \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
@@ -132,7 +132,7 @@ python4 -m sglang.launch_server \
 ### 5.1.1 Low Concurrency (Latency-Optimized)
 
 ```bash
-python4 -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -187,7 +187,7 @@ Max ITL (ms):                            10.44
 ### 5.1.2 Medium Concurrency (Balanced)
 
 ```bash
-python4 -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -240,7 +240,7 @@ Max ITL (ms):                            74.05
 ### 5.1.3 High Concurrency (Throughput-Optimized)
 
 ```bash
-python4 -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
