@@ -1,6 +1,3 @@
-# MiniMax-M2
-
-
 ## AMD GPU Support
 
 ## 1. Model Introduction
@@ -43,20 +40,35 @@ This model is licensed under a Modified MIT License.
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
+
 ## 3. Model Deployment
 
-This section provides deployment configurations optimized for different hardware platforms and use cases.
+This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
+
+### 3.1 Basic Configuration
+
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities.
+
+import MiniMaxM2ConfigGenerator from '@site/src/components/autoregressive/MiniMaxM2ConfigGenerator';
+
+<MiniMaxM2ConfigGenerator />
 
 
-### 3.1 Basic Usage
+
+## 4. Model Invocation
+
+
+### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
 
-### 3.2 Advanced Usage
 
-#### 3.2.1 
+
+### 4.2 Advanced Usage
+
+#### 4.2.1 
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -74,19 +86,19 @@ docker run -d -it --ipc=host --network=host --privileged \
   /bin/bash
 ```
 
-#### 3.2.2 Make modifications inside the docker
+#### 4.2.2 Make modifications inside the docker
 
 ```shell
 mv /sgl-workspace/sglang/python/sglang/srt/models/transformers.py \
    /sgl-workspace/sglang/python/sglang/srt/models/hf_transformers_model.py
 ```
 
-#### 3.2.3 comment out the following line: @torch.compile(dynamic=True, backend=get_compiler_backend()) in /sgl-workspace/sglang/python/sglang/srt/models/minimax_m2.py
+#### 4.2.3 comment out the following line: @torch.compile(dynamic=True, backend=get_compiler_backend()) in /sgl-workspace/sglang/python/sglang/srt/models/minimax_m2.py
 
 ```shell
 #@torch.compile(dynamic=True, backend=get_compiler_backend())
 ```
-#### 3.2.4 Launch the server
+#### 4.2.4 Launch the server
 
 Run the following command to start the SGLang server. SGLang will automatically download and cache the MiniMax-M2.1 model from Hugging Face.
 
@@ -98,9 +110,7 @@ python3 -m sglang.launch_server \
     --tp-size 4 \
     --tool-call-parser minimax-m2 \
     --reasoning-parser minimax-append-think \
-    --host 0.0.0.0 \
     --trust-remote-code \
-    --port 8000 \
     --mem-fraction-static 0.85
 ```
 
@@ -113,18 +123,15 @@ python3 -m sglang.launch_server \
     --ep-size 8 \
     --tool-call-parser minimax-m2 \
     --trust-remote-code \
-    --host 0.0.0.0 \
     --reasoning-parser minimax-append-think \
-    --port 8000 \
     --mem-fraction-static 0.85
 ```
-## 4. Benchmark
-### 4.1 Speed Benchmark
 
-
+## 5. Benchmark
+### 5.1 Speed Benchmark
 Test Environment:
 
-Hardware: AMD MI300X GPU 
+Hardware: AMD MI300X GPU
 
 Model: MiniMax-M2.1
 
@@ -146,7 +153,7 @@ python3 -m sglang.launch_server \
 
 
 
-### 4.1.1 Low Concurrency (Latency-Optimized)
+### 5.1.1 Low Concurrency (Latency-Optimized)
 
 ```bash
 python3 -m sglang.bench_serving \
@@ -157,7 +164,9 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf 
+  --request-rate inf \
+      --host 0.0.0.0 \
+	   --port 8000
 	  
 ```
 
@@ -203,7 +212,7 @@ Max ITL (ms):                            23.61
 
 
 
-### 4.1.2 Medium Concurrency (Balanced)
+### 5.1.2 Medium Concurrency (Balanced)
 
 ```bash
 python3 -m sglang.bench_serving \
@@ -214,7 +223,9 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf 
+  --request-rate inf \
+      --host 0.0.0.0 \
+	   --port 8000
 
 ```
 
@@ -258,7 +269,7 @@ Max ITL (ms):                            632.37
 ```
 
 
-### 4.1.3 High Concurrency (Throughput-Optimized)
+### 5.1.3 High Concurrency (Throughput-Optimized)
 
 ```bash
 python3 -m sglang.bench_serving \
@@ -269,7 +280,9 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf 
+  --request-rate inf \
+      --host 0.0.0.0 \
+	   --port 8000
 ```
 
 
@@ -311,3 +324,6 @@ P99 ITL (ms):                            149.16
 Max ITL (ms):                            956.82
 ==================================================
 ```
+
+
+
