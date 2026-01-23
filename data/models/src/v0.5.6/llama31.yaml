@@ -15,9 +15,32 @@ defaults:
       nodes: single
       optimization: high-throughput
       enable_dp_attention: true
+      extra_args:
+        - --mem-fraction-static
+        - "0.85"
     - name: latency-optimized
       nodes: single
       optimization: low-latency
+      extra_args:
+        - --speculative-algorithm
+        - EAGLE
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
+        - --disable-shared-experts-fusion
+        - --max-running-requests
+        - "64"
+        - --mem-fraction-static
+        - "0.85"
+        - --kv-cache-dtype
+        - fp8_e4m3
+        - --context-length
+        - "32768"
+        - --quantization
+        - fp8
 
 families:
   - name: Llama-3.1

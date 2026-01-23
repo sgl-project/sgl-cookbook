@@ -5,17 +5,27 @@ vendor: moonshotai
 
 defaults:
   hardware:
-    H200: { tp: 8, ep: 4 }
-    B200: { tp: 8, ep: 4 }
+    H200: { tp: 8 }
+    B200: { tp: 8 }
   configurations:
     - name: default
       nodes: single
       optimization: balanced
+      extra_args:
+        - --trust-remote-code
     - name: high-throughput-dp
       nodes: single
       optimization: high-throughput
       dp: 4
       enable_dp_attention: true
+      extra_args:
+        - --trust-remote-code
+    - name: high-throughput-ep
+      nodes: single
+      optimization: high-throughput
+      ep: 4
+      extra_args:
+        - --trust-remote-code
 
 families:
   - name: Kimi-K2

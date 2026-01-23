@@ -17,6 +17,24 @@ defaults:
       optimization: high-throughput
       dp: 8
       enable_dp_attention: true
+    - name: high-throughput-ep
+      nodes: single
+      optimization: high-throughput
+      ep: 8
+    - name: speculative-mtp
+      nodes: single
+      optimization: low-latency
+      env_vars:
+        SGLANG_ENABLE_SPEC_V2: "1"
+      extra_args:
+        - --speculative-algorithm
+        - EAGLE
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
 
 families:
   - name: GLM-4.6

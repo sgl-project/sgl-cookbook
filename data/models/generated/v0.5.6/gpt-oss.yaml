@@ -29,6 +29,33 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: &id001
+              SGLANG_ENABLE_SPEC_V2: '1'
+              SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN: '1'
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - nvidia/gpt-oss-120b-Eagle3
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -44,6 +71,31 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - nvidia/gpt-oss-120b-Eagle3
           prefill: null
           decode: null
       B200:
@@ -63,6 +115,32 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - nvidia/gpt-oss-120b-Eagle3
+          prefill: null
+          decode: null
+    speculative_draft_model: nvidia/gpt-oss-120b-Eagle3
   - name: gpt-oss-120b-bf16
     model_path: lmsys/gpt-oss-120b-bf16
     attributes:
@@ -89,6 +167,31 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - nvidia/gpt-oss-120b-Eagle3
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -104,6 +207,31 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - nvidia/gpt-oss-120b-Eagle3
           prefill: null
           decode: null
       B200:
@@ -123,6 +251,32 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - nvidia/gpt-oss-120b-Eagle3
+          prefill: null
+          decode: null
+    speculative_draft_model: nvidia/gpt-oss-120b-Eagle3
   - name: gpt-oss-20b
     model_path: openai/gpt-oss-20b
     attributes:
@@ -149,6 +303,31 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - zhuyksir/EAGLE3-gpt-oss-20b-bf16
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -164,6 +343,31 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - zhuyksir/EAGLE3-gpt-oss-20b-bf16
           prefill: null
           decode: null
       B200:
@@ -183,6 +387,32 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: mxfp4
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - zhuyksir/EAGLE3-gpt-oss-20b-bf16
+          prefill: null
+          decode: null
+    speculative_draft_model: zhuyksir/EAGLE3-gpt-oss-20b-bf16
   - name: gpt-oss-20b-bf16
     model_path: lmsys/gpt-oss-20b-bf16
     attributes:
@@ -209,6 +439,31 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - zhuyksir/EAGLE3-gpt-oss-20b-bf16
+          prefill: null
+          decode: null
       H200:
         configurations:
         - name: default
@@ -224,6 +479,31 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - zhuyksir/EAGLE3-gpt-oss-20b-bf16
           prefill: null
           decode: null
       B200:
@@ -243,3 +523,29 @@ families:
             extra_args: []
           prefill: null
           decode: null
+        - name: speculative-eagle3
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE3
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+            - --speculative-draft-model-path
+            - zhuyksir/EAGLE3-gpt-oss-20b-bf16
+          prefill: null
+          decode: null
+    speculative_draft_model: zhuyksir/EAGLE3-gpt-oss-20b-bf16

@@ -26,7 +26,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-symm-mem
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -41,7 +42,49 @@ families:
             dp: 8
             ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 8
+            enable_dp_attention: null
+            extra_args:
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: &id001
+              SGLANG_ENABLE_SPEC_V2: '1'
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-symm-mem
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
       H200:
@@ -58,7 +101,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-symm-mem
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -73,7 +117,48 @@ families:
             dp: 8
             ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 8
+            enable_dp_attention: null
+            extra_args:
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-symm-mem
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
       B200:
@@ -90,7 +175,10 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -105,7 +193,54 @@ families:
             dp: 8
             ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 8
+            enable_dp_attention: null
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
   - name: DeepSeek-R1-0528-FP4
@@ -131,7 +266,8 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --enable-symm-mem
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -146,7 +282,48 @@ families:
             dp: 8
             ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 8
+            enable_dp_attention: null
+            extra_args:
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --enable-symm-mem
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
       B200:
@@ -163,7 +340,10 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args: []
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -178,6 +358,53 @@ families:
             dp: 8
             ep: null
             enable_dp_attention: true
-            extra_args: []
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: 8
+            enable_dp_attention: null
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: *id001
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --enable-symm-mem
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null

@@ -12,6 +12,21 @@ defaults:
     - name: default
       nodes: single
       optimization: balanced
+    - name: speculative-eagle3
+      nodes: single
+      optimization: low-latency
+      env_vars:
+        SGLANG_ENABLE_SPEC_V2: "1"
+        SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN: "1"
+      extra_args:
+        - --speculative-algorithm
+        - EAGLE3
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
 
 families:
   - name: GPT-OSS
@@ -26,10 +41,12 @@ families:
       - name: gpt-oss-120b
         model_path: openai/gpt-oss-120b
         quantization: mxfp4
+        speculative_draft_model: nvidia/gpt-oss-120b-Eagle3
 
       - name: gpt-oss-120b-bf16
         model_path: lmsys/gpt-oss-120b-bf16
         quantization: bf16
+        speculative_draft_model: nvidia/gpt-oss-120b-Eagle3
 
       # GPT-OSS 20B - override tp to 1
       - name: gpt-oss-20b
@@ -37,9 +54,11 @@ families:
         quantization: mxfp4
         hardware:
           default: { tp: 1 }
+        speculative_draft_model: zhuyksir/EAGLE3-gpt-oss-20b-bf16
 
       - name: gpt-oss-20b-bf16
         model_path: lmsys/gpt-oss-20b-bf16
         quantization: bf16
         hardware:
           default: { tp: 1 }
+        speculative_draft_model: zhuyksir/EAGLE3-gpt-oss-20b-bf16
