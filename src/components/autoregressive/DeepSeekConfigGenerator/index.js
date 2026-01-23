@@ -80,7 +80,7 @@ const DeepSeekConfigGenerator = () => {
 
         // Hardware platform specific parameters
         if (hardware === 'mi355x') {
-            cmd += ` \\\n  --trust-remote-code \\\n  --nsa-prefill-backend tilelang \\\n  --nsa-decode-backend tilelang \\\n  --disable-cuda-graph`;
+            cmd += ` \\\n  --trust-remote-code \\\n  --nsa-prefill-backend tilelang \\\n  --nsa-decode-backend tilelang \\\n --cuda-graph-max-bs 64`;
         }
 
         // Strategy configurations
