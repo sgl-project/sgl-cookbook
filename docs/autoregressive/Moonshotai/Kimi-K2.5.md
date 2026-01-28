@@ -601,11 +601,3 @@ python -m sglang.test.few_shot_gsm8k \
   --num-questions 200 \
   --port 8000
 ```
-
-## 6. Deployment Verification
-
-To verify the deployment is correct, you can use the Kimi Vendor Verifier provided by Moonshot AI. See the [official documentation](https://huggingface.co/moonshotai/Kimi-K2.5) for details.
-
-## 7. API Access
-
-You can also access Kimi-K2.5's API directly on [https://platform.moonshot.ai](https://platform.moonshot.ai), which provides OpenAI/Anthropic-compatible API.
