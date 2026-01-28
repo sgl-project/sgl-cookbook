@@ -50,7 +50,7 @@ Kimi-K2.5 supports native multimodal input with images:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:8000/v1",
+    base_url="http://localhost:30000/v1",
     api_key="EMPTY"
 )
 
@@ -80,96 +80,123 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-#### 4.2.2 Reasoning Parser (Thinking Mode)
+#### 4.2.2 Reasoning Output
 
-Enable reasoning parser to see the model's step-by-step thinking process:
+Kimi-K2.5 supports both thinking mode and instant mode. You can get the reasoning content by calling the `reasoning_content` field in the response.
 
-**Deployment Command:**
-
-```shell
-python -m sglang.launch_server \
-  --model moonshotai/Kimi-K2.5 \
-  --reasoning-parser kimi_k2 \
-  --tp 8 \
-  --trust-remote-code \
-  --host 0.0.0.0 \
-  --port 8000
-```
-
-**Example:**
+**Usage:**
 
 ```python
-from openai import OpenAI
+import openai
+import base64
+import requests
+def simple_chat(client: openai.OpenAI, model_name: str):
+    messages = [
+        {'role': 'system', 'content': 'You are Kimi, an AI assistant created by Moonshot AI.'},
+        {
+            'role': 'user',
+            'content': [
+                {'type': 'text', 'text': 'which one is bigger, 9.11 or 9.9? think carefully.'}
+            ],
+        },
+    ]
+    response = client.chat.completions.create(
+        model=model_name, messages=messages, stream=False, max_tokens=4096
+    )
+    print('====== Below is reasoning_content in Thinking Mode ======')
+    print(f'reasoning content: {response.choices[0].message.reasoning_content}')
+    print('====== Below is response in Thinking Mode ======')
+    print(f'response: {response.choices[0].message.content}')
 
-client = OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="EMPTY"
-)
+    response = client.chat.completions.create(
+        model=model_name,
+        messages=messages,
+        stream=False,
+        max_tokens=4096,
+        extra_body= {'chat_template_kwargs': {"thinking": False}} # To use instant mode
+    )
+    print('====== Below is response in Instant Mode ======')
+    print(f'response: {response.choices[0].message.content}')
 
-# Enable streaming to see the thinking process in real-time
-response = client.chat.completions.create(
-    model="moonshotai/Kimi-K2.5",
-    messages=[
-        {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
-    ],
-    temperature=0.6,
-    max_tokens=2048,
-    stream=True
-)
-
-# Process the stream
-has_thinking = False
-has_answer = False
-thinking_started = False
-
-for chunk in response:
-    if chunk.choices and len(chunk.choices) > 0:
-        delta = chunk.choices[0].delta
-
-        # Print thinking process
-        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-            if not thinking_started:
-                print("=============== Thinking =================", flush=True)
-                thinking_started = True
-            has_thinking = True
-            print(delta.reasoning_content, end="", flush=True)
-
-        # Print answer content
-        if delta.content:
-            # Close thinking section and add content header
-            if has_thinking and not has_answer:
-                print("\n=============== Content =================", flush=True)
-                has_answer = True
-            print(delta.content, end="", flush=True)
-
-print()
+if __name__ == "__main__":
+    client = openai.OpenAI(api_key="sk-123456", base_url="http://localhost:30000/v1")
+    simple_chat(client, "moonshotai/Kimi-K2.5")
 ```
 
 **Output Example:**
-
 ```text
-=============== Thinking =================
-  The user asks: "What is 15% of 240?" This is a straightforward percentage calculation problem. I need to solve it step by step.
+====== Below is reasoning_content in Thinking Mode ======
+reasoning content: The user is asking which number is bigger, 9.11 or 9.9. This is a classic "trick" question that plays on how people sometimes compare decimals incorrectly by treating them like strings or whole numbers.
 
-Step 1: Understand what "percent" means.
-- "Percent" means "per hundred". So 15% means 15 per 100, or 15/100, or 0.15.
+Let me think through this carefully:
 
-Step 2: Convert the percentage to a decimal.
-- 15% = 15 / 100 = 0.15
+9.11 vs 9.9
 
-Step 3: Multiply the decimal by the number.
-- 0.15 * 240 = 36
+When comparing decimals, I need to look at the place values:
+- 9.11 = 9 + 1/10 + 1/100 = 9 + 0.1 + 0.01 = 9.11
+- 9.9 = 9 + 9/10 = 9 + 0.9 = 9.90
 
-=============== Content =================
- Here is the step-by-step solution:
+Now comparing 9.11 and 9.90:
+- The integer parts are both 9, so we look at the tenths place.
+- 9.11 has 1 in the tenths place
+- 9.90 has 9 in the tenths place
+- Since 9 > 1, we have 9.9 > 9.11
 
-**Step 1: Convert the percentage to a decimal**
-15% means 15 per 100, which is 15 ÷ 100 = **0.15**
+Alternatively, thinking about it as money:
+- $9.11 is nine dollars and eleven cents
+- $9.90 is nine dollars and ninety cents
+- 90 cents is more than 11 cents, so $9.90 > $9.11
 
-**Step 2: Multiply the decimal by the number**
-0.15 × 240 = **36**
+Another way:
+- 9.9 = 9.90
+- 9.90 > 9.11
 
-**Answer:** 15% of 240 is **36**.
+Common mistake: People might think 11 > 9, so 9.11 > 9.9, but that's wrong because 9.9 is actually 9.90, not 9.09 or something. The decimal places need to be aligned.
+
+So the answer is 9.9 is bigger than 9.11.
+
+Wait, I should make sure I'm not falling into any traps here. The user said "think carefully" which suggests they know about the common confusion between 9.11 and 9.9 (similar to the famous 0.999... = 1 debates, or the "9.11 vs 9.9" meme that went around regarding version numbers or dates).
+
+Let me double-check:
+- 9.11 = 9.110
+- 9.9 = 9.900
+- 9.900 > 9.110
+
+Yes, 9.9 is definitely bigger.
+
+I should explain this clearly by showing the decimal expansion or using the money analogy, as that's intuitive.
+====== Below is response in Thinking Mode ======
+response: **9.9 is bigger** than 9.11.
+
+Here's why people often get this wrong: They compare the numbers after the decimal point as if they were whole numbers ("11" vs "9") and think 11 > 9, so 9.11 must be larger. But that's incorrect because **9.9 is actually 9.90**, not 9.09.
+
+Think of it like money:
+- **9.11** = $\$9.11$ (9 dollars and 11 cents)
+- **9.9** = $\$9.90$ (9 dollars and 90 cents)
+
+Comparing the decimal places:
+- 9.**1**1 vs 9.**9**0
+- The tenths place: **1** vs **9**
+- Since 9 > 1, we have 9.90 > 9.11
+
+Or mathematically:
+$$9.9 - 9.11 = 0.79$$
+
+So **9.9 is larger by 0.79**.
+====== Below is response in Instant Mode ======
+response:  I need to compare 9.11 and 9.9.
+
+Let me think carefully. This is a common trick question because of how we read version numbers vs. decimal numbers.
+
+**As decimal numbers:**
+- 9.11 = 9 + 11/100 = 9.11
+- 9.9 = 9 + 9/10 = 9.90
+
+Since 9.90 > 9.11, **9.9 is bigger** (as decimals).
+
+**However**, if this were software version numbers (like "version 9.11" vs "version 9.9"), then 9.11 would be newer/bigger (11 > 9 in the versioning scheme).
+
+Given the notation with decimal points, the most natural interpretation is **decimal numbers**, so **9.9 is bigger**.
 ```
 
 #### 4.2.3 Tool Calling
