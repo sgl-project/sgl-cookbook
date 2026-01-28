@@ -60,3 +60,52 @@ families:
       - name: DeepSeek-V3.2-Speciale
         llm:
           tool_parser: null
+
+      - name: DeepSeek-V3.2-NVFP4
+        vendor: nvidia
+        hardware:
+          B200: { tp: 4 }
+        configurations:
+          - name: default
+            nodes: single
+            optimization: balanced
+            quantization: modelopt_fp4
+            tp: 4
+            extra_args:
+              - --moe-runner-backend
+              - flashinfer_trtllm
+          - name: high-throughput-dp
+            nodes: single
+            optimization: high-throughput
+            quantization: modelopt_fp4
+            tp: 4
+            dp: 4
+            enable_dp_attention: true
+            extra_args:
+              - --moe-runner-backend
+              - flashinfer_trtllm
+          - name: high-throughput-ep
+            nodes: single
+            optimization: high-throughput
+            quantization: modelopt_fp4
+            tp: 4
+            ep: 4
+            extra_args:
+              - --moe-runner-backend
+              - flashinfer_trtllm
+          - name: speculative-mtp
+            nodes: single
+            optimization: low-latency
+            quantization: modelopt_fp4
+            tp: 4
+            extra_args:
+              - --moe-runner-backend
+              - flashinfer_trtllm
+              - --speculative-algorithm
+              - EAGLE
+              - --speculative-num-steps
+              - "3"
+              - --speculative-eagle-topk
+              - "1"
+              - --speculative-num-draft-tokens
+              - "4"
