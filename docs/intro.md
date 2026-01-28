@@ -64,6 +64,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 - [X] [Kimi-K2](./autoregressive/Moonshotai/Kimi-K2.md)
 - [ ] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
+- [X] [Kimi-K2.5](./autoregressive/Moonshotai/Kimi-K2.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 
 #### MiniMax
 
