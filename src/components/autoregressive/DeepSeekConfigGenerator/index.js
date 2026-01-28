@@ -15,7 +15,8 @@ const DeepSeekConfigGenerator = () => {
             title: 'Hardware Platform',
             items: [
                 { id: 'h200', label: 'H200', default: true },
-                { id: 'b200', label: 'B200', default: false }
+                { id: 'b200', label: 'B200', default: false },
+                { id: 'mi355x', label: 'MI355X', default: false }
             ]
         },
         modelname: {
@@ -76,6 +77,11 @@ const DeepSeekConfigGenerator = () => {
 
         let cmd = 'python3 -m sglang.launch_server \\\n';
         cmd += `  --model-path ${modelName}`;
+
+        // Hardware platform specific parameters
+        if (hardware === 'mi355x') {
+            cmd += ` \\\n  --trust-remote-code \\\n  --nsa-prefill-backend tilelang \\\n  --nsa-decode-backend tilelang \\\n --cuda-graph-max-bs 64`;
+        }
 
         // Strategy configurations
         const strategyArray = Array.isArray(strategy) ? strategy : [];
