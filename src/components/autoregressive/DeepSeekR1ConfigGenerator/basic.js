@@ -13,7 +13,9 @@ const DeepSeekR1BasicConfigGenerator = () => {
           { id: 'h100', label: 'H100', default: false },
           { id: 'h200', label: 'H200', default: false },
           { id: 'b200', label: 'B200', default: true },
-          { id: 'mi300x', label: 'MI300X', default: false }
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       quantization: {
