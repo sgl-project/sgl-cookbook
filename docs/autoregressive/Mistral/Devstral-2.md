@@ -263,10 +263,10 @@ print()
 ### 5.1 Speed Benchmark
 **Test Environment**:
 
-- Hardware: xxx (8x)
+- Hardware: MI300X (8x)
 - Tensor Parallelism: 8
-- Model: xxx
-- sglang version: x.x.x
+- Model: Devstral-2-123B-Instruct-2512
+- sglang version: 0.5.7
 
 
 **Scenario 1: Chat (1K/1K) - Most Important**
@@ -277,8 +277,7 @@ print()
 python3 -m sglang.launch_server \
   --model-path mistralai/Devstral-2-123B-Instruct-2512 \
   --tp 8 \
-  --trust-remote-code \
-  --port 8888
+  --trust-remote-code 
 ```
 
 - Low Concurrency (Latency-Optimized)
@@ -292,8 +291,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf \
-  --port 8888
+  --request-rate inf 
 ```
 
 ```
@@ -346,8 +344,7 @@ python -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf \
-  --port 8888
+  --request-rate inf 
 ```
 
 ```
@@ -400,8 +397,7 @@ python -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf \
-  --port 8888
+  --request-rate inf 
 ```
 
 ```
@@ -455,8 +451,7 @@ Document model accuracy on standard benchmarks:
 python3 benchmark/gsm8k/bench_sglang.py \
   --num-shots 8 \
   --num-questions 1316 \
-  --parallel 1316 \
-  --port 8888
+  --parallel 1316 
 ```
 
 **Test Results:**
