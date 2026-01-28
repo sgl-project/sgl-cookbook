@@ -17,6 +17,7 @@ import {
   Model,
   ModelAttributes,
   LLMAttributes,
+  DiffusionAttributes,
   HardwareConfig,
   NamedConfiguration,
   ConfigAttributes,
@@ -147,15 +148,22 @@ function validateVendorConfig(config: VendorConfig, fileName: string): string[] 
         errors.push(`${modelPrefix}: 'model_path' must be a non-empty string`);
       }
 
-      // Check attributes
+      // Check attributes - either llm or diffusion must be present
       if (!model.attributes) {
         errors.push(`${modelPrefix}: 'attributes' must be an object`);
-      } else if (!model.attributes.llm) {
-        errors.push(`${modelPrefix}: 'attributes.llm' must be an object`);
-      } else {
+      } else if (!model.attributes.llm && !model.attributes.diffusion) {
+        errors.push(`${modelPrefix}: 'attributes' must have either 'llm' or 'diffusion'`);
+      } else if (model.attributes.llm) {
+        // Validate LLM attributes
         const tc = model.attributes.llm.thinking_capability;
         if (tc !== "non_thinking" && tc !== "thinking" && tc !== "hybrid") {
           errors.push(`${modelPrefix}: 'attributes.llm.thinking_capability' must be one of: non_thinking, thinking, hybrid`);
+        }
+      } else if (model.attributes.diffusion) {
+        // Validate Diffusion attributes
+        const mt = model.attributes.diffusion.model_type;
+        if (mt !== "image" && mt !== "video" && mt !== "image_edit") {
+          errors.push(`${modelPrefix}: 'attributes.diffusion.model_type' must be one of: image, video, image_edit`);
         }
       }
 
