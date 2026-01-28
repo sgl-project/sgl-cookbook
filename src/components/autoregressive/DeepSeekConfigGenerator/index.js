@@ -17,7 +17,6 @@ const DeepSeekConfigGenerator = () => {
                 { id: 'h200', label: 'H200', default: true },
                 { id: 'b200', label: 'B200', default: false },
                 { id: 'mi355x', label: 'MI355X', default: false }
-                
             ]
         },
         modelname: {
