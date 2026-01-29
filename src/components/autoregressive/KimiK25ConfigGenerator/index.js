@@ -15,7 +15,7 @@ const KimiK25ConfigGenerator = () => {
         title: 'Hardware Platform',
         items: [
           { id: 'h200', label: 'H200', default: true },
-          { id: 'b200', label: 'B200', default: false }
+          { id: 'b300', label: 'B300', default: false }
         ]
       },
       strategy: {

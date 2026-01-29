@@ -63,7 +63,7 @@ response = client.chat.completions.create(
                 {
                     "type": "image_url",
                     "image_url": {
-                        "url": "https://example.com/image.jpg"
+                        "url": "https://ofasys-multimodal-wlcb-3-toshanghai.oss-accelerate.aliyuncs.com/wpf272043/keepme/image/receipt.png"
                     }
                 },
                 {
@@ -78,6 +78,10 @@ response = client.chat.completions.create(
 )
 
 print(response.choices[0].message.content)
+```
+**Output Example:**
+```text
+
 ```
 
 #### 4.2.2 Reasoning Output
@@ -210,9 +214,7 @@ python -m sglang.launch_server \
   --model moonshotai/Kimi-K2.5 \
   --tool-call-parser kimi_k2 \
   --tp 8 \
-  --trust-remote-code \
-  --host 0.0.0.0 \
-  --port 8000
+  --trust-remote-code
 ```
 
 **Python Example:**
@@ -385,7 +387,7 @@ response = client.chat.completions.create(
                 {
                     "type": "image_url",
                     "image_url": {
-                        "url": "https://example.com/product_image.jpg"
+                        "url": "https://ofasys-multimodal-wlcb-3-toshanghai.oss-accelerate.aliyuncs.com/wpf272043/keepme/image/receipt.png"
                     }
                 },
                 {
@@ -402,6 +404,11 @@ response = client.chat.completions.create(
 
 print(response.choices[0].message)
 ```
+**Output Example:**
+```text
+
+```
+
 
 ## 5. Benchmark
 
@@ -411,44 +418,12 @@ This section uses **industry-standard configurations** for comparable benchmark 
 
 **Test Environment:**
 
-- Hardware: NVIDIA H200/B200 GPU (8x)
+- Hardware: NVIDIA H200/B300 GPU (8x)
 - Model: Kimi-K2.5
 - Tensor Parallelism: 8
 - SGLang Version: Latest
 
-**Benchmark Methodology:**
-
-We use industry-standard benchmark configurations to ensure results are comparable across frameworks and hardware platforms.
-
-#### 5.1.1 Standard Test Scenarios
-
-Three core scenarios reflect real-world usage patterns:
-
-| Scenario                | Input Length | Output Length | Use Case                                      |
-| ----------------------- | ------------ | ------------- | --------------------------------------------- |
-| **Chat**          | 1K           | 1K            | Most common conversational AI workload        |
-| **Reasoning**     | 1K           | 8K            | Long-form generation, complex reasoning tasks |
-| **Summarization** | 8K           | 1K            | Document summarization, RAG retrieval         |
-
-#### 5.1.2 Concurrency Levels
-
-Test each scenario at three concurrency levels to capture the throughput vs. latency tradeoff (Pareto frontier):
-
-- **Low Concurrency**: `--max-concurrency 1` (Latency-optimized)
-- **Medium Concurrency**: `--max-concurrency 16` (Balanced)
-- **High Concurrency**: `--max-concurrency 100` (Throughput-optimized)
-
-#### 5.1.3 Number of Prompts
-
-For each concurrency level, configure `num_prompts` to simulate realistic user loads:
-
-- **Quick Test**: `num_prompts = concurrency × 1` (minimal test)
-- **Recommended**: `num_prompts = concurrency × 5` (standard benchmark)
-- **Stable Measurements**: `num_prompts = concurrency × 10` (production-grade)
-
----
-
-#### 5.1.4 Benchmark Commands
+#### 5.1.1 Benchmark Commands
 
 **Scenario 1: Chat (1K/1K) - Most Important**
 
@@ -590,30 +565,6 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
-
-#### 5.1.5 Understanding the Results
-
-**Key Metrics:**
-
-- **Request Throughput (req/s)**: Number of requests processed per second
-- **Output Token Throughput (tok/s)**: Total tokens generated per second
-- **Mean TTFT (ms)**: Time to First Token - measures responsiveness
-- **Mean TPOT (ms)**: Time Per Output Token - measures generation speed
-- **Mean ITL (ms)**: Inter-Token Latency - measures streaming consistency
-
-**Why These Configurations Matter:**
-
-- **1K/1K (Chat)**: Represents the most common conversational AI workload. This is the highest priority scenario for most deployments.
-- **1K/8K (Reasoning)**: Tests long-form generation capabilities crucial for complex reasoning, code generation, and detailed explanations.
-- **8K/1K (Summarization)**: Evaluates performance with large context inputs, essential for RAG systems, document Q&A, and summarization tasks.
-- **Variable Concurrency**: Captures the Pareto frontier - the optimal tradeoff between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
-
-**Interpreting Results:**
-
-- Compare your results against baseline numbers for your hardware
-- Higher throughput at same latency = better performance
-- Lower TTFT = more responsive user experience
-- Lower TPOT = faster generation speed
 
 ### 5.2 Accuracy Benchmark
 
