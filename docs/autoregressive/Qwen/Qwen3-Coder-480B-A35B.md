@@ -13,7 +13,7 @@ Model specifications:
 - **Parameters**: 480B total parameters with 35B activated per token.
 - **MoE Architecture**: 160 experts with 8 experts activated per token.
 - **Context Length**: Supports up to 262K tokens.
-- **ROCm Support**: Compatible with AMD MI300X GPUs via SGLang (verified).
+- **ROCm Support**: Compatible with AMD MI300X, MI325X and MI355X GPUs via SGLang (verified).
 
 For more details, please refer to the [official Qwen3-Coder model page](https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct).
 
@@ -25,11 +25,11 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 
 ## 3. Model Deployment
 
-This section provides deployment configurations verified on AMD MI300X hardware platform.
+This section provides deployment configurations verified on AMD MI300X, MI325X and MI355X hardware platforms.
 
 ### 3.1 Basic Configuration
 
-The Qwen3-Coder-480B-A35B model requires 8 GPUs for deployment. The following configurations have been verified on AMD MI300X GPUs.
+The Qwen3-Coder-480B-A35B model requires 8 GPUs for deployment. The following configurations have been verified on AMD MI300X, MI325X and MI355X GPUs.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform and quantization method.
 
@@ -39,7 +39,7 @@ import Qwen3CoderConfigGenerator from '@site/src/components/autoregressive/Qwen3
 
 ### 3.2 Configuration Tips
 
-* **Memory Management**: We have verified successful deployment with `--context-length 8192`. Larger context lengths may be supported but require additional memory.
+* **Memory Management**: We have verified successful deployment on MI300X/MI325X/MI355X with `--context-length 8192`. Larger context lengths may be supported but require additional memory.
 * **Expert Parallelism**: For FP8 quantization, `--ep 2` is required.
 * **Page Size**: `--page-size 32` is recommended for MoE models to optimize memory usage.
 * **Environment Variable**: If you encounter aiter-related issues, try setting `SGLANG_USE_AITER=0`.
@@ -85,27 +85,41 @@ print(response.choices[0].message.content)
 
 **Example Output:**
 
+````
 ```python
-from typing import List, Optional
+from typing import List, Optional, TypeVar
 
-def binary_search(arr: List[int], target: int) -> Optional[int]:
+T = TypeVar('T')
+
+def binary_search(arr: List[T], target: T) -> Optional[int]:
     """
-    Performs binary search on a sorted list to find the index of a target value.
+    Perform binary search on a sorted list to find the index of a target element.
+
+    This function implements the binary search algorithm, which efficiently finds
+    a target value in a sorted array by repeatedly dividing the search interval
+    in half.
 
     Args:
-        arr (List[int]): A sorted list of integers to search through.
-        target (int): The integer value to search for.
+        arr (List[T]): A sorted list of elements to search through.
+        target (T): The element to search for in the list.
 
     Returns:
-        Optional[int]: The index of the target value if found, None otherwise.
+        Optional[int]: The index of the target element if found, None otherwise.
 
-    Time Complexity: O(log n)
-    Space Complexity: O(1)
+    Time Complexity:
+        O(log n) where n is the number of elements in the array.
+
+    Space Complexity:
+        O(1) - iterative implementation uses constant extra space.
 
     Examples:
         >>> binary_search([1, 2, 3, 4, 5], 3)
         2
         >>> binary_search([1, 2, 3, 4, 5], 6)
+        None
+        >>> binary_search(['a', 'b', 'c', 'd'], 'b')
+        1
+        >>> binary_search([], 1)
         None
     """
     if not arr:
@@ -115,7 +129,7 @@ def binary_search(arr: List[int], target: int) -> Optional[int]:
     right: int = len(arr) - 1
 
     while left <= right:
-        mid: int = left + (right - left) // 2
+        mid: int = (left + right) // 2
 
         if arr[mid] == target:
             return mid
@@ -125,9 +139,282 @@ def binary_search(arr: List[int], target: int) -> Optional[int]:
             right = mid - 1
 
     return None
+
+
+# Alternative recursive implementation
+def binary_search_recursive(arr: List[T], target: T, left: int = 0, right: Optional[int] = None) -> Optional[int]:
+    """
+    Perform binary search recursively on a sorted list to find the index of a target element.
+
+    Args:
+        arr (List[T]): A sorted list of elements to search through.
+        target (T): The element to search for in the list.
+        left (int): Left boundary of the search range (inclusive).
+        right (Optional[int]): Right boundary of the search range (inclusive).
+
+    Returns:
+        Optional[int]: The index of the target element if found, None otherwise.
+
+    Time Complexity:
+        O(log n) where n is the number of elements in the array.
+
+    Space Complexity:
+        O(log n) due to recursive call stack.
+
+    Examples:
+        >>> binary_search_recursive([1, 2, 3, 4, 5], 3)
+        2
+        >>> binary_search_recursive([1, 2, 3, 4, 5], 6)
+        None
+    """
+    if not arr:
+        return None
+
+    if right is None:
+        right = len(arr) - 1
+
+    if left > right:
+        return None
+
+    mid: int = (left + right) // 2
+
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] < target:
+        return binary_search_recursive(arr, target, mid + 1, right)
+    else:
+        return binary_search_recursive(arr, target, left, mid - 1)
 ```
 
-## Reference
+This implementation provides:
 
-- [Qwen3](./Qwen3)
-- [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md)
+1. **Main function** (`binary_search`): An iterative implementation that's more memory-efficient
+2. **Alternative function** (`binary_search_recursive`): A recursive implementation for educational purposes
+3. **Type hints**: Using generics (`TypeVar`) to work with any comparable type
+4. **Comprehensive docstring**: Including description, parameters, return value, complexity analysis, and examples
+5. **Edge case handling**: Empty lists, elements not found, etc.
+6. **Clear variable names**: Self-documenting code
+7. **Examples**: Doctest-style examples in the docstring
+
+The function works with any sorted list of comparable elements (integers, strings, etc.) and returns the index of the target element if found, or `None` if not found.
+````
+
+
+## 5. Benchmark
+
+### 5.1 Speed Benchmark
+
+**Test Environment:**
+
+- Hardware: AMD MI300X GPU (8x)
+- Model: Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8
+- Tensor Parallelism: 8
+- Expert Parallelism: 2
+- sglang version: 0.5.7
+
+We use SGLang's built-in benchmarking tool to conduct performance evaluation with random dataset.
+
+#### 5.1.1 Standard Scenario Benchmark
+
+- Model Deployment Command:
+
+```shell
+SGLANG_USE_AITER=0 python -m sglang.launch_server \
+  --model Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \
+  --tp 8 \
+  --ep 2 \
+  --context-length 8192 \
+  --page-size 32 \
+  --trust-remote-code
+```
+
+##### 5.1.1.1 Low Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1
+```
+
+- Test Results:
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  73.79
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4104
+Request throughput (req/s):              0.14
+Input token throughput (tok/s):          82.68
+Output token throughput (tok/s):         57.19
+Peak output token throughput (tok/s):    59.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          139.86
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   7376.26
+Median E2E Latency (ms):                 5851.51
+P90 E2E Latency (ms):                    13351.89
+P99 E2E Latency (ms):                    16908.32
+---------------Time to First Token----------------
+Mean TTFT (ms):                          191.93
+Median TTFT (ms):                        126.06
+P99 TTFT (ms):                           662.15
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          17.06
+Median TPOT (ms):                        17.07
+P99 TPOT (ms):                           17.08
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           17.06
+Median ITL (ms):                         17.06
+P95 ITL (ms):                            17.14
+P99 ITL (ms):                            17.19
+Max ITL (ms):                            18.53
+==================================================
+```
+
+##### 5.1.1.2 Medium Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16
+```
+
+- Test Results:
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  87.04
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40364
+Request throughput (req/s):              0.92
+Input token throughput (tok/s):          455.77
+Output token throughput (tok/s):         468.83
+Peak output token throughput (tok/s):    608.00
+Peak concurrent requests:                20
+Total token throughput (tok/s):          924.59
+Concurrency:                             13.76
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   14966.88
+Median E2E Latency (ms):                 15871.93
+P90 E2E Latency (ms):                    24983.41
+P99 E2E Latency (ms):                    29504.85
+---------------Time to First Token----------------
+Mean TTFT (ms):                          388.94
+Median TTFT (ms):                        157.49
+P99 TTFT (ms):                           1318.63
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          29.41
+Median TPOT (ms):                        29.22
+P99 TPOT (ms):                           43.48
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           28.64
+Median ITL (ms):                         26.42
+P95 ITL (ms):                            27.51
+P99 ITL (ms):                            131.63
+Max ITL (ms):                            995.11
+==================================================
+```
+
+##### 5.1.1.3 High Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 320 \
+  --max-concurrency 64
+```
+
+- Test Results:
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     320
+Benchmark duration (s):                  177.82
+Total input tokens:                      158939
+Total input text tokens:                 158939
+Total generated tokens:                  170134
+Total generated tokens (retokenized):    168387
+Request throughput (req/s):              1.80
+Input token throughput (tok/s):          893.84
+Output token throughput (tok/s):         956.80
+Peak output token throughput (tok/s):    1728.00
+Peak concurrent requests:                70
+Total token throughput (tok/s):          1850.64
+Concurrency:                             58.88
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   32716.53
+Median E2E Latency (ms):                 30896.37
+P90 E2E Latency (ms):                    65605.24
+P99 E2E Latency (ms):                    80970.63
+---------------Time to First Token----------------
+Mean TTFT (ms):                          372.97
+Median TTFT (ms):                        181.67
+P99 TTFT (ms):                           529.01
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          62.98
+Median TPOT (ms):                        50.44
+P99 TPOT (ms):                           204.24
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           60.95
+Median ITL (ms):                         37.87
+P95 ITL (ms):                            143.98
+P99 ITL (ms):                            148.02
+Max ITL (ms):                            36863.32
+==================================================
+```
+
+### 5.2 Accuracy Benchmark
+
+#### 5.2.1 GSM8K Benchmark
+
+- **Benchmark Command:**
+
+```shell
+python3 -m sglang.test.few_shot_gsm8k --num-questions 200
+```
+
+- **Results**:
+
+  - Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8
+    ```
+    Accuracy: 0.965
+    Invalid: 0.000
+    Latency: 23.084 s
+    Output throughput: 1148.425 token/s
+    ```

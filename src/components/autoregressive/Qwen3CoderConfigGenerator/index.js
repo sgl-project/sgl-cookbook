@@ -4,7 +4,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 /**
  * Qwen3-Coder-480B Configuration Generator
  * Supports Qwen3-Coder-480B-A35B model with BF16 and FP8 quantization
- * Verified on AMD MI300X
+ * Verified on AMD MI300X, MI325X and MI355X
  */
 const Qwen3CoderConfigGenerator = () => {
   const config = {
@@ -15,7 +15,9 @@ const Qwen3CoderConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'mi300x', label: 'MI300X', default: true }
+          { id: 'mi300x', label: 'MI300X', default: true },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       quantization: {
@@ -31,7 +33,9 @@ const Qwen3CoderConfigGenerator = () => {
     modelConfigs: {
       '480b': {
         baseName: '480B-A35B',
-        mi300x: { tp: 8, ep: 0 }
+        mi300x: { tp: 8, ep: 0 },
+        mi325x: { tp: 8, ep: 0 },
+        mi355x: { tp: 8, ep: 0 }
       }
     },
 
@@ -49,7 +53,7 @@ const Qwen3CoderConfigGenerator = () => {
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
       const modelName = `Qwen/Qwen3-Coder-${config.baseName}-Instruct${quantSuffix}`;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
+      let cmd = 'SGLANG_USE_AITER=0 python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
 
       // TP is always 8 for this model
@@ -62,7 +66,7 @@ const Qwen3CoderConfigGenerator = () => {
         cmd += ` \\\n  --ep 2`;
       }
 
-      // Context length verified on MI300X
+      // Context length verified on MI300X/MI325X/MI355X
       cmd += ` \\\n  --context-length 8192`;
 
       // Page size for MoE models
