@@ -2,10 +2,10 @@ import React from 'react';
 import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
- * Kimi-K2 Configuration Generator
- * Supports Kimi-K2-Instruct and Kimi-K2-Thinking models
+ * Kimi-Linear Configuration Generator
+ * Supports Kimi-Linear models
  */
-const KimiK2ConfigGenerator = () => {
+const KimiK2linearConfigGenerator = () => {
   const config = {
     modelFamily: 'moonshotai',
 
@@ -14,9 +14,7 @@ const KimiK2ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'h200', label: 'H200', default: true },
-          { id: 'b200', label: 'B200', default: false },
-          { id: 'mi300x', label: 'mi300x', default: false },
+		  { id: 'mi300x', label: 'mi300x', default: false },
           { id: 'mi325x', label: 'mi325x', default: false },
           { id: 'mi355x', label: 'mi355x', default: false }	
         ]
@@ -25,8 +23,8 @@ const KimiK2ConfigGenerator = () => {
         name: 'modelname',
         title: 'Model Name',
         items: [
-          { id: 'instruct', label: 'Kimi-K2-Instruct', default: true },
-          { id: 'thinking', label: 'Kimi-K2-Thinking', default: false }
+          { id: 'instruct', label: 'Kimi-Linear-48B-A3B-Instruct', default: true },
+
         ]
       },
       strategy: {
@@ -35,8 +33,7 @@ const KimiK2ConfigGenerator = () => {
         type: 'checkbox',
         items: [
           { id: 'tp', label: 'TP', default: true, required: true },
-          { id: 'dp', label: 'DP attention', default: false },
-          { id: 'ep', label: 'EP', default: false }
+
         ]
       },
       reasoning: {
@@ -60,39 +57,34 @@ const KimiK2ConfigGenerator = () => {
     generateCommand: function (values) {
       const { hardware, modelname, strategy, reasoning, toolcall } = values;
 
-      // Validation: Kimi-K2-Instruct doesn't support reasoning parser
+      // Validation: Kimi-Linear doesn't support reasoning parser
       if (modelname === 'instruct' && reasoning === 'enabled') {
-        return `# Error: Kimi-K2-Instruct doesn't support reasoning parser\n# Please select "Disabled" for Reasoning Parser or choose Kimi-K2-Thinking model`;
+        return `# Error: Kimi-Linear doesn't support reasoning parser\n# Please select "Disabled" for Reasoning Parser or choose Kimi-Linear-Thinking model`;
       }
 
       // Model name mapping
       const modelMap = {
-        'instruct': 'Kimi-K2-Instruct',
-        'thinking': 'Kimi-K2-Thinking'
+        'instruct': 'Kimi-Linear',
       };
 
       const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
 
       let cmd = 'python3 -m sglang.launch_server \\\n';
-
-      if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
+	  
+	  if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
         cmd = 'SGLANG_ROCM_FUSED_DECODE_MLA=0 ' + cmd;
       }
+	  
 	  
       cmd += `  --model-path ${modelName}`;
 
       // Strategy configurations
+	  
       const strategyArray = Array.isArray(strategy) ? strategy : [];
       // TP is mandatory
-      cmd += ` \\\n  --tp 8`;
-      if (strategyArray.includes('dp')) {
-        cmd += ` \\\n  --dp 4 \\\n  --enable-dp-attention`;
-      }
-      if (strategyArray.includes('ep')) {
-        cmd += ` \\\n  --ep 4`;
-      }
+      cmd += ` \\\n  --tp 4`;
 
-      // Add trust-remote-code (required for Kimi-K2)
+      // Add trust-remote-code (required for Kimi-Linear)
       cmd += ` \\\n  --trust-remote-code`;
 
       // Add tool-call-parser if enabled
