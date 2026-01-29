@@ -685,7 +685,3 @@ Invalid: 0.000
 Latency: 21.669 s
 Output throughput: 10359.790 token/s
 ```
-
-## 6. Reference
-
-- [DeepSeek-R1](../DeepSeek/DeepSeek-R1.md)
