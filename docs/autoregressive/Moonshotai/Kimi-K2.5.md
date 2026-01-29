@@ -81,7 +81,32 @@ print(response.choices[0].message.content)
 ```
 **Output Example:**
 ```text
+This image shows a **receipt from Auntie Anne's**, the pretzel restaurant chain. Here's a detailed breakdown:
 
+## Header
+- **Logo**: The Auntie Anne's logo featuring a pretzel with a halo
+- **Store name**: "Auntie Anne's" in stylized text
+- Store location/address information (blurred out)
+
+## Purchase Details
+- **Item**: CINNAMON SUGAR (likely a cinnamon sugar pretzel)
+- **Quantity**: 1
+- **Unit price**: 17,000
+- **Line total**: 17,000
+
+## Financial Summary
+- **SUB TOTAL**: 17,000
+- **GRAND TOTAL**: 17,000
+- **CASH IDR**: 20,000 (payment in Indonesian Rupiah)
+- **CHANGE DUE**: 3,000
+
+## Key Observations
+- The currency is **Indonesian Rupiah (IDR)**
+- Customer paid 20,000 IDR in cash
+- Change received: 3,000 IDR
+- Bottom section contains blurred transaction details (likely date, time, receipt number, cashier ID)
+
+The receipt is printed on white thermal paper and appears to be placed on a dark surface. The transaction shows a straightforward single-item purchase.
 ```
 
 #### 4.2.2 Reasoning Output
@@ -223,7 +248,7 @@ python -m sglang.launch_server \
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:8000/v1",
+    base_url="http://localhost:30000/v1",
     api_key="EMPTY"
 )
 
@@ -354,7 +379,7 @@ Combine vision understanding with tool calling for advanced agentic tasks:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:8000/v1",
+    base_url="http://localhost:30000/v1",
     api_key="EMPTY"
 )
 
@@ -406,7 +431,7 @@ print(response.choices[0].message)
 ```
 **Output Example:**
 ```text
-
+ChatCompletionMessage(content="I can see from the receipt that the product is **CINNAMON SUGAR** from Auntie Anne's, which is their classic **Cinnamon Sugar Pretzel**. Let me search for similar items for you. ", refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=[ChatCompletionMessageFunctionToolCall(id='functions.search_product:0', function=Function(arguments='{"query": "cinnamon sugar pretzel"}', name='search_product'), type='function', index=0)], reasoning_content='The user is asking me to identify a product from a receipt and search for similar items. Looking at the receipt, I can see the product is "CINNAMON SUGAR" from Auntie Anne\'s. The price is 17,000 (which appears to be Indonesian Rupiah based on the "CASH IDR" text).\n \n Auntie Anne\'s is a chain that sells pretzels, so this is likely a Cinnamon Sugar Pretzel. I should search for this product to find similar items.\n \n Let me use the search_product function to search for "cinnamon sugar pretzel" or similar terms. ')
 ```
 
 
@@ -418,10 +443,10 @@ This section uses **industry-standard configurations** for comparable benchmark 
 
 **Test Environment:**
 
-- Hardware: NVIDIA H200/B300 GPU (8x)
+- Hardware: NVIDIA H200 GPU (8x)
 - Model: Kimi-K2.5
 - Tensor Parallelism: 8
-- SGLang Version: Latest
+- SGLang Version: 0.5.6.post2
 
 #### 5.1.1 Benchmark Commands
 
@@ -450,6 +475,46 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  39.77
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4221
+Request throughput (req/s):              0.25
+Input token throughput (tok/s):          153.40
+Output token throughput (tok/s):         106.10
+Peak output token throughput (tok/s):    156.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          259.50
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   3972.87
+Median E2E Latency (ms):                 4044.55
+P90 E2E Latency (ms):                    7046.30
+P99 E2E Latency (ms):                    7441.13
+---------------Time to First Token----------------
+Mean TTFT (ms):                          176.89
+Median TTFT (ms):                        154.24
+P99 TTFT (ms):                           285.75
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          9.22
+Median TPOT (ms):                        9.32
+P99 TPOT (ms):                           12.72
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           9.02
+Median ITL (ms):                         8.80
+P95 ITL (ms):                            13.23
+P99 ITL (ms):                            14.17
+Max ITL (ms):                            29.38
+==================================================
+```
+
 - Medium Concurrency (Balanced)
 
 ```bash
@@ -462,6 +527,46 @@ python -m sglang.bench_serving \
   --num-prompts 80 \
   --max-concurrency 16 \
   --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  158.05
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40775
+Request throughput (req/s):              0.51
+Input token throughput (tok/s):          250.99
+Output token throughput (tok/s):         258.18
+Peak output token throughput (tok/s):    1103.00
+Peak concurrent requests:                19
+Total token throughput (tok/s):          509.17
+Concurrency:                             14.09
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   27837.05
+Median E2E Latency (ms):                 23508.00
+P90 E2E Latency (ms):                    57126.31
+P99 E2E Latency (ms):                    66044.35
+---------------Time to First Token----------------
+Mean TTFT (ms):                          374.30
+Median TTFT (ms):                        375.51
+P99 TTFT (ms):                           695.58
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          53.25
+Median TPOT (ms):                        57.93
+P99 TPOT (ms):                           85.45
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           53.95
+Median ITL (ms):                         53.97
+P95 ITL (ms):                            84.74
+P99 ITL (ms):                            244.84
+Max ITL (ms):                            655.61
+==================================================
 ```
 
 - High Concurrency (Throughput-Optimized)
@@ -477,6 +582,46 @@ python -m sglang.bench_serving \
   --max-concurrency 100 \
   --request-rate inf
 ```
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  996.64
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    252588
+Request throughput (req/s):              0.50
+Input token throughput (tok/s):          250.67
+Output token throughput (tok/s):         253.51
+Peak output token throughput (tok/s):    1199.00
+Peak concurrent requests:                104
+Total token throughput (tok/s):          504.18
+Concurrency:                             92.70
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   184773.75
+Median E2E Latency (ms):                 174183.65
+P90 E2E Latency (ms):                    343625.28
+P99 E2E Latency (ms):                    404284.53
+---------------Time to First Token----------------
+Mean TTFT (ms):                          1289.59
+Median TTFT (ms):                        1313.35
+P99 TTFT (ms):                           2346.78
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          364.70
+Median TPOT (ms):                        403.32
+P99 TPOT (ms):                           452.34
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           363.82
+Median ITL (ms):                         316.21
+P95 ITL (ms):                            745.91
+P99 ITL (ms):                            1345.88
+Max ITL (ms):                            3118.59
+==================================================
+```
+
 
 **Scenario 2: Reasoning (1K/8K)**
 
@@ -493,6 +638,45 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  680.26
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  44462
+Total generated tokens (retokenized):    44455
+Request throughput (req/s):              0.01
+Input token throughput (tok/s):          8.97
+Output token throughput (tok/s):         65.36
+Peak output token throughput (tok/s):    151.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          74.33
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   68019.29
+Median E2E Latency (ms):                 70568.85
+P90 E2E Latency (ms):                    113237.40
+P99 E2E Latency (ms):                    121682.34
+---------------Time to First Token----------------
+Mean TTFT (ms):                          206.17
+Median TTFT (ms):                        177.28
+P99 TTFT (ms):                           445.37
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          14.36
+Median TPOT (ms):                        15.89
+P99 TPOT (ms):                           16.43
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           15.26
+Median ITL (ms):                         15.85
+P95 ITL (ms):                            17.50
+P99 ITL (ms):                            23.21
+Max ITL (ms):                            45.22
+==================================================
+```
 
 - Medium Concurrency
 
@@ -507,6 +691,45 @@ python -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  2475.98
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  318306
+Total generated tokens (retokenized):    318166
+Request throughput (req/s):              0.03
+Input token throughput (tok/s):          16.02
+Output token throughput (tok/s):         128.56
+Peak output token throughput (tok/s):    847.00
+Peak concurrent requests:                18
+Total token throughput (tok/s):          144.58
+Concurrency:                             14.62
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   452592.46
+Median E2E Latency (ms):                 486002.05
+P90 E2E Latency (ms):                    833197.57
+P99 E2E Latency (ms):                    957399.48
+---------------Time to First Token----------------
+Mean TTFT (ms):                          359.38
+Median TTFT (ms):                        350.78
+P99 TTFT (ms):                           500.36
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          111.18
+Median TPOT (ms):                        122.76
+P99 TPOT (ms):                           145.90
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           113.69
+Median ITL (ms):                         122.81
+P95 ITL (ms):                            147.87
+P99 ITL (ms):                            151.03
+Max ITL (ms):                            272.05
+==================================================
+```
 
 - High Concurrency
 
@@ -520,6 +743,9 @@ python -m sglang.bench_serving \
   --num-prompts 320 \
   --max-concurrency 64 \
   --request-rate inf
+```
+```
+Waiting for completion...
 ```
 
 **Scenario 3: Summarization (8K/1K)**
@@ -537,6 +763,45 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  120.73
+Total input tokens:                      41941
+Total input text tokens:                 41941
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4220
+Request throughput (req/s):              0.08
+Input token throughput (tok/s):          347.41
+Output token throughput (tok/s):         34.96
+Peak output token throughput (tok/s):    73.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          382.36
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   12068.56
+Median E2E Latency (ms):                 10211.36
+P90 E2E Latency (ms):                    23203.32
+P99 E2E Latency (ms):                    30677.66
+---------------Time to First Token----------------
+Mean TTFT (ms):                          1625.64
+Median TTFT (ms):                        1526.63
+P99 TTFT (ms):                           3743.51
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          24.95
+Median TPOT (ms):                        23.95
+P99 TPOT (ms):                           35.40
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           24.80
+Median ITL (ms):                         21.73
+P95 ITL (ms):                            59.56
+P99 ITL (ms):                            61.10
+Max ITL (ms):                            62.70
+==================================================
+```
 
 - Medium Concurrency
 
@@ -550,6 +815,45 @@ python -m sglang.bench_serving \
   --num-prompts 80 \
   --max-concurrency 16 \
   --request-rate inf
+```
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  389.96
+Total input tokens:                      300020
+Total input text tokens:                 300020
+Total generated tokens:                  41669
+Total generated tokens (retokenized):    41670
+Request throughput (req/s):              0.21
+Input token throughput (tok/s):          769.36
+Output token throughput (tok/s):         106.86
+Peak output token throughput (tok/s):    304.00
+Peak concurrent requests:                19
+Total token throughput (tok/s):          876.22
+Concurrency:                             14.95
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   72870.97
+Median E2E Latency (ms):                 70495.88
+P90 E2E Latency (ms):                    121820.46
+P99 E2E Latency (ms):                    148933.09
+---------------Time to First Token----------------
+Mean TTFT (ms):                          2460.45
+Median TTFT (ms):                        1976.29
+P99 TTFT (ms):                           7305.53
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          140.57
+Median TPOT (ms):                        142.31
+P99 TPOT (ms):                           273.40
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           135.44
+Median ITL (ms):                         95.96
+P95 ITL (ms):                            152.93
+P99 ITL (ms):                            1488.37
+Max ITL (ms):                            6540.24
+==================================================
 ```
 
 - High Concurrency
@@ -565,6 +869,45 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     320
+Benchmark duration (s):                  1279.50
+Total input tokens:                      1273893
+Total input text tokens:                 1273893
+Total generated tokens:                  170000
+Total generated tokens (retokenized):    169981
+Request throughput (req/s):              0.25
+Input token throughput (tok/s):          995.62
+Output token throughput (tok/s):         132.86
+Peak output token throughput (tok/s):    703.00
+Peak concurrent requests:                67
+Total token throughput (tok/s):          1128.49
+Concurrency:                             60.12
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   240385.63
+Median E2E Latency (ms):                 236266.30
+P90 E2E Latency (ms):                    429882.12
+P99 E2E Latency (ms):                    515158.36
+---------------Time to First Token----------------
+Mean TTFT (ms):                          2710.44
+Median TTFT (ms):                        2345.63
+P99 TTFT (ms):                           7144.20
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          443.84
+Median TPOT (ms):                        493.29
+P99 TPOT (ms):                           606.19
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           448.23
+Median ITL (ms):                         296.17
+P95 ITL (ms):                            1869.15
+P99 ITL (ms):                            2708.95
+Max ITL (ms):                            7778.47
+==================================================
+```
 
 ### 5.2 Accuracy Benchmark
 
@@ -577,5 +920,12 @@ Document model accuracy on standard benchmarks:
 ```bash
 python -m sglang.test.few_shot_gsm8k \
   --num-questions 200 \
-  --port 8000
+  --port 30000
+```
+- Result
+```
+Accuracy: 0.965
+Invalid: 0.000
+Latency: 65.359 s
+Output throughput: 298.828 token/s
 ```
