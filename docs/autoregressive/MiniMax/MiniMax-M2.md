@@ -164,9 +164,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf \
-      --host 0.0.0.0 \
-	   --port 8000
+  --request-rate inf 
 	  
 ```
 
@@ -223,9 +221,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf \
-      --host 0.0.0.0 \
-	   --port 8000
+  --request-rate inf 
 
 ```
 
@@ -280,9 +276,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf \
-      --host 0.0.0.0 \
-	   --port 8000
+  --request-rate inf 
 ```
 
 
