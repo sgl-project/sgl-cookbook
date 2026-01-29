@@ -14,7 +14,9 @@ const Qwen25VLConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'mi300x', label: 'MI300X', default: true }
+          { id: 'mi300x', label: 'MI300X', default: true },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -39,19 +41,27 @@ const Qwen25VLConfigGenerator = () => {
     modelConfigs: {
       '72b': {
         baseName: '72B',
-        mi300x: { tp: 8, ep: 0 }
+        mi300x: { tp: 8, ep: 0 },
+        mi325x: { tp: 8, ep: 0 },
+        mi355x: { tp: 8, ep: 0 }
       },
       '32b': {
         baseName: '32B',
-        mi300x: { tp: 2, ep: 0 }
+        mi300x: { tp: 2, ep: 0 },
+        mi325x: { tp: 2, ep: 0 },
+        mi355x: { tp: 2, ep: 0 }
       },
       '7b': {
         baseName: '7B',
-        mi300x: { tp: 1, ep: 0 }
+        mi300x: { tp: 1, ep: 0 },
+        mi325x: { tp: 1, ep: 0 },
+        mi355x: { tp: 1, ep: 0 }
       },
       '3b': {
         baseName: '3B',
-        mi300x: { tp: 1, ep: 0 }
+        mi300x: { tp: 1, ep: 0 },
+        mi325x: { tp: 1, ep: 0 },
+        mi355x: { tp: 1, ep: 0 }
       }
     },
 
@@ -77,7 +87,7 @@ const Qwen25VLConfigGenerator = () => {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
       }
 
-      if (hardware === 'mi300x' && modelSize === '72b') {
+      if ((hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') && modelSize === '72b') {
         cmd += ` \\\n  --context-length 128000`;
       }
 
