@@ -81,6 +81,11 @@ const sidebars = {
           type: 'category',
           label: 'Moonshotai',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/Moonshotai/Kimi-K2.5',
+              label: 'Kimi-K2.5 [NEW]',
+            },
             'autoregressive/Moonshotai/Kimi-K2',
             'autoregressive/Moonshotai/Kimi-Linear',
           ],
