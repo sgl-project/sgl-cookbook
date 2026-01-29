@@ -22,7 +22,7 @@ This section provides a progressive guide from quick deployment to performance o
 
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities. SGLang supports serving DeepSeek V3.2 on NVIDIA H200, B200, and AMD MI355X GPUs.
 
 import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSeekConfigGenerator';
 
