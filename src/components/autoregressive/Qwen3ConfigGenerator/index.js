@@ -17,10 +17,7 @@ const Qwen3ConfigGenerator = () => {
         items: [
           { id: 'b200', label: 'B200', default: true },
           { id: 'h100', label: 'H100', default: false },
-          { id: 'h200', label: 'H200', default: false },
-          { id: 'mi300x', label: 'MI300X', default: false },
-          { id: 'mi325x', label: 'MI325X', default: false },
-          { id: 'mi355x', label: 'MI355X', default: false }
+          { id: 'h200', label: 'H200', default: false }
         ]
       },
       modelsize: {
@@ -78,7 +75,7 @@ const Qwen3ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
         ],
-        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen25' : null
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen' : null
       }
     },
 
@@ -88,80 +85,56 @@ const Qwen3ConfigGenerator = () => {
         hasThinkingVariants: true,
         h100: { tp: 8, ep: 0, bf16: true, fp8: true },
         h200: { tp: 8, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 8, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 4, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 4, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 4, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 8, ep: 0, bf16: true, fp8: true }
       },
       '30b': {
         baseName: '30B-A3B',
         hasThinkingVariants: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '32b': {
         baseName: '32B',
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '14b': {
         baseName: '14B',
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '8b': {
         baseName: '8B',
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '4b': {
         baseName: '4B',
         hasThinkingVariants: true,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '1.7b': {
         baseName: '1.7B',
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       },
       '0.6b': {
         baseName: '0.6B',
         hasThinkingVariants: false,
         h100: { tp: 1, ep: 0, bf16: true, fp8: true },
         h200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        b200: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi300x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi325x: { tp: 1, ep: 0, bf16: true, fp8: true },
-        mi355x: { tp: 1, ep: 0, bf16: true, fp8: true }
+        b200: { tp: 1, ep: 0, bf16: true, fp8: true }
       }
     },
 

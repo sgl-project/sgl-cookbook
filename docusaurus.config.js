@@ -25,7 +25,7 @@ const config = {
   url: 'https://cookbook.sglang.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: process.env.BASE_URL || '/',
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -73,7 +73,6 @@ const config = {
             alias: {
               '@diffusion': path.resolve(__dirname, 'docs', 'diffusion'),
               '@specbundle': path.resolve(__dirname, 'docs', 'specbundle'),
-              '@optimal-configs': path.resolve(__dirname, 'data', 'optimal-configs', 'generated'),
             },
             },
           };

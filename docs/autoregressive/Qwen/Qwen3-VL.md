@@ -11,11 +11,11 @@ sidebar_position: 2
 This generation delivers comprehensive upgrades across the board:
 
 - **Superior text understanding & generation**: Qwen3-VL-235B-A22B-Instruct was ranked as the [#1 open model for text on lmarena.ai](https://x.com/arena/status/1973151703563460942)
-- **Deeper visual perception & reasoning**: Enhanced image and video understanding capabilities.
-- **Extended context length**: Supports up to 262K tokens for processing long documents and videos.
-- **Enhanced spatial and video dynamics comprehension**: Better understanding of spatial relationships and temporal dynamics.
-- **Stronger agent interaction capabilities**: Improved tool use and search-based agent performance.
-- **Flexible deployment options**: Available in Dense and MoE architectures that scale from edge to cloud, with Instruct and reasoning-enhanced Thinking editions.
+- **Deeper visual perception & reasoning**: Enhanced image and video understanding capabilities
+- **Extended context length**: Supports up to 262K tokens for processing long documents and videos
+- **Enhanced spatial and video dynamics comprehension**: Better understanding of spatial relationships and temporal dynamics
+- **Stronger agent interaction capabilities**: Improved tool use and search-based agent performance
+- **Flexible deployment options**: Available in Dense and MoE architectures that scale from edge to cloud, with Instruct and reasoning-enhanced Thinking editions
 
 For more details, please refer to the [official Qwen3-VL GitHub Repository](https://github.com/QwenLM/Qwen3-VL).
 
@@ -31,7 +31,7 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-The Qwen3-VL series offers models in various sizes and architectures, optimized for different hardware platforms including NVIDIA and AMD GPUs. The recommended launch configurations vary by hardware and model size.
+The Qwen3-VL series offers models in various sizes and architectures, optimized for different hardware platforms. The recommended launch configurations vary by hardware and model size.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, quantization method, and thinking capabilities.
 

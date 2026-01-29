@@ -82,7 +82,7 @@ SERVER_ARGS=(
   --pin-cpu-memory
   --num-gpus 4
   --ulysses-degree=2
-  --enable-cfg-parallel
+  --ring-degree=2
 )
 
 SAMPLING_ARGS=(

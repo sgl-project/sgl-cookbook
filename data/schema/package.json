@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "test": "npx ts-node types.test.ts",
-    "test:optimal": "npx ts-node optimal-config.test.ts",
     "validate": "npx ts-node types.test.ts"
   },
   "devDependencies": {

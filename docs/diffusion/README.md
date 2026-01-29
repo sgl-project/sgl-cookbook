@@ -65,14 +65,6 @@ git checkout -b add-my-recipe
 # Submit a PR!
 ```
 
-## Tips for Best Practices
-
-- If you have sufficient VRAM, consider disabling cpu offload options to get better result. You can check the console output to determine which components can safely remain resident:
-```text
-Peak GPU memory: 52.51 GB, Remaining GPU memory at peak: 27.14 GB. Components that can stay resident: [text_encoder]
-```
-- `--dit-layerwise-offload` is enabled for video models by default, but it doesn't always improve performance. Feel free to adjust this option as needed.
-
 ## 📖 Resources
 
 - [SGLang GitHub](https://github.com/sgl-project/sglang)

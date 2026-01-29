@@ -62,12 +62,6 @@ const sidebars = {
             'autoregressive/GLM/GLM-4.6',
             'autoregressive/GLM/GLM-4.6V',
             'autoregressive/GLM/GLM-4.5',
-            'autoregressive/GLM/GLM-4.7',
-            {
-              type: 'doc',
-              id: 'autoregressive/GLM/GLM-4.7-Flash',
-              label: 'GLM-4.7-Flash [NEW]',
-            },
           ],
         },
         {
@@ -141,17 +135,6 @@ const sidebars = {
           label: 'Xiaomi',
           items: [
             'autoregressive/Xiaomi/MiMo-V2-Flash',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'FlashLabs',
-          items: [
-            {
-              type: 'doc',
-              id: 'autoregressive/FlashLabs/Chroma1.0',
-              label: 'Chroma 1.0 [NEW]',
-            },
           ],
         }
       ],

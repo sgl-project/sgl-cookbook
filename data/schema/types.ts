@@ -53,10 +53,9 @@ export interface Model {
  * Organized by model type (llm, diffusion, etc.)
  */
 export interface ModelAttributes {
-  /** LLM-specific attributes (for language models) */
-  llm?: LLMAttributes;
-  /** Diffusion-specific attributes (for image/video generation models) */
-  diffusion?: DiffusionAttributes;
+  /** LLM-specific attributes */
+  llm: LLMAttributes;
+  // Future: diffusion?: DiffusionAttributes;
 }
 
 /**
@@ -71,24 +70,6 @@ export interface LLMAttributes {
   reasoning_parser?: string | null;
   /** Custom chat template path, if needed */
   chat_template?: string | null;
-}
-
-/**
- * Diffusion model-specific attributes (for image/video generation)
- */
-export interface DiffusionAttributes {
-  /** Type of diffusion model */
-  model_type: "image" | "video" | "image_edit";
-  /** Task types supported by the model (e.g., text-to-image, image-to-video) */
-  task_types?: string[];
-  /** Whether the model supports LoRA fine-tuning */
-  supports_lora?: boolean;
-  /** Default ulysses degree for sequence parallelism */
-  ulysses_degree?: number;
-  /** Default ring degree for sequence parallelism */
-  ring_degree?: number;
-  /** Whether to enable layerwise offload by default */
-  dit_layerwise_offload?: boolean;
 }
 
 // ============ Level 4: Hardware Config ============

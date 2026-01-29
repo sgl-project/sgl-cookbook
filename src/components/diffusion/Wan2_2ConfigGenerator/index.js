@@ -86,9 +86,7 @@ const Wan2_2ConfigGenerator = () => {
       if (bestPractice === 'on') {
         command += ` \\
   --num-gpus 4 \\
-  --ulysses-degree 2 \\
-  --enable-cfg-parallel
-  `;
+  --ulysses-degree 4`;
       }
 
       // Only add --lora-path if a LoRA is selected and it's not 'none'

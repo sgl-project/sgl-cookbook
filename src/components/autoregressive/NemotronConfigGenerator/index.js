@@ -22,8 +22,7 @@ const NemotronNano3ConfigGenerator = () => {
         title: 'Model Variant',
         items: [
           { id: 'bf16', label: 'BF16', default: true },
-          { id: 'fp8', label: 'FP8', default: false },
-          { id: 'nvfp4', label: 'NVFP4', default: false }
+          { id: 'fp8', label: 'FP8', default: false }
         ]
       },
       tp: {
@@ -71,7 +70,10 @@ const NemotronNano3ConfigGenerator = () => {
       const variant = modelVariant || 'fp8';
       const baseName = 'NVIDIA-Nemotron-3-Nano-30B-A3B';
 
-      const modelName = `${this.modelFamily}/${baseName}-${variant.toUpperCase()}`;
+      const modelName =
+        variant === 'bf16'
+          ? `${this.modelFamily}/${baseName}-BF16`
+          : `${this.modelFamily}/${baseName}-FP8`;
 
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelName} \\\n`;

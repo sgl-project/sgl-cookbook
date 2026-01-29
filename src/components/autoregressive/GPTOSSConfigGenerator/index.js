@@ -16,8 +16,7 @@ const GPTOSSConfigGenerator = () => {
         items: [
           { id: 'b200', label: 'B200', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'h100', label: 'H100', default: false },
-          { id: 'mi300x', label: 'MI300X', default: false }
+          { id: 'h100', label: 'H100', default: false }
         ]
       },
       modelsize: {
@@ -83,16 +82,14 @@ const GPTOSSConfigGenerator = () => {
         isMOE: true,
         h100: { tp: 8, ep: 0, mxfp4: true, bf16: false },
         h200: { tp: 8, ep: 0, mxfp4: true, bf16: false },
-        b200: { tp: 8, ep: 0, mxfp4: true, bf16: false },
-        mi300x: { tp: 8, ep: 0, mxfp4: true, bf16: false }
+        b200: { tp: 8, ep: 0, mxfp4: true, bf16: false }
       },
       '20b': {
         baseName: '20b',
         isMOE: true,
         h100: { tp: 1, ep: 0, mxfp4: true, bf16: false },
         h200: { tp: 1, ep: 0, mxfp4: true, bf16: false },
-        b200: { tp: 1, ep: 0, mxfp4: true, bf16: false },
-        mi300x: { tp: 1, ep: 0, mxfp4: true, bf16: false }
+        b200: { tp: 1, ep: 0, mxfp4: true, bf16: false }
       }
     },
 
@@ -115,11 +112,6 @@ const GPTOSSConfigGenerator = () => {
       const modelName = `${orgPrefix}/gpt-oss-${config.baseName}${quantSuffix}`;
 
       let cmd = '';
-
-      // AMD MI300X requires SGLANG_USE_AITER=0 due to YaRN RoPE precision issues
-      if (hardware === 'mi300x') {
-        cmd += 'SGLANG_USE_AITER=0 ';
-      }
 
       if (values.speculative === 'enabled') {
         cmd += 'SGLANG_ENABLE_SPEC_V2=1 SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 ';

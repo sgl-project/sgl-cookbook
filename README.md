@@ -9,7 +9,7 @@ A community-maintained repository of practical guides and recipes for deploying 
 
 This cookbook aggregates battle-tested SGLang recipes covering:
 
-- **Models**: Mainstream LLMs, Vision-Language Models (VLMs), and Diffusion Models
+- **Models**: Mainstream LLMs and Vision-Language Models (VLMs)
 - **Use Cases**: Inference serving, deployment strategies, multimodal applications
 - **Hardware**: GPU and CPU configurations, optimization for different accelerators
 - **Best Practices**: Configuration templates, performance tuning, troubleshooting guides
