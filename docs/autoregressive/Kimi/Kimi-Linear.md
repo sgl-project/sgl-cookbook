@@ -18,7 +18,7 @@ High Throughput: Achieves up to 6× faster decoding and significantly reduces ti
 
 **Available Models:**
 
-- **FP8 (8-bit quantized)**: [huggingface: moonshotai/Kimi-Linear-48B-A3B-Instruct] 
+- **FP8 (8-bit quantized)**: [huggingface: moonshotai/Kimi-Linear-48B-A3B-Instruct]
 
 
 **License:**
@@ -54,7 +54,7 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 
+#### 4.2.1
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -95,7 +95,7 @@ SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
 ### 5.1 Speed Benchmark
 Test Environment:
 
-Hardware: AMD MI300X GPU 
+Hardware: AMD MI300X GPU
 
 Model: Kimi-Linear
 
@@ -125,7 +125,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -179,7 +179,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -234,7 +234,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -275,9 +275,3 @@ P99 ITL (ms):                            157.80
 Max ITL (ms):                            2481.11
 ==================================================
 ```
-
-
-
-
-
-

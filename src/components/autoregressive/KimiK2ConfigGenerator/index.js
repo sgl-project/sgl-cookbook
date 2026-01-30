@@ -18,7 +18,7 @@ const KimiK2ConfigGenerator = () => {
           { id: 'b200', label: 'B200', default: false },
           { id: 'mi300x', label: 'mi300x', default: false },
           { id: 'mi325x', label: 'mi325x', default: false },
-          { id: 'mi355x', label: 'mi355x', default: false }	
+          { id: 'mi355x', label: 'mi355x', default: false }
         ]
       },
       modelname: {
@@ -78,7 +78,7 @@ const KimiK2ConfigGenerator = () => {
       if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
         cmd = 'SGLANG_ROCM_FUSED_DECODE_MLA=0 ' + cmd;
       }
-	  
+
       cmd += `  --model-path ${modelName}`;
 
       // Strategy configurations

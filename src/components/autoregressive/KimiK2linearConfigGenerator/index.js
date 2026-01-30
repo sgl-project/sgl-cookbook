@@ -16,7 +16,7 @@ const KimiK2linearConfigGenerator = () => {
         items: [
 		  { id: 'mi300x', label: 'mi300x', default: false },
           { id: 'mi325x', label: 'mi325x', default: false },
-          { id: 'mi355x', label: 'mi355x', default: false }	
+          { id: 'mi355x', label: 'mi355x', default: false }
         ]
       },
       modelname: {
@@ -70,16 +70,16 @@ const KimiK2linearConfigGenerator = () => {
       const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
 
       let cmd = 'python3 -m sglang.launch_server \\\n';
-	  
+
 	  if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
         cmd = 'SGLANG_ROCM_FUSED_DECODE_MLA=0 ' + cmd;
       }
-	  
-	  
+
+
       cmd += `  --model-path ${modelName}`;
 
       // Strategy configurations
-	  
+
       const strategyArray = Array.isArray(strategy) ? strategy : [];
       // TP is mandatory
       cmd += ` \\\n  --tp 4`;

@@ -19,8 +19,8 @@ Agentic Intelligence: Specifically designed for tool use, reasoning, and autonom
 
 **Available Models:**
 
-- **FP8 (8-bit quantized)**: [huggingface: moonshotai/Kimi-K2-Instruct] 
--[huggingface: moonshotai/Kimi-K2-Thinking] 
+- **FP8 (8-bit quantized)**: [huggingface: moonshotai/Kimi-K2-Instruct]
+-[huggingface: moonshotai/Kimi-K2-Thinking]
 
 
 **License:**
@@ -58,7 +58,7 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 
+#### 4.2.1
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi40x
 ```
@@ -91,7 +91,7 @@ SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
   --model-path moonshotai/Kimi-K2-Instruct \
   --tokenizer-path  moonshotai/Kimi-K2-Instruct \
   --tp 8 \
-  --trust-remote-code 
+  --trust-remote-code
 ```
 
 #### 4.2.4 Tool Calling
@@ -102,15 +102,15 @@ SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
   --model moonshotai/Kimi-K2-Instruct \
   --tool-call-parser kimi_k2 \
   --tp 8 \
-  --trust-remote-code 
+  --trust-remote-code
 
-``` 
+```
 
 ## 5. Benchmark
 ### 5.1 Speed Benchmark
 Test Environment:
 
-Hardware: AMD MI300X GPU 
+Hardware: AMD MI300X GPU
 
 Model: Kimi-K2-Instruct
 
@@ -125,9 +125,9 @@ SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
   --model moonshotai/Kimi-K2-Instruct \
   --tool-call-parser kimi_k2 \
   --tp 8 \
-  --trust-remote-code 
-``` 
-  
+  --trust-remote-code
+```
+
 
 ### 5.1.1 Low Concurrency (Latency-Optimized)
 
@@ -140,7 +140,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -195,7 +195,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf 
+  --request-rate inf
 
 ```
 
@@ -253,7 +253,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 
