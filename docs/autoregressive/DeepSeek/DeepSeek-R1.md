@@ -12,13 +12,13 @@ sidebar_position: 1
 
 - **Advanced Reasoning**: Built-in reasoning capabilities for complex problem-solving
 - **Multiple Quantizations**: FP8 and FP4 variants for different performance/memory trade-offs
-- **Hardware Optimization**: Specifically tuned for NVIDIA B200 (Blackwell) and H200 (Hopper) GPUs, and AMD MI300X GPUs
+- **Hardware Optimization**: Specifically tuned for NVIDIA B200 (Blackwell) and H200 (Hopper) GPUs, and AMD MI300X, MI325X and MI355X GPUs
 - **High Performance**: Optimized for both throughput and latency scenarios
 
 **Available Models:**
 
 - **FP8 (8-bit quantized)**: [deepseek-ai/DeepSeek-R1-0528](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528) - Recommended for H200 and MI300X
-- **FP4 (4-bit quantized)**: [nvidia/DeepSeek-R1-0528-FP4-v2](https://huggingface.co/nvidia/DeepSeek-R1-0528-FP4-v2) - Recommended for B200
+- **FP4 (4-bit quantized)**: [nvidia/DeepSeek-R1-0528-FP4-v2](https://huggingface.co/nvidia/DeepSeek-R1-0528-FP4-v2) - Recommended for B200 and MI355X
 
 **License:**
 To use DeepSeek-R1, you must agree to DeepSeek's Community License. See [LICENSE](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528/blob/main/LICENSE) for details.

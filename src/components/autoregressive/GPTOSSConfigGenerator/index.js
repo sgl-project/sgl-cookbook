@@ -16,7 +16,10 @@ const GPTOSSConfigGenerator = () => {
         items: [
           { id: 'b200', label: 'B200', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'h100', label: 'H100', default: false }
+          { id: 'h100', label: 'H100', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -63,6 +66,11 @@ const GPTOSSConfigGenerator = () => {
         commandRule: (value, allValues) => {
           if (value !== 'enabled') return null;
 
+          // MI30x GPUs are handled in generateCommand (returns comment only)
+          if (allValues.hardware === 'mi300x' || allValues.hardware === 'mi325x' || allValues.hardware === 'mi355x') {
+            return null;
+          }
+
           let cmd = '--speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4';
 
           if (allValues.modelsize === '120b') {
@@ -82,20 +90,35 @@ const GPTOSSConfigGenerator = () => {
         isMOE: true,
         h100: { tp: 8, ep: 0, mxfp4: true, bf16: false },
         h200: { tp: 8, ep: 0, mxfp4: true, bf16: false },
-        b200: { tp: 8, ep: 0, mxfp4: true, bf16: false }
+        b200: { tp: 8, ep: 0, mxfp4: true, bf16: false },
+        mi300x: { tp: 8, ep: 0, mxfp4: false, bf16: true },
+        mi325x: { tp: 8, ep: 0, mxfp4: false, bf16: true },
+        mi355x: { tp: 8, ep: 0, mxfp4: true, bf16: false }
       },
       '20b': {
         baseName: '20b',
         isMOE: true,
         h100: { tp: 1, ep: 0, mxfp4: true, bf16: false },
         h200: { tp: 1, ep: 0, mxfp4: true, bf16: false },
-        b200: { tp: 1, ep: 0, mxfp4: true, bf16: false }
+        b200: { tp: 1, ep: 0, mxfp4: true, bf16: false },
+        mi300x: { tp: 1, ep: 0, mxfp4: false, bf16: true },
+        mi325x: { tp: 1, ep: 0, mxfp4: false, bf16: true },
+        mi355x: { tp: 1, ep: 0, mxfp4: true, bf16: false }
       }
     },
 
     generateCommand: function (values) {
       const { hardware, modelsize: modelSize, quantization, reasoningParser } = values;
-      const commandKey = `${hardware}-${modelSize}-${quantization}-${reasoningParser}`;
+
+      // MI30x GPUs with speculative decoding: Work In Progress
+      if ((hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') && values.speculative === 'enabled') {
+        return '# MI30x GPUs Speculative Decoding: Work In Progress';
+      }
+
+      // MI300X/MI325X MXFP4: Work In Progress (only MI355X with gfx950 supports MXFP4)
+      if ((hardware === 'mi300x' || hardware === 'mi325x') && quantization === 'mxfp4') {
+        return '# MI300X/MI325X GPUs with MXFP4 quantization: Work In Progress';
+      }
 
       const config = this.modelConfigs[modelSize];
       if (!config) {
@@ -112,6 +135,11 @@ const GPTOSSConfigGenerator = () => {
       const modelName = `${orgPrefix}/gpt-oss-${config.baseName}${quantSuffix}`;
 
       let cmd = '';
+
+      // AMD MI30x requires SGLANG_USE_AITER=0 due to YaRN RoPE precision issues
+      if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
+        cmd += 'SGLANG_USE_AITER=0 ';
+      }
 
       if (values.speculative === 'enabled') {
         cmd += 'SGLANG_ENABLE_SPEC_V2=1 SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 ';

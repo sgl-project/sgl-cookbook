@@ -329,13 +329,71 @@ def get_merged_hardware_config(
     return merged_hw_configs, hardware_list
 
 
+def get_diffusion_attr(obj: dict, key: str, default: Any = None) -> Any:
+    """Get a diffusion attribute from either obj.diffusion.key or obj.key."""
+    diffusion = obj.get("diffusion", {})
+    if key in diffusion:
+        return diffusion[key]
+    return obj.get(key, default)
+
+
+def build_diffusion_attributes(
+    family: dict,
+    model_def: dict,
+) -> dict:
+    """Build diffusion model attributes from family defaults and model overrides."""
+    model_type = get_diffusion_attr(model_def, "model_type")
+    if model_type is None:
+        model_type = get_diffusion_attr(family, "model_type", "image")
+
+    task_types = get_diffusion_attr(model_def, "task_types")
+    if task_types is None:
+        task_types = get_diffusion_attr(family, "task_types")
+
+    supports_lora = get_diffusion_attr(model_def, "supports_lora")
+    if supports_lora is None:
+        supports_lora = get_diffusion_attr(family, "supports_lora")
+
+    ulysses_degree = get_diffusion_attr(model_def, "ulysses_degree")
+    if ulysses_degree is None:
+        ulysses_degree = get_diffusion_attr(family, "ulysses_degree")
+
+    ring_degree = get_diffusion_attr(model_def, "ring_degree")
+    if ring_degree is None:
+        ring_degree = get_diffusion_attr(family, "ring_degree")
+
+    dit_layerwise_offload = get_diffusion_attr(model_def, "dit_layerwise_offload")
+    if dit_layerwise_offload is None:
+        dit_layerwise_offload = get_diffusion_attr(family, "dit_layerwise_offload")
+
+    return {
+        "model_type": model_type,
+        "task_types": task_types,
+        "supports_lora": supports_lora,
+        "ulysses_degree": ulysses_degree,
+        "ring_degree": ring_degree,
+        "dit_layerwise_offload": dit_layerwise_offload,
+    }
+
+
 def build_model_attributes(
     family: dict,
     model_def: dict,
     capability: str | None = None,
 ) -> dict:
     """Build model attributes from family defaults and model overrides."""
-    # Determine thinking_capability based on:
+    # Check if this is a diffusion model (has diffusion attributes)
+    is_diffusion = (
+        "diffusion" in family
+        or "diffusion" in model_def
+        or get_diffusion_attr(family, "model_type") is not None
+        or get_diffusion_attr(model_def, "model_type") is not None
+    )
+
+    if is_diffusion:
+        return {"diffusion": build_diffusion_attributes(family, model_def)}
+
+    # LLM model: Determine thinking_capability based on:
     # 1. Model-level override (model_def.llm.thinking_capability or model_def.thinking_capability)
     # 2. Family-level default (family.llm.thinking_capability or family.thinking_capability)
     # 3. Infer from capability variant
