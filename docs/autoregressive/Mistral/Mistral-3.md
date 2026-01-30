@@ -67,7 +67,7 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 
+#### 4.2.1
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -98,7 +98,7 @@ pip install transformers==5.0.0.rc0
 python3 -m sglang.launch_server \
   --model-path mistralai/Ministral-3-14B-Instruct-2512 \
   --tp 1 \
-  --trust-remote-code 
+  --trust-remote-code
 ```
 
 
@@ -158,7 +158,7 @@ For each concurrency level, configure `num_prompts` to simulate realistic user l
 python3 -m sglang.launch_server \
   --model-path mistralai/Ministral-3-14B-Instruct-2512 \
   --tp 1 \
-  --trust-remote-code 
+  --trust-remote-code
 ```
 
 - Low Concurrency (Latency-Optimized)
@@ -172,7 +172,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -225,7 +225,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -278,7 +278,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -368,5 +368,3 @@ Invalid: 0.000
 Latency: 29.185 s
 Output throughput: 4854.672 token/s
 ```
-
-  

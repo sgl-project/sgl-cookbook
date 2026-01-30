@@ -18,7 +18,7 @@ const Ministral3ConfigGenerator = () => {
         items: [
           { id: 'mi300x', label: 'mi300x', default: false },
           { id: 'mi325x', label: 'mi325x', default: false },
-          { id: 'mi355x', label: 'mi355x', default: false }	
+          { id: 'mi355x', label: 'mi355x', default: false }
         ]
       },
       model: {
@@ -75,8 +75,8 @@ const Ministral3ConfigGenerator = () => {
       if (!tp) return `# Error: Unknown hardware platform: ${hardware}`;
 
       let cmd = 'python -m sglang.launch_server \\\n';
-	  
-	  
+
+
       cmd += `  --model ${modelCfg.modelId}`;
 
       if (tp > 1) {
