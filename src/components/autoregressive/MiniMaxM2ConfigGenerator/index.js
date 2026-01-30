@@ -16,7 +16,7 @@ const MiniMaxM2ConfigGenerator = () => {
         items: [
           { id: 'mi300x', label: 'mi300x', default: false },
           { id: 'mi325x', label: 'mi325x', default: false },
-          { id: 'mi355x', label: 'mi355x', default: false }	
+          { id: 'mi355x', label: 'mi355x', default: false }
         ]
       },
       modelname: {
