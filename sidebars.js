@@ -29,7 +29,7 @@ const sidebars = {
             'autoregressive/Qwen/Qwen3',
             'autoregressive/Qwen/Qwen3-Next',
             'autoregressive/Qwen/Qwen3-VL',
-            'autoregressive/Qwen/Qwen3-Coder-480B-A35B',
+            'autoregressive/Qwen/Qwen3-Coder',
             'autoregressive/Qwen/Qwen2.5-VL',
           ],
         },
@@ -62,6 +62,12 @@ const sidebars = {
             'autoregressive/GLM/GLM-4.6',
             'autoregressive/GLM/GLM-4.6V',
             'autoregressive/GLM/GLM-4.5',
+            'autoregressive/GLM/GLM-4.7',
+            {
+              type: 'doc',
+              id: 'autoregressive/GLM/GLM-4.7-Flash',
+              label: 'GLM-4.7-Flash [NEW]',
+            },
           ],
         },
         {
@@ -75,6 +81,11 @@ const sidebars = {
           type: 'category',
           label: 'Moonshotai',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/Moonshotai/Kimi-K2.5',
+              label: 'Kimi-K2.5 [NEW]',
+            },
             'autoregressive/Moonshotai/Kimi-K2',
             'autoregressive/Moonshotai/Kimi-Linear',
           ],
@@ -135,6 +146,17 @@ const sidebars = {
           label: 'Xiaomi',
           items: [
             'autoregressive/Xiaomi/MiMo-V2-Flash',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'FlashLabs',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/FlashLabs/Chroma1.0',
+              label: 'Chroma 1.0 [NEW]',
+            },
           ],
         }
       ],

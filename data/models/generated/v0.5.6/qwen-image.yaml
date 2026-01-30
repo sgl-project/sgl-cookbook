@@ -1,0 +1,68 @@
+vendor: qwen
+families:
+- name: Qwen-Image-Edit
+  description: Qwen image editing diffusion models
+  models:
+  - name: Qwen-Image-Edit-2511
+    model_path: Qwen/Qwen-Image-Edit-2511
+    attributes:
+      diffusion:
+        model_type: image_edit
+        task_types:
+        - image-editing
+        supports_lora: null
+        ulysses_degree: 1
+        ring_degree: 1
+        dit_layerwise_offload: null
+    hardware:
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
