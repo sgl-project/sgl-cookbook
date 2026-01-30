@@ -67,7 +67,7 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 
 ```shell
-docker pull lmsysorg/sglang:v0.5.7-rocm700-mi40x
+docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
 
 ```shell
@@ -79,7 +79,7 @@ docker run -d -it --ipc=host --network=host --privileged \
   -v /:/work \
   -e SHELL=/bin/bash \
   --name Llama4 \
-  lmsysorg/sglang:v0.5.7-rocm700-mi40x \
+  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
   /bin/bash
 ```
 
@@ -89,7 +89,7 @@ docker run -d -it --ipc=host --network=host --privileged \
 Run the following command to start the SGLang server. SGLang will automatically download and cache the Llama-4-Scout model from Hugging Face.
 
 
-
+### Llama-4-Scout
 8-GPU deployment command:
 
 ```bash
@@ -98,8 +98,20 @@ python3 -m sglang.launch_server \
   --tp 8 \
   --context-length 1000000 \
   --trust-remote-code 
-
 ```
+
+### Llama-4-Maverick
+8-GPU deployment command:
+
+```bash
+python3 -m sglang.launch_server \
+  --model-path meta-llama/Llama-4-Maverick-17B-128E-Instruct \
+  --tp 8 \
+  --context-length 1000000 \
+  --trust-remote-code 
+```
+
+
 
 
 
@@ -287,5 +299,192 @@ Median ITL (ms):                         24.46
 P95 ITL (ms):                            84.46
 P99 ITL (ms):                            87.64
 Max ITL (ms):                            226.06
+==================================================
+```
+
+
+### 5.2 Speed Benchmark
+Test Environment:
+
+Hardware: AMD MI300X GPU 
+
+Model: Llama-4-Maverick
+
+Tensor Parallelism: 8
+
+sglang version: 0.5.7
+
+
+
+
+- **Model Deployment**
+
+```bash
+python3 -m sglang.launch_server \
+  --model-path meta-llama/Llama-4-Maverick-17B-128E-Instruct \
+  --tp 8 \
+  --context-length 1000000 \
+  --trust-remote-code 
+
+```
+
+### 5.2.1 Low Concurrency (Latency-Optimized)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --request-rate inf 
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  68.08
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total input vision tokens:               0
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4202
+Request throughput (req/s):              0.15
+Input token throughput (tok/s):          89.62
+Output token throughput (tok/s):         61.99
+Peak output token throughput (tok/s):    168.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          151.61
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   6805.62
+Median E2E Latency (ms):                 2733.91
+---------------Time to First Token----------------
+Mean TTFT (ms):                          4296.56
+Median TTFT (ms):                        57.45
+P99 TTFT (ms):                           38633.95
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          5.95
+Median TPOT (ms):                        5.96
+P99 TPOT (ms):                           5.97
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           5.96
+Median ITL (ms):                         5.96
+P95 ITL (ms):                            6.02
+P99 ITL (ms):                            6.08
+Max ITL (ms):                            7.02
+==================================================
+```
+
+
+
+### 5.2.2 Medium Concurrency (Balanced)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf 
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  30.72
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total input vision tokens:               0
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40923
+Request throughput (req/s):              2.60
+Input token throughput (tok/s):          1291.39
+Output token throughput (tok/s):         1328.41
+Peak output token throughput (tok/s):    1760.00
+Peak concurrent requests:                22
+Total token throughput (tok/s):          2619.80
+Concurrency:                             13.92
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   5345.15
+Median E2E Latency (ms):                 5679.73
+---------------Time to First Token----------------
+Mean TTFT (ms):                          259.30
+Median TTFT (ms):                        72.60
+P99 TTFT (ms):                           1063.45
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          10.53
+Median TPOT (ms):                        10.22
+P99 TPOT (ms):                           20.27
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           9.99
+Median ITL (ms):                         9.10
+P95 ITL (ms):                            9.87
+P99 ITL (ms):                            55.62
+Max ITL (ms):                            868.54
+==================================================
+```
+
+### 5.2.3 High Concurrency (Throughput-Optimized)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100 \
+  --request-rate inf 
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  90.95
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total input vision tokens:               0
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    251625
+Request throughput (req/s):              5.50
+Input token throughput (tok/s):          2746.77
+Output token throughput (tok/s):         2777.90
+Peak output token throughput (tok/s):    3700.00
+Peak concurrent requests:                109
+Total token throughput (tok/s):          5524.67
+Concurrency:                             93.04
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   16924.17
+Median E2E Latency (ms):                 16294.85
+---------------Time to First Token----------------
+Mean TTFT (ms):                          188.19
+Median TTFT (ms):                        128.96
+P99 TTFT (ms):                           534.81
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          33.63
+Median TPOT (ms):                        35.37
+P99 TPOT (ms):                           38.26
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           33.19
+Median ITL (ms):                         27.66
+P95 ITL (ms):                            76.91
+P99 ITL (ms):                            78.82
+Max ITL (ms):                            268.17
 ==================================================
 ```
