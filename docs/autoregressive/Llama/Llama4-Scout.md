@@ -65,7 +65,7 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 
+#### 4.2.1
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -97,7 +97,7 @@ python3 -m sglang.launch_server \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
-  --trust-remote-code 
+  --trust-remote-code
 ```
 
 ### Llama-4-Maverick
@@ -108,7 +108,7 @@ python3 -m sglang.launch_server \
   --model-path meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --tp 8 \
   --context-length 1000000 \
-  --trust-remote-code 
+  --trust-remote-code
 ```
 
 
@@ -119,7 +119,7 @@ python3 -m sglang.launch_server \
 ### 5.1 Speed Benchmark
 Test Environment:
 
-Hardware: AMD MI300X GPU 
+Hardware: AMD MI300X GPU
 
 Model: Llama-4-Scout
 
@@ -137,7 +137,7 @@ python3 -m sglang.launch_server \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
-  --trust-remote-code 
+  --trust-remote-code
 
 ```
 
@@ -152,7 +152,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -207,7 +207,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -260,7 +260,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -306,7 +306,7 @@ Max ITL (ms):                            226.06
 ### 5.2 Speed Benchmark
 Test Environment:
 
-Hardware: AMD MI300X GPU 
+Hardware: AMD MI300X GPU
 
 Model: Llama-4-Maverick
 
@@ -324,7 +324,7 @@ python3 -m sglang.launch_server \
   --model-path meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --tp 8 \
   --context-length 1000000 \
-  --trust-remote-code 
+  --trust-remote-code
 
 ```
 
@@ -339,7 +339,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 10 \
   --max-concurrency 1 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -394,7 +394,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 80 \
   --max-concurrency 16 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
@@ -447,7 +447,7 @@ python3 -m sglang.bench_serving \
   --random-output-len 1000 \
   --num-prompts 500 \
   --max-concurrency 100 \
-  --request-rate inf 
+  --request-rate inf
 ```
 
 ```
