@@ -4,19 +4,18 @@
 
 [Glyph](https://huggingface.co/zai-org/Glyph) is a powerful language model developed by Zhipu AI, featuring advanced capabilities in reasoning, function calling, and multi-modal understanding.
 
-**Hardware Support:** AMD MI300X/MI325X/MI355X
+**Hardware Support:** NVIDIA B200/H100/H200, AMD MI300X/MI325X/MI355X
 
 **Key Features:**
 
 - **Advanced Reasoning**: Built-in reasoning capabilities for complex problem-solving
 - **Multiple Quantizations**: BF16 and FP8 variants for different performance/memory trade-offs
-- **Hardware Optimization**: Specifically tuned for AMD MI300X/MI325X/MI355X GPUs
 - **High Performance**: Optimized for both throughput and latency scenarios
 
 **Available Models:**
 
-- **BF16 (Full precision)**: [zai-org/Glyph](https://huggingface.co/zai-org/Glyph) - Recommended for MI300X/MI325X/MI355X
-- **FP8 (8-bit quantized)**: [zai-org/Glyph-FP8](https://huggingface.co/zai-org/Glyph-FP8) - Recommended for MI300X/MI325X/MI355X
+- **BF16 (Full precision)**: [zai-org/Glyph](https://huggingface.co/zai-org/Glyph)
+- **FP8 (8-bit quantized)**: [zai-org/Glyph-FP8](https://huggingface.co/zai-org/Glyph-FP8)
 
 **License:**
 
@@ -54,15 +53,17 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 Reasoning Parser
+#### 4.2.1 Thinking Mode
 
-Glyph supports Thinking mode by default. Enable the reasoning parser during deployment to separate the thinking and the content sections:
+Glyph supports thinking mode for enhanced reasoning. Enable the reasoning parser during deployment to separate the thinking and content sections:
 
 ```shell
-python3 -m sglang.launch_server \
+python -m sglang.launch_server \
   --model-path zai-org/Glyph \
   --reasoning-parser glm45 \
-  --tp-size 4
+  --tp 4 \
+  --host 0.0.0.0 \
+  --port 30000
 ```
 
 **Streaming with Thinking Process:**
@@ -114,19 +115,35 @@ for chunk in response:
 print()
 ```
 
+**Note:** The reasoning parser captures the model's step-by-step thinking process, allowing you to see how the model arrives at its conclusions.
+
+**Disable Thinking Mode:**
+
+To disable thinking mode for a specific request:
+
+```python
+response = client.chat.completions.create(
+    model="zai-org/Glyph",
+    messages=[{"role": "user", "content": "What is the capital of France?"}],
+    extra_body={"chat_template_kwargs": {"enable_thinking": False}}
+)
+```
+
 #### 4.2.2 Tool Calling
 
 Glyph supports tool calling capabilities. Enable the tool call parser:
 
 ```shell
-python3 -m sglang.launch_server \
+python -m sglang.launch_server \
   --model-path zai-org/Glyph \
   --reasoning-parser glm45 \
   --tool-call-parser glm45 \
-  --tp-size 4
+  --tp 4 \
+  --host 0.0.0.0 \
+  --port 30000
 ```
 
-**Python Example:**
+**Python Example (with Thinking Process):**
 
 ```python
 from openai import OpenAI
@@ -162,16 +179,123 @@ tools = [
     }
 ]
 
+# Make request with streaming to see thinking process
 response = client.chat.completions.create(
     model="zai-org/Glyph",
     messages=[
         {"role": "user", "content": "What's the weather in Beijing?"}
     ],
     tools=tools,
+    temperature=0.7,
+    stream=True
+)
+
+# Process streaming response
+thinking_started = False
+has_thinking = False
+tool_calls_accumulator = {}
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+
+        # Accumulate tool calls
+        if hasattr(delta, 'tool_calls') and delta.tool_calls:
+            # Close thinking section if needed
+            if has_thinking and thinking_started:
+                print("\n=============== Content =================\n", flush=True)
+                thinking_started = False
+
+            for tool_call in delta.tool_calls:
+                index = tool_call.index
+                if index not in tool_calls_accumulator:
+                    tool_calls_accumulator[index] = {
+                        'name': None,
+                        'arguments': ''
+                    }
+
+                if tool_call.function:
+                    if tool_call.function.name:
+                        tool_calls_accumulator[index]['name'] = tool_call.function.name
+                    if tool_call.function.arguments:
+                        tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
+
+        # Print content
+        if delta.content:
+            print(delta.content, end="", flush=True)
+
+# Print accumulated tool calls
+for index, tool_call in sorted(tool_calls_accumulator.items()):
+    print(f"Tool Call: {tool_call['name']}")
+    print(f"   Arguments: {tool_call['arguments']}")
+
+print()
+```
+
+**Output Example:**
+
+```text
+=============== Thinking =================
+The user is asking about the weather in Beijing. I need to use the get_weather function to retrieve this information.
+I should call the function with location="Beijing".
+=============== Content =================
+
+Tool Call: get_weather
+   Arguments: {"location": "Beijing", "unit": "celsius"}
+```
+
+**Note:**
+
+- The reasoning parser shows how the model decides to use a tool
+- Tool calls are clearly marked with the function name and arguments
+- You can then execute the function and send the result back to continue the conversation
+
+**Handling Tool Call Results:**
+
+```python
+# After getting the tool call, execute the function
+def get_weather(location, unit="celsius"):
+    # Your actual weather API call here
+    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
+
+# Send tool result back to the model
+messages = [
+    {"role": "user", "content": "What's the weather in Beijing?"},
+    {
+        "role": "assistant",
+        "content": None,
+        "tool_calls": [{
+            "id": "call_123",
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "arguments": '{"location": "Beijing", "unit": "celsius"}'
+            }
+        }]
+    },
+    {
+        "role": "tool",
+        "tool_call_id": "call_123",
+        "content": get_weather("Beijing", "celsius")
+    }
+]
+
+final_response = client.chat.completions.create(
+    model="zai-org/Glyph",
+    messages=messages,
     temperature=0.7
 )
 
-print(response.choices[0].message)
+print(final_response.choices[0].message.content)
+# Output: "The weather in Beijing is currently 22°C and sunny."
 ```
 
 ## 5. Benchmark
@@ -182,7 +306,6 @@ This section uses **industry-standard configurations** for comparable benchmark 
 
 **Test Environment:**
 
-- Hardware: AMD MI300X (8x), AMD MI325X (8x), AMD MI355X (8x)
 - Model: Glyph
 - SGLang Version: 0.5.6.post1
 
