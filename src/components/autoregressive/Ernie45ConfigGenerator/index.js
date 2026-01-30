@@ -29,8 +29,8 @@ const Ernie45ConfigGenerator = () => {
         type: 'checkbox',
         items: [
           { id: 'tp', label: 'TP', subtitle: 'Tensor Parallel', default: true, required: true },
-          { id: 'dp', label: 'DP', subtitle: 'Data Parallel', default: false },
-          { id: 'ep', label: 'EP', subtitle: 'Expert Parallel', default: false }
+          { id: 'dp', label: 'DP', subtitle: 'Data Parallel', default: false, disabledWhen: (values) => values.modelsize === '21b' },
+          { id: 'ep', label: 'EP', subtitle: 'Expert Parallel', default: false, disabledWhen: (values) => values.modelsize === '21b' }
         ]
       }
     },

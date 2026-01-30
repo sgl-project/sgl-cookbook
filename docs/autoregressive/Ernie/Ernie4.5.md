@@ -2,19 +2,14 @@
 
 ## 1. Model Introduction
 
-The **ERNIE-4.5** series is a family of large language models developed by Baidu. ERNIE (Enhanced Representation through Knowledge Integration) 4.5 represents an advanced version of the ERNIE series, optimized for general-purpose tasks and conversational scenarios. The models feature strong language understanding and generation capabilities, suitable for a wide range of natural language processing tasks.
+The **ERNIE-4.5** series is a family of large language models developed by Baidu. ERNIE (Enhanced Representation through Knowledge Integration) 4.5 represents an advanced version of the ERNIE series, optimized for general-purpose tasks and conversational scenarios.
 
-### ERNIE-4.5-21B-A3B-PT
-
-**[ERNIE-4.5-21B-A3B-PT](https://huggingface.co/baidu/ERNIE-4.5-21B-A3B-PT)** is a 21 billion parameter model with 3 billion active parameters per token. For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for general conversations, text generation, and various NLP tasks.
-
-### ERNIE-4.5-300B-A47B-PT
-
-**[ERNIE-4.5-300B-A47B-PT](https://huggingface.co/baidu/ERNIE-4.5-300B-A47B-PT)** is a larger Mixture-of-Experts (MoE) model with 300 billion total parameters and 47 billion active parameters per token. The model features 64 experts with 8 active per token, supporting extremely long context windows of up to 131,072 tokens. This post-trained model is optimized for text-only tasks and offers enhanced capabilities for complex reasoning, long-form generation, and handling extensive context. For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95.
-
-**Key Features:**
-
-- **Hardware Optimization**: Specifically tuned for AMD MI300X, MI325X, and MI355X GPUs
+ERNIE-4.5 delivers advanced features as below:
+- **Heterogeneous Modality Structure**: MoE architecture that supports parameter sharing across modalities while allowing dedicated parameters for each individual modality, enhancing multimodal understanding without compromising, and even improving, performance on text-related tasks.
+- **Vision Encoder**: Dedicated adaptive-resolution ViT with 2D RoPE and image packing; for video, adaptive frame sampling and timestamp rendering, supporting both shared and modality-specific visual processing.
+- **Adapter**: Shared modality-bridging module with spatial and temporal compression to align vision to text embedding space, enabling cross-modal understanding without compromising text representations.
+- **Multimodal Position Embedding**: Unified 3D RoPE (temporal, height, width) for vision and 1D RoPE for text in a single embedding space, supporting parameter sharing while encoding modality-specific positions.
+- **Hardware Optimization**: Specifically tuned for AMD MI300X, MI325X, and MI355X GPUs.
 
 ## 2. SGLang Installation
 
@@ -169,11 +164,9 @@ This section uses **industry-standard configurations** for comparable benchmark 
 
 We use industry-standard benchmark configurations to ensure results are comparable across frameworks and hardware platforms.
 
-#### 5.1.1 Benchmark Commands
+#### 5.1.1 Standard Scenario Benchmark
 
-**Scenario 1: Chat (1K/1K) - Most Important**
-
-- **Model Deployment**
+- Model Deployment Command:
 
 ```bash
 python -m sglang.launch_server \
@@ -181,7 +174,8 @@ python -m sglang.launch_server \
   --tp 1
 ```
 
-- Low Concurrency (Latency-Optimized)
+##### 5.1.1.1 Low Concurrency (Latency-Optimized)
+- Benchmark Command:
 
 ```bash
 python -m sglang.bench_serving \
@@ -195,6 +189,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -234,7 +229,8 @@ Max ITL (ms):                            4.67
 ==================================================
 ```
 
-- Medium Concurrency (Balanced)
+##### 5.1.1.2 Medium Concurrency (Balanced)
+- Benchmark Command:
 
 ```bash
 python -m sglang.bench_serving \
@@ -248,6 +244,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -287,7 +284,8 @@ Max ITL (ms):                            105.01
 ==================================================
 ```
 
-- High Concurrency (Throughput-Optimized)
+##### 5.1.1.3 High Concurrency (Throughput-Optimized)
+- Benchmark Command:
 
 ```bash
 python -m sglang.bench_serving \
@@ -301,6 +299,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -340,10 +339,10 @@ Max ITL (ms):                            185.12
 ==================================================
 ```
 
-**Scenario 2: Reasoning (1K/8K)**
+#### 5.1.2 Reasoning Scenario Benchmark
 
-- Low Concurrency
-
+##### 5.1.2.1 Low Concurrency
+- Benchmark Command:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -356,6 +355,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -395,8 +395,9 @@ Max ITL (ms):                            7.28
 ==================================================
 ```
 
-- Medium Concurrency
+##### 5.1.2.2 Medium Concurrency
 
+- Benchmark Command:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -409,6 +410,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -448,8 +450,8 @@ Max ITL (ms):                            39.94
 ==================================================
 ```
 
-- High Concurrency
-
+##### 5.1.2.3 High Concurrency
+- Benchmark Command:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -462,6 +464,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -501,9 +504,10 @@ Max ITL (ms):                            74.36
 ==================================================
 ```
 
-**Scenario 3: Summarization (8K/1K)**
+#### 5.1.3 Summarization Scenario Benchmark
 
-- Low Concurrency
+##### 5.1.3.1 Low Concurrency
+- Benchmark Command:
 
 ```bash
 python -m sglang.bench_serving \
@@ -517,6 +521,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -556,7 +561,8 @@ Max ITL (ms):                            5.68
 ==================================================
 ```
 
-- Medium Concurrency
+##### 5.1.3.2 Medium Concurrency
+- Benchmark Command:
 
 ```bash
 python -m sglang.bench_serving \
@@ -570,6 +576,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -609,8 +616,9 @@ Max ITL (ms):                            411.31
 ==================================================
 ```
 
-- High Concurrency
+##### 5.1.3.3 High Concurrency
 
+- Benchmark Command:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -623,6 +631,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
