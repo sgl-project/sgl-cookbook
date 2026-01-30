@@ -79,7 +79,9 @@ response = client.chat.completions.create(
 
 print(response.choices[0].message.content)
 ```
+
 **Output Example:**
+
 ```text
 This image shows a **receipt from Auntie Anne's**, the pretzel restaurant chain. Here's a detailed breakdown:
 
@@ -153,6 +155,7 @@ if __name__ == "__main__":
 ```
 
 **Output Example:**
+
 ```text
 ====== Below is reasoning_content in Thinking Mode ======
 reasoning content: The user is asking which number is bigger, 9.11 or 9.9. This is a classic "trick" question that plays on how people sometimes compare decimals incorrectly by treating them like strings or whole numbers.
@@ -429,11 +432,12 @@ response = client.chat.completions.create(
 
 print(response.choices[0].message)
 ```
+
 **Output Example:**
+
 ```text
 ChatCompletionMessage(content="I can see from the receipt that the product is **CINNAMON SUGAR** from Auntie Anne's, which is their classic **Cinnamon Sugar Pretzel**. Let me search for similar items for you. ", refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=[ChatCompletionMessageFunctionToolCall(id='functions.search_product:0', function=Function(arguments='{"query": "cinnamon sugar pretzel"}', name='search_product'), type='function', index=0)], reasoning_content='The user is asking me to identify a product from a receipt and search for similar items. Looking at the receipt, I can see the product is "CINNAMON SUGAR" from Auntie Anne\'s. The price is 17,000 (which appears to be Indonesian Rupiah based on the "CASH IDR" text).\n \n Auntie Anne\'s is a chain that sells pretzels, so this is likely a Cinnamon Sugar Pretzel. I should search for this product to find similar items.\n \n Let me use the search_product function to search for "cinnamon sugar pretzel" or similar terms. ')
 ```
-
 
 ## 5. Benchmark
 
@@ -582,6 +586,7 @@ python -m sglang.bench_serving \
   --max-concurrency 100 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -622,7 +627,6 @@ Max ITL (ms):                            3118.59
 ==================================================
 ```
 
-
 **Scenario 2: Reasoning (1K/8K)**
 
 - Low Concurrency
@@ -638,6 +642,7 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -691,6 +696,7 @@ python -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -744,6 +750,7 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
+
 ```
 Waiting for completion...
 ```
@@ -763,6 +770,7 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -816,6 +824,7 @@ python -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -869,6 +878,7 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
+
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -911,21 +921,27 @@ Max ITL (ms):                            7778.47
 
 ### 5.2 Accuracy Benchmark
 
-Document model accuracy on standard benchmarks:
+#### 5.2.1 MMMU Benchmark
 
-#### 5.2.1 GSM8K Benchmark
+You can evaluate the model's accuracy using the MMMU dataset with `lmms_eval`:
 
-- Benchmark Command
+- Benchmark Command:
 
-```bash
-python -m sglang.test.few_shot_gsm8k \
-  --num-questions 200 \
-  --port 30000
+```shell
+python3 -m lmms_eval \
+  --model openai_compatible \
+  --model_args "model=moonshotai/Kimi-K2.5,api_key=EMPTY,base_url=http://127.0.0.1:30000/v1/" \
+  --tasks mmmu_val \
+  --batch_size 128 \
+  --log_samples \
+  --log_samples_suffix "openai_compatible" \
+  --output_path ./logs \
+  --gen_kwargs "max_new_tokens=4096"
 ```
-- Result
+- Result:
+
 ```
-Accuracy: 0.965
-Invalid: 0.000
-Latency: 65.359 s
-Output throughput: 298.828 token/s
+| Tasks  |Version|Filter|n-shot| Metric |   |Value|   |Stderr|
+|--------|------:|------|-----:|--------|---|----:|---|------|
+|mmmu_val|      0|none  |     0|mmmu_acc|↑  | 0.64|±  |N/A   |
 ```
