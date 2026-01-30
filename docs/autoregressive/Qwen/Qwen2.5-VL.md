@@ -6,16 +6,20 @@ sidebar_position: 5
 
 ## 1. Model Introduction
 
-[Qwen2.5-VL series](https://huggingface.co/collections/Qwen/qwen25-vl-66cee7455501d7126940800d) is a vision-language model from the Qwen team, offering significant improvements over its predecessor in understanding, reasoning, and multi-modal processing.
+**[Qwen2.5-VL](https://huggingface.co/collections/Qwen/qwen25-vl)** is a vision-language model series from the Qwen team, offering significant improvements over its predecessor in understanding, reasoning, and multi-modal processing.
 
-This generation delivers comprehensive upgrades across the board:
+**Key Features:**
 
-- **Enhanced Visual Understanding**: Strong performance in document understanding, chart analysis, and scene recognition.
-- **Improved Reasoning**: Logical reasoning and mathematical problem-solving capabilities in multi-modal contexts.
+- **Understand things visually**: Proficient in recognizing common objects such as flowers, birds, fish, and insects, and it is highly capable of analyzing texts, charts, icons, graphics, and layouts within images.
+- **More Agentic**: Play as a visual agent that can reason and dynamically direct tools, which is capable of computer use and phone use.
+- **Understanding long videos and capturing events**: Supports comprehending videos of over 1 hour, and this time it has a new ability of cpaturing event by pinpointing the relevant video segments.
+- **Capable of visual localization in different formats**: Accurately localize objects in an image by generating bounding boxes or points, and it can provide stable JSON outputs for coordinates and attributes.
+- **Generating structured outputs**: Supports structured outputs of the contents, benefiting usages in finance, commerce, etc for data like scans of invoices, forms, tables, etc.
+- **Dynamic Resolution and Frame Rate Training for Video Understanding**: Extend dynamic resolution to the temporal dimension by adopting dynamic FPS sampling, enabling the model to comprehend videos at various sampling rates. Accordingly, we update mRoPE in the time dimension with IDs and absolute time alignment, enabling the model to learn temporal sequence and speed, and ultimately acquire the ability to pinpoint specific moments.
 - **Multiple Sizes**: Available in 3B, 7B, 32B, and 72B variants to suit different deployment needs.
 - **ROCm Support**: Compatible with AMD MI300X, MI325X and MI355X GPUs via SGLang (verified).
 
-For more details, please refer to the [official Qwen2.5-VL collection](https://huggingface.co/collections/Qwen/qwen25-vl-66cee7455501d7126940800d).
+For more details, please refer to the [official Qwen2.5-VL GitHub Repository](https://github.com/QwenLM/Qwen3-VL).
 
 ## 2. SGLang Installation
 
@@ -55,7 +59,7 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 Multi-Modal Inputs
 
-Qwen2.5-VL supports image inputs. Here's a basic example with image input:
+Qwen2.5-VL supports image inputs. Here's a basic example with single image input:
 
 ```python
 import time
@@ -173,8 +177,8 @@ Generated text: The first image shows a single red taxi driving on a street with
 
 **Note:**
 
-- You can also provide local file paths using `file://` protocol
-- For larger images, you may need more memory; adjust `--mem-fraction-static` accordingly
+- You can also provide local file paths using `file://` protocol.
+- For larger images, you may need more memory, adjust `--mem-fraction-static` accordingly.
 
 ## 5. Benchmark
 
@@ -186,6 +190,7 @@ Generated text: The first image shows a single red taxi driving on a street with
 - Model: Qwen2.5-VL-72B-Instruct
 - Tensor Parallelism: 8
 - Context Length: 128000
+- sglang version: 0.5.7
 
 We use SGLang's built-in benchmarking tool to conduct performance evaluation with random images. Each request has 128 input tokens, two 720p images, and 1024 output tokens.
 
@@ -325,32 +330,26 @@ Max ITL (ms):                            73751.40
 
 ### 5.2 Accuracy Benchmark
 
-**Test Environment:**
-
-- Hardware: AMD MI300X GPU (8x)
-- Model: Qwen2.5-VL-72B-Instruct
-- Tensor Parallelism: 8
-
 #### 5.2.1 MMMU Benchmark
 
 You can evaluate the model's accuracy using the MMMU dataset:
 
-- Benchmark Command:
+- **Benchmark Command:**
 
 ```shell
 cd benchmark/mmmu && python bench_sglang.py --concurrency 16
 ```
 
-- **Test Results:**
-
-```
-| Category                       | Accuracy | Samples |
-|--------------------------------|----------|---------|
-| Overall                        |    0.620 |     900 |
-| Art and Design                 |    0.717 |     120 |
-| Business                       |    0.653 |     150 |
-| Health and Medicine            |    0.680 |     150 |
-| Humanities and Social Science  |    0.767 |     120 |
-| Science                        |    0.567 |     150 |
-| Tech and Engineering           |    0.452 |     210 |
-```
+- **Test Results**:
+  - Qwen2.5-VL-72B-Instruct
+    ```
+    | Category                       | Accuracy | Samples |
+    |--------------------------------|----------|---------|
+    | Overall                        |    0.620 |     900 |
+    | Art and Design                 |    0.717 |     120 |
+    | Business                       |    0.653 |     150 |
+    | Health and Medicine            |    0.680 |     150 |
+    | Humanities and Social Science  |    0.767 |     120 |
+    | Science                        |    0.567 |     150 |
+    | Tech and Engineering           |    0.452 |     210 |
+    ```
