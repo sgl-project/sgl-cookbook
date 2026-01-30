@@ -4,7 +4,7 @@
 
 [GPT-OSS](https://huggingface.co/openai/gpt-oss-20b) is an advanced large language model developed by OpenAI designed for power reasoning, agentic tasks, and versatile developer use cases. It has versions with two model sizes.
 
-- **gpt-oss-120b** — for production, general purpose, high reasoning use cases that fit into a single 80GB GPU (like NVIDIA H100 80GB or AMD MI300X 192GB) (117B parameters with 5.1B active parameters)
+- **gpt-oss-120b** — for production, general purpose, high reasoning use cases that fit into a single 80GB GPU (like NVIDIA H100 80GB or AMD MI355X 288GB) (117B parameters with 5.1B active parameters)
 - **gpt-oss-20b** — for lower latency, and local or specialized use cases (21B parameters with 3.6B active parameters)
 
 GPT-OSS introduces several groundbreaking innovations:
