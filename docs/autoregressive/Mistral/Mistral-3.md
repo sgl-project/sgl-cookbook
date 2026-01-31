@@ -10,33 +10,8 @@ Today, we announce Mistral 3, the next generation of Mistral models. Mistral 3 i
 The Ministral models represent the best performance-to-cost ratio in their category. At the same time, Mistral Large 3 joins the ranks of frontier instruction-fine-tuned open-source models.
 
 
-
-**Key Features:**
-
-The Ministral-3 Instruct model offers the following capabilities:
-
-Vision: Enables the model to analyze images and provide insights based on visual content, in addition to text.
-Multilingual: Supports dozens of languages, including English, French, Spanish, German, Italian, Portuguese, Dutch, Chinese, Japanese, Korean, Arabic.
-System Prompt: Maintains strong adherence and support for system prompts.
-Agentic: Offers best-in-class agentic capabilities with native function calling and JSON outputting.
-Edge-Optimized: Delivers best-in-class performance at a small scale, deployable anywhere.
-Apache 2.0 License: Open-source license allowing usage and modification for both commercial and non-commercial purposes.
-Large Context Window: Supports a 256k context window.
-
-
-
-
-- **Hardware Optimization**: Specifically tuned for  AMD MI300X GPUs
-- **High Performance**: Optimized for both throughput and latency scenarios
-
 **Available Models:**
-
-- **FP8 (8-bit quantized)**: [huggingface: mistralai/Ministral-3-14B-Instruct-2512] , [huggingface: mistralai/Ministral-3-8B-Instruct-2512]- Recommended for MI300X.
-
-
-**License:**
-This model is licensed under a Modified MIT License.
-
+[huggingface: mistralai/Ministral-3-14B-Instruct-2512] , [huggingface: mistralai/Ministral-3-8B-Instruct-2512]
 
 
 ## 2. SGLang Installation
@@ -59,15 +34,19 @@ import Ministral3ConfigGenerator from '@site/src/components/autoregressive/Minis
 ### 3.2 Configuration Tips
 For more detailed configuration tips, please refer to [Mistral-3 Usage](https://cookbook.sglang.io/docs/autoregressive/Mistral/Mistral-3).
 
+## 4. Model Invocation
+
 ### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
+- [SGLang OpenAI Vision API Guide](https://docs.sglang.ai/basic_usage/openai_api_vision.html)
+
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1
+#### 4.2.1 Launch the docker
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -152,7 +131,7 @@ For each concurrency level, configure `num_prompts` to simulate realistic user l
 
 **Scenario 1: Chat (1K/1K) - Most Important**
 
-- **Model Deployment**
+- Model Deployment Command:
 
 ```bash
 python3 -m sglang.launch_server \
@@ -162,7 +141,7 @@ python3 -m sglang.launch_server \
 ```
 
 - Low Concurrency (Latency-Optimized)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -175,6 +154,7 @@ python3 -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -215,7 +195,7 @@ Max ITL (ms):                            8.45
 ```
 
 - Medium Concurrency (Balanced)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -227,7 +207,7 @@ python3 -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
-
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -268,7 +248,7 @@ Max ITL (ms):                            888.63
 ```
 
 - High Concurrency (Throughput-Optimized)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -281,6 +261,7 @@ python3 -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -320,30 +301,6 @@ Max ITL (ms):                            328.10
 ==================================================
 ```
 
-
-#### 5.1.5 Understanding the Results
-
-**Key Metrics:**
-
-- **Request Throughput (req/s)**: Number of requests processed per second
-- **Output Token Throughput (tok/s)**: Total tokens generated per second
-- **Mean TTFT (ms)**: Time to First Token - measures responsiveness
-- **Mean TPOT (ms)**: Time Per Output Token - measures generation speed
-- **Mean ITL (ms)**: Inter-Token Latency - measures streaming consistency
-
-**Why These Configurations Matter:**
-
-- **1K/1K (Chat)**: Represents the most common conversational AI workload. This is the highest priority scenario for most deployments.
-- **1K/8K (Reasoning)**: Tests long-form generation capabilities crucial for complex reasoning, code generation, and detailed explanations.
-- **8K/1K (Summarization)**: Evaluates performance with large context inputs, essential for RAG systems, document Q&A, and summarization tasks.
-- **Variable Concurrency**: Captures the Pareto frontier - the optimal trade-off between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
-
-**Interpreting Results:**
-
-- Compare your results against baseline numbers for your hardware
-- Higher throughput at same latency = better performance
-- Lower TTFT = more responsive user experience
-- Lower TPOT = faster generation speed
 
 ### 5.2 Accuracy Benchmark
 
