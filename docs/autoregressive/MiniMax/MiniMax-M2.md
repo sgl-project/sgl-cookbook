@@ -4,11 +4,8 @@
 
 MiniMax-M2 redefines efficiency for agents. It's a compact, fast, and cost-effective MoE model (230 billion total parameters with 10 billion active parameters) built for elite performance in coding and agentic tasks, all while maintaining powerful general intelligence.
 
+This generation delivers comprehensive upgrades across the board:
 
-
-**Key Features:**
-
-The MiniMaxAI/MiniMax-M2 Instruct model offers the following capabilities:
 
 Superior Intelligence. According to benchmarks from Artificial Analysis, MiniMax-M2 demonstrates highly competitive general intelligence across mathematics, science, instruction following, coding, and agentic tool use. Its composite score ranks #1 among open-source models globally.
 
@@ -18,25 +15,11 @@ Agent Performance. MiniMax-M2 plans and executes complex, long-horizon toolchain
 
 Efficient Design. With 10 billion activated parameters (230 billion in total), MiniMax-M2 delivers lower latency, lower cost, and higher throughput for interactive agents and batched sampling—perfectly aligned with the shift toward highly deployable models that still shine on coding and agentic tasks.
 
-
-- **Hardware Optimization**: Specifically tuned for  AMD MI300X GPUs
-- **High Performance**: Optimized for both throughput and latency scenarios
-
-**Available Models:**
-
-This document applies to the following models. You only need to change the model name during deployment.
-
-- [MiniMaxAI/MiniMax-M2.1](https://huggingface.co/MiniMaxAI/MiniMax-M2.1)
-- [MiniMaxAI/MiniMax-M2](https://huggingface.co/MiniMaxAI/MiniMax-M2)
-
-
-
-**License:**
-This model is licensed under a Modified MIT License.
-
-
+For more details, please refer to the [official Minimax GitHub Repository]: https://github.com/MiniMax-AI
 
 ## 2. SGLang Installation
+
+SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
@@ -58,17 +41,19 @@ import MiniMaxM2ConfigGenerator from '@site/src/components/autoregressive/MiniMa
 ## 4. Model Invocation
 
 
+
 ### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
+- [SGLang OpenAI Vision API Guide](https://docs.sglang.ai/basic_usage/openai_api_vision.html)
 
 
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1
+#### 4.2.1 Launch the docker 
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -154,7 +139,7 @@ python3 -m sglang.launch_server \
 
 
 ### 5.1.1 Low Concurrency (Latency-Optimized)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -168,7 +153,7 @@ python3 -m sglang.bench_serving \
 
 ```
 
-
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -211,7 +196,7 @@ Max ITL (ms):                            23.61
 
 
 ### 5.1.2 Medium Concurrency (Balanced)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -224,7 +209,7 @@ python3 -m sglang.bench_serving \
   --request-rate inf
 
 ```
-
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -266,7 +251,7 @@ Max ITL (ms):                            632.37
 
 
 ### 5.1.3 High Concurrency (Throughput-Optimized)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -279,7 +264,7 @@ python3 -m sglang.bench_serving \
   --request-rate inf
 ```
 
-
+- Test Results:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
