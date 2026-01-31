@@ -524,7 +524,7 @@ Large-Scale Training: Pre-trained a 1T parameter MoE model on 15.5T tokens with 
 MuonClip Optimizer: We apply the Muon optimizer to an unprecedented scale, and develop novel optimization techniques to resolve instabilities while scaling up.
 Agentic Intelligence: Specifically designed for tool use, reasoning, and autonomous problem-solving.
 
-For more details, please refer to the official Kimi GitHub Repository: https://github.com/MoonshotAI/Kimi-K2 
+For more details, please refer to the official Kimi GitHub Repository: https://github.com/MoonshotAI/Kimi-K2
 
 
 
@@ -558,7 +558,7 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 Launch the docker 
+#### 4.2.1 Launch the docker
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
