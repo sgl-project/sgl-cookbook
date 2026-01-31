@@ -4,27 +4,13 @@
 Kimi K2 is a state-of-the-art mixture-of-experts (MoE) language model with 42 billion activated parameters and 1 trillion total parameters. Trained with the Muon optimizer, Kimi K2 achieves exceptional performance across frontier knowledge, reasoning, and coding tasks while being meticulously optimized for agentic capabilities.
 
 
-
-**Key Features:**
-
-The Kimi-K2 Instruct model offers the following capabilities:
+This generation delivers comprehensive upgrades across the board:
 
 Large-Scale Training: Pre-trained a 1T parameter MoE model on 15.5T tokens with zero training instability.
 MuonClip Optimizer: We apply the Muon optimizer to an unprecedented scale, and develop novel optimization techniques to resolve instabilities while scaling up.
 Agentic Intelligence: Specifically designed for tool use, reasoning, and autonomous problem-solving.
 
-
-- **Hardware Optimization**: Specifically tuned for  AMD MI400X GPUs
-- **High Performance**: Optimized for both throughput and latency scenarios
-
-**Available Models:**
-
-- **FP8 (8-bit quantized)**: [huggingface: moonshotai/Kimi-K2-Instruct]
--[huggingface: moonshotai/Kimi-K2-Thinking]
-
-
-**License:**
-This model is licensed under a Modified MIT License.
+For more details, please refer to the official Kimi GitHub Repository: https://github.com/MoonshotAI/Kimi-K2 
 
 
 
@@ -49,18 +35,18 @@ import KimiK2ConfigGenerator from '@site/src/components/autoregressive/KimiK2Con
 
 ## 4. Model Invocation
 
-
 ### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
+- [SGLang OpenAI Vision API Guide](https://docs.sglang.ai/basic_usage/openai_api_vision.html)
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1
+#### 4.2.1 Launch the docker 
 ```shell
-docker pull lmsysorg/sglang:v0.5.7-rocm700-mi40x
+docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
 
 ```shell
@@ -72,7 +58,7 @@ docker run -d -it --ipc=host --network=host --privileged \
   -v /:/work \
   -e SHELL=/bin/bash \
   --name Kimi \
-  lmsysorg/sglang:v0.5.7-rocm700-mi40x \
+  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
   /bin/bash
 ```
 
@@ -86,7 +72,8 @@ pip install sentencepiece tiktoken
 #### 4.2.3 Launch the server
 ```shell
 export SGLANG_ROCM_FUSED_DECODE_MLA=0
-
+```
+```shell
 SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
   --model-path moonshotai/Kimi-K2-Instruct \
   --tokenizer-path  moonshotai/Kimi-K2-Instruct \
@@ -130,7 +117,7 @@ SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
 
 
 ### 5.1.1 Low Concurrency (Latency-Optimized)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -142,6 +129,7 @@ python3 -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+- Test Results:
 
 ```
 ============ Serving Benchmark Result ============
@@ -185,7 +173,7 @@ Max ITL (ms):                            42.06
 
 
 ### 5.1.2 Medium Concurrency (Balanced)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -199,6 +187,7 @@ python3 -m sglang.bench_serving \
 
 ```
 
+- Test Results:
 
 
 ```
@@ -243,7 +232,7 @@ Max ITL (ms):                            2469.48
 
 
 ### 5.1.3 High Concurrency (Throughput-Optimized)
-
+- Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -257,6 +246,7 @@ python3 -m sglang.bench_serving \
 ```
 
 
+- Test Results:
 
 
 ```
