@@ -928,20 +928,56 @@ You can evaluate the model's accuracy using the MMMU dataset with `lmms_eval`:
 - Benchmark Command:
 
 ```shell
-python3 -m lmms_eval \
-  --model openai_compatible \
-  --model_args "model=moonshotai/Kimi-K2.5,api_key=EMPTY,base_url=http://127.0.0.1:30000/v1/" \
-  --tasks mmmu_val \
-  --batch_size 128 \
-  --log_samples \
-  --log_samples_suffix "openai_compatible" \
-  --output_path ./logs \
-  --gen_kwargs "max_new_tokens=4096"
+python3 benchmark/mmmu/bench_sglang.py \
+    --response-answer-regex "<\|begin_of_box\|>(.*)<\|end_of_box\|>" \
+    --port 30000 \
+    --concurrency 64
 ```
+
 - Result:
 
-```
-| Tasks  |Version|Filter|n-shot| Metric |   |Value|   |Stderr|
-|--------|------:|------|-----:|--------|---|----:|---|------|
-|mmmu_val|      0|none  |     0|mmmu_acc|↑  | 0.64|±  |N/A   |
+```text
+Benchmark time: 2903.3503892859444
+answers saved to: ./answer_sglang.json
+Evaluating...
+answers saved to: ./answer_sglang.json
+{'Accounting': {'acc': 0.8, 'num': 30},
+ 'Agriculture': {'acc': 0.667, 'num': 30},
+ 'Architecture_and_Engineering': {'acc': 0.733, 'num': 30},
+ 'Art': {'acc': 0.7, 'num': 30},
+ 'Art_Theory': {'acc': 0.833, 'num': 30},
+ 'Basic_Medical_Science': {'acc': 0.667, 'num': 30},
+ 'Biology': {'acc': 0.69, 'num': 29},
+ 'Chemistry': {'acc': 0.5, 'num': 30},
+ 'Clinical_Medicine': {'acc': 0.467, 'num': 30},
+ 'Computer_Science': {'acc': 0.6, 'num': 30},
+ 'Design': {'acc': 0.8, 'num': 30},
+ 'Diagnostics_and_Laboratory_Medicine': {'acc': 0.4, 'num': 30},
+ 'Economics': {'acc': 0.733, 'num': 30},
+ 'Electronics': {'acc': 0.633, 'num': 30},
+ 'Energy_and_Power': {'acc': 0.867, 'num': 30},
+ 'Finance': {'acc': 0.897, 'num': 29},
+ 'Geography': {'acc': 0.6, 'num': 30},
+ 'History': {'acc': 0.333, 'num': 30},
+ 'Literature': {'acc': 0.5, 'num': 30},
+ 'Manage': {'acc': 0.7, 'num': 30},
+ 'Marketing': {'acc': 0.933, 'num': 30},
+ 'Materials': {'acc': 0.733, 'num': 30},
+ 'Math': {'acc': 0.867, 'num': 30},
+ 'Mechanical_Engineering': {'acc': 0.733, 'num': 30},
+ 'Music': {'acc': 0.567, 'num': 30},
+ 'Overall': {'acc': 0.678, 'num': 898},
+ 'Overall-Art and Design': {'acc': 0.725, 'num': 120},
+ 'Overall-Business': {'acc': 0.812, 'num': 149},
+ 'Overall-Health and Medicine': {'acc': 0.593, 'num': 150},
+ 'Overall-Humanities and Social Science': {'acc': 0.475, 'num': 120},
+ 'Overall-Science': {'acc': 0.711, 'num': 149},
+ 'Overall-Tech and Engineering': {'acc': 0.71, 'num': 210},
+ 'Pharmacy': {'acc': 0.633, 'num': 30},
+ 'Physics': {'acc': 0.9, 'num': 30},
+ 'Psychology': {'acc': 0.467, 'num': 30},
+ 'Public_Health': {'acc': 0.8, 'num': 30},
+ 'Sociology': {'acc': 0.6, 'num': 30}}
+eval out saved to ./val_sglang.json
+Overall accuracy: 0.678
 ```
