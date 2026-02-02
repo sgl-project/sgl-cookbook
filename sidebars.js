@@ -57,6 +57,11 @@ const sidebars = {
           type: 'category',
           label: 'GLM',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/GLM/GLM-OCR',
+              label: 'GLM-OCR [NEW]',
+            },
             'autoregressive/GLM/Glyph',
             'autoregressive/GLM/GLM-4.5V',
             'autoregressive/GLM/GLM-4.6',
