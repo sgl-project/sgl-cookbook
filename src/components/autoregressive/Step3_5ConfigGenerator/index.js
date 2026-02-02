@@ -28,7 +28,8 @@ const Step3_5ConfigGenerator = () => {
         name: 'quantization',
         title: 'Quantization',
         items: [
-          { id: 'bf16', label: 'BF16', default: true }
+          { id: 'bf16', label: 'BF16', default: true },
+          { id: 'fp8', label: 'FP8', default: false }
         ]
       },
       reasoningParser: {
@@ -70,7 +71,7 @@ const Step3_5ConfigGenerator = () => {
       '196b': {
         baseName: '196b',
         isMOE: true,
-        h200: { tp: 4, ep: 4, bf16: true },
+        h200: { tp: 4, bf16: true },
       },
     },
 
@@ -79,8 +80,8 @@ const Step3_5ConfigGenerator = () => {
 
       const config = this.modelConfigs[modelSize];
       const hwConfig = config[hardware];
-
-      const modelName = `stepfun-ai/Step-3.5-Flash`;
+      const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
+      const modelName = `stepfun-ai/Step-3.5-Flash${quantSuffix}`;
 
       let cmd = '';
 
@@ -90,11 +91,8 @@ const Step3_5ConfigGenerator = () => {
       if (hwConfig.tp > 1) {
         cmd += ` \\\n  --tp ${hwConfig.tp}`;
       }
-
-      let ep = hwConfig.ep;
-
-      if (ep > 0) {
-        cmd += ` \\\n  --ep ${ep}`;
+      if (quantSuffix==='-FP8'){
+        cmd += ` \\\n  --ep ${hwConfig.tp}`;
       }
 
       for (const [key, option] of Object.entries(this.options)) {
