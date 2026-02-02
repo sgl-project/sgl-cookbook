@@ -158,6 +158,17 @@ const sidebars = {
               label: 'Chroma 1.0 [NEW]',
             },
           ],
+        },
+        {
+          type: 'category',
+          label: 'StepFun',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/StepFun/Step3.5',
+              label: 'Step3.5 [NEW]',
+            },
+          ],
         }
       ],
     },
