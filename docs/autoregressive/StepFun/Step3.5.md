@@ -2,21 +2,33 @@
 sidebar_position: 16
 ---
 
-# Step3.5
+# Step-3.5
 
 ## 1. Model Introduction
 
-Step3.5 is StepFun's cutting-edge multimodal reasoning model—built on a Mixture-of-Experts architecture with 321B total parameters and 38B active. The model is available in multiple quantization formats optimized for different hardware platforms.
+[Step-3.5-Flash](https://huggingface.co/stepfun-ai/Step-3.5-Flash) is StepFun's production-grade reasoning engine built to decouple elite intelligence from heavy compute, and cuts attention cost for low-latency, cost-effective long-context inference—purpose-built for autonomous agents in real-world workflows. The model is available in multiple quantization formats optimized for different hardware platforms.
 
 This generation delivers comprehensive upgrades across the board:
-- **Multi-Layer Multi-Token Prediction (MTP)**: Equipped with a lightweight multi-layer MTP module using dense FFNs. This triples output speed during inference and will be good to accelerates rollout in RL training.
-- **Enhanced Multimodal Reasoning**: Excels in STEM/Math—causal analysis and logical, evidence-based answers.
+- **Hybrid Attention Architecture**:  Interleaves Sliding Window Attention (SWA) and Global Attention (GA) with a 3:1 ratio and an aggressive 128-token window. This hybrid approach ensures consistent performance across massive datasets or long codebases while significantly reducing the computational overhead typical of standard long-context models.
+- **Sparse Mixture-of-Experts**: Only 11B active parameters out of 196B parameters.
+- **Multi-Layer Multi-Token Prediction (MTP)**: Equipped with a  3-way Multi-Token Prediction (MTP-3). This allows for complex, multi-step reasoning chains with immediate responsiveness.
 
 ## 2.SGLang Installation
 
-SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
+Step-3.5-Flash is currently available in SGLang via Docker image install.
 
-Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+### Docker
+```
+# Pull the docker image
+docker pull lmsysorg/sglang:dev-pr-18084
+
+# Launch the container
+docker run -it --gpus all \
+  --shm-size=32g \
+  --ipc=host \
+  --network=host \
+  lmsysorg/sglang:dev-pr-18084 bash
+```
 
 ## 3.Model Deployment
 
@@ -24,7 +36,7 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-The GPT-OSS series comes in two sizes. Recommended starting configurations vary depending on hardware.
+The Step-3.5-Flash series comes in only one sizes. Recommended starting configurations vary depending on hardware.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, quantization method, and thinking capabilities.
 
@@ -44,13 +56,14 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 Reasoning Parser
 
-Step3.5 only supports reasoning mode. Enable the reasoning parser during deployment to separate the thinking and content sections:
+Step-3.5-Flash only supports reasoning mode. Enable the reasoning parser during deployment to separate the thinking and content sections:
 
 ```shell
-python -m sglang.launch_server \
-  --model openai/gpt-oss-120b \
-  --reasoning-parser gpt-oss \
-  --tp 8
+sglang serve \
+  --model-path stepfun-ai/Step-3.5-Flash \
+  --tp 4 \
+  --ep 4 \
+  --reasoning-parser step3p5
 ```
 
 ```python
@@ -63,7 +76,7 @@ client = OpenAI(
 
 # Enable streaming to see the thinking process in real-time
 response = client.chat.completions.create(
-    model="openai/gpt-oss-120b",
+    model="stepfun-ai/Step-3.5-Flash",
     messages=[
         {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
     ],
@@ -104,75 +117,70 @@ print()
 
 ```
 =============== Thinking =================
-The user asks: "Solve this problem step by step: What is 15% of 240?" So we need to provide step-by-step solution. Compute 15% of 240: 0.15 * 240 = 36. Provide steps: convert percent to decimal, multiply, maybe use fraction. Provide answer.
+We are asked: "What is 15% of 240?" We need to solve step by step.
+
+Step 1: Understand that "15% of 240" means we need to calculate 15 percent of 240. In mathematical terms, it is (15/100) * 240.
+
+Step 2: Simplify the calculation. We can compute 15% of 240 by first finding 10% of 240 and then 5% of 240, and adding them. Alternatively, we can multiply directly.
+
+Method 1:
+10% of 240 = 240 * 0.10 = 24.
+5% is half of 10%, so 5% of 240 = 24 / 2 = 12.
+Then 15% = 10% + 5% = 24 + 12 = 36.
+
+Method 2: Direct multiplication: 15% = 15/100 = 0.15, so 0.15 * 240 = 36.
+
+We can also compute fractionally: (15/100)*240 = (15*240)/100. 15*240 = 3600, divided by 100 gives 36.
+
+Thus, the answer is 36.
+
+We'll present the solution step by step.
+
 =============== Content =================
-**Step‑by‑step solution**
 
-1. **Understand what “percent” means**
-   “15 %” means 15 out of every 100 parts, i.e. the fraction \(\displaystyle \frac{15}{100}\).
+To find 15% of 240, follow these steps:
 
-2. **Convert the percent to a decimal (or fraction)**
-   \[
-   \frac{15}{100}=0.15
-   \]
+1. **Convert the percentage to a decimal**:
+   \( 15\% = \frac{15}{100} = 0.15 \)
 
-3. **Set up the multiplication**
-   To find 15 % of 240 we multiply 240 by the decimal 0.15:
-   \[
-   240 \times 0.15
-   \]
+2. **Multiply by the number**:
+   \( 0.15 \times 240 = 36 \)
 
-4. **Do the multiplication**
-   One convenient way is to break it into two easier parts:
-   \[
-   240 \times 0.15 = 240 \times \left(\frac{15}{100}\right)
-                = \frac{240 \times 15}{100}
-   \]
+Alternatively, break it down:
+- \( 10\% \text{ of } 240 = 240 \times 0.10 = 24 \)
+- \( 5\% \text{ of } 240 = \frac{24}{2} = 12 \) (since 5% is half of 10%)
+- \( 15\% = 10\% + 5\% = 24 + 12 = 36 \)
 
-   - First compute \(240 \times 15\):
-     \[
-     240 \times 15 = 240 \times (10 + 5) = 2400 + 1200 = 3600
-     \]
-
-   - Then divide by 100:
-     \[
-     \frac{3600}{100} = 36
-     \]
-
-5. **Write the result**
-   \[
-   15\% \text{ of } 240 = 36
-   \]
-
----
-
-**Answer:** \(36\)
+**Answer:** 36
 ```
 
 #### 4.2.2 Tool Calling
 
-Step3.5 supports tool calling capabilities. Enable the tool call parser:
+Step-3.5 supports tool calling capabilities. Enable the tool call parser:
 
-**Python Example (without Thinking Process):**
+**Python Example:**
 
 Start sglang server:
 
 ```shell
-python -m sglang.launch_server \
-  --model openai/gpt-oss-120b \
-  --tool-call-parser gpt-oss \
-  --tp 8
+sglang serve \
+  --model-path stepfun-ai/Step-3.5-Flash \
+  --tp 4 \
+  --ep 4 \
+  --reasoning-parser step3p5 \
+  --tool-call-parser step3p5
 ```
 
 ```python
 from openai import OpenAI
+import json
 
 client = OpenAI(
-    base_url="http://localhost:8000/v1",
+    base_url="http://localhost:30000/v1",
     api_key="EMPTY"
 )
 
-# Define available tools
+# 1. define tools
 tools = [
     {
         "type": "function",
@@ -182,15 +190,8 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "The city name"
-                    },
-                    "unit": {
-                        "type": "string",
-                        "enum": ["celsius", "fahrenheit"],
-                        "description": "Temperature unit"
-                    }
+                    "location": {"type": "string", "description": "The city name"},
+                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"], "description": "Temperature unit"}
                 },
                 "required": ["location"]
             }
@@ -198,155 +199,87 @@ tools = [
     }
 ]
 
-# Make request with streaming to see thinking process
+# 2. tool run
+def get_weather(location, unit="celsius"):
+    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
+
+# 3. send first request
+print("--- Sending first request ---")
 response = client.chat.completions.create(
-    model="openai/gpt-oss-120b",
+    model="stepfun-ai/Step-3.5-Flash",
     messages=[
         {"role": "user", "content": "What's the weather in Beijing?"}
     ],
     tools=tools,
-    temperature=0.7,
-    stream=True
+    temperature=1.0,
+    stream=False
 )
 
-# Process streaming response
-thinking_started = False
-has_thinking = False
+message = response.choices[0].message
 
-for chunk in response:
-    if chunk.choices and len(chunk.choices) > 0:
-        delta = chunk.choices[0].delta
+# 4. Handle Reasoning Content
+reasoning = getattr(message, 'reasoning_content', None)
+if reasoning:
+    print("=============== Thinking =================")
+    print(reasoning)
+    print("==========================================")
 
-        # Print thinking process
-        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-            if not thinking_started:
-                print("=============== Thinking =================", flush=True)
-                thinking_started = True
-            has_thinking = True
-            print(delta.reasoning_content, end="", flush=True)
+# 5. Handle Tool Calls
+if message.tool_calls:
+    print("\n🔧 Tool Calls detected:")
+    history_messages = [
+        {"role": "user", "content": "What's the weather in Beijing?"},
+        message
+    ]
 
-        # Print tool calls
-        if hasattr(delta, 'tool_calls') and delta.tool_calls:
-            # Close thinking section if needed
-            if has_thinking and thinking_started:
-                print("\n=============== Content =================", flush=True)
-                thinking_started = False
+    for tool_call in message.tool_calls:
+        print(f"   Tool: {tool_call.function.name}")
+        print(f"   Args: {tool_call.function.arguments}")
 
-            for tool_call in delta.tool_calls:
-                if tool_call.function:
-                    print(f"🔧 Tool Call: {tool_call.function.name}")
-                    print(f"   Arguments: {tool_call.function.arguments}")
+        args = json.loads(tool_call.function.arguments)
+        tool_result = get_weather(args.get("location"), args.get("unit", "celsius"))
 
-        # Print content
-        if delta.content:
-            print(delta.content, end="", flush=True)
+        history_messages.append({
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "content": tool_result
+        })
 
-print()
+    print("\n--- Sending tool results ---")
+    final_response = client.chat.completions.create(
+        model="stepfun-ai/Step-3.5-Flash",
+        messages=history_messages,
+        temperature=1.0,
+        stream=False
+    )
+
+    print("=============== Final Content =================")
+    print(final_response.choices[0].message.content)
+
+else:
+    if message.content:
+        print("=============== Content =================")
+        print(message.content)
 ```
 
 **Output Example:**
 
 ```
+--- Sending first request ---
+=============== Thinking =================
+The user is asking for the weather in Beijing. I should use the get_weather function with location="Beijing". The unit parameter is optional and the user didn't specify a preference, so I'll leave it out (the default should be fine).
 
+==========================================
+
+🔧 Tool Calls detected:
+   Tool: get_weather
+   Args: {"location": "Beijing"}
+
+--- Sending tool results ---
+=============== Final Content =================
+The weather in Beijing is 22°C and sunny.
 ```
 
-**Python Example (with Thinking Process):**
-
-Start sglang server:
-
-```shell
-python -m sglang.launch_server \
-  --model openai/gpt-oss-120b \
-  --reasoning-parser gpt-oss \
-  --tool-call-parser gpt-oss \
-  --tp 8
-```
-
-```python
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="EMPTY"
-)
-
-# Define available tools
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "Get the current weather for a location",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "The city name"
-                    },
-                    "unit": {
-                        "type": "string",
-                        "enum": ["celsius", "fahrenheit"],
-                        "description": "Temperature unit"
-                    }
-                },
-                "required": ["location"]
-            }
-        }
-    }
-]
-
-# Make request with streaming to see thinking process
-response = client.chat.completions.create(
-    model="openai/gpt-oss-120b",
-    messages=[
-        {"role": "user", "content": "What's the weather in Beijing?"}
-    ],
-    tools=tools,
-    temperature=0.7,
-    stream=True
-)
-
-# Process streaming response
-thinking_started = False
-has_thinking = False
-
-for chunk in response:
-    if chunk.choices and len(chunk.choices) > 0:
-        delta = chunk.choices[0].delta
-
-        # Print thinking process
-        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-            if not thinking_started:
-                print("=============== Thinking =================", flush=True)
-                thinking_started = True
-            has_thinking = True
-            print(delta.reasoning_content, end="", flush=True)
-
-        # Print tool calls
-        if hasattr(delta, 'tool_calls') and delta.tool_calls:
-            # Close thinking section if needed
-            if has_thinking and thinking_started:
-                print("\n=============== Content =================", flush=True)
-                thinking_started = False
-
-            for tool_call in delta.tool_calls:
-                if tool_call.function:
-                    print(f"🔧 Tool Call: {tool_call.function.name}")
-                    print(f"   Arguments: {tool_call.function.arguments}")
-
-        # Print content
-        if delta.content:
-            print(delta.content, end="", flush=True)
-
-print()
-```
-
-**Output Example:**
-
-```
-
-```
 
 **Note:**
 
@@ -354,56 +287,17 @@ print()
 - Tool calls are clearly marked with the function name and arguments
 - You can then execute the function and send the result back to continue the conversation
 
-**Handling Tool Call Results:**
-
-```python
-# After getting the tool call, execute the function
-def get_weather(location, unit="celsius"):
-    # Your actual weather API call here
-    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
-
-# Send tool result back to the model
-messages = [
-    {"role": "user", "content": "What's the weather in Beijing?"},
-    {
-        "role": "assistant",
-        "content": None,
-        "tool_calls": [{
-            "id": "call_123",
-            "type": "function",
-            "function": {
-                "name": "get_weather",
-                "arguments": '{"location": "Beijing", "unit": "celsius"}'
-            }
-        }]
-    },
-    {
-        "role": "tool",
-        "tool_call_id": "call_123",
-        "content": get_weather("Beijing", "celsius")
-    }
-]
-
-final_response = client.chat.completions.create(
-    model="openai/gpt-oss-120b",
-    messages=messages,
-    temperature=0.7
-)
-
-print(final_response.choices[0].message.content)
-# Output: "The current weather in Beijing is 22 °C and sunny. Let me know if you’d like a forecast for the next few days or any other details!"
-```
-
 ## 5. Benchmark
 
 ### 5.1 Speed Benchmark
 
 **Test Environment:**
 
-- Hardware: NVIDIA B200 GPU (8x)
-- Model: Qwen3-235B-A22B-Instruct-2507
-- Tensor Parallelism: 8
-- sglang version: 0.5.6
+- Hardware: NVIDIA H200 GPU (4x)
+- Model: Step-3.5-Flash
+- Tensor Parallelism: 4
+- Expert Parallelism: 4
+- sglang version: 0.5.8
 
 We use SGLang's built-in benchmarking tool to conduct performance evaluation on the [ShareGPT_Vicuna_unfiltered](https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered) dataset. This dataset contains real conversation data and can better reflect performance in actual use scenarios.
 
@@ -412,9 +306,10 @@ We use SGLang's built-in benchmarking tool to conduct performance evaluation on 
 - Model Deployment Command:
 
 ```shell
-python -m sglang.launch_server \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --tp 8
+sglang serve \
+  --model-path stepfun-ai/Step-3.5-Flash \
+  --tp 4 \
+  --ep 4
 ```
 
 ##### 5.1.1.1 Low Concurrency
@@ -424,7 +319,7 @@ python -m sglang.launch_server \
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
+  --model stepfun-ai/Step-3.5-Flash \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -435,7 +330,43 @@ python3 -m sglang.bench_serving \
 - Test Results:
 
 ```
-
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  35.30
+Total input tokens:                      6091
+Total input text tokens:                 6091
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4212
+Request throughput (req/s):              0.28
+Input token throughput (tok/s):          172.57
+Output token throughput (tok/s):         119.56
+Peak output token throughput (tok/s):    124.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          292.14
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   3527.94
+Median E2E Latency (ms):                 2884.72
+P90 E2E Latency (ms):                    6350.38
+P99 E2E Latency (ms):                    7858.53
+---------------Time to First Token----------------
+Mean TTFT (ms):                          107.53
+Median TTFT (ms):                        80.93
+P99 TTFT (ms):                           269.52
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          8.12
+Median TPOT (ms):                        8.13
+P99 TPOT (ms):                           8.14
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           8.12
+Median ITL (ms):                         8.11
+P95 ITL (ms):                            8.61
+P99 ITL (ms):                            8.91
+Max ITL (ms):                            20.77
+==================================================
 ```
 
 ##### 5.1.1.2 Medium Concurrency
@@ -445,7 +376,7 @@ python3 -m sglang.bench_serving \
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
+  --model stepfun-ai/Step-3.5-Flash \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -456,7 +387,43 @@ python3 -m sglang.bench_serving \
 - Test Results:
 
 ```
-
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  54.06
+Total input tokens:                      39588
+Total input text tokens:                 39588
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40479
+Request throughput (req/s):              1.48
+Input token throughput (tok/s):          732.33
+Output token throughput (tok/s):         754.84
+Peak output token throughput (tok/s):    928.00
+Peak concurrent requests:                21
+Total token throughput (tok/s):          1487.17
+Concurrency:                             14.06
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   9501.23
+Median E2E Latency (ms):                 10010.71
+P90 E2E Latency (ms):                    15655.09
+P99 E2E Latency (ms):                    18803.63
+---------------Time to First Token----------------
+Mean TTFT (ms):                          198.34
+Median TTFT (ms):                        89.50
+P99 TTFT (ms):                           984.66
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          18.97
+Median TPOT (ms):                        18.80
+P99 TPOT (ms):                           35.67
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           18.27
+Median ITL (ms):                         17.48
+P95 ITL (ms):                            18.44
+P99 ITL (ms):                            62.47
+Max ITL (ms):                            460.85
+==================================================
 ```
 
 ##### 5.1.1.3 High Concurrency
@@ -466,7 +433,7 @@ python3 -m sglang.bench_serving \
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
+  --model stepfun-ai/Step-3.5-Flash \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -477,145 +444,43 @@ python3 -m sglang.bench_serving \
 - Test Results:
 
 ```
-
-```
-
-#### 5.1.2 Reasoning Scenario Benchmark
-
-- Model Deployment Command:
-
-```shell
-python -m sglang.launch_server \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --tp 8
-```
-
-##### 5.1.2.1 Low Concurrency
-
-- Benchmark Command:
-
-```
-python3 -m sglang.bench_serving \
-  --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --dataset-name random \
-  --random-input-len 1000 \
-  --random-output-len 8000 \
-  --num-prompts 10 \
-  --max-concurrency 1
-```
-
-- Test Results:
-
-```
-
-```
-
-##### 5.1.2.2 Medium Concurrency
-
-- Benchmark Command:
-
-```
-python3 -m sglang.bench_serving \
-  --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --dataset-name random \
-  --random-input-len 1000 \
-  --random-output-len 8000 \
-  --num-prompts 80 \
-  --max-concurrency 16
-```
-
-- Test Results:
-
-```
-
-```
-
-##### 5.1.2.3 High Concurrency
-
-- Benchmark Command:
-
-```
-python3 -m sglang.bench_serving \
-  --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --dataset-name random \
-  --random-input-len 1000 \
-  --random-output-len 8000 \
-  --num-prompts 320 \
-  --max-concurrency 64
-```
-
-- Test Results:
-
-```
-
-```
-
-#### 5.1.3 Summarization Scenario Benchmark
-
-##### 5.1.3.1 Low Concurrency
-
-- Benchmark Command:
-
-```
-python3 -m sglang.bench_serving \
-  --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --dataset-name random \
-  --random-input-len 8000 \
-  --random-output-len 1000 \
-  --num-prompts 10 \
-  --max-concurrency 1
-```
-
-- Test Results:
-
-```
-
-```
-
-##### 5.1.3.2 Medium Concurrency
-
-- Benchmark Command:
-
-```
-python3 -m sglang.bench_serving \
-  --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --dataset-name random \
-  --random-input-len 8000 \
-  --random-output-len 1000 \
-  --num-prompts 80 \
-  --max-concurrency 16
-```
-
-- Test Results:
-
-```
-
-```
-
-##### 5.1.3.3 High Concurrency
-
-- Benchmark Command:
-
-```
-python3 -m sglang.bench_serving \
-  --backend sglang \
-  --model Qwen/Qwen3-235B-A22B-Instruct-2507 \
-  --dataset-name random \
-  --random-input-len 8000 \
-  --random-output-len 1000 \
-  --num-prompts 320 \
-  --max-concurrency 64
-```
-
-- Test Results:
-
-```
-
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  125.88
+Total input tokens:                      249331
+Total input text tokens:                 249331
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    251323
+Request throughput (req/s):              3.97
+Input token throughput (tok/s):          1980.77
+Output token throughput (tok/s):         2007.23
+Peak output token throughput (tok/s):    2500.00
+Peak concurrent requests:                109
+Total token throughput (tok/s):          3987.99
+Concurrency:                             92.25
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   23223.31
+Median E2E Latency (ms):                 22631.90
+P90 E2E Latency (ms):                    42269.38
+P99 E2E Latency (ms):                    47637.53
+---------------Time to First Token----------------
+Mean TTFT (ms):                          372.13
+Median TTFT (ms):                        127.26
+P99 TTFT (ms):                           1880.42
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          46.06
+Median TPOT (ms):                        47.61
+P99 TPOT (ms):                           51.34
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           45.31
+Median ITL (ms):                         39.86
+P95 ITL (ms):                            72.49
+P99 ITL (ms):                            117.05
+Max ITL (ms):                            1359.81
+==================================================
 ```
 
 ### 5.2 Accuracy Benchmark
@@ -630,7 +495,10 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200
 
 - **Results**:
 
-  - Step3.5
+  - Step-3.5-Flash
     ```
-
+    Accuracy: 0.885
+    Invalid: 0.005
+    Latency: 9.986 s
+    Output throughput: 1972.911 token/s
     ```
