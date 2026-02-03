@@ -34,9 +34,9 @@ This section provides deployment configurations optimized for different hardware
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and deployment strategy.
 
-import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSeekConfigGenerator';
+import DeepSeekOCRConfigGenerator from '@site/src/components/autoregressive/DeepSeekOCRConfigGenerator';
 
-<DeepSeekConfigGenerator />
+<DeepSeekOCRConfigGenerator />
 
 ### 3.2 Configuration Tips
 

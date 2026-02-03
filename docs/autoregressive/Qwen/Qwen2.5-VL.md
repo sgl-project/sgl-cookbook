@@ -180,6 +180,7 @@ Generated text: The first image shows a single red taxi driving on a street with
 - You can also provide local file paths using `file://` protocol.
 - For larger images, you may need more memory, adjust `--mem-fraction-static` accordingly.
 
+
 ## 5. Benchmark
 
 ### 5.1 Speed Benchmark
@@ -189,10 +190,9 @@ Generated text: The first image shows a single red taxi driving on a street with
 - Hardware: AMD MI300X GPU (8x)
 - Model: Qwen2.5-VL-72B-Instruct
 - Tensor Parallelism: 8
-- Context Length: 128000
-- sglang version: 0.5.7
+- SGLang Version: 0.5.6
 
-We use SGLang's built-in benchmarking tool to conduct performance evaluation with random images. Each request has 128 input tokens, two 720p images, and 1024 output tokens.
+We use SGLang's built-in benchmarking tool to conduct performance evaluation with random images. To simulate real-world usage, you can specify different input and output lengths for each request. For example, each request can have 128 input tokens, two 720p images, and 1024 output tokens.
 
 #### 5.1.1 Latency-Sensitive Benchmark
 
@@ -202,7 +202,8 @@ We use SGLang's built-in benchmarking tool to conduct performance evaluation wit
 python -m sglang.launch_server \
   --model Qwen/Qwen2.5-VL-72B-Instruct \
   --tp 8 \
-  --context-length 128000
+  --host 0.0.0.0 \
+  --port 30000
 ```
 
 - Benchmark Command:
@@ -210,6 +211,8 @@ python -m sglang.launch_server \
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang-oai-chat \
+  --host 127.0.0.1 \
+  --port 30000 \
   --model Qwen/Qwen2.5-VL-72B-Instruct \
   --dataset-name image \
   --image-count 2 \
@@ -220,47 +223,6 @@ python3 -m sglang.bench_serving \
   --max-concurrency 1
 ```
 
-- **Test Results:**
-
-```
-============ Serving Benchmark Result ============
-Backend:                                 sglang-oai-chat
-Traffic request rate:                    inf
-Max request concurrency:                 1
-Successful requests:                     10
-Benchmark duration (s):                  92.78
-Total input tokens:                      24776
-Total input text tokens:                 816
-Total input vision tokens:               23960
-Total generated tokens:                  4220
-Total generated tokens (retokenized):    2449
-Request throughput (req/s):              0.11
-Input token throughput (tok/s):          267.04
-Output token throughput (tok/s):         45.48
-Peak output token throughput (tok/s):    107.00
-Peak concurrent requests:                2
-Total token throughput (tok/s):          312.52
-Concurrency:                             1.00
-----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   9274.21
-Median E2E Latency (ms):                 5031.18
----------------Time to First Token----------------
-Mean TTFT (ms):                          5333.48
-Median TTFT (ms):                        826.35
-P99 TTFT (ms):                           41852.91
------Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          9.37
-Median TPOT (ms):                        9.36
-P99 TPOT (ms):                           9.41
----------------Inter-Token Latency----------------
-Mean ITL (ms):                           11.98
-Median ITL (ms):                         9.38
-P95 ITL (ms):                            18.74
-P99 ITL (ms):                            18.80
-Max ITL (ms):                            34.51
-==================================================
-```
-
 #### 5.1.2 Throughput-Sensitive Benchmark
 
 - Model Deployment Command:
@@ -269,7 +231,49 @@ Max ITL (ms):                            34.51
 python -m sglang.launch_server \
   --model Qwen/Qwen2.5-VL-72B-Instruct \
   --tp 8 \
-  --context-length 128000
+  --host 0.0.0.0 \
+  --port 30000
+```
+- Result:
+```text
+============ Serving Benchmark Result ============
+Backend:                                 sglang-oai-chat
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  37.99
+Total input tokens:                      24781
+Total input text tokens:                 821
+Total input vision tokens:               23960
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    2365
+Request throughput (req/s):              0.26
+Input token throughput (tok/s):          652.26
+Output token throughput (tok/s):         111.07
+Peak output token throughput (tok/s):    128.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          763.34
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   3797.61
+Median E2E Latency (ms):                 3140.90
+P90 E2E Latency (ms):                    6545.54
+P99 E2E Latency (ms):                    7939.56
+---------------Time to First Token----------------
+Mean TTFT (ms):                          504.45
+Median TTFT (ms):                        510.93
+P99 TTFT (ms):                           521.78
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          7.82
+Median TPOT (ms):                        7.82
+P99 TPOT (ms):                           7.84
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           10.07
+Median ITL (ms):                         7.90
+P95 ITL (ms):                            15.79
+P99 ITL (ms):                            15.93
+Max ITL (ms):                            23.60
+==================================================
 ```
 
 - Benchmark Command:
@@ -277,54 +281,55 @@ python -m sglang.launch_server \
 ```shell
 python3 -m sglang.bench_serving \
   --backend sglang-oai-chat \
+  --host 127.0.0.1 \
+  --port 30000 \
   --model Qwen/Qwen2.5-VL-72B-Instruct \
   --dataset-name image \
   --image-count 2 \
   --image-resolution 720p \
   --random-input-len 128 \
   --random-output-len 1024 \
-  --num-prompts 100 \
+  --num-prompts 1000 \
   --max-concurrency 100
 ```
-
-- **Test Results:**
-
-```
+```text
 ============ Serving Benchmark Result ============
 Backend:                                 sglang-oai-chat
 Traffic request rate:                    inf
 Max request concurrency:                 100
-Successful requests:                     100
-Benchmark duration (s):                  96.18
-Total input tokens:                      247998
-Total input text tokens:                 8398
-Total input vision tokens:               239600
-Total generated tokens:                  52444
-Total generated tokens (retokenized):    36606
-Request throughput (req/s):              1.04
-Input token throughput (tok/s):          2578.41
-Output token throughput (tok/s):         545.26
-Peak output token throughput (tok/s):    4693.00
-Peak concurrent requests:                100
-Total token throughput (tok/s):          3123.67
-Concurrency:                             92.75
+Successful requests:                     1000
+Benchmark duration (s):                  454.68
+Total input tokens:                      2481865
+Total input text tokens:                 85865
+Total input vision tokens:               2396000
+Total generated tokens:                  510855
+Total generated tokens (retokenized):    296466
+Request throughput (req/s):              2.20
+Input token throughput (tok/s):          5458.50
+Output token throughput (tok/s):         1123.55
+Peak output token throughput (tok/s):    5004.00
+Peak concurrent requests:                106
+Total token throughput (tok/s):          6582.05
+Concurrency:                             98.63
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   89207.18
-Median E2E Latency (ms):                 89901.46
+Mean E2E Latency (ms):                   44844.92
+Median E2E Latency (ms):                 42866.15
+P90 E2E Latency (ms):                    82798.20
+P99 E2E Latency (ms):                    106306.30
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          62327.44
-Median TTFT (ms):                        63882.97
-P99 TTFT (ms):                           78659.14
+Mean TTFT (ms):                          4507.79
+Median TTFT (ms):                        1180.83
+P99 TTFT (ms):                           39975.22
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          83.63
-Median TPOT (ms):                        48.94
-P99 TPOT (ms):                           689.88
+Mean TPOT (ms):                          80.26
+Median TPOT (ms):                        82.38
+P99 TPOT (ms):                           152.89
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           60.74
-Median ITL (ms):                         19.55
-P95 ITL (ms):                            38.11
-P99 ITL (ms):                            83.48
-Max ITL (ms):                            73751.40
+Mean ITL (ms):                           100.66
+Median ITL (ms):                         13.26
+P95 ITL (ms):                            428.45
+P99 ITL (ms):                            1393.35
+Max ITL (ms):                            31943.26
 ==================================================
 ```
 
@@ -334,22 +339,55 @@ Max ITL (ms):                            73751.40
 
 You can evaluate the model's accuracy using the MMMU dataset:
 
-- **Benchmark Command:**
+- Benchmark Command:
 
 ```shell
-cd benchmark/mmmu && python bench_sglang.py --concurrency 16
+python3 benchmark/mmmu/bench_sglang.py \
+    --port 30000 \
+    --concurrency 64
 ```
-
-- **Test Results**:
-  - Qwen2.5-VL-72B-Instruct
-    ```
-    | Category                       | Accuracy | Samples |
-    |--------------------------------|----------|---------|
-    | Overall                        |    0.620 |     900 |
-    | Art and Design                 |    0.717 |     120 |
-    | Business                       |    0.653 |     150 |
-    | Health and Medicine            |    0.680 |     150 |
-    | Humanities and Social Science  |    0.767 |     120 |
-    | Science                        |    0.567 |     150 |
-    | Tech and Engineering           |    0.452 |     210 |
-    ```
+```text
+Benchmark time: 97.75084622902796
+answers saved to: ./answer_sglang.json
+Evaluating...
+answers saved to: ./answer_sglang.json
+{'Accounting': {'acc': 0.633, 'num': 30},
+ 'Agriculture': {'acc': 0.5, 'num': 30},
+ 'Architecture_and_Engineering': {'acc': 0.367, 'num': 30},
+ 'Art': {'acc': 0.767, 'num': 30},
+ 'Art_Theory': {'acc': 0.9, 'num': 30},
+ 'Basic_Medical_Science': {'acc': 0.7, 'num': 30},
+ 'Biology': {'acc': 0.467, 'num': 30},
+ 'Chemistry': {'acc': 0.433, 'num': 30},
+ 'Clinical_Medicine': {'acc': 0.733, 'num': 30},
+ 'Computer_Science': {'acc': 0.567, 'num': 30},
+ 'Design': {'acc': 0.833, 'num': 30},
+ 'Diagnostics_and_Laboratory_Medicine': {'acc': 0.467, 'num': 30},
+ 'Economics': {'acc': 0.767, 'num': 30},
+ 'Electronics': {'acc': 0.433, 'num': 30},
+ 'Energy_and_Power': {'acc': 0.467, 'num': 30},
+ 'Finance': {'acc': 0.533, 'num': 30},
+ 'Geography': {'acc': 0.633, 'num': 30},
+ 'History': {'acc': 0.7, 'num': 30},
+ 'Literature': {'acc': 0.867, 'num': 30},
+ 'Manage': {'acc': 0.633, 'num': 30},
+ 'Marketing': {'acc': 0.733, 'num': 30},
+ 'Materials': {'acc': 0.333, 'num': 30},
+ 'Math': {'acc': 0.533, 'num': 30},
+ 'Mechanical_Engineering': {'acc': 0.433, 'num': 30},
+ 'Music': {'acc': 0.367, 'num': 30},
+ 'Overall': {'acc': 0.62, 'num': 900},
+ 'Overall-Art and Design': {'acc': 0.717, 'num': 120},
+ 'Overall-Business': {'acc': 0.66, 'num': 150},
+ 'Overall-Health and Medicine': {'acc': 0.693, 'num': 150},
+ 'Overall-Humanities and Social Science': {'acc': 0.775, 'num': 120},
+ 'Overall-Science': {'acc': 0.553, 'num': 150},
+ 'Overall-Tech and Engineering': {'acc': 0.443, 'num': 210},
+ 'Pharmacy': {'acc': 0.833, 'num': 30},
+ 'Physics': {'acc': 0.7, 'num': 30},
+ 'Psychology': {'acc': 0.767, 'num': 30},
+ 'Public_Health': {'acc': 0.733, 'num': 30},
+ 'Sociology': {'acc': 0.767, 'num': 30}}
+eval out saved to ./val_sglang.json
+Overall accuracy: 0.62
+```

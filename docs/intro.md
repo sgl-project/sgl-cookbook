@@ -28,7 +28,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [X] [Qwen3](./autoregressive/Qwen/Qwen3.md)
 - [X] [Qwen3-Next](./autoregressive/Qwen/Qwen3-Next.md)
 - [X] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
-- [ ] [Qwen3-Coder-480B-A35B](./autoregressive/Qwen/Qwen3-Coder-480B-A35B.md)
+- [ ] [Qwen3-Coder](./autoregressive/Qwen/Qwen3-Coder.md)
 - [ ] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
 
 #### DeepSeek
@@ -64,6 +64,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 - [X] [Kimi-K2](./autoregressive/Moonshotai/Kimi-K2.md)
 - [ ] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
+- [X] [Kimi-K2.5](./autoregressive/Moonshotai/Kimi-K2.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 
 #### MiniMax
 
@@ -98,6 +99,11 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 #### Xiaomi
 
 - [X] [MiMo-V2-Flash](./autoregressive/Xiaomi/MiMo-V2-Flash.md)
+
+
+#### FlashLabs
+
+- [X] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md)<span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 
 ### Diffusion Models
 

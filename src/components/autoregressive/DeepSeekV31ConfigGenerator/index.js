@@ -110,4 +110,4 @@ const DeepSeekV31ConfigGenerator = () => {
   return <ConfigGenerator config={config} />;
 };
 
-export default DeepSeekConfigGenerator;
+export default DeepSeekV31ConfigGenerator;
