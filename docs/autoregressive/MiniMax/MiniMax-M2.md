@@ -13,7 +13,7 @@ This generation delivers comprehensive upgrades across the board:
 
 - **Efficient Design**: With 10 billion activated parameters (230 billion in total), MiniMax-M2 delivers lower latency, lower cost, and higher throughput for interactive agents and batched sampling—perfectly aligned with the shift toward highly deployable models that still shine on coding and agentic tasks.
 
-For more details, please refer to the [official Minimax GitHub Repository]: https://github.com/MiniMax-AI
+For more details, please refer to the [official Minimax GitHub Repository](https://github.com/MiniMax-AI).
 
 ## 2. SGLang Installation
 
