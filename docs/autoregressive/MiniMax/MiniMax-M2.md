@@ -1,19 +1,17 @@
-## AMD GPU Support
-
 ## 1. Model Introduction
 
-MiniMax-M2 redefines efficiency for agents. It's a compact, fast, and cost-effective MoE model (230 billion total parameters with 10 billion active parameters) built for elite performance in coding and agentic tasks, all while maintaining powerful general intelligence.
+[MiniMax-M2](https://huggingface.co/MiniMaxAI/MiniMax-M2) is a compact, fast, and cost-effective MoE model (230 billion total parameters with 10 billion active parameters) built for elite performance in coding and agentic tasks, all while maintaining powerful general intelligence.
 
 This generation delivers comprehensive upgrades across the board:
 
 
-Superior Intelligence. According to benchmarks from Artificial Analysis, MiniMax-M2 demonstrates highly competitive general intelligence across mathematics, science, instruction following, coding, and agentic tool use. Its composite score ranks #1 among open-source models globally.
+- **Superior Intelligence**: MiniMax-M2 demonstrates highly competitive general intelligence across mathematics, science, instruction following, coding, and agentic tool use in [Artificial Analysis](https://artificialanalysis.ai/). Its composite score ranks #1 among open-source models globally.
 
-Advanced Coding. Engineered for end-to-end developer workflows, MiniMax-M2 excels at multi-file edits, coding-run-fix loops, and test-validated repairs. Strong performance on Terminal-Bench and (Multi-)SWE-Bench–style tasks demonstrates practical effectiveness in terminals, IDEs, and CI across languages.
+- **Advanced Coding**: Engineered for end-to-end developer workflows, MiniMax-M2 excels at multi-file edits, coding-run-fix loops, and test-validated repairs. Strong performance on Terminal-Bench and (Multi-)SWE-Bench–style tasks demonstrates practical effectiveness in terminals, IDEs, and CI across languages.
 
-Agent Performance. MiniMax-M2 plans and executes complex, long-horizon toolchains across shell, browser, retrieval, and code runners. In BrowseComp-style evaluations, it consistently locates hard-to-surface sources, maintains evidence traceable, and gracefully recovers from flaky steps.
+- **Agent Performance**: MiniMax-M2 plans and executes complex, long-horizon toolchains across shell, browser, retrieval, and code runners. In BrowseComp-style evaluations, it consistently locates hard-to-surface sources, maintains evidence traceable, and gracefully recovers from flaky steps.
 
-Efficient Design. With 10 billion activated parameters (230 billion in total), MiniMax-M2 delivers lower latency, lower cost, and higher throughput for interactive agents and batched sampling—perfectly aligned with the shift toward highly deployable models that still shine on coding and agentic tasks.
+- **Efficient Design**: With 10 billion activated parameters (230 billion in total), MiniMax-M2 delivers lower latency, lower cost, and higher throughput for interactive agents and batched sampling—perfectly aligned with the shift toward highly deployable models that still shine on coding and agentic tasks.
 
 For more details, please refer to the [official Minimax GitHub Repository]: https://github.com/MiniMax-AI
 
@@ -21,8 +19,36 @@ For more details, please refer to the [official Minimax GitHub Repository]: http
 
 SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
 
-Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions. The AMD environment is currently available in SGLang via Docker image install.
 
+### 2.1 AMD Docker
+#### 2.1.1 Launch docker
+```shell
+docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
+docker run -d -it --ipc=host --network=host --privileged \
+  --cap-add=CAP_SYS_ADMIN \
+  --device=/dev/kfd --device=/dev/dri --device=/dev/mem \
+  --group-add video --cap-add=SYS_PTRACE \
+  --security-opt seccomp=unconfined \
+  -v /:/work \
+  -e SHELL=/bin/bash \
+  --name Minimax \
+  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
+  /bin/bash
+```
+
+#### 2.1.2 Make modifications inside the docker
+
+```shell
+mv /sgl-workspace/sglang/python/sglang/srt/models/transformers.py \
+   /sgl-workspace/sglang/python/sglang/srt/models/hf_transformers_model.py
+```
+
+#### 2.1.3 Fix torch compile
+Comment out the following line: @torch.compile(dynamic=True, backend=get_compiler_backend()) in /sgl-workspace/sglang/python/sglang/srt/models/minimax_m2.py
+```shell
+#@torch.compile(dynamic=True, backend=get_compiler_backend())
+```
 
 ## 3. Model Deployment
 
@@ -41,90 +67,51 @@ import MiniMaxM2ConfigGenerator from '@site/src/components/autoregressive/MiniMa
 ## 4. Model Invocation
 
 
-
 ### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
-- [SGLang OpenAI Vision API Guide](https://docs.sglang.ai/basic_usage/openai_api_vision.html)
-
 
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 Launch the docker
-```shell
-docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
+#### 4.2.1 Reasoning Parser
+Server Command:
+```
+```
+Test Code:
+```
+```
+Output Example:
+```
 ```
 
-```shell
-docker run -d -it --ipc=host --network=host --privileged \
-  --cap-add=CAP_SYS_ADMIN \
-  --device=/dev/kfd --device=/dev/dri --device=/dev/mem \
-  --group-add video --cap-add=SYS_PTRACE \
-  --security-opt seccomp=unconfined \
-  -v /:/work \
-  -e SHELL=/bin/bash \
-  --name Minimax \
-  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
-  /bin/bash
+### 4.2.2 Tool Calling
+
+Server Command:
 ```
-
-#### 4.2.2 Make modifications inside the docker
-
-```shell
-mv /sgl-workspace/sglang/python/sglang/srt/models/transformers.py \
-   /sgl-workspace/sglang/python/sglang/srt/models/hf_transformers_model.py
 ```
-
-#### 4.2.3 comment out the following line: @torch.compile(dynamic=True, backend=get_compiler_backend()) in /sgl-workspace/sglang/python/sglang/srt/models/minimax_m2.py
-
-```shell
-#@torch.compile(dynamic=True, backend=get_compiler_backend())
+Test Code:
 ```
-#### 4.2.4 Launch the server
-
-Run the following command to start the SGLang server. SGLang will automatically download and cache the MiniMax-M2.1 model from Hugging Face.
-
-4-GPU deployment command:
-
-```shell
-python3 -m sglang.launch_server \
-    --model-path MiniMaxAI/MiniMax-M2.1 \
-    --tp-size 4 \
-    --tool-call-parser minimax-m2 \
-    --reasoning-parser minimax-append-think \
-    --trust-remote-code \
-    --mem-fraction-static 0.85
 ```
-
-8-GPU deployment command:
-
-```bash
-python3 -m sglang.launch_server \
-    --model-path MiniMaxAI/MiniMax-M2.1 \
-    --tp-size 8 \
-    --ep-size 8 \
-    --tool-call-parser minimax-m2 \
-    --trust-remote-code \
-    --reasoning-parser minimax-append-think \
-    --mem-fraction-static 0.85
+Output Example:
+```
 ```
 
 ## 5. Benchmark
 ### 5.1 Speed Benchmark
-Test Environment:
+**Test Environment**:
 
-Hardware: AMD MI300X GPU
+- Hardware: AMD MI300X GPU(4x)
 
-Model: MiniMax-M2.1
+- Model: MiniMax-M2.1
 
-Tensor Parallelism: 4
+- Tensor Parallelism: 4
 
-sglang version: 0.5.7
+- sglang version: 0.5.7
 
-- **Model Deployment**
+**Model Deployment**:
 
 ```bash
 python3 -m sglang.launch_server \
@@ -303,3 +290,14 @@ P99 ITL (ms):                            149.16
 Max ITL (ms):                            956.82
 ==================================================
 ```
+
+
+### 5.2 Accuracy Benchmark
+#### 5.2.1 GSM8K Benchmark
+- **Benchmark Command**:
+```
+```
+- **Result**:
+  - MiniMax-M2.1
+  ```
+  ```

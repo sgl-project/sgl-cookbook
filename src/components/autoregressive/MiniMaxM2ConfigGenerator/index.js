@@ -14,17 +14,17 @@ const MiniMaxM2ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'mi300x', label: 'mi300x', default: false },
-          { id: 'mi325x', label: 'mi325x', default: false },
-          { id: 'mi355x', label: 'mi355x', default: false }
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelname: {
         name: 'modelname',
         title: 'Model Name',
         items: [
-          { id: 'M2.1', label: 'MiniMaxAI/MiniMax-M2.1', default: true },
-          { id: 'M2', label: 'MiniMaxAI/MiniMax-M2', default: false }
+          { id: 'M2.1', label: 'MiniMax-M2.1', default: true },
+          { id: 'M2', label: 'MiniMax-M2', default: false }
         ]
       },
       strategy: {
