@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Qwen3-Coder-Next
 
 ## 1. Model Introduction
@@ -122,7 +126,7 @@ print()
 
 **Output Example:**
 
-```
+````
 =============== Thinking =================
 Okay, the user wants a Python function to find the longest palindromic substring using dynamic programming. Let me think about this step by step.
 
@@ -130,7 +134,7 @@ First, I need to understand what a palindrome is. A palindrome reads the same fo
 
 The problem is to find the longest such substring in a given string. I need to use dynamic programming for this.
 
-Let me recall the DP approach. I'll create a 2D DP table where dp[i][j] is True if the substring from index i to j is a palindrome. 
+Let me recall the DP approach. I'll create a 2D DP table where dp[i][j] is True if the substring from index i to j is a palindrome.
 
 The base cases are:
 - Single characters are palindromes: dp[i][i] = True
@@ -154,47 +158,47 @@ Here's a Python function to find the longest palindromic substring using dynamic
 def longest_palindromic_substring(s: str) -> str:
     """
     Find the longest palindromic substring using dynamic programming.
-    
+
     Args:
         s: Input string
-        
+
     Returns:
         The longest palindromic substring
     """
     if not s:
         return ""
-    
+
     n = len(s)
     # dp[i][j] will be True if substring s[i:j+1] is a palindrome
     dp = [[False] * n for _ in range(n)]
-    
+
     # Track the longest palindrome found
     max_length = 1
     start = 0
-    
+
     # Every single character is a palindrome
     for i in range(n):
         dp[i][i] = True
-    
+
     # Check for two-character palindromes
     for i in range(n - 1):
         if s[i] == s[i + 1]:
             dp[i][i + 1] = True
             max_length = 2
             start = i
-    
+
     # Check for palindromes of length 3 and more
     for length in range(3, n + 1):
         for i in range(n - length + 1):
             j = i + length - 1
-            
+
             # Check if s[i:j+1] is a palindrome
             if s[i] == s[j] and dp[i + 1][j - 1]:
                 dp[i][j] = True
                 if length > max_length:
                     max_length = length
                     start = i
-    
+
     return s[start:start + max_length]
 
 
@@ -207,7 +211,7 @@ if __name__ == "__main__":
         "a",          # Expected: "a"
         "ac",         # Expected: "a" or "c"
     ]
-    
+
     for test in test_cases:
         result = longest_palindromic_substring(test)
         print(f"Input: '{test}' -> Longest palindrome: '{result}'")
@@ -220,7 +224,7 @@ if __name__ == "__main__":
 
 1. **Initialize DP table**: Create a 2D boolean table where `dp[i][j]` indicates if substring from index i to j is a palindrome
 
-2. **Base cases**: 
+2. **Base cases**:
    - Single characters (length 1) are always palindromes
    - Two-character substrings are palindromes if both characters are equal
 
@@ -231,7 +235,7 @@ if __name__ == "__main__":
 4. **Track maximum**: Keep track of the longest palindrome found during the process
 
 5. **Return result**: Return the substring using the stored start position and maximum length
-```
+````
 
 **Note:** The reasoning parser captures the model's step-by-step thought process about the algorithm design, showing how it arrives at the solution.
 
@@ -242,9 +246,7 @@ if __name__ == "__main__":
 ```shell
 python -m sglang.launch_server \
   --model Qwen/Qwen3-Coder-Next-80B-A3B-Instruct \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 ```python
@@ -304,30 +306,30 @@ Here's a Python function to find the longest palindromic substring using dynamic
 def longest_palindromic_substring(s: str) -> str:
     """
     Find the longest palindromic substring using dynamic programming.
-    
+
     Time Complexity: O(n²)
     Space Complexity: O(n²)
     """
     if not s:
         return ""
-    
+
     n = len(s)
     dp = [[False] * n for _ in range(n)]
-    
+
     max_length = 1
     start = 0
-    
+
     # Single characters are palindromes
     for i in range(n):
         dp[i][i] = True
-    
+
     # Check two-character palindromes
     for i in range(n - 1):
         if s[i] == s[i + 1]:
             dp[i][i + 1] = True
             max_length = 2
             start = i
-    
+
     # Check palindromes of length 3+
     for length in range(3, n + 1):
         for i in range(n - length + 1):
@@ -337,7 +339,7 @@ def longest_palindromic_substring(s: str) -> str:
                 if length > max_length:
                     max_length = length
                     start = i
-    
+
     return s[start:start + max_length]
 ```
 
@@ -347,7 +349,7 @@ print(longest_palindromic_substring("babad"))    # "bab" or "aba"
 print(longest_palindromic_substring("cbbd"))     # "bb"
 print(longest_palindromic_substring("racecar"))  # "racecar"
 ```
-```
+
 
 #### 4.2.2 Tool Calling
 
@@ -361,9 +363,7 @@ Start sglang server:
 python -m sglang.launch_server \
   --model Qwen/Qwen3-Coder-Next-80B-A3B-Instruct \
   --tool-call-parser qwen_coder \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 ```python
@@ -485,9 +485,7 @@ python -m sglang.launch_server \
   --model Qwen/Qwen3-Coder-Next-80B-A3B-Thinking \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen_coder \
-  --tp 8 \
-  --host 0.0.0.0 \
-  --port 8000
+  --tp 8
 ```
 
 ```python
@@ -627,10 +625,10 @@ def execute_code(code, timeout=30):
     # This is a simplified example
     import sys
     from io import StringIO
-    
+
     old_stdout = sys.stdout
     sys.stdout = StringIO()
-    
+
     try:
         exec(code)
         output = sys.stdout.getvalue()
@@ -638,7 +636,7 @@ def execute_code(code, timeout=30):
         output = f"Error: {str(e)}"
     finally:
         sys.stdout = old_stdout
-    
+
     return output
 
 # Send tool result back to the model
