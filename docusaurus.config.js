@@ -14,6 +14,7 @@ import { fileURLToPath } from 'url';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'SGLang Cookbook',
+  tagline: 'The SGLang Cookbook is a practical collection of examples and guides that show developers how to efficiently run SGLang with a variety of models on different platforms.',
   favicon: 'img/favicon.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -33,6 +34,7 @@ const config = {
   projectName: 'sgl-cookbook', // Usually your repo name.
 
   onBrokenLinks: 'throw',
+  trailingSlash: false,
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -42,12 +44,16 @@ const config = {
     locales: ['en'],
   },
 
+  // Enable faster navigation with client-side routing
+  noIndex: false,
+
   presets: [
     [
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/',
           sidebarPath: './sidebars.js',
           editUrl:
             'https://github.com/sgl-project/sgl-cookbook/tree/main',
@@ -85,6 +91,34 @@ const config = {
     {
       tagName: 'meta',
       attributes: {
+        name: 'robots',
+        content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'author',
+        content: 'SGLang Team',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'publisher',
+        content: 'SGLang Team',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'canonical',
+        href: 'https://cookbook.sglang.io/',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
         name: 'algolia-site-verification',
         content: 'B137E28CCDDFD715',
       },
@@ -96,15 +130,156 @@ const config = {
         content: 'fE6yfJhRYZw5wDa8b-KyjhoGyUUXcRV5gyanHUoDmV4',
       },
     },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:title',
+        content: 'SGLang Cookbook - Production Deployment Guides',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:description',
+        content: 'The SGLang Cookbook is a practical collection of examples and guides that show developers how to efficiently run SGLang with a variety of models on different platforms.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:type',
+        content: 'website',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:url',
+        content: 'https://cookbook.sglang.io',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image',
+        content: 'https://cookbook.sglang.io/img/logo.png',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image:alt',
+        content: 'SGLang Cookbook Logo',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:site_name',
+        content: 'SGLang Cookbook',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:locale',
+        content: 'en_US',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:title',
+        content: 'SGLang Cookbook - Production Deployment Guides',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:description',
+        content: 'The SGLang Cookbook is a practical collection of examples and guides that show developers how to efficiently run SGLang with a variety of models on different platforms.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:image',
+        content: 'https://cookbook.sglang.io/img/logo.png',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:image:alt',
+        content: 'SGLang Cookbook Logo',
+      },
+    },
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'SGLang Cookbook',
+        description: 'The SGLang Cookbook is a practical collection of examples and guides that show developers how to efficiently run SGLang with a variety of models on different platforms.',
+        url: 'https://cookbook.sglang.io',
+        publisher: {
+          '@type': 'Organization',
+          name: 'SGLang Team',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://cookbook.sglang.io/img/logo.png',
+          },
+        },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://cookbook.sglang.io/?q={search_term_string}',
+          'query-input': 'required name=search_term_string',
+        },
+      }),
+    },
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'TechArticle',
+        headline: 'SGLang Cookbook - Production Deployment Guides',
+        description: 'The SGLang Cookbook is a practical collection of examples and guides that show developers how to efficiently run SGLang with a variety of models on different platforms.',
+        author: {
+          '@type': 'Organization',
+          name: 'SGLang Team',
+        },
+        datePublished: new Date().toISOString().split('T')[0],
+        dateModified: new Date().toISOString().split('T')[0],
+      }),
+    },
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        {name: 'description', content: 'The SGLang Cookbook is a practical collection of examples and guides that show developers how to efficiently run SGLang with a variety of models on different platforms.'},
+        {name: 'keywords', content: 'SGLang, LLM, deployment, inference, GPU, production, guides, cookbook, DeepSeek, Qwen, Llama, AI inference, model serving, CUDA, PyTorch, HuggingFace, transformer models, language models, vision models, diffusion models, performance optimization, distributed inference, model optimization'},
+      ],
       navbar: {
         title: 'SGLang Cookbook',
         logo: {
           alt: 'SGLang Cookbook Logo',
           src: 'img/logo.png',
+          href: '/',
+          target: '_self',
         },
         items: [
           {
