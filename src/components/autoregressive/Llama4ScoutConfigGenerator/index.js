@@ -16,9 +16,9 @@ const Llama4ScoutConfigGenerator = () => {
           { id: 'b200', label: 'B200', default: false },
           { id: 'h100', label: 'H100', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'mi300x', label: 'mi300x', default: false },
-          { id: 'mi325x', label: 'mi325x', default: false },
-          { id: 'mi355x', label: 'mi355x', default: false }
+          { id: 'mi300x', label: 'MI300x', default: false },
+          { id: 'mi325x', label: 'MI325x', default: false },
+          { id: 'mi355x', label: 'MI355x', default: false }
         ]
       },
       quantization: {
