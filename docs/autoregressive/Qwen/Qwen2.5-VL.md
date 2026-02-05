@@ -6,16 +6,20 @@ sidebar_position: 5
 
 ## 1. Model Introduction
 
-[Qwen2.5-VL series](https://huggingface.co/collections/Qwen/qwen25-vl-66cee7455501d7126940800d) is a vision-language model from the Qwen team, offering significant improvements over its predecessor in understanding, reasoning, and multi-modal processing.
+**[Qwen2.5-VL](https://huggingface.co/collections/Qwen/qwen25-vl)** is a vision-language model series from the Qwen team, offering significant improvements over its predecessor in understanding, reasoning, and multi-modal processing.
 
-This generation delivers comprehensive upgrades across the board:
+**Key Features:**
 
-- **Enhanced Visual Understanding**: Strong performance in document understanding, chart analysis, and scene recognition.
-- **Improved Reasoning**: Logical reasoning and mathematical problem-solving capabilities in multi-modal contexts.
+- **Understand things visually**: Proficient in recognizing common objects such as flowers, birds, fish, and insects, and it is highly capable of analyzing texts, charts, icons, graphics, and layouts within images.
+- **More Agentic**: Play as a visual agent that can reason and dynamically direct tools, which is capable of computer use and phone use.
+- **Understanding long videos and capturing events**: Supports comprehending videos of over 1 hour, and this time it has a new ability of cpaturing event by pinpointing the relevant video segments.
+- **Capable of visual localization in different formats**: Accurately localize objects in an image by generating bounding boxes or points, and it can provide stable JSON outputs for coordinates and attributes.
+- **Generating structured outputs**: Supports structured outputs of the contents, benefiting usages in finance, commerce, etc for data like scans of invoices, forms, tables, etc.
+- **Dynamic Resolution and Frame Rate Training for Video Understanding**: Extend dynamic resolution to the temporal dimension by adopting dynamic FPS sampling, enabling the model to comprehend videos at various sampling rates. Accordingly, we update mRoPE in the time dimension with IDs and absolute time alignment, enabling the model to learn temporal sequence and speed, and ultimately acquire the ability to pinpoint specific moments.
 - **Multiple Sizes**: Available in 3B, 7B, 32B, and 72B variants to suit different deployment needs.
-- **ROCm Support**: Compatible with AMD MI300X GPUs via SGLang (verified).
+- **ROCm Support**: Compatible with AMD MI300X, MI325X and MI355X GPUs via SGLang (verified).
 
-For more details, please refer to the [official Qwen2.5-VL collection](https://huggingface.co/collections/Qwen/qwen25-vl-66cee7455501d7126940800d).
+For more details, please refer to the [official Qwen2.5-VL GitHub Repository](https://github.com/QwenLM/Qwen3-VL).
 
 ## 2. SGLang Installation
 
@@ -25,11 +29,11 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 
 ## 3. Model Deployment
 
-This section provides deployment configurations optimized for AMD MI300X hardware platforms and different use cases.
+This section provides deployment configurations optimized for AMD MI300X, MI325X and MI355X hardware platforms and different use cases.
 
 ### 3.1 Basic Configuration
 
-The Qwen2.5-VL series offers models in various sizes. The following configurations have been verified on AMD MI300X GPUs.
+The Qwen2.5-VL series offers models in various sizes. The following configurations have been verified on AMD MI300X, MI325X and MI355X GPUs.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform and model size.
 
@@ -39,8 +43,8 @@ import Qwen25VLConfigGenerator from '@site/src/components/autoregressive/Qwen25V
 
 ### 3.2 Configuration Tips
 
-* **Memory Management**: For the 72B model on MI300X, we have verified successful deployment with `--context-length 128000`. Smaller context lengths can be used to reduce memory usage if needed.
-* **Multi-GPU Deployment**: Use Tensor Parallelism (`--tp`) to scale across multiple GPUs. For example, use `--tp 8` for the 72B model and `--tp 2` for the 32B model on MI300X.
+* **Memory Management**: For the 72B model on MI300X/MI325X/MI355X, we have verified successful deployment with `--context-length 128000`. Smaller context lengths can be used to reduce memory usage if needed.
+* **Multi-GPU Deployment**: Use Tensor Parallelism (`--tp`) to scale across multiple GPUs. For example, use `--tp 8` for the 72B model and `--tp 2` for the 32B model on MI300X/MI325X/MI355X.
 
 ## 4. Model Invocation
 
@@ -55,7 +59,7 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 Multi-Modal Inputs
 
-Qwen2.5-VL supports image inputs. Here's a basic example with image input:
+Qwen2.5-VL supports image inputs. Here's a basic example with single image input:
 
 ```python
 import time
@@ -173,8 +177,9 @@ Generated text: The first image shows a single red taxi driving on a street with
 
 **Note:**
 
-- You can also provide local file paths using `file://` protocol
-- For larger images, you may need more memory; adjust `--mem-fraction-static` accordingly
+- You can also provide local file paths using `file://` protocol.
+- For larger images, you may need more memory, adjust `--mem-fraction-static` accordingly.
+
 
 ## 5. Benchmark
 
