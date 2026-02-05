@@ -514,24 +514,6 @@ Output throughput: 1231.699 token/s
 ```
 ## AMD GPU Support
 
-## 1. Model Introduction
-Kimi K2 is a state-of-the-art mixture-of-experts (MoE) language model with 42 billion activated parameters and 1 trillion total parameters. Trained with the Muon optimizer, Kimi K2 achieves exceptional performance across frontier knowledge, reasoning, and coding tasks while being meticulously optimized for agentic capabilities.
-
-
-This generation delivers comprehensive upgrades across the board:
-
-Large-Scale Training: Pre-trained a 1T parameter MoE model on 15.5T tokens with zero training instability.
-MuonClip Optimizer: We apply the Muon optimizer to an unprecedented scale, and develop novel optimization techniques to resolve instabilities while scaling up.
-Agentic Intelligence: Specifically designed for tool use, reasoning, and autonomous problem-solving.
-
-For more details, please refer to the official Kimi GitHub Repository: https://github.com/MoonshotAI/Kimi-K2
-
-
-
-## 2. SGLang Installation
-
-Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
-
 
 ## 3. Model Deployment
 
@@ -557,8 +539,7 @@ For basic API usage and request examples, please refer to:
 - [SGLang OpenAI Vision API Guide](https://docs.sglang.ai/basic_usage/openai_api_vision.html)
 
 ### 4.2 Advanced Usage
-
-#### 4.2.1 Launch the docker
+#### 4.2.1 pre-installation steps inside the docker
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -576,36 +557,12 @@ docker run -d -it --ipc=host --network=host --privileged \
   /bin/bash
 ```
 
-#### 4.2.2 pre-installation steps inside the docker
 
 ```shell
 pip install sentencepiece tiktoken
 ```
 
 
-#### 4.2.3 Launch the server
-```shell
-export SGLANG_ROCM_FUSED_DECODE_MLA=0
-```
-```shell
-SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
-  --model-path moonshotai/Kimi-K2-Instruct \
-  --tokenizer-path  moonshotai/Kimi-K2-Instruct \
-  --tp 8 \
-  --trust-remote-code
-```
-
-#### 4.2.4 Tool Calling
-Kimi-K2-Instruct and Kimi-K2-Thinking support tool calling capabilities. Enable the tool call parser during deployment:
-
-```shell
-SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
-  --model moonshotai/Kimi-K2-Instruct \
-  --tool-call-parser kimi_k2 \
-  --tp 8 \
-  --trust-remote-code
-
-```
 
 ## 5. Benchmark
 ### 5.1 Speed Benchmark
@@ -624,7 +581,6 @@ sglang version: 0.5.7
 ```bash
 SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
   --model moonshotai/Kimi-K2-Instruct \
-  --tool-call-parser kimi_k2 \
   --tp 8 \
   --trust-remote-code
 ```
@@ -801,3 +757,31 @@ P99 ITL (ms):                            194.81
 Max ITL (ms):                            654.74
 ==================================================
 ```
+### 5.2 Accuracy Benchmark
+
+#### 5.2.1 GSM8K Benchmark
+
+- Server Command
+
+```shell
+  SGLANG_ROCM_FUSED_DECODE_MLA=0 python -m sglang.launch_server \
+  --model moonshotai/Kimi-K2-Instruct \
+  --tp 8 \
+  --trust-remote-code 
+```
+
+- Benchmark Command
+
+```shell
+
+python3 -m sglang.test.few_shot_gsm8k --num-questions 200
+```
+- **Result**:
+
+```
+Accuracy: 0.965
+Invalid: 0.000
+Latency: 27.759 s
+Output throughput: 697.171 token/s
+```
+
