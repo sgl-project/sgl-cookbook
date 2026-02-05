@@ -45,7 +45,7 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1
+#### 4.2.1 Launch the docker 
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -88,9 +88,9 @@ Test Environment:
 
 Hardware: AMD MI300X GPU
 
-Model: Kimi-K2-Instruct
+Model: Kimi-Linear-48B-A3B-Instruct
 
-Tensor Parallelism: 8
+Tensor Parallelism: 4
 
 sglang version: 0.5.7
 
@@ -269,4 +269,32 @@ P95 ITL (ms):                            123.42
 P99 ITL (ms):                            157.80
 Max ITL (ms):                            2481.11
 ==================================================
+```
+### 5.2 Accuracy Benchmark
+
+#### 5.2.1 GSM8K Benchmark
+
+- Server Command
+
+```shell
+SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
+  --model-path moonshotai/Kimi-Linear-48B-A3B-Instruct \
+  --tokenizer-path  moonshotai/Kimi-Linear-48B-A3B-Instruct \
+  --tp 4 \
+  --trust-remote-code
+```
+
+- Benchmark Command
+
+```shell
+python3 -m sglang.test.few_shot_gsm8k --num-questions 200 
+```
+
+- **Result**:
+
+```
+Accuracy: 0.705
+Invalid: 0.000
+Latency: 11.855 s
+Output throughput: 3224.982 token/s
 ```
