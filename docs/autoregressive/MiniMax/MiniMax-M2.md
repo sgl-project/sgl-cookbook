@@ -79,24 +79,253 @@ For basic API usage and request examples, please refer to:
 #### 4.2.1 Reasoning Parser
 Server Command:
 ```
+    python3 -m sglang.launch_server \
+    --model-path MiniMaxAI/MiniMax-M2 \
+    --tp-size 4 \
+    --reasoning-parser minimax-append-think \
+    --trust-remote-code \
+    --mem-fraction-static 0.85
 ```
 Test Code:
 ```
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="EMPTY"
+)
+
+# Enable streaming to see the thinking process in real-time
+response = client.chat.completions.create(
+    model="MiniMaxAI/MiniMax-M2",
+    messages=[
+        {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
+    ],
+    temperature=0.6,
+    max_tokens=2048,
+    stream=True
+)
+
+# Process the stream
+has_thinking = False
+has_answer = False
+thinking_started = False
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+
+        # Print answer content
+        if delta.content:
+            # Close thinking section and add content header
+            if has_thinking and not has_answer:
+                print("\n=============== Content =================", flush=True)
+                has_answer = True
+            print(delta.content, end="", flush=True)
+
+print()
 ```
 Output Example:
 ```
+<think>First, the user asks: "What is 15% of 240?" This is a straightforward percentage calculation. I need to solve it step by step as per the instruction.
+
+The problem is: What is 15% of 240?
+
+To find a percentage of a number, I multiply the number by the percentage divided by 100. So, 15% is 15/100, which simplifies to 0.15.
+
+Therefore, 15% of 240 is 240 times 0.15.
+
+Let me calculate that: 240 × 0.15.
+
+I can break it down: 240 × 0.15 = 240 × (15/100) = (240 × 15) / 100.
+
+Now, 240 × 15. 200 × 15 = 3000, and 40 × 15 = 600, so total 3000 + 600 = 3600.
+
+Then, divide by 100: 3600 / 100 = 36.
+
+So, 15% of 240 is 36.
+
+I should confirm this with another method. For example, 10% of 240 is 24, and 5% is half of that, which is 12. Then 15% is 10% + 5% = 24 + 12 = 36. Same answer.
+
+Or, using fractions: 15% = 3/20, so 240 × 3/20 = (240 / 20) × 3 = 12 × 3 = 36.
+
+All methods confirm it's 36.
+
+The user said "solve this problem step by step," so I should present the steps clearly.
+
+Step 1: Understand that "15% of 240" means 15 per hundred of 240.
+
+Step 2: Convert percentage to decimal: 15% = 15/100 = 0.15.
+
+Step 3: Multiply the number by the decimal: 240 × 0.15.
+
+Step 4: Calculate the multiplication: 240 × 0.15 = 36.
+
+Step 5: Therefore, 15% of 240 is 36.
+
+I should also mention that percentage means per hundred, so it's straightforward.
+
+Finally, I need to box the answer as per the instruction.
+
+So, the final answer is 36.
+</think>
+
+To find 15% of 240, follow these steps:
+
+1. **Understand the percentage**: "15%" means 15 per hundred, or 15/100.
+2. **Convert to a decimal**: 15/100 = 0.15.
+3. **Multiply by the number**: 240 × 0.15.
+4. **Calculate the result**:
+   - 240 × 0.15 = 36.
+
+Alternatively, you can break it down:
+- 10% of 240 is 24 (since 240 ÷ 10 = 24).
+- 5% of 240 is half of 10%, which is 12.
+- Therefore, 15% is 10% + 5% = 24 + 12 = 36.
+
+Both methods confirm the result.
+
+**Answer**: 36
 ```
 
 ### 4.2.2 Tool Calling
 
 Server Command:
 ```
+python3 -m sglang.launch_server \
+    --model-path MiniMaxAI/MiniMax-M2 \
+    --tp-size 4 \
+    --tool-call-parser minimax-m2 \
+    --trust-remote-code \
+    --mem-fraction-static 0.85
 ```
 Test Code:
 ```
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY"
+)
+
+# Define available tools
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city name"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                        "description": "Temperature unit"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+# Make request with streaming to see thinking process
+response = client.chat.completions.create(
+    model="MiniMaxAI/MiniMax-M2",
+    messages=[
+        {"role": "user", "content": "What's the weather in Beijing?"}
+    ],
+    tools=tools,
+    temperature=0.7,
+    stream=True
+)
+
+# Process streaming response
+thinking_started = False
+has_thinking = False
+tool_calls_accumulator = {}
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+
+        # Print thinking process
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            if not thinking_started:
+                print("=============== Thinking =================", flush=True)
+                thinking_started = True
+            has_thinking = True
+            print(delta.reasoning_content, end="", flush=True)
+
+        # Accumulate tool calls
+        if hasattr(delta, 'tool_calls') and delta.tool_calls:
+            # Close thinking section if needed
+            if has_thinking and thinking_started:
+                print("\n=============== Content =================\n", flush=True)
+                thinking_started = False
+
+            for tool_call in delta.tool_calls:
+                index = tool_call.index
+                if index not in tool_calls_accumulator:
+                    tool_calls_accumulator[index] = {
+                        'name': None,
+                        'arguments': ''
+                    }
+
+                if tool_call.function:
+                    if tool_call.function.name:
+                        tool_calls_accumulator[index]['name'] = tool_call.function.name
+                    if tool_call.function.arguments:
+                        tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
+
+        # Print content
+        if delta.content:
+            print(delta.content, end="", flush=True)
+
+# Print accumulated tool calls
+for index, tool_call in sorted(tool_calls_accumulator.items()):
+    print(f"🔧 Tool Call: {tool_call['name']}")
+    print(f"   Arguments: {tool_call['arguments']}")
+
+print()
 ```
 Output Example:
 ```
+Alright, the user is asking about the weather in Beijing. This is a straightforward request that I can help with using the get_weather tool that's available to me.
+
+Let me think about what I need to do here. The user wants to know the current weather conditions in Beijing, which is the capital city of China. To provide this information, I need to use the get_weather tool that's been provided to me.
+
+Looking at the tool's parameters, I can see it requires:
+1. location - which is required and should be a string representing the city name
+2. unit - which is optional and can be either "celsius" or "fahrenheit"
+
+For the location parameter, I'll use "Beijing" since that's what the user asked about.
+
+For the unit parameter, the user didn't specify their preference between celsius and fahrenheit. Since Beijing is in China, which primarily uses celsius, and celsius is the more standard unit internationally, I'll default to celsius. If the user wants the temperature in fahrenheit instead, they can ask in a follow-up message and I can provide that information.
+
+So I need to make a tool call to get_weather with the following parameters:
+- location: "Beijing"
+- unit: "celsius"
+
+This should return the current weather information for Beijing, which I can then share with the user. I'll format my response using the required XML tags for tool calls as specified in my instructions.
+</think>
+
+
+🔧 Tool Call: get_weather
+   Arguments: {"location": "Beijing", "unit": "celsius"}
 ```
 
 ## 5. Benchmark
@@ -105,7 +334,7 @@ Output Example:
 
 - Hardware: AMD MI300X GPU(4x)
 
-- Model: MiniMax-M2.1
+- Model: MiniMax-M2
 
 - Tensor Parallelism: 4
 
@@ -115,10 +344,8 @@ Output Example:
 
 ```bash
 python3 -m sglang.launch_server \
-    --model-path MiniMaxAI/MiniMax-M2.1 \
+    --model-path MiniMaxAI/MiniMax-M2 \
     --tp-size 4 \
-    --tool-call-parser minimax-m2 \
-    --reasoning-parser minimax-append-think \
     --trust-remote-code \
     --mem-fraction-static 0.85
 ```
@@ -130,7 +357,7 @@ python3 -m sglang.launch_server \
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model MiniMaxAI/MiniMax-M2.1 \
+  --model MiniMaxAI/MiniMax-M2 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -147,36 +374,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 1
 Successful requests:                     10
-Benchmark duration (s):                  138.49
+Benchmark duration (s):                  138.91
 Total input tokens:                      6101
 Total input text tokens:                 6101
 Total input vision tokens:               0
 Total generated tokens:                  4220
 Total generated tokens (retokenized):    4220
 Request throughput (req/s):              0.07
-Input token throughput (tok/s):          44.05
-Output token throughput (tok/s):         30.47
+Input token throughput (tok/s):          43.92
+Output token throughput (tok/s):         30.38
 Peak output token throughput (tok/s):    46.00
 Peak concurrent requests:                2
-Total token throughput (tok/s):          74.53
+Total token throughput (tok/s):          74.30
 Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   13844.96
-Median E2E Latency (ms):                 10379.28
+Mean E2E Latency (ms):                   13887.62
+Median E2E Latency (ms):                 10377.26
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          4489.71
-Median TTFT (ms):                        382.24
-P99 TTFT (ms):                           37978.20
+Mean TTFT (ms):                          4528.94
+Median TTFT (ms):                        385.23
+P99 TTFT (ms):                           38338.51
 -----Time per Output Token (excl. 1st token)------
 Mean TPOT (ms):                          22.21
-Median TPOT (ms):                        22.23
-P99 TPOT (ms):                           22.24
+Median TPOT (ms):                        22.24
+P99 TPOT (ms):                           22.25
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           22.22
+Mean ITL (ms):                           22.23
 Median ITL (ms):                         22.24
-P95 ITL (ms):                            22.34
-P99 ITL (ms):                            22.39
-Max ITL (ms):                            23.61
+P95 ITL (ms):                            22.35
+P99 ITL (ms):                            22.41
+Max ITL (ms):                            23.64
 ==================================================
 ```
 
@@ -187,7 +414,7 @@ Max ITL (ms):                            23.61
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model MiniMaxAI/MiniMax-M2.1 \
+  --model MiniMaxAI/MiniMax-M2 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -203,36 +430,36 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 16
 Successful requests:                     80
-Benchmark duration (s):                  79.85
+Benchmark duration (s):                  81.07
 Total input tokens:                      39668
 Total input text tokens:                 39668
 Total input vision tokens:               0
 Total generated tokens:                  40805
-Total generated tokens (retokenized):    40801
-Request throughput (req/s):              1.00
-Input token throughput (tok/s):          496.81
-Output token throughput (tok/s):         511.05
-Peak output token throughput (tok/s):    703.00
-Peak concurrent requests:                20
-Total token throughput (tok/s):          1007.86
-Concurrency:                             13.71
+Total generated tokens (retokenized):    40803
+Request throughput (req/s):              0.99
+Input token throughput (tok/s):          489.29
+Output token throughput (tok/s):         503.32
+Peak output token throughput (tok/s):    704.00
+Peak concurrent requests:                19
+Total token throughput (tok/s):          992.61
+Concurrency:                             13.74
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   13683.48
-Median E2E Latency (ms):                 14324.05
+Mean E2E Latency (ms):                   13925.95
+Median E2E Latency (ms):                 14348.75
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          329.71
-Median TTFT (ms):                        147.43
-P99 TTFT (ms):                           898.91
+Mean TTFT (ms):                          532.32
+Median TTFT (ms):                        147.69
+P99 TTFT (ms):                           1978.48
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          26.93
-Median TPOT (ms):                        26.52
-P99 TPOT (ms):                           38.01
+Mean TPOT (ms):                          27.49
+Median TPOT (ms):                        26.56
+P99 TPOT (ms):                           46.52
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           26.23
-Median ITL (ms):                         23.44
-P95 ITL (ms):                            24.30
-P99 ITL (ms):                            123.34
-Max ITL (ms):                            632.37
+Mean ITL (ms):                           26.31
+Median ITL (ms):                         23.47
+P95 ITL (ms):                            24.37
+P99 ITL (ms):                            125.10
+Max ITL (ms):                            1192.51
 ==================================================
 ```
 
@@ -242,7 +469,7 @@ Max ITL (ms):                            632.37
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model MiniMaxAI/MiniMax-M2.1 \
+  --model MiniMaxAI/MiniMax-M2 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -258,46 +485,61 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 100
 Successful requests:                     500
-Benchmark duration (s):                  153.81
+Benchmark duration (s):                  153.71
 Total input tokens:                      249831
 Total input text tokens:                 249831
 Total input vision tokens:               0
 Total generated tokens:                  252662
-Total generated tokens (retokenized):    252540
+Total generated tokens (retokenized):    250982
 Request throughput (req/s):              3.25
-Input token throughput (tok/s):          1624.24
-Output token throughput (tok/s):         1642.64
-Peak output token throughput (tok/s):    2600.00
+Input token throughput (tok/s):          1625.33
+Output token throughput (tok/s):         1643.75
+Peak output token throughput (tok/s):    2597.00
 Peak concurrent requests:                107
-Total token throughput (tok/s):          3266.88
-Concurrency:                             91.12
+Total token throughput (tok/s):          3269.09
+Concurrency:                             91.14
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   28030.32
-Median E2E Latency (ms):                 26911.51
+Mean E2E Latency (ms):                   28017.24
+Median E2E Latency (ms):                 26865.28
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          505.29
-Median TTFT (ms):                        182.64
-P99 TTFT (ms):                           1815.81
+Mean TTFT (ms):                          387.41
+Median TTFT (ms):                        183.90
+P99 TTFT (ms):                           1192.44
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          55.04
-Median TPOT (ms):                        57.64
-P99 TPOT (ms):                           69.84
+Mean TPOT (ms):                          55.23
+Median TPOT (ms):                        57.84
+P99 TPOT (ms):                           70.23
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           54.58
-Median ITL (ms):                         38.94
-P95 ITL (ms):                            140.77
-P99 ITL (ms):                            149.16
-Max ITL (ms):                            956.82
+Mean ITL (ms):                           54.79
+Median ITL (ms):                         39.01
+P95 ITL (ms):                            143.10
+P99 ITL (ms):                            150.46
+Max ITL (ms):                            986.14
 ==================================================
 ```
 
 
 ### 5.2 Accuracy Benchmark
 #### 5.2.1 GSM8K Benchmark
+
+- **Server Command**:
+```
+python3 -m sglang.launch_server \
+    --model-path MiniMaxAI/MiniMax-M2 \
+    --tp-size 4 \
+    --trust-remote-code \
+    --mem-fraction-static 0.85
+```
+
 - **Benchmark Command**:
 ```
+  python3 -m sglang.test.few_shot_gsm8k --num-questions 200
 ```
 - **Result**:
-  - MiniMax-M2.1
-  ```
-  ```
+  - MiniMax-M2
+```
+ Accuracy: 0.950
+ Invalid: 0.000
+ Latency: 15.120 s
+ Output throughput: 1306.711 token/s 
+```
