@@ -57,6 +57,11 @@ const sidebars = {
           type: 'category',
           label: 'GLM',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/GLM/GLM-OCR',
+              label: 'GLM-OCR [NEW]',
+            },
             'autoregressive/GLM/Glyph',
             'autoregressive/GLM/GLM-4.5V',
             'autoregressive/GLM/GLM-4.6',
@@ -156,6 +161,17 @@ const sidebars = {
               type: 'doc',
               id: 'autoregressive/FlashLabs/Chroma1.0',
               label: 'Chroma 1.0 [NEW]',
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'StepFun',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/StepFun/Step3.5',
+              label: 'Step3.5 [NEW]',
             },
           ],
         }
