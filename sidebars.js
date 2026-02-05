@@ -30,7 +30,7 @@ const sidebars = {
             'autoregressive/Qwen/Qwen3-Next',
             'autoregressive/Qwen/Qwen3-VL',
             'autoregressive/Qwen/Qwen3-Coder',
-            'autoregressive/Qwen/Qwen3-Coder-Next',
+            'autoregressive/Qwen/qwen3-coder-next',
             'autoregressive/Qwen/Qwen2.5-VL',
           ],
         },
