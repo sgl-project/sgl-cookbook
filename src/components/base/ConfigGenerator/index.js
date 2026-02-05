@@ -151,7 +151,7 @@ const ConfigGenerator = ({ config }) => {
               // Checkbox items
               option.items.map(item => {
                 const isChecked = (values[option.name] || []).includes(item.id);
-                const isDisabled = item.required;
+                const isDisabled = item.required || (typeof item.disabledWhen === 'function' && item.disabledWhen(values));
                 return (
                   <label
                     key={item.id}
