@@ -22,9 +22,9 @@ This section provides a progressive guide from quick deployment to performance o
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities.
 
-import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSeekConfigGenerator';
+import DeepSeekV31ConfigGenerator from '@site/src/components/autoregressive/DeepSeekV31ConfigGenerator';
 
-<DeepSeekConfigGenerator />
+<DeepSeekV31ConfigGenerator />
 
 ### 3.2 Configuration Tips
 For more detailed configuration tips, please refer to [DeepSeek V3/V3.1/R1 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
