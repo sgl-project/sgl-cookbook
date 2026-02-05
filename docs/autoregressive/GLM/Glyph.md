@@ -323,9 +323,36 @@ Three core scenarios reflect real-world usage patterns:
 | **Reasoning**     | 1K           | 8K            | Long-form generation, complex reasoning tasks |
 | **Summarization** | 8K           | 1K            | Document summarization, RAG retrieval         |
 
-#### 5.1.2 Benchmark Commands
+#### 5.1.2 Concurrency Levels
 
-**Scenario 1: Chat (1K/1K)**
+Test each scenario at three concurrency levels to capture the throughput vs. latency tradeoff (Pareto frontier):
+
+- **Low Concurrency**: `--max-concurrency 1` (Latency-optimized)
+- **Medium Concurrency**: `--max-concurrency 16` (Balanced)
+- **High Concurrency**: `--max-concurrency 100` for Chat, `--max-concurrency 64` for Reasoning/Summarization (Throughput-optimized)
+
+#### 5.1.3 Number of Prompts
+
+For each concurrency level, configure `num_prompts` to simulate realistic user loads:
+
+- **Quick Test**: `num_prompts = concurrency × 1` (minimal test)
+- **Recommended**: `num_prompts = concurrency × 5` (standard benchmark)
+- **Stable Measurements**: `num_prompts = concurrency × 10` (production-grade)
+
+---
+
+#### 5.1.4 Benchmark Commands
+
+**Scenario 1: Chat (1K/1K) - Most Important**
+
+- **Model Deployment**
+```bash
+python -m sglang.launch_server \
+  --model zai-org/Glyph \
+  --tp 2
+```
+
+- Low Concurrency (Latency-Optimized)
 
 ```bash
 python -m sglang.bench_serving \
@@ -339,7 +366,154 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  17.03
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total input vision tokens:               0
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4220
+Request throughput (req/s):              0.59
+Input token throughput (tok/s):          358.17
+Output token throughput (tok/s):         247.74
+Peak output token throughput (tok/s):    251.00
+Peak concurrent requests:                3
+Total token throughput (tok/s):          605.91
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   1702.14
+Median E2E Latency (ms):                 1361.72
+---------------Time to First Token----------------
+Mean TTFT (ms):                          22.35
+Median TTFT (ms):                        22.61
+P99 TTFT (ms):                           23.76
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          3.99
+Median TPOT (ms):                        3.99
+P99 TPOT (ms):                           4.01
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           3.99
+Median ITL (ms):                         3.99
+P95 ITL (ms):                            4.03
+P99 ITL (ms):                            4.12
+Max ITL (ms):                            7.46
+==================================================
+```
+
+- Medium Concurrency (Balanced)
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model zai-org/Glyph \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  16.27
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total input vision tokens:               0
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40804
+Request throughput (req/s):              4.92
+Input token throughput (tok/s):          2438.06
+Output token throughput (tok/s):         2507.94
+Peak output token throughput (tok/s):    3069.00
+Peak concurrent requests:                26
+Total token throughput (tok/s):          4946.00
+Concurrency:                             13.44
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   2733.43
+Median E2E Latency (ms):                 2892.98
+---------------Time to First Token----------------
+Mean TTFT (ms):                          33.10
+Median TTFT (ms):                        27.73
+P99 TTFT (ms):                           49.34
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          5.33
+Median TPOT (ms):                        5.39
+P99 TPOT (ms):                           5.86
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           5.30
+Median ITL (ms):                         4.89
+P95 ITL (ms):                            5.54
+P99 ITL (ms):                            21.17
+Max ITL (ms):                            25.14
+==================================================
+```
+
+- High Concurrency (Throughput-Optimized)
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model zai-org/Glyph \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  25.67
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total input vision tokens:               0
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    252657
+Request throughput (req/s):              19.48
+Input token throughput (tok/s):          9733.69
+Output token throughput (tok/s):         9843.99
+Peak output token throughput (tok/s):    13398.00
+Peak concurrent requests:                127
+Total token throughput (tok/s):          19577.68
+Concurrency:                             89.49
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   4593.75
+Median E2E Latency (ms):                 4431.03
+---------------Time to First Token----------------
+Mean TTFT (ms):                          48.66
+Median TTFT (ms):                        35.88
+P99 TTFT (ms):                           120.61
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          9.10
+Median TPOT (ms):                        9.55
+P99 TPOT (ms):                           11.00
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           9.01
+Median ITL (ms):                         6.51
+P95 ITL (ms):                            23.19
+P99 ITL (ms):                            25.54
+Max ITL (ms):                            52.93
+==================================================
+```
+
 **Scenario 2: Reasoning (1K/8K)**
+
+- Low Concurrency
 
 ```bash
 python -m sglang.bench_serving \
@@ -353,7 +527,154 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  201.53
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total input vision tokens:               0
+Total generated tokens:                  44462
+Total generated tokens (retokenized):    44455
+Request throughput (req/s):              0.05
+Input token throughput (tok/s):          30.27
+Output token throughput (tok/s):         220.63
+Peak output token throughput (tok/s):    251.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          250.90
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   20151.45
+Median E2E Latency (ms):                 21576.31
+---------------Time to First Token----------------
+Mean TTFT (ms):                          2362.23
+Median TTFT (ms):                        23.03
+P99 TTFT (ms):                           21310.14
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          4.00
+Median TPOT (ms):                        4.00
+P99 TPOT (ms):                           4.01
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           4.00
+Median ITL (ms):                         4.00
+P95 ITL (ms):                            4.05
+P99 ITL (ms):                            4.08
+Max ITL (ms):                            5.67
+==================================================
+```
+
+- Medium Concurrency
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model zai-org/Glyph \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 8000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  118.67
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total input vision tokens:               0
+Total generated tokens:                  318306
+Total generated tokens (retokenized):    318270
+Request throughput (req/s):              0.67
+Input token throughput (tok/s):          334.27
+Output token throughput (tok/s):         2682.26
+Peak output token throughput (tok/s):    3264.00
+Peak concurrent requests:                19
+Total token throughput (tok/s):          3016.53
+Concurrency:                             13.74
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   20387.23
+Median E2E Latency (ms):                 20466.09
+---------------Time to First Token----------------
+Mean TTFT (ms):                          132.47
+Median TTFT (ms):                        27.19
+P99 TTFT (ms):                           583.15
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          5.09
+Median TPOT (ms):                        5.13
+P99 TPOT (ms):                           5.19
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           5.09
+Median ITL (ms):                         5.08
+P95 ITL (ms):                            5.18
+P99 ITL (ms):                            5.57
+Max ITL (ms):                            522.26
+==================================================
+```
+
+- High Concurrency
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model zai-org/Glyph \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 8000 \
+  --num-prompts 320 \
+  --max-concurrency 64 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     320
+Benchmark duration (s):                  150.00
+Total input tokens:                      158939
+Total input text tokens:                 158939
+Total input vision tokens:               0
+Total generated tokens:                  1301025
+Total generated tokens (retokenized):    1300901
+Request throughput (req/s):              2.13
+Input token throughput (tok/s):          1059.59
+Output token throughput (tok/s):         8673.49
+Peak output token throughput (tok/s):    11899.00
+Peak concurrent requests:                71
+Total token throughput (tok/s):          9733.09
+Concurrency:                             54.71
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   25645.42
+Median E2E Latency (ms):                 26913.26
+---------------Time to First Token----------------
+Mean TTFT (ms):                          163.75
+Median TTFT (ms):                        93.67
+P99 TTFT (ms):                           426.19
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          6.27
+Median TPOT (ms):                        6.39
+P99 TPOT (ms):                           6.59
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           6.27
+Median ITL (ms):                         0.17
+P95 ITL (ms):                            32.94
+P99 ITL (ms):                            67.89
+Max ITL (ms):                            136.00
+==================================================
+```
+
 **Scenario 3: Summarization (8K/1K)**
+
+- Low
 
 ```bash
 python -m sglang.bench_serving \
@@ -367,12 +688,194 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  17.44
+Total input tokens:                      41941
+Total input text tokens:                 41941
+Total input vision tokens:               0
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4220
+Request throughput (req/s):              0.57
+Input token throughput (tok/s):          2405.19
+Output token throughput (tok/s):         242.00
+Peak output token throughput (tok/s):    250.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          2647.19
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   1742.54
+Median E2E Latency (ms):                 1412.47
+---------------Time to First Token----------------
+Mean TTFT (ms):                          53.48
+Median TTFT (ms):                        45.05
+P99 TTFT (ms):                           98.57
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          4.01
+Median TPOT (ms):                        4.01
+P99 TPOT (ms):                           4.03
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           4.01
+Median ITL (ms):                         4.01
+P95 ITL (ms):                            4.06
+P99 ITL (ms):                            4.09
+Max ITL (ms):                            4.95
+==================================================
+```
+
+- Medium Concurrency
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model zai-org/Glyph \
+  --dataset-name random \
+  --random-input-len 8000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  16.90
+Total input tokens:                      300020
+Total input text tokens:                 300020
+Total input vision tokens:               0
+Total generated tokens:                  41669
+Total generated tokens (retokenized):    41668
+Request throughput (req/s):              4.73
+Input token throughput (tok/s):          17753.58
+Output token throughput (tok/s):         2465.75
+Peak output token throughput (tok/s):    3005.00
+Peak concurrent requests:                25
+Total token throughput (tok/s):          20219.33
+Concurrency:                             13.68
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   2890.33
+Median E2E Latency (ms):                 3069.55
+---------------Time to First Token----------------
+Mean TTFT (ms):                          41.46
+Median TTFT (ms):                        31.75
+P99 TTFT (ms):                           93.18
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          5.52
+Median TPOT (ms):                        5.58
+P99 TPOT (ms):                           6.14
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           5.48
+Median ITL (ms):                         5.13
+P95 ITL (ms):                            5.93
+P99 ITL (ms):                            20.76
+Max ITL (ms):                            36.01
+==================================================
+```
+
+- High Concurrency
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model zai-org/Glyph \
+  --dataset-name random \
+  --random-input-len 8000 \
+  --random-output-len 1000 \
+  --num-prompts 320 \
+  --max-concurrency 64 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     320
+Benchmark duration (s):                  35.54
+Total input tokens:                      1273893
+Total input text tokens:                 1273893
+Total input vision tokens:               0
+Total generated tokens:                  170000
+Total generated tokens (retokenized):    169994
+Request throughput (req/s):              9.01
+Input token throughput (tok/s):          35848.57
+Output token throughput (tok/s):         4783.96
+Peak output token throughput (tok/s):    8396.00
+Peak concurrent requests:                80
+Total token throughput (tok/s):          40632.53
+Concurrency:                             59.26
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   6580.96
+Median E2E Latency (ms):                 6248.74
+---------------Time to First Token----------------
+Mean TTFT (ms):                          345.27
+Median TTFT (ms):                        96.06
+P99 TTFT (ms):                           2823.92
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          12.26
+Median TPOT (ms):                        12.53
+P99 TPOT (ms):                           23.58
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           11.76
+Median ITL (ms):                         6.57
+P95 ITL (ms):                            27.66
+P99 ITL (ms):                            91.24
+Max ITL (ms):                            2609.64
+==================================================
+```
+
+#### 5.1.5 Understanding the Results
+
+**Key Metrics:**
+
+- **Request Throughput (req/s)**: Number of requests processed per second
+- **Output Token Throughput (tok/s)**: Total tokens generated per second
+- **Mean TTFT (ms)**: Time to First Token - measures responsiveness
+- **Mean TPOT (ms)**: Time Per Output Token - measures generation speed
+- **Mean ITL (ms)**: Inter-Token Latency - measures streaming consistency
+
+**Why These Configurations Matter:**
+
+- **1K/1K (Chat)**: Represents the most common conversational AI workload. This is the highest priority scenario for most deployments.
+- **1K/8K (Reasoning)**: Tests long-form generation capabilities crucial for complex reasoning, code generation, and detailed explanations.
+- **8K/1K (Summarization)**: Evaluates performance with large context inputs, essential for RAG systems, document Q&A, and summarization tasks.
+- **Variable Concurrency**: Captures the Pareto frontier - the optimal tradeoff between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
+
+**Interpreting Results:**
+
+- Compare your results against baseline numbers for your hardware
+- Higher throughput at same latency = better performance
+- Lower TTFT = more responsive user experience
+- Lower TPOT = faster generation speed
+
 ### 5.2 Accuracy Benchmark
 
+Document model accuracy on standard benchmarks:
+
 #### 5.2.1 GSM8K Benchmark
+
+- Benchmark Command
 
 ```bash
 python -m sglang.test.few_shot_gsm8k \
   --num-questions 200 \
   --port 30000
+```
+
+- Test Result
+
+```
+Accuracy: 0.890
+Invalid: 0.000
+Latency: 3.718 s
+Output throughput: 5245.606 token/s
 ```
