@@ -4,14 +4,20 @@
 ## AMD GPU Support
 
 ## 1. Model Introduction
+The largest model in the Ministral 3 family, Ministral 3 14B offers frontier capabilities and performance comparable to its larger Mistral Small 3.2 24B counterpart. A powerful and efficient language model with vision capabilities.
 
-Today, we announce Mistral 3, the next generation of Mistral models. Mistral 3 includes three state-of-the-art small, dense models (14B, 8B, and 3B) and Mistral Large 3 – our most capable model to date – a sparse mixture-of-experts trained with 41B active and 675B total parameters. All models are released under the Apache 2.0 license. Open-sourcing our models in a variety of compressed formats empowers the developer community and puts AI in people’s hands through distributed intelligence.
+The Ministral 3 14B Instruct model offers the following capabilities:
 
-The Ministral models represent the best performance-to-cost ratio in their category. At the same time, Mistral Large 3 joins the ranks of frontier instruction-fine-tuned open-source models.
+Vision: Enables the model to analyze images and provide insights based on visual content, in addition to text.
+Multilingual: Supports dozens of languages, including English, French, Spanish, German, Italian, Portuguese, Dutch, Chinese, Japanese, Korean, Arabic.
+System Prompt: Maintains strong adherence and support for system prompts.
+Agentic: Offers best-in-class agentic capabilities with native function calling and JSON outputting.
+Edge-Optimized: Delivers best-in-class performance at a small scale, deployable anywhere.
+Apache 2.0 License: Open-source license allowing usage and modification for both commercial and non-commercial purposes.
+Large Context Window: Supports a 256k context window.
 
 
-**Available Models:**
-[huggingface: mistralai/Ministral-3-14B-Instruct-2512] , [huggingface: mistralai/Ministral-3-8B-Instruct-2512]
+For further details, please refer to the [official documentation][(https://github.com/mistralai)]
 
 
 ## 2. SGLang Installation
@@ -95,42 +101,6 @@ This section uses **industry-standard configurations** for comparable benchmark 
 - Tensor Parallelism: 1
 - SGLang Version: 0.5.7
 
-**Benchmark Methodology:**
-
-We use industry-standard benchmark configurations to ensure results are comparable across frameworks and hardware platforms.
-
-#### 5.1.1 Standard Test Scenarios
-
-Three core scenarios reflect real-world usage patterns:
-
-| Scenario          | Input Length | Output Length | Use Case                                      |
-| ----------------- | ------------ | ------------- | --------------------------------------------- |
-| **Chat**          | 1K           | 1K            | Most common conversational AI workload        |
-| **Reasoning**     | 1K           | 8K            | Long-form generation, complex reasoning tasks |
-| **Summarization** | 8K           | 1K            | Document summarization, RAG retrieval         |
-
-#### 5.1.2 Concurrency Levels
-
-Test each scenario at different concurrency levels to capture the throughput vs. latency trade-off:
-
-- **Low Concurrency**: `--max-concurrency 1` (Latency-optimized)
-- **Medium Concurrency**: `--max-concurrency 16` (Balanced)
-- **High Concurrency**: `--max-concurrency 100` (Throughput-optimized)
-
-#### 5.1.3 Number of Prompts
-
-For each concurrency level, configure `num_prompts` to simulate realistic user loads:
-
-- **Quick Test**: `num_prompts = concurrency × 1` (minimal test)
-- **Recommended**: `num_prompts = concurrency × 5` (standard benchmark)
-- **Stable Measurements**: `num_prompts = concurrency × 10` (production-grade)
-
----
-
-#### 5.1.4 Benchmark Commands
-
-**Scenario 1: Chat (1K/1K) - Most Important**
-
 - Model Deployment Command:
 
 ```bash
@@ -140,7 +110,7 @@ python3 -m sglang.launch_server \
   --trust-remote-code
 ```
 
-- Low Concurrency (Latency-Optimized)
+##### 5.1.1.1 Low Concurrency
 - Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
@@ -194,7 +164,7 @@ Max ITL (ms):                            8.45
 ==================================================
 ```
 
-- Medium Concurrency (Balanced)
+##### 5.1.1.2 Medium Concurrency
 - Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
@@ -247,7 +217,7 @@ Max ITL (ms):                            888.63
 ==================================================
 ```
 
-- High Concurrency (Throughput-Optimized)
+##### 5.1.1.3 High Concurrency
 - Benchmark Command:
 ```bash
 python3 -m sglang.bench_serving \
