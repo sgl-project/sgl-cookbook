@@ -227,25 +227,7 @@
       "gpu_count": 8,
       "scenario": "low-latency",
       "parameters": {
-        "model_path": "deepseek-ai/DeepSeek-R1-0528",
-        "trust_remote_code": true,
-        "tensor_parallel_size": 8,
-        "mem_fraction_static": 0.8,
-        "cuda_graph_max_bs": 128,
-        "chunked_prefill_size": 131072,
-        "num_continuous_decode_steps": 4,
-        "max_prefill_tokens": 131072,
-        "kv_cache_dtype": "fp8_e4m3",
-        "attention_backend": "aiter",
-        "disable_radix_cache": true
-      }
-    },
-    {
-      "hardware": "mi325x",
-      "quantization": "fp8",
-      "gpu_count": 8,
-      "scenario": "low-latency",
-      "parameters": {
+        "env_vars": "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1",
         "model_path": "deepseek-ai/DeepSeek-R1-0528",
         "trust_remote_code": true,
         "tensor_parallel_size": 8,
@@ -265,6 +247,7 @@
       "gpu_count": 8,
       "scenario": "high-throughput",
       "parameters": {
+        "env_vars": "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1",
         "model_path": "deepseek-ai/DeepSeek-R1-0528",
         "trust_remote_code": true,
         "tensor_parallel_size": 8,
@@ -282,8 +265,29 @@
       "hardware": "mi325x",
       "quantization": "fp8",
       "gpu_count": 8,
+      "scenario": "low-latency",
+      "parameters": {
+        "env_vars": "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1",
+        "model_path": "deepseek-ai/DeepSeek-R1-0528",
+        "trust_remote_code": true,
+        "tensor_parallel_size": 8,
+        "mem_fraction_static": 0.8,
+        "cuda_graph_max_bs": 128,
+        "chunked_prefill_size": 131072,
+        "num_continuous_decode_steps": 4,
+        "max_prefill_tokens": 131072,
+        "kv_cache_dtype": "fp8_e4m3",
+        "attention_backend": "aiter",
+        "disable_radix_cache": true
+      }
+    },
+    {
+      "hardware": "mi325x",
+      "quantization": "fp8",
+      "gpu_count": 8,
       "scenario": "high-throughput",
       "parameters": {
+        "env_vars": "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1",
         "model_path": "deepseek-ai/DeepSeek-R1-0528",
         "trust_remote_code": true,
         "tensor_parallel_size": 8,
@@ -303,12 +307,13 @@
       "gpu_count": 8,
       "scenario": "low-latency",
       "parameters": {
+        "env_vars": "SGLANG_USE_AITER=1 RCCL_MSCCL_ENABLE=0 ROCM_QUICK_REDUCE_QUANTIZATION=INT4",
         "model_path": "deepseek-ai/DeepSeek-R1-0528",
         "trust_remote_code": true,
         "tensor_parallel_size": 8,
-        "chunked_prefill_size": 196608,
         "mem_fraction_static": 0.8,
         "disable_radix_cache": true,
+        "chunked_prefill_size": 196608,
         "num_continuous_decode_steps": 4,
         "max_prefill_tokens": 196608,
         "cuda_graph_max_bs": 128,
@@ -317,35 +322,17 @@
     },
     {
       "hardware": "mi355x",
-      "quantization": "fp4",
-      "gpu_count": 8,
-      "scenario": "low-latency",
-      "parameters": {
-        "model_path": "amd/DeepSeek-R1-MXFP4",
-        "trust_remote_code": true,
-        "tensor_parallel_size": 8,
-        "chunked_prefill_size": 196608,
-        "mem_fraction_static": 0.8,
-        "disable_radix_cache": true,
-        "num_continuous_decode_steps": 4,
-        "max_prefill_tokens": 196608,
-        "cuda_graph_max_bs": 128,
-        "attention_backend": "aiter",
-        "kv_cache_dtype": "fp8_e4m3"
-      }
-    },
-    {
-      "hardware": "mi355x",
       "quantization": "fp8",
       "gpu_count": 8,
       "scenario": "high-throughput",
       "parameters": {
+        "env_vars": "SGLANG_USE_AITER=1 RCCL_MSCCL_ENABLE=0 ROCM_QUICK_REDUCE_QUANTIZATION=INT4",
         "model_path": "deepseek-ai/DeepSeek-R1-0528",
         "trust_remote_code": true,
         "tensor_parallel_size": 8,
-        "chunked_prefill_size": 196608,
         "mem_fraction_static": 0.8,
         "disable_radix_cache": true,
+        "chunked_prefill_size": 196608,
         "num_continuous_decode_steps": 4,
         "max_prefill_tokens": 196608,
         "cuda_graph_max_bs": 512,
@@ -356,14 +343,35 @@
       "hardware": "mi355x",
       "quantization": "fp4",
       "gpu_count": 8,
-      "scenario": "high-throughput",
+      "scenario": "low-latency",
       "parameters": {
-        "model_path": "amd/DeepSeek-R1-MXFP4",
+        "env_vars": "SGLANG_USE_AITER=1 ROCM_QUICK_REDUCE_QUANTIZATION=INT4",
+        "model_path": "deepseek-ai/DeepSeek-R1-0528",
         "trust_remote_code": true,
         "tensor_parallel_size": 8,
-        "chunked_prefill_size": 196608,
         "mem_fraction_static": 0.8,
         "disable_radix_cache": true,
+        "chunked_prefill_size": 196608,
+        "num_continuous_decode_steps": 4,
+        "max_prefill_tokens": 196608,
+        "cuda_graph_max_bs": 128,
+        "attention_backend": "aiter",
+        "kv_cache_dtype": "fp8_e4m3"
+      }
+    },
+    {
+      "hardware": "mi355x",
+      "quantization": "fp4",
+      "gpu_count": 8,
+      "scenario": "high-throughput",
+      "parameters": {
+        "env_vars": "SGLANG_USE_AITER=1 ROCM_QUICK_REDUCE_QUANTIZATION=INT4",
+        "model_path": "deepseek-ai/DeepSeek-R1-0528",
+        "trust_remote_code": true,
+        "tensor_parallel_size": 8,
+        "mem_fraction_static": 0.8,
+        "disable_radix_cache": true,
+        "chunked_prefill_size": 196608,
         "num_continuous_decode_steps": 4,
         "max_prefill_tokens": 196608,
         "cuda_graph_max_bs": 512,
@@ -377,16 +385,6 @@
       "hardware": "h200",
       "quantization": "fp4",
       "error": "FP4 is only available for B200 hardware. Please select FP8 quantization."
-    },
-    {
-      "hardware": "mi300x",
-      "quantization": "fp4",
-      "error": "FP4 is only available for MI355X hardware. Please select FP8 quantization."
-    },
-    {
-      "hardware": "mi325x",
-      "quantization": "fp4",
-      "error": "FP4 is only available for MI355X hardware. Please select FP8 quantization."
     }
   ]
 }
