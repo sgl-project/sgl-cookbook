@@ -514,7 +514,6 @@ Output throughput: 1231.699 token/s
 ```
 ## AMD GPU Support
 
-
 ## 3. Model Deployment
 
 This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
@@ -526,8 +525,6 @@ This section provides a progressive guide from quick deployment to performance o
 import KimiK2ConfigGenerator from '@site/src/components/autoregressive/KimiK2ConfigGenerator';
 
 <KimiK2ConfigGenerator />
-
-
 
 ## 4. Model Invocation
 
@@ -557,12 +554,9 @@ docker run -d -it --ipc=host --network=host --privileged \
   /bin/bash
 ```
 
-
 ```shell
 pip install sentencepiece tiktoken
 ```
-
-
 
 ## 5. Benchmark
 ### 5.1 Speed Benchmark
@@ -585,9 +579,9 @@ SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
   --trust-remote-code
 ```
 
-
 ### 5.1.1 Low Concurrency (Latency-Optimized)
 - Benchmark Command:
+
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -599,6 +593,7 @@ python3 -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+
 - Test Results:
 
 ```
@@ -640,10 +635,9 @@ Max ITL (ms):                            42.06
 ==================================================
 ```
 
-
-
 ### 5.1.2 Medium Concurrency (Balanced)
 - Benchmark Command:
+  
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -654,12 +648,9 @@ python3 -m sglang.bench_serving \
   --num-prompts 80 \
   --max-concurrency 16 \
   --request-rate inf
-
 ```
 
 - Test Results:
-
-
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -699,10 +690,9 @@ Max ITL (ms):                            2469.48
 ==================================================
 ```
 
-
-
 ### 5.1.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
+  
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -717,7 +707,6 @@ python3 -m sglang.bench_serving \
 
 
 - Test Results:
-
 
 ```
 ============ Serving Benchmark Result ============
@@ -757,6 +746,7 @@ P99 ITL (ms):                            194.81
 Max ITL (ms):                            654.74
 ==================================================
 ```
+
 ### 5.2 Accuracy Benchmark
 
 #### 5.2.1 GSM8K Benchmark
@@ -773,11 +763,9 @@ Max ITL (ms):                            654.74
 - Benchmark Command
 
 ```shell
-
 python3 -m sglang.test.few_shot_gsm8k --num-questions 200
 ```
 - **Result**:
-
 ```
 Accuracy: 0.965
 Invalid: 0.000
