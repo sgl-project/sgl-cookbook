@@ -20,7 +20,7 @@ const DeepSeekR1AdvancedConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: uiOptions.hardware
-          .filter(opt => opt.id === 'b200' || opt.id === 'h200')
+          .filter(opt => opt.id === 'b200' || opt.id === 'h200' || opt.id === 'mi300x' || opt.id === 'mi325x' || opt.id === 'mi355x')
           .map(opt => ({
             id: opt.id,
             label: opt.label,
@@ -36,19 +36,23 @@ const DeepSeekR1AdvancedConfigGenerator = () => {
         getDynamicItems: (values) => {
           return uiOptions.quantization.map(opt => {
             // H200 only supports FP8, disable FP4
-            if (values.hardware === 'h200' && opt.id === 'fp4') {
+            if (
+              (values.hardware === 'h200' && opt.id === 'fp4') ||
+              (values.hardware === 'mi300x' && opt.id === 'fp4') ||
+              (values.hardware === 'mi325x' && opt.id === 'fp4')
+            ) {
               return {
                 id: opt.id,
                 label: opt.label,
                 default: false,
                 disabled: true,
-                disabledReason: 'FP4 not supported on H200'
+                disabledReason: 'FP4 not supported on H200, MI300X, MI325X'
               };
             }
             return {
               id: opt.id,
               label: opt.label,
-              default: values.hardware === 'h200' ? opt.id === 'fp8' : opt.default
+              default: (values.hardware === 'h200' || values.hardware === 'mi300x' || values.hardware === 'mi325x') ? opt.id === 'fp8' : opt.default
             };
           });
         }

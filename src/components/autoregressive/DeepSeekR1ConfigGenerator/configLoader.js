@@ -62,7 +62,8 @@ const fieldToFlag = {
   stream_interval: 'stream-interval',
   quantization: 'quantization',
   decode_log_interval: 'decode-log-interval',
-  fp8_gemm_backend: 'fp8-gemm-backend'
+  fp8_gemm_backend: 'fp8-gemm-backend',
+  num_continuous_decode_steps: 'num-continuous-decode-steps'
 };
 
 /**
