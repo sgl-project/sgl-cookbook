@@ -45,7 +45,7 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-#### 4.2.1 Launch the docker 
+#### 4.2.1 Launch the docker
 ```shell
 docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
 ```
@@ -287,7 +287,7 @@ SGLANG_ROCM_FUSED_DECODE_MLA=0 python3 -m sglang.launch_server \
 - Benchmark Command
 
 ```shell
-python3 -m sglang.test.few_shot_gsm8k --num-questions 200 
+python3 -m sglang.test.few_shot_gsm8k --num-questions 200
 ```
 
 - **Result**:
