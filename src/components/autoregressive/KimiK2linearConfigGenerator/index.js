@@ -14,9 +14,15 @@ const KimiK2linearConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
+<<<<<<< HEAD
 		  { id: 'mi300x', label: 'MI300x', default: false },
           { id: 'mi325x', label: 'MI325x', default: false },
           { id: 'mi355x', label: 'MI355x', default: false }
+=======
+		  { id: 'mi300x', label: 'mi300x', default: false },
+          { id: 'mi325x', label: 'mi325x', default: false },
+          { id: 'mi355x', label: 'mi355x', default: false }
+>>>>>>> 3b5314e (Create index.js)
         ]
       },
       modelname: {
