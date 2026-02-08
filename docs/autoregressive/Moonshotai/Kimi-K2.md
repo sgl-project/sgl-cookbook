@@ -637,7 +637,7 @@ Max ITL (ms):                            42.06
 
 ### 5.1.2 Medium Concurrency (Balanced)
 - Benchmark Command:
-  
+
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -692,7 +692,7 @@ Max ITL (ms):                            2469.48
 
 ### 5.1.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
-  
+
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
@@ -757,7 +757,7 @@ Max ITL (ms):                            654.74
   SGLANG_ROCM_FUSED_DECODE_MLA=0 python -m sglang.launch_server \
   --model moonshotai/Kimi-K2-Instruct \
   --tp 8 \
-  --trust-remote-code 
+  --trust-remote-code
 ```
 
 - Benchmark Command
@@ -772,4 +772,3 @@ Invalid: 0.000
 Latency: 27.759 s
 Output throughput: 697.171 token/s
 ```
-
