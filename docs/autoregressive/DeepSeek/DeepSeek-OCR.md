@@ -15,7 +15,8 @@ sidebar_position: 1
 
 **Available Models:**
 
-- **Base Model**: [deepseek-ai/DeepSeek-OCR](https://huggingface.co/deepseek-ai/DeepSeek-OCR) - Recommended for OCR tasks
+- **DeepSeek-OCR** (OCR-1): [deepseek-ai/DeepSeek-OCR](https://huggingface.co/deepseek-ai/DeepSeek-OCR)
+- **DeepSeek-OCR-2**: [deepseek-ai/DeepSeek-OCR-2](https://huggingface.co/deepseek-ai/DeepSeek-OCR-2)
 
 **License:**
 To use DeepSeek-OCR, you must agree to DeepSeek's Community License. See [LICENSE](https://huggingface.co/deepseek-ai/DeepSeek-OCR/blob/main/LICENSE) for details.
@@ -50,6 +51,46 @@ For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
 
+### 4.2 Prompt Examples
+
+Recommended prompts from the model card:
+
+```
+<image>
+<|grounding|>Convert the document to markdown.
+```
+
+```
+<image>
+Free OCR.
+```
+
+### 4.3 OpenAI-Compatible Request Example
+
+```python
+import requests
+
+url = "http://localhost:30000/v1/chat/completions"
+
+data = {
+    "model": "deepseek-ai/DeepSeek-OCR-2",
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "<image>\n<|grounding|>Convert the document to markdown."},
+                {"type": "image_url", "image_url": {"url": "https://example.com/your_image.jpg"}},
+            ],
+        }
+    ],
+    "max_tokens": 512,
+}
+
+response = requests.post(url, json=data)
+print(response.text)
+```
+
+> You can replace `deepseek-ai/DeepSeek-OCR-2` with `deepseek-ai/DeepSeek-OCR`.
 
 ## 5. Benchmark
 
