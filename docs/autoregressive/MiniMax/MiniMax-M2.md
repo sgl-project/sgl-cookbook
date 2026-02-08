@@ -541,5 +541,5 @@ python3 -m sglang.launch_server \
  Accuracy: 0.950
  Invalid: 0.000
  Latency: 15.120 s
- Output throughput: 1306.711 token/s 
+ Output throughput: 1306.711 token/s
 ```
