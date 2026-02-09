@@ -95,35 +95,35 @@ T = TypeVar('T')
 def binary_search(sorted_list: Sequence[T], target: T) -> Optional[int]:
     """
     Perform binary search on a sorted list to find the index of a target element.
-    
+
     Args:
         sorted_list: A sequence (e.g., list, tuple) sorted in ascending order.
         target: The element to search for in the list.
-    
+
     Returns:
         The index of the target element if found, or None if not found.
-    
+
     Time Complexity: O(log n)
     Space Complexity: O(1)
-    
+
     Note:
         The function assumes the list is sorted in ascending order.
         If the list contains duplicate elements, it returns the index of one of them.
     """
     left = 0
     right = len(sorted_list) - 1
-    
+
     while left <= right:
         mid = (left + right) // 2
         mid_val = sorted_list[mid]
-        
+
         if mid_val == target:
             return mid
         elif mid_val < target:
             left = mid + 1
         else:
             right = mid - 1
-    
+
     return None
 ```
 
@@ -284,41 +284,41 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 1         
-Successful requests:                     10        
-Benchmark duration (s):                  20.92     
-Total input tokens:                      1997      
-Total input text tokens:                 1997      
-Total generated tokens:                  2798      
-Total generated tokens (retokenized):    2797      
-Request throughput (req/s):              0.48      
-Input token throughput (tok/s):          95.45     
-Output token throughput (tok/s):         133.74    
-Peak output token throughput (tok/s):    157.00    
-Peak concurrent requests:                3         
-Total token throughput (tok/s):          229.19    
-Concurrency:                             1.00      
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  20.92
+Total input tokens:                      1997
+Total input text tokens:                 1997
+Total generated tokens:                  2798
+Total generated tokens (retokenized):    2797
+Request throughput (req/s):              0.48
+Input token throughput (tok/s):          95.45
+Output token throughput (tok/s):         133.74
+Peak output token throughput (tok/s):    157.00
+Peak concurrent requests:                3
+Total token throughput (tok/s):          229.19
+Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   2088.44   
-Median E2E Latency (ms):                 2283.11   
-P90 E2E Latency (ms):                    3123.91   
-P99 E2E Latency (ms):                    3533.93   
+Mean E2E Latency (ms):                   2088.44
+Median E2E Latency (ms):                 2283.11
+P90 E2E Latency (ms):                    3123.91
+P99 E2E Latency (ms):                    3533.93
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          259.32    
-Median TTFT (ms):                        290.78    
-P99 TTFT (ms):                           327.80    
+Mean TTFT (ms):                          259.32
+Median TTFT (ms):                        290.78
+P99 TTFT (ms):                           327.80
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          6.61      
-Median TPOT (ms):                        6.60      
-P99 TPOT (ms):                           6.88      
+Mean TPOT (ms):                          6.61
+Median TPOT (ms):                        6.60
+P99 TPOT (ms):                           6.88
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           6.56      
-Median ITL (ms):                         6.53      
-P95 ITL (ms):                            7.55      
-P99 ITL (ms):                            8.01      
-Max ITL (ms):                            13.56     
+Mean ITL (ms):                           6.56
+Median ITL (ms):                         6.53
+P95 ITL (ms):                            7.55
+P99 ITL (ms):                            8.01
+Max ITL (ms):                            13.56
 ==================================================
 ```
 
@@ -342,41 +342,41 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 100       
-Successful requests:                     1000      
-Benchmark duration (s):                  176.11    
-Total input tokens:                      302118    
-Total input text tokens:                 302118    
-Total generated tokens:                  195775    
-Total generated tokens (retokenized):    195566    
-Request throughput (req/s):              5.68      
-Input token throughput (tok/s):          1715.51   
-Output token throughput (tok/s):         1111.66   
-Peak output token throughput (tok/s):    4362.00   
-Peak concurrent requests:                119       
-Total token throughput (tok/s):          2827.17   
-Concurrency:                             95.07     
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     1000
+Benchmark duration (s):                  176.11
+Total input tokens:                      302118
+Total input text tokens:                 302118
+Total generated tokens:                  195775
+Total generated tokens (retokenized):    195566
+Request throughput (req/s):              5.68
+Input token throughput (tok/s):          1715.51
+Output token throughput (tok/s):         1111.66
+Peak output token throughput (tok/s):    4362.00
+Peak concurrent requests:                119
+Total token throughput (tok/s):          2827.17
+Concurrency:                             95.07
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   16742.04  
-Median E2E Latency (ms):                 10633.62  
-P90 E2E Latency (ms):                    41046.49  
-P99 E2E Latency (ms):                    75870.86  
+Mean E2E Latency (ms):                   16742.04
+Median E2E Latency (ms):                 10633.62
+P90 E2E Latency (ms):                    41046.49
+P99 E2E Latency (ms):                    75870.86
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          437.66    
-Median TTFT (ms):                        388.08    
-P99 TTFT (ms):                           1355.31   
+Mean TTFT (ms):                          437.66
+Median TTFT (ms):                        388.08
+P99 TTFT (ms):                           1355.31
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          92.28     
-Median TPOT (ms):                        92.24     
-P99 TPOT (ms):                           265.24    
+Mean TPOT (ms):                          92.28
+Median TPOT (ms):                        92.24
+P99 TPOT (ms):                           265.24
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           83.73     
-Median ITL (ms):                         20.48     
-P95 ITL (ms):                            568.34    
-P99 ITL (ms):                            603.16    
-Max ITL (ms):                            1540.42   
+Mean ITL (ms):                           83.73
+Median ITL (ms):                         20.48
+P95 ITL (ms):                            568.34
+P99 ITL (ms):                            603.16
+Max ITL (ms):                            1540.42
 ==================================================
 ```
 
