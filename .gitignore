@@ -19,9 +19,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Claude
-.claude
-
 # Python
 __pycache__
 *.pyc
