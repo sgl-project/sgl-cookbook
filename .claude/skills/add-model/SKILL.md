@@ -12,7 +12,7 @@ This is an interactive, multi-step workflow. Collect inputs incrementally from t
 
 Ask the user for:
 
-1. **Model Card** - HuggingFace model name or URL (e.g., `Qwen/Qwen3-Coder-Next` or `https://huggingface.co/deepseek-ai/DeepSeek-V3`). Fetch the page to extract model description, supported capabilities, and other details.
+1. **Model Card** - HuggingFace model name or URL (e.g., `Qwen/Qwen3-Coder-Next` or `https://huggingface.co/deepseek-ai/DeepSeek-V3`). Fetch the page to extract model description, supported capabilities, and other details. If the model is not yet public or the page is inaccessible, ask the user to paste as much information as they know (model name, parameter count, architecture, capabilities, context length, etc.).
 2. **Model Variants** - Check if the model family has multiple size variants (e.g., 480B/30B) and quantization options (e.g., BF16/FP8). Ask the user which variants to include. This affects:
    - ConfigGenerator: `modelSize` option with `modelConfigs` per size, `quantization` option for BF16/FP8
    - YAML: `models` list with different `base_name` entries, `quantizations` arrays
