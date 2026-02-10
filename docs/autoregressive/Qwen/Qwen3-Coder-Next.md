@@ -254,7 +254,7 @@ Arguments: {"code": "import math\nmath.factorial(10)"}
 - Tensor Parallelism: 2
 - sglang version: 0.5.8+
 
-#### 5.1.1 Latency-Sensitive Benchmark
+#### 5.1.1 Standard Scenario Benchmark
 
 - Model Deployment Command:
 
@@ -266,6 +266,8 @@ python -m sglang.launch_server \
   --port 30000
 ```
 
+##### 5.1.1.1 Low Concurrency
+
 - Benchmark Command:
 
 ```shell
@@ -274,13 +276,197 @@ python3 -m sglang.bench_serving \
   --host 127.0.0.1 \
   --port 30000 \
   --model Qwen/Qwen3-Coder-Next \
-  --random-input-len 1024 \
-  --random-output-len 1024 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1
+```
+- Result:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  27.86
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4218
+Request throughput (req/s):              0.36
+Input token throughput (tok/s):          219.00
+Output token throughput (tok/s):         151.48
+Peak output token throughput (tok/s):    166.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          370.48
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   2784.14
+Median E2E Latency (ms):                 2258.08
+P90 E2E Latency (ms):                    5044.43
+P99 E2E Latency (ms):                    6130.52
+---------------Time to First Token----------------
+Mean TTFT (ms):                          161.68
+Median TTFT (ms):                        168.09
+P99 TTFT (ms):                           183.26
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          6.19
+Median TPOT (ms):                        6.23
+P99 TPOT (ms):                           6.32
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           6.23
+Median ITL (ms):                         6.23
+P95 ITL (ms):                            6.51
+P99 ITL (ms):                            6.64
+Max ITL (ms):                            13.45
+==================================================
+```
+
+##### 5.1.1.2 Medium Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 30000 \
+  --model Qwen/Qwen3-Coder-Next \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16
+```
+- Result:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  39.06
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40789
+Request throughput (req/s):              2.05
+Input token throughput (tok/s):          1015.62
+Output token throughput (tok/s):         1044.73
+Peak output token throughput (tok/s):    1664.00
+Peak concurrent requests:                21
+Total token throughput (tok/s):          2060.34
+Concurrency:                             14.16
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   6910.97
+Median E2E Latency (ms):                 7248.27
+P90 E2E Latency (ms):                    11612.63
+P99 E2E Latency (ms):                    13933.91
+---------------Time to First Token----------------
+Mean TTFT (ms):                          183.48
+Median TTFT (ms):                        156.50
+P99 TTFT (ms):                           311.46
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          13.61
+Median TPOT (ms):                        13.59
+P99 TPOT (ms):                           21.11
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           13.22
+Median ITL (ms):                         9.76
+P95 ITL (ms):                            10.43
+P99 ITL (ms):                            158.04
+Max ITL (ms):                            394.39
+==================================================
+```
+
+##### 5.1.1.3 High Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 30000 \
+  --model Qwen/Qwen3-Coder-Next \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100
+```
+- Result:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  102.81
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    252536
+Request throughput (req/s):              4.86
+Input token throughput (tok/s):          2429.99
+Output token throughput (tok/s):         2457.53
+Peak output token throughput (tok/s):    5299.00
+Peak concurrent requests:                109
+Total token throughput (tok/s):          4887.52
+Concurrency:                             94.28
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   19385.20
+Median E2E Latency (ms):                 17584.09
+P90 E2E Latency (ms):                    36762.15
+P99 E2E Latency (ms):                    42518.35
+---------------Time to First Token----------------
+Mean TTFT (ms):                          270.62
+Median TTFT (ms):                        159.65
+P99 TTFT (ms):                           938.90
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          38.57
+Median TPOT (ms):                        41.78
+P99 TPOT (ms):                           53.28
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           37.90
+Median ITL (ms):                         18.26
+P95 ITL (ms):                            167.82
+P99 ITL (ms):                            311.45
+Max ITL (ms):                            993.20
+==================================================
+```
+
+#### 5.1.2 Reasoning Scenario Benchmark
+
+- Model Deployment Command:
+
+```shell
+python -m sglang.launch_server \
+  --model Qwen/Qwen3-Coder-Next \
+  --tp 2 \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+##### 5.1.2.1 Low Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 30000 \
+  --model Qwen/Qwen3-Coder-Next \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 8000 \
   --num-prompts 10 \
   --max-concurrency 1
 ```
 
-- **Test Results:**
+- Result:
 
 ```
 ============ Serving Benchmark Result ============
@@ -288,41 +474,41 @@ Backend:                                 sglang
 Traffic request rate:                    inf
 Max request concurrency:                 1
 Successful requests:                     10
-Benchmark duration (s):                  20.92
-Total input tokens:                      1997
-Total input text tokens:                 1997
-Total generated tokens:                  2798
-Total generated tokens (retokenized):    2797
-Request throughput (req/s):              0.48
-Input token throughput (tok/s):          95.45
-Output token throughput (tok/s):         133.74
-Peak output token throughput (tok/s):    157.00
-Peak concurrent requests:                3
-Total token throughput (tok/s):          229.19
+Benchmark duration (s):                  285.02
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  44462
+Total generated tokens (retokenized):    44432
+Request throughput (req/s):              0.04
+Input token throughput (tok/s):          21.41
+Output token throughput (tok/s):         156.00
+Peak output token throughput (tok/s):    173.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          177.40
 Concurrency:                             1.00
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   2088.44
-Median E2E Latency (ms):                 2283.11
-P90 E2E Latency (ms):                    3123.91
-P99 E2E Latency (ms):                    3533.93
+Mean E2E Latency (ms):                   28499.54
+Median E2E Latency (ms):                 30424.65
+P90 E2E Latency (ms):                    49132.26
+P99 E2E Latency (ms):                    51075.28
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          259.32
-Median TTFT (ms):                        290.78
-P99 TTFT (ms):                           327.80
+Mean TTFT (ms):                          95.51
+Median TTFT (ms):                        93.86
+P99 TTFT (ms):                           112.56
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          6.61
-Median TPOT (ms):                        6.60
-P99 TPOT (ms):                           6.88
+Mean TPOT (ms):                          6.24
+Median TPOT (ms):                        6.30
+P99 TPOT (ms):                           6.60
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           6.56
-Median ITL (ms):                         6.53
-P95 ITL (ms):                            7.55
-P99 ITL (ms):                            8.01
-Max ITL (ms):                            13.56
+Mean ITL (ms):                           6.39
+Median ITL (ms):                         6.34
+P95 ITL (ms):                            7.16
+P99 ITL (ms):                            7.42
+Max ITL (ms):                            12.48
 ==================================================
 ```
 
-#### 5.1.2 Throughput-Sensitive Benchmark
+##### 5.1.2.2 Medium Concurrency
 
 - Benchmark Command:
 
@@ -332,51 +518,286 @@ python3 -m sglang.bench_serving \
   --host 127.0.0.1 \
   --port 30000 \
   --model Qwen/Qwen3-Coder-Next \
-  --random-input-len 1024 \
-  --random-output-len 1024 \
-  --num-prompts 1000 \
-  --max-concurrency 100
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 8000 \
+  --num-prompts 80 \
+  --max-concurrency 16
 ```
 
-- **Test Results:**
+- Result:
 
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
 Traffic request rate:                    inf
-Max request concurrency:                 100
-Successful requests:                     1000
-Benchmark duration (s):                  176.11
-Total input tokens:                      302118
-Total input text tokens:                 302118
-Total generated tokens:                  195775
-Total generated tokens (retokenized):    195566
-Request throughput (req/s):              5.68
-Input token throughput (tok/s):          1715.51
-Output token throughput (tok/s):         1111.66
-Peak output token throughput (tok/s):    4362.00
-Peak concurrent requests:                119
-Total token throughput (tok/s):          2827.17
-Concurrency:                             95.07
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  237.77
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  318306
+Total generated tokens (retokenized):    315646
+Request throughput (req/s):              0.34
+Input token throughput (tok/s):          166.83
+Output token throughput (tok/s):         1338.72
+Peak output token throughput (tok/s):    1727.00
+Peak concurrent requests:                19
+Total token throughput (tok/s):          1505.55
+Concurrency:                             13.88
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   16742.04
-Median E2E Latency (ms):                 10633.62
-P90 E2E Latency (ms):                    41046.49
-P99 E2E Latency (ms):                    75870.86
+Mean E2E Latency (ms):                   41266.21
+Median E2E Latency (ms):                 41010.10
+P90 E2E Latency (ms):                    77574.22
+P99 E2E Latency (ms):                    82688.04
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          437.66
-Median TTFT (ms):                        388.08
-P99 TTFT (ms):                           1355.31
+Mean TTFT (ms):                          140.73
+Median TTFT (ms):                        84.52
+P99 TTFT (ms):                           365.86
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          92.28
-Median TPOT (ms):                        92.24
-P99 TPOT (ms):                           265.24
+Mean TPOT (ms):                          10.32
+Median TPOT (ms):                        10.38
+P99 TPOT (ms):                           10.87
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           83.73
-Median ITL (ms):                         20.48
-P95 ITL (ms):                            568.34
-P99 ITL (ms):                            603.16
-Max ITL (ms):                            1540.42
+Mean ITL (ms):                           10.34
+Median ITL (ms):                         10.19
+P95 ITL (ms):                            10.75
+P99 ITL (ms):                            11.18
+Max ITL (ms):                            206.79
+==================================================
+```
+
+##### 5.1.2.3 High Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 30000 \
+  --model Qwen/Qwen3-Coder-Next \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 8000 \
+  --num-prompts 320 \
+  --max-concurrency 64
+```
+
+- Result:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     320
+Benchmark duration (s):                  384.82
+Total input tokens:                      158939
+Total input text tokens:                 158939
+Total generated tokens:                  1301025
+Total generated tokens (retokenized):    1299908
+Request throughput (req/s):              0.83
+Input token throughput (tok/s):          413.02
+Output token throughput (tok/s):         3380.83
+Peak output token throughput (tok/s):    4317.00
+Peak concurrent requests:                69
+Total token throughput (tok/s):          3793.85
+Concurrency:                             56.42
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   67847.54
+Median E2E Latency (ms):                 70724.38
+P90 E2E Latency (ms):                    120888.83
+P99 E2E Latency (ms):                    133234.48
+---------------Time to First Token----------------
+Mean TTFT (ms):                          212.24
+Median TTFT (ms):                        115.96
+P99 TTFT (ms):                           652.93
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          16.76
+Median TPOT (ms):                        16.99
+P99 TPOT (ms):                           18.18
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           16.64
+Median ITL (ms):                         15.83
+P95 ITL (ms):                            31.64
+P99 ITL (ms):                            90.85
+Max ITL (ms):                            576.60
+==================================================
+```
+
+#### 5.1.3 Summarization Scenario Benchmark
+
+##### 5.1.3.1 Low Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 30000 \
+  --model Qwen/Qwen3-Coder-Next \
+  --dataset-name random \
+  --random-input-len 8000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1
+```
+
+- Result:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  29.42
+Total input tokens:                      41941
+Total input text tokens:                 41941
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4220
+Request throughput (req/s):              0.34
+Input token throughput (tok/s):          1425.35
+Output token throughput (tok/s):         143.42
+Peak output token throughput (tok/s):    169.00
+Peak concurrent requests:                3
+Total token throughput (tok/s):          1568.77
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   2941.19
+Median E2E Latency (ms):                 2411.84
+P90 E2E Latency (ms):                    5661.26
+P99 E2E Latency (ms):                    6497.45
+---------------Time to First Token----------------
+Mean TTFT (ms):                          139.46
+Median TTFT (ms):                        160.33
+P99 TTFT (ms):                           184.30
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          6.56
+Median TPOT (ms):                        6.65
+P99 TPOT (ms):                           7.29
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           6.65
+Median ITL (ms):                         6.68
+P95 ITL (ms):                            7.39
+P99 ITL (ms):                            7.51
+Max ITL (ms):                            16.34
+==================================================
+```
+
+##### 5.1.3.2 Medium Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 30000 \
+  --model Qwen/Qwen3-Coder-Next \
+  --dataset-name random \
+  --random-input-len 8000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16
+```
+
+- Result:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  41.62
+Total input tokens:                      300020
+Total input text tokens:                 300020
+Total generated tokens:                  41669
+Total generated tokens (retokenized):    41664
+Request throughput (req/s):              1.92
+Input token throughput (tok/s):          7208.67
+Output token throughput (tok/s):         1001.19
+Peak output token throughput (tok/s):    1536.00
+Peak concurrent requests:                21
+Total token throughput (tok/s):          8209.86
+Concurrency:                             14.27
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   7421.29
+Median E2E Latency (ms):                 7985.77
+P90 E2E Latency (ms):                    12122.09
+P99 E2E Latency (ms):                    14595.05
+---------------Time to First Token----------------
+Mean TTFT (ms):                          248.49
+Median TTFT (ms):                        179.25
+P99 TTFT (ms):                           915.90
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          14.13
+Median TPOT (ms):                        14.28
+P99 TPOT (ms):                           24.02
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           13.80
+Median ITL (ms):                         10.46
+P95 ITL (ms):                            11.00
+P99 ITL (ms):                            173.14
+Max ITL (ms):                            823.32
+==================================================
+```
+
+##### 5.1.3.3 High Concurrency
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host 127.0.0.1 \
+  --port 30000 \
+  --model Qwen/Qwen3-Coder-Next \
+  --dataset-name random \
+  --random-input-len 8000 \
+  --random-output-len 1000 \
+  --num-prompts 320 \
+  --max-concurrency 64
+```
+
+- Result:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 64
+Successful requests:                     320
+Benchmark duration (s):                  85.74
+Total input tokens:                      1273893
+Total input text tokens:                 1273893
+Total generated tokens:                  170000
+Total generated tokens (retokenized):    169983
+Request throughput (req/s):              3.73
+Input token throughput (tok/s):          14858.12
+Output token throughput (tok/s):         1982.80
+Peak output token throughput (tok/s):    3734.00
+Peak concurrent requests:                70
+Total token throughput (tok/s):          16840.92
+Concurrency:                             59.75
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   16008.12
+Median E2E Latency (ms):                 15460.65
+P90 E2E Latency (ms):                    27705.81
+P99 E2E Latency (ms):                    32874.74
+---------------Time to First Token----------------
+Mean TTFT (ms):                          476.99
+Median TTFT (ms):                        177.50
+P99 TTFT (ms):                           3014.39
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          29.81
+Median TPOT (ms):                        31.19
+P99 TPOT (ms):                           45.53
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           29.29
+Median ITL (ms):                         15.75
+P95 ITL (ms):                            173.94
+P99 ITL (ms):                            202.00
+Max ITL (ms):                            2783.23
 ==================================================
 ```
 
