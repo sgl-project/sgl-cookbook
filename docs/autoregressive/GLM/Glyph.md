@@ -61,9 +61,7 @@ Glyph supports thinking mode for enhanced reasoning. Enable the reasoning parser
 python -m sglang.launch_server \
   --model-path zai-org/Glyph \
   --reasoning-parser glm45 \
-  --tp 4 \
-  --host 0.0.0.0 \
-  --port 30000
+  --tp 4
 ```
 
 **Streaming with Thinking Process:**
@@ -138,9 +136,7 @@ python -m sglang.launch_server \
   --model-path zai-org/Glyph \
   --reasoning-parser glm45 \
   --tool-call-parser glm45 \
-  --tp 4 \
-  --host 0.0.0.0 \
-  --port 30000
+  --tp 4
 ```
 
 **Python Example (with Thinking Process):**
@@ -313,37 +309,7 @@ This section uses **industry-standard configurations** for comparable benchmark 
 
 We use industry-standard benchmark configurations to ensure results are comparable across frameworks and hardware platforms.
 
-#### 5.1.1 Standard Test Scenarios
-
-Three core scenarios reflect real-world usage patterns:
-
-| Scenario                | Input Length | Output Length | Use Case                                      |
-| ----------------------- | ------------ | ------------- | --------------------------------------------- |
-| **Chat**          | 1K           | 1K            | Most common conversational AI workload        |
-| **Reasoning**     | 1K           | 8K            | Long-form generation, complex reasoning tasks |
-| **Summarization** | 8K           | 1K            | Document summarization, RAG retrieval         |
-
-#### 5.1.2 Concurrency Levels
-
-Test each scenario at three concurrency levels to capture the throughput vs. latency tradeoff (Pareto frontier):
-
-- **Low Concurrency**: `--max-concurrency 1` (Latency-optimized)
-- **Medium Concurrency**: `--max-concurrency 16` (Balanced)
-- **High Concurrency**: `--max-concurrency 100` for Chat, `--max-concurrency 64` for Reasoning/Summarization (Throughput-optimized)
-
-#### 5.1.3 Number of Prompts
-
-For each concurrency level, configure `num_prompts` to simulate realistic user loads:
-
-- **Quick Test**: `num_prompts = concurrency × 1` (minimal test)
-- **Recommended**: `num_prompts = concurrency × 5` (standard benchmark)
-- **Stable Measurements**: `num_prompts = concurrency × 10` (production-grade)
-
----
-
-#### 5.1.4 Benchmark Commands
-
-**Scenario 1: Chat (1K/1K) - Most Important**
+#### 5.1.1 Standard Scenario Benchmark
 
 - **Model Deployment**
 ```bash
@@ -352,8 +318,8 @@ python -m sglang.launch_server \
   --tp 2
 ```
 
-- Low Concurrency (Latency-Optimized)
-
+##### 5.1.1.1 Low Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -366,6 +332,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -405,8 +372,8 @@ Max ITL (ms):                            7.46
 ==================================================
 ```
 
-- Medium Concurrency (Balanced)
-
+##### 5.1.1.2 Medium Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -419,6 +386,7 @@ python -m sglang.bench_serving \
   --request-rate inf
 ```
 
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -458,8 +426,8 @@ Max ITL (ms):                            25.14
 ==================================================
 ```
 
-- High Concurrency (Throughput-Optimized)
-
+##### 5.1.1.3 High Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -471,7 +439,7 @@ python -m sglang.bench_serving \
   --max-concurrency 100 \
   --request-rate inf
 ```
-
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -511,10 +479,10 @@ Max ITL (ms):                            52.93
 ==================================================
 ```
 
-**Scenario 2: Reasoning (1K/8K)**
+#### 5.1.2 Reasoning Scenario Benchmark
 
-- Low Concurrency
-
+##### 5.1.2.1 Low Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -526,7 +494,7 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
-
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -566,8 +534,8 @@ Max ITL (ms):                            5.67
 ==================================================
 ```
 
-- Medium Concurrency
-
+##### 5.1.2.2 Medium Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -579,7 +547,7 @@ python -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
-
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -619,8 +587,8 @@ Max ITL (ms):                            522.26
 ==================================================
 ```
 
-- High Concurrency
-
+##### 5.1.2.3 High Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -632,7 +600,7 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
-
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -672,10 +640,10 @@ Max ITL (ms):                            136.00
 ==================================================
 ```
 
-**Scenario 3: Summarization (8K/1K)**
+#### 5.1.3 Summarization Scenario Benchmark
 
-- Low
-
+#### 5.1.3.1 Low Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -687,7 +655,7 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
-
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -727,8 +695,8 @@ Max ITL (ms):                            4.95
 ==================================================
 ```
 
-- Medium Concurrency
-
+##### 5.1.3.2 Medium Concurrency
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -740,7 +708,7 @@ python -m sglang.bench_serving \
   --max-concurrency 16 \
   --request-rate inf
 ```
-
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -780,8 +748,9 @@ Max ITL (ms):                            36.01
 ==================================================
 ```
 
-- High Concurrency
+##### 5.1.3.3 High Concurrency
 
+- **Benchmark Command**:
 ```bash
 python -m sglang.bench_serving \
   --backend sglang \
@@ -793,7 +762,7 @@ python -m sglang.bench_serving \
   --max-concurrency 64 \
   --request-rate inf
 ```
-
+- **Test Results**:
 ```
 ============ Serving Benchmark Result ============
 Backend:                                 sglang
@@ -833,30 +802,6 @@ Max ITL (ms):                            2609.64
 ==================================================
 ```
 
-#### 5.1.5 Understanding the Results
-
-**Key Metrics:**
-
-- **Request Throughput (req/s)**: Number of requests processed per second
-- **Output Token Throughput (tok/s)**: Total tokens generated per second
-- **Mean TTFT (ms)**: Time to First Token - measures responsiveness
-- **Mean TPOT (ms)**: Time Per Output Token - measures generation speed
-- **Mean ITL (ms)**: Inter-Token Latency - measures streaming consistency
-
-**Why These Configurations Matter:**
-
-- **1K/1K (Chat)**: Represents the most common conversational AI workload. This is the highest priority scenario for most deployments.
-- **1K/8K (Reasoning)**: Tests long-form generation capabilities crucial for complex reasoning, code generation, and detailed explanations.
-- **8K/1K (Summarization)**: Evaluates performance with large context inputs, essential for RAG systems, document Q&A, and summarization tasks.
-- **Variable Concurrency**: Captures the Pareto frontier - the optimal tradeoff between throughput and latency at different load levels. Low concurrency shows best-case latency, high concurrency shows maximum throughput.
-
-**Interpreting Results:**
-
-- Compare your results against baseline numbers for your hardware
-- Higher throughput at same latency = better performance
-- Lower TTFT = more responsive user experience
-- Lower TPOT = faster generation speed
-
 ### 5.2 Accuracy Benchmark
 
 Document model accuracy on standard benchmarks:
@@ -867,8 +812,7 @@ Document model accuracy on standard benchmarks:
 
 ```bash
 python -m sglang.test.few_shot_gsm8k \
-  --num-questions 200 \
-  --port 30000
+  --num-questions 200
 ```
 
 - Test Result

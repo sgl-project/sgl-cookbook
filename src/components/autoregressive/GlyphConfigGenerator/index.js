@@ -80,7 +80,7 @@ const GlyphConfigGenerator = () => {
       if (isAMD) {
         cmd = 'python3 -m sglang.launch_server \\\n';
         cmd += `  --model-path ${modelName}`;
-        cmd += ` \\\n  --tp-size ${hwConfig.tp}`;
+        cmd += ` \\\n  --tp ${hwConfig.tp}`;
       } else {
         cmd = 'python -m sglang.launch_server \\\n';
         cmd += `  --model ${modelName}`;
