@@ -35,7 +35,7 @@ For more detailed configuration tips, please refer to [DeepSeek V3/V3.1/R1 Usage
 
 For basic API usage and request examples, please refer to:
 
-- [Basic API Usage](https://docs.sglang.ai/get_started/quick_start.html)
+- [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html)
 
 ### 4.2 Advanced Usage
 

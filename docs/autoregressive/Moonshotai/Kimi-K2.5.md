@@ -38,7 +38,7 @@ import KimiK25ConfigGenerator from '@site/src/components/autoregressive/KimiK25C
 
 ### 4.1 Basic Usage
 
-See [Basic API Usage](https://docs.sglang.ai/get_started/quick_start.html).
+See [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html).
 
 ### 4.2 Advanced Usage
 
