@@ -34,6 +34,17 @@ Pull the official pre-built image from Docker Hub to ensure all dependencies are
 docker pull flashlabs/chroma:latest
 ```
 
+For AMD (ROCm) systems, use the SGLang ROCm image (do not use `flashlabs/chroma:latest`, which is the CUDA image).
+Pick the tag based on your GPU:
+
+- MI355/MI350 series: `...-mi35x`
+- MI300 series: `...-mi30x`
+
+```bash
+# Example (MI355/MI350). Swap to mi30x for MI300.
+docker pull lmsysorg/sglang:v0.5.8-rocm700-mi35x
+```
+
 ### Step 2: Download Model Weights
 
 Download the **Chroma-4B** weights from Hugging Face. You can choose one of the following methods:
@@ -66,6 +77,8 @@ cd Chroma-SGLang
 
 ### Step 4: Run the Server
 
+#### NVIDIA (CUDA)
+
 ```bash
 docker run -d \
   --gpus all \
@@ -86,6 +99,25 @@ or run simply the following one line command
 
 ```bash
 docker-compose up -d
+```
+
+#### AMD (ROCm)
+
+Then run the ROCm image:
+
+```bash
+docker run -it --rm \
+  --ipc=host --network=host \
+  --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+  --group-add video \
+  --device=/dev/kfd --device=/dev/dri \
+  -v "your_Chroma-SGLang_path":/workspace/Chroma-SGLang \
+  -v "your_chroma_path":/model \
+  -w /workspace/Chroma-SGLang \
+  -e CHROMA_MODEL_PATH=/model \
+  -e DP_SIZE=1 \
+  lmsysorg/sglang:v0.5.8-rocm700-mi35x \  # use mi30x for MI300
+  bash -lc "pip install av && python3 -m uvicorn api_server:app --host 0.0.0.0 --port 8000 --workers 1"
 ```
 
 ## 5. Client Usage Example
