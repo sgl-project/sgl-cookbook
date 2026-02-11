@@ -42,6 +42,7 @@ const sidebars = {
             'autoregressive/DeepSeek/DeepSeek-V3',
             'autoregressive/DeepSeek/DeepSeek-R1',
             'autoregressive/DeepSeek/DeepSeek-OCR',
+            'autoregressive/DeepSeek/DeepSeek-OCR-2',
           ],
         },
         {

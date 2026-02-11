@@ -19,7 +19,6 @@ const DeepSeekOCR2ConfigGenerator = () => {
         title: 'Quantization',
         items: [
           { id: 'fp16', label: 'FP16', default: true },
-          { id: 'fp8', label: 'FP8', default: false },
         ]
       },
       strategy: {
@@ -35,21 +34,16 @@ const DeepSeekOCR2ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, quantization, strategy } = values;
+      const { strategy } = values;
 
       const strategyArray = Array.isArray(strategy) ? strategy : [];
 
       // Model path
       let modelPath = 'deepseek-ai/DeepSeek-OCR-2';
 
-      let cmd = 'python3 -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model-path ${modelPath}`;
-
-      if (quantization === 'fp8') {
-        cmd += ` \\\n  --dtype auto`;
-      } else {
-        cmd += ` \\\n  --dtype float16`;
-      }
+      cmd += ` \\\n  --enable-multimodal`;
 
       // TP strategy
       if (strategyArray.includes('tp')) {
@@ -66,7 +60,7 @@ const DeepSeekOCR2ConfigGenerator = () => {
         cmd += ` \\\n  --ep 1`;
       }
 
-      cmd += ` \\\n  --host 0.0.0.0 \\\n  --port 8000`;
+      cmd += ` \\\n  --host 0.0.0.0 \\\n  --port 30000`;
 
       return cmd;
     }
