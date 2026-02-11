@@ -53,7 +53,7 @@ Create `docs/autoregressive/<Vendor>/<ModelName>.md` with ALL sections pre-popul
 
 **Benchmark commands reference:**
 - GSM8K: `python benchmark/gsm8k/bench_sglang.py --port <port>`
-- MMLU: `cd benchmark/mmlu && bash download_data.sh && python3 bench_sglang.py --port <port>`
+- MMLU: `python benchmark/mmlu/bench_sglang.py --port <port>`
 - Latency benchmark: `python3 -m sglang.bench_serving --backend sglang --num-prompts 10 --max-concurrency 1 ...`
 - Throughput benchmark: `python3 -m sglang.bench_serving --backend sglang --num-prompts 1000 --max-concurrency 100 ...`
 

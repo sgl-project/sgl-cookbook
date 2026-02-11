@@ -60,8 +60,13 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/GLM/GLM-5',
+              label: 'GLM-5 [NEW]',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/GLM/GLM-OCR',
-              label: 'GLM-OCR [NEW]',
+              label: 'GLM-OCR',
             },
             'autoregressive/GLM/Glyph',
             'autoregressive/GLM/GLM-4.5V',
@@ -72,7 +77,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/GLM/GLM-4.7-Flash',
-              label: 'GLM-4.7-Flash [NEW]',
+              label: 'GLM-4.7-Flash',
             },
           ],
         },

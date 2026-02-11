@@ -1,0 +1,353 @@
+vendor: zai-org
+families:
+- name: GLM-5
+  description: GLM-5 744B (40B active) MoE model with reasoning, coding, and agentic capabilities
+  models:
+  - name: GLM-5
+    model_path: zai-org/GLM-5
+    attributes:
+      llm:
+        thinking_capability: null
+        tool_parser: glm47
+        reasoning_parser: glm45
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 32
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 32
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 32
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+  - name: GLM-5-FP8
+    model_path: zai-org/GLM-5-FP8
+    attributes:
+      llm:
+        thinking_capability: null
+        tool_parser: glm47
+        reasoning_parser: glm45
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
