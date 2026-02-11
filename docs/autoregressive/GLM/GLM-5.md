@@ -379,7 +379,7 @@ The user is asking for the weather in Beijing. I have access to a get_weather fu
 Since the user didn't specify a unit preference and it's optional, I should not ask about it or make up a value. I'll just call the function with the required location parameter.I'll get the current weather in Beijing for you.
 =============== Content =================
 Tool Call: get_weather
-   Arguments: 
+   Arguments:
 Tool Call: None
    Arguments: {
 Tool Call: None
@@ -417,42 +417,42 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 1         
-Successful requests:                     10        
-Benchmark duration (s):                  35.78     
-Total input tokens:                      6101      
-Total input text tokens:                 6101      
-Total generated tokens:                  4220      
-Total generated tokens (retokenized):    4213      
-Request throughput (req/s):              0.28      
-Input token throughput (tok/s):          170.54    
-Output token throughput (tok/s):         117.96    
-Peak output token throughput (tok/s):    148.00    
-Peak concurrent requests:                2         
-Total token throughput (tok/s):          288.50    
-Concurrency:                             1.00      
-Accept length:                           3.48      
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  35.78
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4213
+Request throughput (req/s):              0.28
+Input token throughput (tok/s):          170.54
+Output token throughput (tok/s):         117.96
+Peak output token throughput (tok/s):    148.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          288.50
+Concurrency:                             1.00
+Accept length:                           3.48
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   3576.31   
-Median E2E Latency (ms):                 2935.97   
-P90 E2E Latency (ms):                    5908.97   
-P99 E2E Latency (ms):                    8588.08   
+Mean E2E Latency (ms):                   3576.31
+Median E2E Latency (ms):                 2935.97
+P90 E2E Latency (ms):                    5908.97
+P99 E2E Latency (ms):                    8588.08
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          290.88    
-Median TTFT (ms):                        282.34    
-P99 TTFT (ms):                           332.27    
+Mean TTFT (ms):                          290.88
+Median TTFT (ms):                        282.34
+P99 TTFT (ms):                           332.27
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          7.54      
-Median TPOT (ms):                        6.97      
-P99 TPOT (ms):                           9.04      
+Mean TPOT (ms):                          7.54
+Median TPOT (ms):                        6.97
+P99 TPOT (ms):                           9.04
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           7.80      
-Median ITL (ms):                         6.81      
-P95 ITL (ms):                            13.51     
-P99 ITL (ms):                            26.99     
-Max ITL (ms):                            29.50     
+Mean ITL (ms):                           7.80
+Median ITL (ms):                         6.81
+P95 ITL (ms):                            13.51
+P99 ITL (ms):                            26.99
+Max ITL (ms):                            29.50
 ==================================================
 ```
 
@@ -472,42 +472,42 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 100       
-Successful requests:                     1000      
-Benchmark duration (s):                  411.74    
-Total input tokens:                      502493    
-Total input text tokens:                 502493    
-Total generated tokens:                  500251    
-Total generated tokens (retokenized):    499614    
-Request throughput (req/s):              2.43      
-Input token throughput (tok/s):          1220.41   
-Output token throughput (tok/s):         1214.97   
-Peak output token throughput (tok/s):    2648.00   
-Peak concurrent requests:                105       
-Total token throughput (tok/s):          2435.38   
-Concurrency:                             96.30     
-Accept length:                           3.50      
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     1000
+Benchmark duration (s):                  411.74
+Total input tokens:                      502493
+Total input text tokens:                 502493
+Total generated tokens:                  500251
+Total generated tokens (retokenized):    499614
+Request throughput (req/s):              2.43
+Input token throughput (tok/s):          1220.41
+Output token throughput (tok/s):         1214.97
+Peak output token throughput (tok/s):    2648.00
+Peak concurrent requests:                105
+Total token throughput (tok/s):          2435.38
+Concurrency:                             96.30
+Accept length:                           3.50
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   39648.76  
-Median E2E Latency (ms):                 39058.12  
-P90 E2E Latency (ms):                    57009.82  
-P99 E2E Latency (ms):                    68880.33  
+Mean E2E Latency (ms):                   39648.76
+Median E2E Latency (ms):                 39058.12
+P90 E2E Latency (ms):                    57009.82
+P99 E2E Latency (ms):                    68880.33
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          20613.80  
-Median TTFT (ms):                        21429.21  
-P99 TTFT (ms):                           29543.17  
+Mean TTFT (ms):                          20613.80
+Median TTFT (ms):                        21429.21
+P99 TTFT (ms):                           29543.17
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          38.73     
-Median TPOT (ms):                        36.52     
-P99 TPOT (ms):                           67.09     
+Mean TPOT (ms):                          38.73
+Median TPOT (ms):                        36.52
+P99 TPOT (ms):                           67.09
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           38.13     
-Median ITL (ms):                         16.57     
-P95 ITL (ms):                            86.01     
-P99 ITL (ms):                            164.88    
-Max ITL (ms):                            1307.02   
+Mean ITL (ms):                           38.13
+Median ITL (ms):                         16.57
+P95 ITL (ms):                            86.01
+P99 ITL (ms):                            164.88
+Max ITL (ms):                            1307.02
 ==================================================
 ```
 
