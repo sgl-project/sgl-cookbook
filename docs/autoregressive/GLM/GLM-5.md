@@ -25,7 +25,7 @@ With advances in both pre-training (28.5T tokens) and post-training via [slime](
 
 SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
 
-GLM-5 requires a specific SGLang Docker image:
+GLM-5 requires a specific SGLang Docker image or install from source:
 
 ```bash
 # For Hopper GPUs (H100/H200)
@@ -36,6 +36,10 @@ docker pull lmsysorg/sglang:glm5-blackwell
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
+
+:::note Blackwell (B200) Source Build
+If you build SGLang from source on Blackwell GPUs, you need to manually compile `sgl-kernel` due to existing kernel issues (Hopper GPUs are unaffected). See [sglang#18595](https://github.com/sgl-project/sglang/issues/18595) for details.
+:::
 
 ## 3. Model Deployment
 
