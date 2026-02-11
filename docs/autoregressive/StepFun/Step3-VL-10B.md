@@ -515,7 +515,7 @@ python3 -m sglang.bench_serving \
   --random-input-len 128 \
   --random-output-len 1024 \
   --num-prompts 10 \
-  --max-concurrency 1 
+  --max-concurrency 1
 ```
 
 - Result:
