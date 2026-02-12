@@ -180,6 +180,17 @@ const sidebars = {
               label: 'Step3.5 [NEW]',
             },
           ],
+        },
+        {
+          type: 'category',
+          label: 'LLaDA',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/LLaDA/LLaDA-2.1',
+              label: 'LLaDA 2.1 [NEW]',
+            },
+          ],
         }
       ],
     },
