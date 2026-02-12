@@ -229,4 +229,3 @@ const Wan2_1ConfigGenerator = () => {
 };
 
 export default Wan2_1ConfigGenerator;
-
