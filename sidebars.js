@@ -180,6 +180,17 @@ const sidebars = {
               label: 'Step3.5 [NEW]',
             },
           ],
+        },
+        {
+          type: 'category',
+          label: 'InclusionAI',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/InclusionAI/Ring-2.5-1T',
+              label: 'Ring-2.5-1T [NEW]',
+            },
+          ],
         }
       ],
     },
