@@ -71,7 +71,163 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-TODO: Add reasoning mode and tool calling examples after testing.
+#### 4.2.1 Reasoning Parser
+
+To enable reasoning output separation, add `--reasoning-parser deepseek-r1` when launching the server. The thinking process is returned via `reasoning_content` in the streaming response.
+
+```shell
+python -m sglang.launch_server \
+  --model-path inclusionAI/Ring-2.5-1T \
+  --tp 8 \
+  --trust-remote-code \
+  --reasoning-parser deepseek-r1 \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY"
+)
+
+response = client.chat.completions.create(
+    model="inclusionAI/Ring-2.5-1T",
+    messages=[
+        {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
+    ],
+    max_tokens=2048,
+    stream=True
+)
+
+for chunk in response:
+    if chunk.choices and len(chunk.choices) > 0:
+        delta = chunk.choices[0].delta
+
+        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+            print(delta.reasoning_content, end="", flush=True)
+
+        if delta.content:
+            print(delta.content, end="", flush=True)
+
+print()
+```
+
+<details>
+<summary>Output Example</summary>
+
+````
+We are asked: "Solve this problem step by step: What is 15% of 240?" This is a straightforward percentage calculation. We need to show step-by-step solution.
+
+We can compute 15% of 240 as (15/100)*240 = 0.15 * 240 = 36.
+
+But we need to present step by step. Also ensure it's clear.
+
+We could also break down: 10% of 240 = 24, then 5% = 12, so 15% = 36.
+
+But any method is fine.
+
+We'll produce a solution with explanation: "To find 15% of 240, multiply 240 by 0.15 (or 15/100)."
+
+We'll show:
+
+15% = 15/100 = 0.15
+
+Then 0.15 × 240 = 36.
+
+Alternatively: (15/100) × 240 = (15 × 240) / 100 = 3600/100 = 36.
+
+Finally, answer: 36.
+
+We can also illustrate stepwise: "First, convert the percentage to a decimal: 15% = 0.15. Then multiply by the number: 0.15 × 240 = 36."
+
+We'll present as a final answer: \boxed{36}.
+
+However, we need to provide step-by-step solution as per instructions. We'll write a full explanation.
+
+We can also use the fraction method: 15% of 240 = (15/100)*240 = (15*240)/100 = 3600/100 = 36.
+
+Alr.
+
+I think that's it.
+
+
+**Step 1:** Write 15% as a fraction or decimal.
+\[ 15\% = \frac{15}{100} = 0.15\]
+
+**Step 2:** Multiply the number (240) by this fraction/decimal.
+\[ 240 \times 0.15 = 36\]
+
+Alternatively, using the fraction:
+\[ \frac{15}{100} \times 240 = \frac{15 \times 240}{100} = \frac{3600}{100} = 36\]
+
+**Conclusion:** 15% of 240 is 36.
+
+\[ \boxed{36} \]
+````
+
+</details>
+
+#### 4.2.2 Tool Calling
+
+To enable tool calling, add `--tool-call-parser qwen` when launching the server.
+
+```shell
+python -m sglang.launch_server \
+  --model-path inclusionAI/Ring-2.5-1T \
+  --tp 8 \
+  --trust-remote-code \
+  --tool-call-parser qwen \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY"
+)
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city name"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+response = client.chat.completions.create(
+    model="inclusionAI/Ring-2.5-1T",
+    messages=[
+        {"role": "user", "content": "What's the weather in Beijing?"}
+    ],
+    tools=tools
+)
+
+print(response.choices[0].message.tool_calls)
+```
+
+**Output Example:**
+
+```
+[ChatCompletionMessageFunctionToolCall(id='call_770360e31d194ed79d32cd8c', function=Function(arguments='{"location": "Beijing"}', name='get_weather'), type='function', index=0)]
+```
 
 ## 5. Benchmark
 
