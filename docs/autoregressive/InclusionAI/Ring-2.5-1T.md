@@ -24,7 +24,11 @@
 Ring-2.5-1T requires a specific SGLang Docker image:
 
 ```bash
-docker pull lmsysorg/sglang:dev-pr-18598
+# For H200/B200
+docker pull lmsysorg/sglang:nightly-dev-20260213-a0ebaa64
+
+# For GB200/GB300
+docker pull lmsysorg/sglang:nightly-dev-cu13-20260213-a0ebaa64
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -44,19 +48,17 @@ import Ring25ConfigGenerator from '@site/src/components/autoregressive/Ring25Con
 ### 3.2 Configuration Tips
 
 - The `--trust-remote-code` flag is required for this model due to custom modeling code.
-- H200 uses `--max-running-requests 64` for optimal performance.
 - The model uses FP8 quantization (compressed-tensors format).
 
 ## 4. Model Invocation
 
-Deploy Ring-2.5-1T with the following command (on H200):
+Deploy Ring-2.5-1T with the following command (on H200, all features enabled):
 
 ```shell
-python3 -m sglang.launch_server \
+python -m sglang.launch_server \
   --model-path inclusionAI/Ring-2.5-1T \
-  --tp-size 8 \
+  --tp 8 \
   --trust-remote-code \
-  --max-running-requests 64 \
   --host 0.0.0.0 \
   --port 30000
 ```
@@ -69,8 +71,29 @@ For basic API usage and request examples, please refer to:
 
 ### 4.2 Advanced Usage
 
-TODO: Add reasoning mode examples, tool calling examples after testing.
+TODO: Add reasoning mode and tool calling examples after testing.
 
 ## 5. Benchmark
 
-TODO: Add benchmark results after testing.
+### GSM8K
+
+- Deployment Command
+```bash
+python3 -m sglang.launch_server \
+  --model-path inclusionAI/Ring-2.5-1T \
+  --tp-size 8 \
+  --trust-remote-code
+```
+
+- Benchmark Command
+```bash
+python3 benchmark/gsm8k/bench_sglang.py --temperature 1.2 --top-p 0.8 --max-new-tokens 32768 --num-questions 200 --tokenizer-path inclusionAI/Ring-2.5-1T --enable-thinking
+```
+
+- Test Result
+```
+Accuracy: 0.955
+Invalid: 0.010
+Latency: 615.833 s
+Output throughput: 412.360 token/s
+```

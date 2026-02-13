@@ -1,4 +1,4 @@
-vendor: inclusionai
+vendor: inclusionAI
 families:
 - name: Ring-2.5
   description: Ring-2.5-1T trillion-parameter reasoning model with hybrid linear attention
@@ -7,9 +7,9 @@ families:
     model_path: inclusionAI/Ring-2.5-1T
     attributes:
       llm:
-        thinking_capability: null
-        tool_parser: null
-        reasoning_parser: null
+        thinking_capability: hybrid
+        tool_parser: qwen
+        reasoning_parser: deepseek-r1
         chat_template: null
     hardware:
       H200:
@@ -26,9 +26,7 @@ families:
             dp: null
             ep: null
             enable_dp_attention: null
-            extra_args:
-            - --max-running-requests
-            - '64'
+            extra_args: []
           prefill: null
           decode: null
       B200:
@@ -42,6 +40,40 @@ families:
           engine:
             env_vars: {}
             tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      GB200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      GB300:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
             dp: null
             ep: null
             enable_dp_attention: null
