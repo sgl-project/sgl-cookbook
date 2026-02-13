@@ -51,3 +51,7 @@ vendors:
   wan-ai:
     name: Wan AI
     huggingface_org: Wan-AI
+
+  inclusionAI:
+    name: InclusionAI (Ant Group)
+    huggingface_org: inclusionAI

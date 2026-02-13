@@ -1,0 +1,41 @@
+# LLaDA 2.1 Model Configurations
+# This file is compiled to data/models/generated/llada21.yaml
+
+vendor: inclusionAI
+
+defaults:
+  hardware:
+    H100: { tp: 4 }
+    H200: { tp: 4 }
+    B200: { tp: 2 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      extra_args:
+        - --dllm-algorithm
+        - JointThreshold
+        - --trust-remote-code
+        - --mem-fraction-static
+        - "0.8"
+        - --max-running-requests
+        - "1"
+        - --attention-backend
+        - flashinfer
+
+families:
+  - name: LLaDA-2.1
+    description: LLaDA 2.1 diffusion language model series
+    llm:
+      thinking_capability: non_thinking
+
+    models:
+      - name: LLaDA2.1-mini
+        quantization: bf16
+        hardware:
+          H100: { tp: 1 }
+          H200: { tp: 1 }
+          B200: { tp: 1 }
+
+      - name: LLaDA2.1-flash
+        quantization: bf16
