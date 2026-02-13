@@ -188,8 +188,13 @@ const sidebars = {
         },
         {
           type: 'category',
-          label: 'LLaDA',
+          label: 'InclusionAI',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/InclusionAI/Ring-2.5-1T',
+              label: 'Ring-2.5-1T [NEW]',
+            },
             {
               type: 'doc',
               id: 'autoregressive/LLaDA/LLaDA-2.1',
