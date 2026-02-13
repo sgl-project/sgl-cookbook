@@ -105,6 +105,11 @@ const sidebars = {
           type: 'category',
           label: 'MiniMax',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/MiniMax/MiniMax-M2.5',
+              label: 'MiniMax-M2.5 [NEW]',
+            },
             'autoregressive/MiniMax/MiniMax-M2',
           ],
         },
@@ -178,6 +183,17 @@ const sidebars = {
               type: 'doc',
               id: 'autoregressive/StepFun/Step3.5',
               label: 'Step3.5 [NEW]',
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'LLaDA',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/LLaDA/LLaDA-2.1',
+              label: 'LLaDA 2.1 [NEW]',
             },
           ],
         }
