@@ -190,6 +190,11 @@ const sidebars = {
               id: 'autoregressive/InclusionAI/Ring-2.5-1T',
               label: 'Ring-2.5-1T [NEW]',
             },
+            {
+              type: 'doc',
+              id: 'autoregressive/LLaDA/LLaDA-2.1',
+              label: 'LLaDA 2.1 [NEW]',
+            },
           ],
         }
       ],
