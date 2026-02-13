@@ -105,6 +105,11 @@ const sidebars = {
           type: 'category',
           label: 'MiniMax',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/MiniMax/MiniMax-M2.5',
+              label: 'MiniMax-M2.5 [NEW]',
+            },
             'autoregressive/MiniMax/MiniMax-M2',
           ],
         },
