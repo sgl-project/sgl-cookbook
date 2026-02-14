@@ -1,0 +1,87 @@
+import React, { useState } from 'react';
+import styles from '../../base/ConfigGenerator/styles.module.css';
+
+const ZImageTurboConfigGenerator = () => {
+  const baseConfig = {
+    modelFamily: 'Z-Image-Turbo',
+
+    options: {
+      hardware: {
+        name: 'hardware',
+        title: 'Hardware Platform',
+        items: [
+          { id: 'mi300x', label: 'MI300X', default: true },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
+        ]
+      }
+    },
+
+    generateCommand: function(values) {
+      return `sglang serve \\
+  --model-path Tongyi-MAI/Z-Image-Turbo \\
+  --ulysses-degree=1 \\
+  --ring-degree=1`;
+    }
+  };
+
+  const getInitialState = () => {
+    const initialState = {};
+    Object.entries(baseConfig.options).forEach(([key, option]) => {
+      const defaultItem = option.items.find(item => item.default);
+      initialState[key] = defaultItem ? defaultItem.id : option.items[0].id;
+    });
+    return initialState;
+  };
+
+  const [values, setValues] = useState(getInitialState);
+
+  const handleRadioChange = (optionName, itemId) => {
+    setValues(prev => ({ ...prev, [optionName]: itemId }));
+  };
+
+  const command = baseConfig.generateCommand(values);
+
+  return (
+    <div className={styles.configContainer}>
+      {Object.entries(baseConfig.options).map(([key, option], index) => (
+        <div key={key} className={styles.optionCard}>
+          <div className={styles.optionTitle}>
+            {option.title}
+          </div>
+          <div className={styles.optionItems}>
+            {option.items.map(item => {
+              const isChecked = values[option.name] === item.id;
+              return (
+                <label
+                  key={item.id}
+                  className={`${styles.optionLabel} ${isChecked ? styles.checked : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name={option.name}
+                    value={item.id}
+                    checked={isChecked}
+                    onChange={() => handleRadioChange(option.name, item.id)}
+                    className={styles.hiddenInput}
+                  />
+                  {item.label}
+                  {item.subtitle && (
+                    <small className={styles.subtitle}>{item.subtitle}</small>
+                  )}
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      <div className={styles.commandCard}>
+        <div className={styles.commandTitle}>Generated Command</div>
+        <pre className={styles.commandDisplay}>{command}</pre>
+      </div>
+    </div>
+  );
+};
+
+export default ZImageTurboConfigGenerator;
