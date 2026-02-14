@@ -39,10 +39,6 @@ import DeepSeekOCRConfigGenerator from '@site/src/components/autoregressive/Deep
 
 <DeepSeekOCRConfigGenerator />
 
-### 3.2 Configuration Tips
-
-For more detailed configuration tips, please refer to [DeepSeek V3/V3.1/R1 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
-
 ## 4. Model Invocation
 
 ### 4.1 Basic Usage

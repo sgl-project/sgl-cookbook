@@ -73,8 +73,6 @@ Detailed commands for reference:
 
 **Download Weights:** If you encounter errors when starting the server, ensure the weights have finished downloading. It's recommended to download them beforehand or restart multiple times until all weights are downloaded. Please refer to the [DeepSeek V3 official guide](https://huggingface.co/deepseek-ai/DeepSeek-V3-Base#61-inference-with-deepseek-infer-demo-example-only) to download the weights.
 
-For more detailed configuration tips, please also refer to [DeepSeek-V3 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
-
 ### 3.4 Multi-Node Deployment
 
 For single-node deployment on 8 x H200, please refer to [this example](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#installation--launch).
@@ -94,45 +92,15 @@ SGLang provides many optimizations specifically designed for the DeepSeek models
 
 #### 3.5.1 Multi-head Latent Attention (MLA) Throughput Optimizations
 
-[MLA](https://arxiv.org/pdf/2405.04434) is an innovative attention mechanism introduced by the DeepSeek team, aimed at improving inference efficiency. SGLang has implemented specific optimizations including:
-
-- **Weight Absorption**: By applying the associative law of matrix multiplication to reorder computation steps, this method balances computation and memory access and improves efficiency in the decoding phase.
-- **MLA Attention Backends**: Currently SGLang supports different optimized MLA attention backends, including [FlashAttention3](https://github.com/Dao-AILab/flash-attention), [Flashinfer](https://docs.flashinfer.ai/api/attention.html#flashinfer-mla), [FlashMLA](https://github.com/deepseek-ai/FlashMLA), [CutlassMLA](https://github.com/sgl-project/sglang/pull/5390), **TRTLLM MLA** (optimized for Blackwell architecture), and [Triton](https://github.com/triton-lang/triton) backends. The default FA3 provides good performance across wide workloads.
-- **FP8 Quantization**: W8A8 FP8 and KV Cache FP8 quantization enables efficient FP8 inference. Additionally, we have implemented Batched Matrix Multiplication (BMM) operator to facilitate FP8 inference in MLA with weight absorption.
-- **CUDA Graph & Torch.compile**: Both MLA and Mixture of Experts (MoE) are compatible with CUDA Graph and Torch.compile, which reduces latency and accelerates decoding speed for small batch sizes.
-- **Chunked Prefix Cache**: Chunked prefix cache optimization can increase throughput by cutting prefix cache into chunks, processing them with multi-head attention and merging their states. Its improvement can be significant when doing chunked prefill on long sequences. Currently this optimization is only available for FlashAttention3 backend.
-
-Overall, with these optimizations, we have achieved up to **7x** acceleration in output throughput compared to the previous version.
-
-<p align="center">
-  <img src="https://lmsys.org/images/blog/sglang_v0_3/deepseek_mla.svg" alt="Multi-head Latent Attention for DeepSeek Series Models" />
-</p>
-
-**Usage**: MLA optimization is enabled by default.
-
-**Reference**: Check [Blog](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations) and [Slides](https://github.com/sgl-project/sgl-learning-materials/blob/main/slides/lmsys_1st_meetup_deepseek_mla.pdf) for more details.
+SGLang implements various MLA throughput optimizations (see [Blog](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations) | [Slides](https://github.com/sgl-project/sgl-learning-materials/blob/main/slides/lmsys_1st_meetup_deepseek_mla.pdf)). Additional features since the blog include CUDA Graph & Torch.compile compatibility and chunked prefix cache. Supported MLA attention backends: [FlashAttention3](https://github.com/Dao-AILab/flash-attention), [Flashinfer](https://docs.flashinfer.ai/api/attention.html#flashinfer-mla), [FlashMLA](https://github.com/deepseek-ai/FlashMLA), [CutlassMLA](https://github.com/sgl-project/sglang/pull/5390), **TRTLLM MLA** (Blackwell), and [Triton](https://github.com/triton-lang/triton). MLA optimization is enabled by default.
 
 #### 3.5.2 Data Parallelism Attention
 
-This optimization involves data parallelism (DP) for the MLA attention mechanism of DeepSeek Series Models, which allows for a significant reduction in the KV cache size, enabling larger batch sizes. Each DP worker independently handles different types of batches (prefill, decode, idle), which are then synchronized before and after processing through the Mixture-of-Experts (MoE) layer. If you do not use DP attention, KV cache will be duplicated among all TP ranks.
+For details on DP attention, see the [DP/DPA Guide](https://docs.sglang.ai/advanced_features/dp_dpa_smg_guide.html).
 
-<p align="center">
-  <img src="https://lmsys.org/images/blog/sglang_v0_4/dp_attention.svg" alt="Data Parallelism Attention for DeepSeek Series Models" />
-</p>
-
-With data parallelism attention enabled, we have achieved up to **1.9x** decoding throughput improvement compared to the previous version.
-
-<p align="center">
-  <img src="https://lmsys.org/images/blog/sglang_v0_4/deepseek_coder_v2.svg" alt="Data Parallelism Attention Performance Comparison" />
-</p>
-
-**Usage**:
-- Append `--enable-dp-attention --tp 8 --dp 8` to the server arguments when using 8 H200 GPUs. This optimization improves peak throughput in high batch size scenarios where the server is limited by KV cache capacity.
-- DP and TP attention can be flexibly combined. For example, to deploy DeepSeek-V3/R1 on 2 nodes with 8 H100 GPUs each, you can specify `--enable-dp-attention --tp 16 --dp 2`. This configuration runs attention with 2 DP groups, each containing 8 TP GPUs.
+DP and TP attention can be flexibly combined. For example, to deploy DeepSeek-V3/R1 on 2 nodes with 8 H100 GPUs each, you can specify `--enable-dp-attention --tp 16 --dp 2`.
 
 > **Caution:** Data parallelism attention is not recommended for low-latency, small-batch use cases. It is optimized for high-throughput scenarios with large batch sizes.
-
-**Reference**: Check [Blog](https://lmsys.org/blog/2024-12-04-sglang-v0-4/#data-parallelism-attention-for-deepseek-models).
 
 #### 3.5.3 Multi-Node Tensor Parallelism
 
@@ -158,27 +126,11 @@ python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --tru
 
 #### 3.5.5 Multi-token Prediction
 
-SGLang implements DeepSeek V3 Multi-Token Prediction (MTP) based on [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding). With this optimization, the decoding speed can be improved by **1.8x** for batch size 1 and **1.5x** for batch size 32 respectively on H200 TP8 setting.
-
-**Usage**:
-Add `--speculative-algorithm EAGLE`. Other flags, like `--speculative-num-steps`, `--speculative-eagle-topk` and `--speculative-num-draft-tokens` are optional. For example:
-
-```bash
-python3 -m sglang.launch_server \
-  --model-path deepseek-ai/DeepSeek-V3-0324 \
-  --speculative-algorithm EAGLE \
-  --trust-remote-code \
-  --tp 8
-```
-
-- The default configuration for DeepSeek models is `--speculative-num-steps 3 --speculative-eagle-topk 1 --speculative-num-draft-tokens 4`. The best configuration can be searched with [bench_speculative.py](https://github.com/sgl-project/sglang/blob/main/scripts/playground/bench_speculative.py) script for given batch size. The minimum configuration is `--speculative-num-steps 1 --speculative-eagle-topk 1 --speculative-num-draft-tokens 2`, which can achieve speedup for larger batch sizes.
-- Most MLA attention backends fully support MTP usage. See [MLA Backends](https://docs.sglang.io/advanced_features/attention_backend.html#mla-backends) for details.
+SGLang implements DeepSeek MTP based on [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding), achieving **1.8x** speedup at batch size 1 and **1.5x** at batch size 32 on H200 TP8. The default configuration for DeepSeek models is `--speculative-num-steps 3 --speculative-eagle-topk 1 --speculative-num-draft-tokens 4`.
 
 > **Note:** To enable DeepSeek MTP for large batch sizes (>48), you need to adjust some parameters (Reference [this discussion](https://github.com/sgl-project/sglang/issues/4543#issuecomment-2737413756)):
-> - Adjust `--max-running-requests` to a larger number. The default value is `48` for MTP. For larger batch sizes, you should increase this value beyond the default value.
-> - Set `--cuda-graph-bs`. It's a list of batch sizes for cuda graph capture. The [default captured batch sizes for speculative decoding](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/server_args.py#L888-L895) is 48. You can customize this by including more batch sizes.
-
-> **Tip:** To enable the experimental overlap scheduler for EAGLE speculative decoding, set the environment variable `SGLANG_ENABLE_SPEC_V2=1`. This can improve performance by enabling overlap scheduling between draft and verification stages.
+> - Adjust `--max-running-requests` beyond the default value of `48` for MTP.
+> - Set `--cuda-graph-bs` to include larger batch sizes beyond the [default captured sizes](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/server_args.py#L888-L895).
 
 ## 4. Model Invocation
 
@@ -469,6 +421,12 @@ curl "http://127.0.0.1:8000/v1/chat/completions" \
 -d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3-0324", "tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
 ```
 
+Expected Response:
+
+```
+{"id":"6501ef8e2d874006bf555bc80cddc7c5","object":"chat.completion","created":1745993638,"model":"deepseek-ai/DeepSeek-V3-0324","choices":[{"index":0,"message":{"role":"assistant","content":null,"reasoning_content":null,"tool_calls":[{"id":"0","index":null,"type":"function","function":{"name":"query_weather","arguments":"{\"city\": \"Qingdao\"}"}}]},"logprobs":null,"finish_reason":"tool_calls","matched_stop":null}],"usage":{"prompt_tokens":116,"total_tokens":138,"completion_tokens":22,"prompt_tokens_details":null}}
+```
+
 Streaming request:
 
 ```bash
@@ -477,7 +435,25 @@ curl "http://127.0.0.1:8000/v1/chat/completions" \
 -d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3-0324","stream":true,"tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
 ```
 
-The client needs to concatenate all argument fragments from streamed chunks to reconstruct the complete tool call.
+Expected Streamed Chunks (simplified for clarity):
+
+```
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"{\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"city"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\":\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"Q"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"ing"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"dao"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\"}"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":null}}], "finish_reason": "tool_calls"}
+data: [DONE]
+```
+
+The client needs to concatenate all argument fragments from streamed chunks to reconstruct the complete tool call:
+
+```
+{"city": "Qingdao"}
+```
 
 > **Important:**
 > 1. Use a lower `"temperature"` value for better results.

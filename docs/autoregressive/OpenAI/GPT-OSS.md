@@ -39,6 +39,18 @@ import GPTOSSConfigGenerator from '@site/src/components/autoregressive/GPTOSSCon
 
 For more detailed configuration tips, please refer to [GPS-OSS Usage](https://docs.sglang.io/basic_usage/gpt_oss.html).
 
+**EAGLE Speculative Decoding:** SGLang supports speculative decoding for GPT-OSS models using EAGLE3 algorithm. This can significantly improve decoding speed, especially for small batch sizes. Add `--speculative-algorithm EAGLE3` along with the draft model path:
+
+```bash
+python3 -m sglang.launch_server \
+  --model-path openai/gpt-oss-120b \
+  --speculative-algorithm EAGLE3 \
+  --speculative-draft-model-path lmsys/EAGLE3-gpt-oss-120b-bf16 \
+  --tp 2
+```
+
+**Tip:** To enable the experimental overlap scheduler for EAGLE3 speculative decoding, set the environment variable `SGLANG_ENABLE_SPEC_V2=1`. This can improve performance by enabling overlap scheduling between draft and verification stages.
+
 ## 4.Model Invocation
 
 ### 4.1 Basic Usage
@@ -53,27 +65,6 @@ GPT‑OSS is compatible with the OpenAI Responses API. Use `client.responses.cre
 `model`, `instructions`, `input`, and optional `tools` to enable built‑in tool use. You can
 set reasoning level via `instructions`, e.g., "Reasoning: high" (also supports "medium" and
 "low") — levels: low (fast), medium (balanced), high (deep).
-
-### 4.1.2 Speculative Decoding
-
-SGLang supports speculative decoding for GPT-OSS models using EAGLE3 algorithm. This can
-significantly improve decoding speed, especially for small batch sizes.
-
-**Usage**:
-Add `--speculative-algorithm EAGLE3` along with the draft model path.
-```bash
-python3 -m sglang.launch_server \
-  --model-path openai/gpt-oss-120b \
-  --speculative-algorithm EAGLE3 \
-  --speculative-draft-model-path lmsys/EAGLE3-gpt-oss-120b-bf16 \
-  --tp 2
-```
-
-```{tip}
-To enable the experimental overlap scheduler for EAGLE3 speculative decoding, set the
-environment variable `SGLANG_ENABLE_SPEC_V2=1`. This can improve performance by enabling
-overlap scheduling between draft and verification stages.
-```
 
 ### 4.2 Advanced Usage
 
@@ -188,12 +179,12 @@ The user asks: "Solve this problem step by step: What is 15% of 240?" So we need
 
 GPT-OSS supports tool calling capabilities. Enable the tool call parser:
 
-##### Built-in Tools
+**Built-in Tools**
 
 GPT‑OSS can call built‑in tools for web search and Python execution. You can use the demo tool
 server or connect to external MCP tool servers.
 
-###### Python Tool
+**Python Tool**
 
 - Executes short Python snippets for calculations, parsing, and quick scripts.
 - By default runs in a Docker-based sandbox. To run on the host, set
@@ -201,19 +192,19 @@ server or connect to external MCP tool servers.
 - Ensure Docker is available if you are not using the UV backend. It is recommended to run
   `docker pull python:3.11` in advance.
 
-###### Web Search Tool
+**Web Search Tool**
 
 - Uses the Exa backend for web search.
 - Requires an Exa API key; set `EXA_API_KEY` in your environment. Create a key at
   `https://exa.ai`.
 
-###### Tool & Reasoning Parser
+**Tool & Reasoning Parser**
 
 - We support OpenAI Reasoning and Tool Call parser, as well as our SGLang native api for tool
   call and reasoning. Refer to [reasoning parser](../advanced_features/separate_reasoning.ipynb)
   and [tool call parser](../advanced_features/function_calling.ipynb) for more details.
 
-###### Notes
+**Notes**
 
 - Use **Python 3.12** for the demo tools. And install the required `gpt-oss` packages.
 - The default demo integrates the web search tool (Exa backend) and a demo Python interpreter
@@ -251,7 +242,7 @@ python -m sglang.launch_server ... --tool-server ip-1:port-1,ip-2:port-2
 The URLs should be MCP SSE servers that expose server information and well-documented tools.
 These tools are added to the system prompt so the model can use them.
 
-###### Quick Demo
+**Quick Demo**
 
 ```python
 from openai import OpenAI

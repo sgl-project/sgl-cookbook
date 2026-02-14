@@ -18,21 +18,7 @@ SGLang offers multiple installation methods. You can choose the most suitable in
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
-## 3. Model Deployment
-
-This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
-
-### 3.1 Basic Configuration
-
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities. SGLang supports serving DeepSeek V3.2 on NVIDIA H200, B200, and AMD MI355X GPUs.
-
-import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSeekConfigGenerator';
-
-<DeepSeekConfigGenerator />
-
-### 3.2 Installation
-
-#### Docker
+**Docker (V3.2-specific images):**
 
 ```bash
 # H200/B200
@@ -51,7 +37,7 @@ docker pull lmsysorg/sglang:dsv32-a2
 docker pull lmsysorg/sglang:dsv32-a3
 ```
 
-#### Build From Source
+**Build From Source:**
 
 ```bash
 git clone https://github.com/sgl-project/sglang
@@ -60,7 +46,19 @@ pip3 install pip --upgrade
 pip3 install -e "python"
 ```
 
-### 3.3 Launch Examples
+## 3. Model Deployment
+
+This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
+
+### 3.1 Basic Configuration
+
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and thinking capabilities. SGLang supports serving DeepSeek V3.2 on NVIDIA H200, B200, and AMD MI355X GPUs.
+
+import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSeekConfigGenerator';
+
+<DeepSeekConfigGenerator />
+
+### 3.2 Launch Examples
 
 To serve [DeepSeek-V3.2-Exp](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp) on 8xH200/B200 GPUs:
 
@@ -78,7 +76,7 @@ python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8
 python3 -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --nsa-prefill-backend tilelang --nsa-decode-backend tilelang
 ```
 
-### 3.4 Configuration Tips
+### 3.3 Configuration Tips
 
 - **DP Attention (Recommended)**: For DeepSeek V3.2 model, the kernels are customized for the use case of `dp_size=8`, so DP attention (`--dp 8 --enable-dp-attention`) is the recommended configuration for better stability and performance. All test cases use this configuration by default.
 - **Pure TP Mode**: Launching with pure TP (without `--dp` and `--enable-dp-attention`) is also supported. Note that this mode has not been fully validated in PD disaggregation scenarios.
@@ -93,9 +91,7 @@ python3 -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --n
   - **H200**: `flashmla_sparse` prefill (short-seq uses MHA via FlashAttention varlen), `fa3` decode, `bf16` kv cache dtype.
   - **B200**: `flashmla_auto` prefill (short-seq uses MHA via TRT-LLM ragged), `flashmla_kv` decode, `fp8_e4m3` kv cache dtype. `flashmla_auto` enables automatic selection of either `flashmla_sparse` or `flashmla_kv` based on KV cache dtype, hardware, and heuristics.
 
-For more details, please also refer to [DeepSeek-V3.2 Usage](https://docs.sglang.io/basic_usage/deepseek_v32.html).
-
-### 3.5 Multi-token Prediction
+### 3.4 Multi-token Prediction
 
 SGLang implements Multi-Token Prediction (MTP) for DeepSeek V3.2 based on [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding). With this optimization, the decoding speed can be improved significantly on small batch sizes. See [this PR](https://github.com/sgl-project/sglang/pull/11652) for more information.
 
@@ -116,7 +112,7 @@ python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --sp
 
 > **Tip:** To enable the experimental overlap scheduler for EAGLE speculative decoding, set the environment variable `SGLANG_ENABLE_SPEC_V2=1`. This can improve performance by enabling overlap scheduling between draft and verification stages.
 
-### 3.6 NVFP4 Checkpoint
+### 3.5 NVFP4 Checkpoint
 
 To launch DeepSeek V3.2 [NVFP4 checkpoint](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4) on Blackwell devices, specify the quantization method as `modelopt_fp4`, and moe runner backend as one of `flashinfer_trtllm` (recommended), `flashinfer_cutlass` and `flashinfer_cutedsl`. Any other usage (parallelism, reasoning parser, etc.) is the same as the FP8 checkpoint.
 
@@ -124,7 +120,7 @@ To launch DeepSeek V3.2 [NVFP4 checkpoint](https://huggingface.co/nvidia/DeepSee
 python -m sglang.launch_server --model nvidia/DeepSeek-V3.2-NVFP4 --tp 4 --quantization modelopt_fp4 --moe-runner-backend flashinfer_trtllm --tool-call-parser deepseekv32 --reasoning-parser deepseek-v3
 ```
 
-### 3.7 PD Disaggregation
+### 3.6 PD Disaggregation
 
 Prefill Command:
 
@@ -171,13 +167,13 @@ python -m sglang_router.launch_router --pd-disaggregation \
 
 For more advanced or production-ready deployment methods (RBG or LWS-based), please refer to the [DeepSeek V3.2 PD documentation](https://docs.sglang.io/references/multi_node_deployment/rbg_pd/deepseekv32_pd.html).
 
-### 3.8 DSA Context Parallel (Experimental)
+### 3.7 DSA Context Parallel (Experimental)
 
 > **Note:** This feature is only verified on Hopper machines.
 
 For context parallel in DeepSeek V3.2 model, two different modes of splitting tokens are provided, controlled with `--nsa-prefill-cp-mode`.
 
-#### 3.8.1 In-Sequence Splitting (Default)
+#### 3.7.1 In-Sequence Splitting (Default)
 
 This mode (`--nsa-prefill-cp-mode in-seq-split`) implements context parallel for DSA by splitting the sequence uniformly between context parallel ranks. At attention stage, each CP rank computes the indexer results of sharded sequence, and collects the whole KV cache through all-gather.
 
@@ -196,7 +192,7 @@ For details, see [PR #12065](https://github.com/sgl-project/sglang/pull/12065).
 python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --ep 8 --dp 2 --enable-dp-attention --enable-nsa-prefill-context-parallel --nsa-prefill-cp-mode in-seq-split --max-running-requests 32
 ```
 
-#### 3.8.2 Round-Robin Splitting
+#### 3.7.2 Round-Robin Splitting
 
 This mode (`--nsa-prefill-cp-mode round-robin-split`) distributes tokens across ranks based on `token_idx % cp_size`.
 
@@ -209,7 +205,7 @@ For details, see [PR #13959](https://github.com/sgl-project/sglang/pull/13959).
 python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --enable-nsa-prefill-context-parallel --nsa-prefill-cp-mode round-robin-split --max-running-requests 32
 ```
 
-#### 3.8.3 Pipeline Parallel + Context Parallel (PP + CP)
+#### 3.7.3 Pipeline Parallel + Context Parallel (PP + CP)
 
 This mode combines Pipeline Parallelism (PP) and Context Parallelism (CP) to scale across multiple nodes, achieving better throughput and TTFT. Only tested on H20 96G.
 
@@ -596,6 +592,12 @@ curl "http://127.0.0.1:8000/v1/chat/completions" \
 -d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3.2-Exp", "tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
 ```
 
+Expected Response:
+
+```
+{"id":"6501ef8e2d874006bf555bc80cddc7c5","object":"chat.completion","created":1745993638,"model":"deepseek-ai/DeepSeek-V3.2-Exp","choices":[{"index":0,"message":{"role":"assistant","content":null,"reasoning_content":null,"tool_calls":[{"id":"0","index":null,"type":"function","function":{"name":"query_weather","arguments":"{\"city\": \"Qingdao\"}"}}]},"logprobs":null,"finish_reason":"tool_calls","matched_stop":null}],"usage":{"prompt_tokens":116,"total_tokens":138,"completion_tokens":22,"prompt_tokens_details":null}}
+```
+
 Streaming request:
 
 ```bash
@@ -604,7 +606,25 @@ curl "http://127.0.0.1:8000/v1/chat/completions" \
 -d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3.2-Exp","stream":true,"tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
 ```
 
-The client needs to concatenate all argument fragments from streamed chunks to reconstruct the complete tool call.
+Expected Streamed Chunks (simplified for clarity):
+
+```
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"{\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"city"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\":\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"Q"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"ing"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"dao"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\"}"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":null}}], "finish_reason": "tool_calls"}
+data: [DONE]
+```
+
+The client needs to concatenate all argument fragments from streamed chunks to reconstruct the complete tool call:
+
+```
+{"city": "Qingdao"}
+```
 
 > **Important:**
 > 1. Use a lower `"temperature"` value for better results.

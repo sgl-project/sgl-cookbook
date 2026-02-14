@@ -42,11 +42,7 @@ import GLM45ConfigGenerator from '@site/src/components/autoregressive/GLM45Confi
 
 For more detailed configuration tips, please refer to [GLM-4.5/GLM-4.6 Usage](https://docs.sglang.io/basic_usage/glm45.html).
 
-### 3.3 EAGLE Speculative Decoding
-
-SGLang supports GLM-4.5 with [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding).
-
-Add arguments `--speculative-algorithm`, `--speculative-num-steps`, `--speculative-eagle-topk` and `--speculative-num-draft-tokens` to enable this feature. For example:
+**EAGLE Speculative Decoding:** SGLang supports GLM-4.5 with [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding). Add arguments `--speculative-algorithm`, `--speculative-num-steps`, `--speculative-eagle-topk` and `--speculative-num-draft-tokens` to enable this feature. For example:
 
 ```bash
 python3 -m sglang.launch_server \
@@ -63,7 +59,7 @@ python3 -m sglang.launch_server \
   --enable-custom-logit-processor
 ```
 
-> **Tip:** To enable the experimental overlap scheduler for EAGLE speculative decoding, set the environment variable `SGLANG_ENABLE_SPEC_V2=1`. This can improve performance by enabling overlap scheduling between draft and verification stages.
+**Tip:** To enable the experimental overlap scheduler for EAGLE speculative decoding, set the environment variable `SGLANG_ENABLE_SPEC_V2=1`. This can improve performance by enabling overlap scheduling between draft and verification stages.
 
 ## 4. Model Invocation
 
@@ -165,6 +161,8 @@ python -m sglang.launch_server \
   --host 0.0.0.0 \
   --port 8000
 ```
+
+**Note:** For GLM-4.5 and GLM-4.6, `--tool-call-parser` should be set to `glm45`. For GLM-4.7, it should be set to glm47.
 
 **Python Example (with Thinking Process):**
 

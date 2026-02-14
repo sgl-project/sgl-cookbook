@@ -43,13 +43,7 @@ python3 -m sglang.launch_server \
 - **Chat Template**: Add `--chat-template llama-4` for chat completion tasks.
 - **Enable Multi-Modal**: Add `--enable-multimodal` for multi-modal capabilities.
 - **Enable Hybrid-KVCache**: Set `--swa-full-tokens-ratio` to adjust the ratio of SWA layer (for Llama4, it's local attention layer) KV tokens / full layer KV tokens. (default: 0.8, range: 0-1)
-
-### 3.3 EAGLE Speculative Decoding
-
-SGLang has supported Llama 4 Maverick (400B) with [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding).
-
-**Usage**:
-Add arguments `--speculative-draft-model-path`, `--speculative-algorithm`, `--speculative-num-steps`, `--speculative-eagle-topk` and `--speculative-num-draft-tokens` to enable this feature. For example:
+- **EAGLE Speculative Decoding** SGLang has supported Llama 4 Maverick (400B) with [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding). Add arguments `--speculative-draft-model-path`, `--speculative-algorithm`, `--speculative-num-steps`, `--speculative-eagle-topk` and `--speculative-num-draft-tokens` to enable this feature. For example:
 
 ```bash
 python3 -m sglang.launch_server \
@@ -64,7 +58,7 @@ python3 -m sglang.launch_server \
   --context-length 1000000
 ```
 
-- **Note** The Llama 4 draft model *nvidia/Llama-4-Maverick-17B-128E-Eagle3* can only recognize conversations in chat mode.
+**Note:** The Llama 4 draft model *nvidia/Llama-4-Maverick-17B-128E-Eagle3* can only recognize conversations in chat mode.
 
 ## 4. Model Invocation
 
