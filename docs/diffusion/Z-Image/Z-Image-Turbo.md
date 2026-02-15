@@ -135,9 +135,10 @@ sglang serve --model-path Tongyi-MAI/Z-Image-Turbo
 
 Test Environment:
 
-- Hardware: NVIDIA B200 GPU (1x)
+- Hardware: NVIDIA B300 SXM6 AC (1x)
 - Model: Tongyi-MAI/Z-Image-Turbo
-- sglang diffusion version: 0.5.8
+- sglang version: 0.0.0.dev1+gf4417475b
+- git revision: f441747
 
 **Server Command**:
 
@@ -156,23 +157,23 @@ python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
 
 ```
 ================= Serving Benchmark Result =================
-Task:                                    text-to-image
+Task:                                    text-to-image  
 Model:                                   Tongyi-MAI/Z-Image-Turbo
-Dataset:                                 vbench
+Dataset:                                 vbench         
 --------------------------------------------------
-Benchmark duration (s):                  8.94
-Request rate:                            inf
-Max request concurrency:                 1
-Successful requests:                     1/1
+Benchmark duration (s):                  13.59          
+Request rate:                            inf            
+Max request concurrency:                 1              
+Successful requests:                     1/1              
 --------------------------------------------------
-Request throughput (req/s):              0.11
-Latency Mean (s):                        8.9357
-Latency Median (s):                      8.9357
-Latency P99 (s):                         8.9357
+Request throughput (req/s):              0.07           
+Latency Mean (s):                        13.5904        
+Latency Median (s):                      13.5904        
+Latency P99 (s):                         13.5904        
 --------------------------------------------------
-Peak Memory Max (MB):                    47807.33
-Peak Memory Mean (MB):                   47807.33
-Peak Memory Median (MB):                 47807.33
+Peak Memory Max (MB):                    16984.45       
+Peak Memory Mean (MB):                   16984.45       
+Peak Memory Median (MB):                 16984.45       
 ============================================================
 ```
 
@@ -195,22 +196,22 @@ python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
 
 ```
 ================= Serving Benchmark Result =================
-Task:                                    text-to-image
+Task:                                    text-to-image  
 Model:                                   Tongyi-MAI/Z-Image-Turbo
-Dataset:                                 vbench
+Dataset:                                 vbench         
 --------------------------------------------------
-Benchmark duration (s):                  13.93
-Request rate:                            inf
-Max request concurrency:                 20
-Successful requests:                     20/20
+Benchmark duration (s):                  30.15          
+Request rate:                            inf            
+Max request concurrency:                 20             
+Successful requests:                     20/20             
 --------------------------------------------------
-Request throughput (req/s):              1.44
-Latency Mean (s):                        7.3259
-Latency Median (s):                      7.3231
-Latency P99 (s):                         13.7907
+Request throughput (req/s):              0.66           
+Latency Mean (s):                        21.2048        
+Latency Median (s):                      21.1990        
+Latency P99 (s):                         29.9739        
 --------------------------------------------------
-Peak Memory Max (MB):                    47819.38
-Peak Memory Mean (MB):                   47819.34
-Peak Memory Median (MB):                 47819.33
+Peak Memory Max (MB):                    16984.51       
+Peak Memory Mean (MB):                   16984.47       
+Peak Memory Median (MB):                 16984.46       
 ============================================================
 ```
