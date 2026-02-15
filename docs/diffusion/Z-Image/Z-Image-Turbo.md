@@ -157,23 +157,23 @@ python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
 
 ```
 ================= Serving Benchmark Result =================
-Task:                                    text-to-image  
+Task:                                    text-to-image
 Model:                                   Tongyi-MAI/Z-Image-Turbo
-Dataset:                                 vbench         
+Dataset:                                 vbench
 --------------------------------------------------
-Benchmark duration (s):                  13.59          
-Request rate:                            inf            
-Max request concurrency:                 1              
-Successful requests:                     1/1              
+Benchmark duration (s):                  13.59
+Request rate:                            inf
+Max request concurrency:                 1
+Successful requests:                     1/1
 --------------------------------------------------
-Request throughput (req/s):              0.07           
-Latency Mean (s):                        13.5904        
-Latency Median (s):                      13.5904        
-Latency P99 (s):                         13.5904        
+Request throughput (req/s):              0.07
+Latency Mean (s):                        13.5904
+Latency Median (s):                      13.5904
+Latency P99 (s):                         13.5904
 --------------------------------------------------
-Peak Memory Max (MB):                    16984.45       
-Peak Memory Mean (MB):                   16984.45       
-Peak Memory Median (MB):                 16984.45       
+Peak Memory Max (MB):                    16984.45
+Peak Memory Mean (MB):                   16984.45
+Peak Memory Median (MB):                 16984.45
 ============================================================
 ```
 
@@ -196,22 +196,22 @@ python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
 
 ```
 ================= Serving Benchmark Result =================
-Task:                                    text-to-image  
+Task:                                    text-to-image
 Model:                                   Tongyi-MAI/Z-Image-Turbo
-Dataset:                                 vbench         
+Dataset:                                 vbench
 --------------------------------------------------
-Benchmark duration (s):                  30.15          
-Request rate:                            inf            
-Max request concurrency:                 20             
-Successful requests:                     20/20             
+Benchmark duration (s):                  30.15
+Request rate:                            inf
+Max request concurrency:                 20
+Successful requests:                     20/20
 --------------------------------------------------
-Request throughput (req/s):              0.66           
-Latency Mean (s):                        21.2048        
-Latency Median (s):                      21.1990        
-Latency P99 (s):                         29.9739        
+Request throughput (req/s):              0.66
+Latency Mean (s):                        21.2048
+Latency Median (s):                      21.1990
+Latency P99 (s):                         29.9739
 --------------------------------------------------
-Peak Memory Max (MB):                    16984.51       
-Peak Memory Mean (MB):                   16984.47       
-Peak Memory Median (MB):                 16984.46       
+Peak Memory Max (MB):                    16984.51
+Peak Memory Mean (MB):                   16984.47
+Peak Memory Median (MB):                 16984.46
 ============================================================
 ```
