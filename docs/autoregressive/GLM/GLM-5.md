@@ -34,11 +34,11 @@ docker pull lmsysorg/sglang:glm5-hopper
 # For Blackwell GPUs (B200)
 docker pull lmsysorg/sglang:glm5-blackwell
 
-# For AMD MI300X/MI308 GPUs (gfx942)
+# For AMD MI300X/MI308/MI325X GPUs (gfx942)
 docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi30x-20260214 # this version or newer
 
 # For AMD MI350/MI355 GPUs (gfx950)
-docker pull lmsysorg/sglang:v0.5.8.post1-rocm700-mi35x-20260214 # this version or newer
+docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi35x-20260214 # this version or newer
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -560,8 +560,6 @@ python benchmark/gsm8k/bench_sglang.py --num-questions 1319 --parallel 1319
 ```text
 Accuracy: 0.956
 Invalid: 0.000
-Latency: 280.704 s
-Output throughput: 493.720 token/s
 ```
 
 #### 5.2.2 MMLU Benchmark
