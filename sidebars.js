@@ -184,6 +184,11 @@ const sidebars = {
               id: 'autoregressive/StepFun/Step3.5',
               label: 'Step3.5 [NEW]',
             },
+            {
+              type: 'doc',
+              id: 'autoregressive/StepFun/Step3-VL-10B',
+              label: 'Step3-VL-10B [NEW]',
+            },
           ],
         },
         {
