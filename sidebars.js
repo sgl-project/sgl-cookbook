@@ -198,6 +198,11 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/InclusionAI/Ling-2.5-1T',
+              label: 'Ling-2.5-1T [NEW]',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/InclusionAI/Ring-2.5-1T',
               label: 'Ring-2.5-1T [NEW]',
             },
