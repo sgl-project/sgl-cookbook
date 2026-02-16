@@ -134,6 +134,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ## Reference
 
+- [Installation (PyPI)](./base/installation.md) - Install SGLang via pip or uv (stable and nightly)
 - [Server arguments](./base/reference/server_arguments.md) - Understanding all the arguments
 
 ## 🚀 Quick Start

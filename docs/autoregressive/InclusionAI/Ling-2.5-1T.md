@@ -32,6 +32,8 @@ docker pull lmsysorg/sglang:nightly-dev-cu13-20260213-a0ebaa64
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
 
+Ling-2.5-1T is also supported via the **nightly PyPI builds**. See the [SGLang Installation (PyPI)](../../base/installation.md#nightly-releases) guide for setup instructions.
+
 ## 3. Model Deployment
 
 Ling-2.5-1T is a trillion-parameter BF16 model that requires multi-node deployment (at least 2 nodes). Use the configuration selector below to generate the deployment command for your hardware platform.
