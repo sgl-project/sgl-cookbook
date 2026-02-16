@@ -256,7 +256,6 @@ const sidebars = {
       type: 'category',
       label: 'Others',
       items: [
-        {type: 'doc', label: 'Installation (PyPI)', id: 'base/installation'},
         {
           type: 'category',
           label: 'SpecBundle',
