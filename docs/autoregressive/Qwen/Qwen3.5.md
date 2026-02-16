@@ -575,7 +575,7 @@ I should call the get_weather function with Beijing as the location.
 
 =============== Content =================
 Tool Call: get_weather
-   Arguments: 
+   Arguments:
 Tool Call: None
    Arguments: {
 Tool Call: None
@@ -743,42 +743,42 @@ python3 -m sglang.bench_serving \
 
 ```
 ============ Serving Benchmark Result ============
-Backend:                                 sglang    
-Traffic request rate:                    inf       
-Max request concurrency:                 100       
-Successful requests:                     1000      
-Benchmark duration (s):                  283.04    
-Total input tokens:                      502493    
-Total input text tokens:                 502493    
-Total generated tokens:                  500251    
-Total generated tokens (retokenized):    498222    
-Request throughput (req/s):              3.53      
-Input token throughput (tok/s):          1775.37   
-Output token throughput (tok/s):         1767.45   
-Peak output token throughput (tok/s):    3630.00   
-Peak concurrent requests:                108       
-Total token throughput (tok/s):          3542.82   
-Concurrency:                             96.71     
-Accept length:                           3.31      
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     1000
+Benchmark duration (s):                  283.04
+Total input tokens:                      502493
+Total input text tokens:                 502493
+Total generated tokens:                  500251
+Total generated tokens (retokenized):    498222
+Request throughput (req/s):              3.53
+Input token throughput (tok/s):          1775.37
+Output token throughput (tok/s):         1767.45
+Peak output token throughput (tok/s):    3630.00
+Peak concurrent requests:                108
+Total token throughput (tok/s):          3542.82
+Concurrency:                             96.71
+Accept length:                           3.31
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   27372.05  
-Median E2E Latency (ms):                 26660.21  
-P90 E2E Latency (ms):                    39951.91  
-P99 E2E Latency (ms):                    48405.51  
+Mean E2E Latency (ms):                   27372.05
+Median E2E Latency (ms):                 26660.21
+P90 E2E Latency (ms):                    39951.91
+P99 E2E Latency (ms):                    48405.51
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          14247.21  
-Median TTFT (ms):                        14932.44  
-P99 TTFT (ms):                           20998.45  
+Mean TTFT (ms):                          14247.21
+Median TTFT (ms):                        14932.44
+P99 TTFT (ms):                           20998.45
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          26.16     
-Median TPOT (ms):                        26.13     
-P99 TPOT (ms):                           41.33     
+Mean TPOT (ms):                          26.16
+Median TPOT (ms):                        26.13
+P99 TPOT (ms):                           41.33
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           26.29     
-Median ITL (ms):                         11.38     
-P95 ITL (ms):                            72.10     
-P99 ITL (ms):                            149.57    
-Max ITL (ms):                            1220.68   
+Mean ITL (ms):                           26.29
+Median ITL (ms):                         11.38
+P95 ITL (ms):                            72.10
+P99 ITL (ms):                            149.57
+Max ITL (ms):                            1220.68
 ==================================================
 ```
 
@@ -829,4 +829,3 @@ python3 -m sglang.bench_serving \
 ```
 TODO
 ```
-
