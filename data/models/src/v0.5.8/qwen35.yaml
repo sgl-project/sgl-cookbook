@@ -1,0 +1,43 @@
+# Qwen3.5 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/qwen35.yaml
+#
+# GPU requirements:
+#   H100: tp=16 (model ~800GB in BF16, each rank needs ~100GB > 80GB)
+#   H200: tp=8
+#   B200: tp=8
+
+vendor: qwen
+
+defaults:
+  hardware:
+    H100: { tp: 16 }
+    H200: { tp: 8 }
+    B200: { tp: 8 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+    - name: speculative-mtp
+      nodes: single
+      optimization: low-latency
+      extra_args:
+        - --speculative-algo
+        - NEXTN
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
+
+families:
+  - name: Qwen3.5
+    description: Qwen3.5 397B (17B active) MoE VLM with hybrid reasoning, tool calling, and multimodal capabilities
+    llm:
+      thinking_capability: hybrid
+      tool_parser: qwen3_coder
+      reasoning_parser: qwen3
+
+    models:
+      - name: Qwen3.5-397B-A17B
+        quantization: bf16

@@ -7,7 +7,7 @@ families:
     model_path: zai-org/GLM-5
     attributes:
       llm:
-        thinking_capability: null
+        thinking_capability: hybrid
         tool_parser: glm47
         reasoning_parser: glm45
         chat_template: null
@@ -181,7 +181,7 @@ families:
     model_path: zai-org/GLM-5-FP8
     attributes:
       llm:
-        thinking_capability: null
+        thinking_capability: hybrid
         tool_parser: glm47
         reasoning_parser: glm45
         chat_template: null
