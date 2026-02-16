@@ -1,0 +1,134 @@
+vendor: qwen
+families:
+- name: Qwen3.5
+  description: Qwen3.5 397B (17B active) MoE VLM with hybrid reasoning, tool calling, and multimodal capabilities
+  models:
+  - name: Qwen3.5-397B-A17B
+    model_path: Qwen/Qwen3.5-397B-A17B
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: qwen3_coder
+        reasoning_parser: qwen3
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 16
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algo
+            - NEXTN
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algo
+            - NEXTN
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algo
+            - NEXTN
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
