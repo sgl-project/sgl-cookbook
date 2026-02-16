@@ -30,42 +30,6 @@ import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSee
 
 <DeepSeekConfigGenerator />
 
-#### NVIDIA NVFP4 Variant
-
-To deploy the NVIDIA NVFP4-quantized variant with TP=4 and DP=4:
-
-```shell
-python -m sglang.launch_server \
-  --model nvidia/DeepSeek-V3.2-NVFP4 \
-  --tp 4 \
-  --dp 4 \
-  --enable-dp-attention \
-  --quantization modelopt_fp4 \
-  --moe-runner-backend flashinfer_trtllm \
-  --tool-call-parser deepseekv32 \
-  --reasoning-parser deepseek-v3 \
-  --host 0.0.0.0 \
-  --port 8000
-```
-
-This variant supports the same configurations as the standard DeepSeek-V3.2 models. For example, to enable speculative decoding (MTP):
-
-```shell
-python -m sglang.launch_server \
-  --model nvidia/DeepSeek-V3.2-NVFP4 \
-  --tp 4 \
-  --quantization modelopt_fp4 \
-  --moe-runner-backend flashinfer_trtllm \
-  --tool-call-parser deepseekv32 \
-  --reasoning-parser deepseek-v3 \
-  --speculative-algorithm EAGLE \
-  --speculative-num-steps 3 \
-  --speculative-eagle-topk 1 \
-  --speculative-num-draft-tokens 4 \
-  --host 0.0.0.0 \
-  --port 8000
-```
-
 ### 3.2 Configuration Tips
 For more detailed configuration tips, please refer to [DeepSeek-V3.2 Usage](https://docs.sglang.io/basic_usage/deepseek_v32.html).
 
