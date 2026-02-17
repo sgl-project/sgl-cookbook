@@ -55,7 +55,7 @@ const sidebars = {
           type: 'category',
           label: 'Llama',
           items: [
-            'autoregressive/Llama/Llama4-Scout',
+            'autoregressive/Llama/Llama4',
             'autoregressive/Llama/Llama3.3-70B',
             'autoregressive/Llama/Llama3.1',
           ],
