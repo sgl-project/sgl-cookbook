@@ -18,6 +18,7 @@ Qwen3.5 features a Gated Delta Networks combined with sparse Mixture-of-Experts 
 **Available Models:**
 
 - **BF16 (Full precision)**: [Qwen/Qwen3.5-397B-A17B](https://huggingface.co/Qwen/Qwen3.5-397B-A17B)
+- **FP8 (Quantized)**: [Qwen/Qwen3.5-397B-A17B-FP8](https://huggingface.co/Qwen/Qwen3.5-397B-A17B-FP8)
 
 **License:** Apache 2.0
 
@@ -49,9 +50,13 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 
 ### 3.2 Configuration Tips
 
-- The model has ~397B parameters in BF16, requiring ~800GB of GPU memory for weights alone.
-- **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
-- **H200 (141GB)** and **B200 (192GB)** can run with tp=8 on a single node.
+- **BF16**: ~397B parameters require ~800GB of GPU memory for weights.
+  - **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
+  - **H200 (141GB)** and **B200 (192GB)** run comfortably with tp=8 on a single node.
+- **FP8**: The quantized model requires ~400GB for weights, cutting memory in half.
+  - **H100** can now run on a single node with tp=8 (~50GB per rank).
+  - **H200** and **B200** also use tp=8, leaving plenty of room for KV cache.
+  - FP8 quantization has minimal accuracy impact while roughly doubling throughput on H100.
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
 - Context length defaults to 262,144 tokens. If you encounter OOM errors, consider reducing it, but maintain at least 128K to preserve thinking capabilities.
@@ -60,11 +65,11 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
 
-| Hardware | TP |
-| -------- | -- |
-| H100     | 16 |
-| H200     | 8  |
-| B200     | 8  |
+| Hardware | BF16 TP | FP8 TP |
+| -------- | ------- | ------ |
+| H100     | 16      | 8      |
+| H200     | 8       | 8      |
+| B200     | 8       | 8      |
 
 ## 4. Model Invocation
 
