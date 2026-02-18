@@ -1,8 +1,13 @@
 # Qwen3.5 Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/qwen35.yaml
 #
-# GPU requirements:
+# GPU requirements (BF16):
 #   H100: tp=16 (model ~800GB in BF16, each rank needs ~100GB > 80GB)
+#   H200: tp=8
+#   B200: tp=8
+#
+# GPU requirements (FP8):
+#   H100: tp=8 (model ~400GB in FP8, each rank needs ~50GB < 80GB)
 #   H200: tp=8
 #   B200: tp=8
 
@@ -41,3 +46,10 @@ families:
     models:
       - name: Qwen3.5-397B-A17B
         quantization: bf16
+
+      - name: Qwen3.5-397B-A17B-FP8
+        quantization: fp8
+        hardware:
+          H100: { tp: 8 }
+          H200: { tp: 8 }
+          B200: { tp: 8 }
