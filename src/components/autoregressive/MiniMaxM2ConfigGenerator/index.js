@@ -1,0 +1,98 @@
+import React from 'react';
+import ConfigGenerator from '../../base/ConfigGenerator';
+
+/**
+ * MiniMax-M2 Configuration Generator
+ * Supports MiniMax-M2 and MiniMax-M2.1 models
+ */
+const MiniMaxM2ConfigGenerator = () => {
+  const config = {
+    modelFamily: 'MiniMaxAI',
+
+    options: {
+      hardware: {
+        name: 'hardware',
+        title: 'Hardware Platform',
+        items: [
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
+        ]
+      },
+      modelname: {
+        name: 'modelname',
+        title: 'Model Name',
+        items: [
+          { id: 'M2.1', label: 'MiniMax-M2.1', default: true },
+          { id: 'M2', label: 'MiniMax-M2', default: false }
+        ]
+      },
+      strategy: {
+        name: 'strategy',
+        title: 'Deployment Strategy',
+        type: 'checkbox',
+        items: [
+          { id: 'tp', label: 'TP', default: true, required: true },
+
+        ]
+      },
+      reasoning: {
+        name: 'reasoning',
+        title: 'Reasoning Parser',
+        items: [
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
+        ]
+      },
+      toolcall: {
+        name: 'toolcall',
+        title: 'Tool Call Parser',
+        items: [
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
+        ]
+      }
+    },
+
+    generateCommand: function (values) {
+      const { hardware, modelname, strategy, reasoning, toolcall } = values;
+
+
+      // Model name mapping
+      const modelMap = {
+        'M2.1': 'MiniMax-M2.1',
+        'M2': 'MiniMax-M2'
+      };
+
+      const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
+
+      let cmd = 'python3 -m sglang.launch_server \\\n';
+      cmd += `  --model-path ${modelName}`;
+
+      // Strategy configurations
+      const strategyArray = Array.isArray(strategy) ? strategy : [];
+      // TP is mandatory
+      cmd += ` \\\n  --tp 8`;
+
+
+      // Add trust-remote-code (required for MiniMax-M2)
+      cmd += ` \\\n  --trust-remote-code`;
+
+      // Add tool-call-parser if enabled
+      if (toolcall === 'enabled') {
+        cmd += ` \\\n  --tool-call-parser minimax-m2`;
+      }
+
+      // Add reasoning-parser if enabled
+      if (reasoning === 'enabled') {
+        cmd += ` \\\n  --reasoning-parser minimax-append-think`;
+      }
+
+      return cmd;
+    }
+  };
+
+  return <ConfigGenerator config={config} />;
+};
+
+export default MiniMaxM2ConfigGenerator;
