@@ -33,6 +33,12 @@ docker pull lmsysorg/sglang:glm5-hopper
 
 # For Blackwell GPUs (B200)
 docker pull lmsysorg/sglang:glm5-blackwell
+
+# For AMD MI300X/MI308/MI325X GPUs (gfx942)
+docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi30x-20260214 # this version or newer
+
+# For AMD MI350/MI355 GPUs (gfx950)
+docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi35x-20260214 # this version or newer
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -86,15 +92,29 @@ python -m sglang.launch_server \
   --port 30000
 ```
 
-### 4.1 Basic Usage
+### 4.1 MI350/MI355 (ROCm) Server Command
+
+The following ROCm command is an additional option for AMD GPUs and does not replace the NVIDIA instructions above.
+
+```shell
+python -m sglang.launch_server \
+  --model zai-org/GLM-5-FP8 \
+  --tp 8 \
+  --tool-call-parser glm47 \
+  --reasoning-parser glm45 \
+  --nsa-prefill-backend tilelang \
+  --nsa-decode-backend tilelang
+```
+
+### 4.2 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
 
-### 4.2 Advanced Usage
+### 4.3 Advanced Usage
 
-#### 4.2.1 Reasoning Parser
+#### 4.3.1 Reasoning Parser
 
 GLM-5 supports Thinking mode **by default**. Enable the reasoning parser during deployment to separate the thinking and content sections. The thinking process is returned via `reasoning_content` in the streaming response.
 
@@ -286,7 +306,7 @@ Calculate the multiplication:
 \]
 ```
 
-#### 4.2.2 Tool Calling
+#### 4.3.2 Tool Calling
 
 GLM-5 supports tool calling capabilities. Enable the tool call parser during deployment. Thinking mode is on by default; to disable it for tool calling requests, pass `extra_body={"chat_template_kwargs": {"enable_thinking": False}}`.
 
@@ -530,6 +550,16 @@ Accuracy: 0.955
 Invalid: 0.000
 Latency: 32.470 s
 Output throughput: 642.044 token/s
+```
+
+- MI350/MI355 Test (GLM-5-FP8, `tp=8`, TileLang NSA backends)
+```bash
+python benchmark/gsm8k/bench_sglang.py --num-questions 1319 --parallel 1319
+```
+
+```text
+Accuracy: 0.956
+Invalid: 0.000
 ```
 
 #### 5.2.2 MMLU Benchmark
