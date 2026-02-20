@@ -61,7 +61,7 @@ const Qwen35ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware } = values;
+      const { hardware, speculative } = values;
 
       const modelName = `${this.modelFamily}/Qwen3.5-397B-A17B`;
 
@@ -69,10 +69,9 @@ const Qwen35ConfigGenerator = () => {
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
+      // Initialize the base command
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-
-      // TP setting
       cmd += ` \\\n  --tp ${tpValue}`;
 
       // Apply commandRule from all options
@@ -85,7 +84,15 @@ const Qwen35ConfigGenerator = () => {
         }
       });
 
-      // Memory fraction based on hardware
+      // Append B200-specific backend configurations
+      if (hardware === 'b200' && speculative === 'disabled') {
+        cmd += ` \\\n  --attention-backend trtllm_mha`;
+        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        cmd += ` \\\n  --tokenizer-worker-num 6`;
+        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+      }
+
+      // Add memory fraction for both cases
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
       return cmd;
