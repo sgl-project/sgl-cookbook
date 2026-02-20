@@ -69,34 +69,12 @@ const Qwen35ConfigGenerator = () => {
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
-      if (hardware === 'b200' && speculative === 'disabled') {
-        let cmd = 'python -m sglang.launch_server \\\n';
-        cmd += `  --model ${modelName}`;
-
-        cmd += ` \\\n  --tp ${tpValue}`;
-
-        Object.entries(this.options).forEach(([key, option]) => {
-          if (option.commandRule) {
-            const rule = option.commandRule(values[key]);
-            if (rule) {
-              cmd += ` \\\n  ${rule}`;
-            }
-          }
-        });
-
-        cmd += ` \\\n  --attention-backend trtllm_mha`;
-        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
-        cmd += ` \\\n  --tokenizer-worker-num 6`;
-        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
-
-        return cmd;
-      }
-
+      // Initialize the base command
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-
       cmd += ` \\\n  --tp ${tpValue}`;
 
+      // Apply commandRule from all options
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule) {
           const rule = option.commandRule(values[key]);
@@ -106,6 +84,15 @@ const Qwen35ConfigGenerator = () => {
         }
       });
 
+      // Append B200-specific backend configurations
+      if (hardware === 'b200' && speculative === 'disabled') {
+        cmd += ` \\\n  --attention-backend trtllm_mha`;
+        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        cmd += ` \\\n  --tokenizer-worker-num 6`;
+        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+      }
+
+      // Add memory fraction for both cases
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
       return cmd;
