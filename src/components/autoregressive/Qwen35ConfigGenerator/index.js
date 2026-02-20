@@ -70,26 +70,10 @@ const Qwen35ConfigGenerator = () => {
       const memFraction = hwConfig.mem;
 
       if (hardware === 'b200' && speculative === 'disabled') {
-        let cmd = 'python3 -m sglang.launch_server \\\n';
-        cmd += `  --model-path ${modelName} \\\n`;
-        cmd += `  --served-model-name "${modelName}" \\\n`;
-        cmd += `  --host 0.0.0.0 \\\n`;
-        cmd += `  --port $PORT \\\n`;
-        cmd += `  --trust-remote-code \\\n`;
-        cmd += `  --tensor-parallel-size ${tpValue} \\\n`;
-        cmd += `  --disable-radix-cache \\\n`;
-        cmd += `  --mem-fraction-static $MEM_FRAC_STATIC \\\n`;
-        cmd += `  --chunked-prefill-size $CHUNKED_PREFILL_SIZE \\\n`;
-        cmd += `  --max-prefill-tokens $MAX_PREFILL_TOKENS \\\n`;
-        cmd += `  --cuda-graph-max-bs $CUDA_GRAPH_MAX_BATCH_SIZE \\\n`;
-        cmd += `  --max-running-requests $MAX_RUNNING_REQUESTS \\\n`;
-        cmd += `  --context-length $CONTEXT_LENGTH \\\n`;
-        cmd += `  --attention-backend trtllm_mha \\\n`;
-        cmd += `  --moe-runner-backend flashinfer_trtllm \\\n`;
-        cmd += `  --tokenizer-worker-num 6 \\\n`;
-        cmd += `  --stream-interval 30 \\\n`;
-        cmd += `  --scheduler-recv-interval $SCHEDULER_RECV_INTERVAL \\\n`;
-        cmd += `  --enable-flashinfer-allreduce-fusion`;
+        let cmd = 'python -m sglang.launch_server \\\n';
+        cmd += `  --model ${modelName}`;
+
+        cmd += ` \\\n  --tp ${tpValue}`;
 
         Object.entries(this.options).forEach(([key, option]) => {
           if (option.commandRule) {
@@ -99,6 +83,11 @@ const Qwen35ConfigGenerator = () => {
             }
           }
         });
+
+        cmd += ` \\\n  --attention-backend trtllm_mha`;
+        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        cmd += ` \\\n  --tokenizer-worker-num 6`;
+        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
 
         return cmd;
       }
