@@ -43,7 +43,11 @@ import NemotronSuperConfigGenerator from '@site/src/components/autoregressive/Ne
 
 - **TP support**:
 
-    To set tp size, use `--tp <1|2|4|8>`.
+    To set tp size, use `--tp <1|2|4|8>`. TP=4 is recommended for this model.
+
+- **Expert Parallelism**:
+
+    Use `--ep 1` for single-node deployments.
 
 - **FP8 KV cache**:
 
@@ -51,6 +55,19 @@ import NemotronSuperConfigGenerator from '@site/src/components/autoregressive/Ne
 
 
 ## 4. Model Invocation
+
+```shell
+python3 -m sglang.launch_server \
+  --model-path nvidia/nemotron-super-sft-020426 \
+  --host 0.0.0.0 \
+  --port 30000 \
+  --log-level warning \
+  --trust-remote-code \
+  --tp 4 \
+  --ep 1 \
+  --tool-call-parser qwen3_coder \
+  --reasoning-parser nano_v3
+```
 
 ### 4.1 Basic Usage (OpenAI-Compatible API)
 
@@ -67,13 +84,29 @@ client = OpenAI(
 resp = client.chat.completions.create(
     model="nvidia/nemotron-super-sft-020426",
     messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Summarize what MoE models are in 5 bullets."},
+        {"role": "system", "content": "You are a helpful AI assistant."},
+        {"role": "user", "content": "Give me 3 bullet points about SGLang."},
     ],
-    max_tokens=256,
+    temperature=0.6,
+    max_tokens=512,
 )
-
+print(resp.choices[0].message.reasoning_content)
 print(resp.choices[0].message.content)
+```
+
+Output:
+```
+We need to respond with 3 bullet points about SGLang. SGLang is a system for serving large language
+models, focusing on efficient inference, dynamic batching, etc. Provide concise bullet points.
+
+- **High‑performance LLM serving:** SGLang is designed to run large language models (LLMs) at low
+  latency and high throughput by leveraging kernel‑level optimizations and GPU‑friendly execution
+  pipelines.
+- **Dynamic batching & streaming:** It supports on‑the‑fly batching of requests and continuous token
+  streaming, enabling efficient handling of varying workloads without sacrificing response time.
+- **Flexible deployment:** The framework works with popular model formats (e.g., Hugging Face, ONNX)
+  and integrates with containerized environments (Docker, Kubernetes), making it easy to plug into
+  existing inference stacks.
 ```
 
 Streaming chat completion:
@@ -91,6 +124,7 @@ stream = client.chat.completions.create(
         {"role": "system", "content": "You are a helpful AI assistant."},
         {"role": "user", "content": "What are the first 5 prime numbers?"}
     ],
+    temperature=0.7,
     max_tokens=1024,
     stream=True,
 )
@@ -100,9 +134,20 @@ for chunk in stream:
         print(delta.content, end="", flush=True)
 ```
 
+Output:
+```
+The first five prime numbers are:
+
+1. 2
+2. 3
+3. 5
+4. 7
+5. 11
+```
+
 ### 4.2 Reasoning
 
-To enable reasoning, `--reasoning-parser nano_v3` should be appended to the launching command. The model supports two modes — Reasoning ON (default) vs OFF. This can be toggled by setting `enable_thinking` to `False`, as shown below.
+The model supports two modes — Reasoning ON (default) vs OFF. This can be toggled by setting `enable_thinking` to `False`, as shown below.
 
 ```python
 from openai import OpenAI
@@ -120,9 +165,11 @@ resp = client.chat.completions.create(
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Write a haiku about GPUs."}
     ],
-    max_tokens=512,
+    temperature=1,
+    max_tokens=256,
 )
 print(resp.choices[0].message.reasoning_content)
+print(resp.choices[0].message.content)
 
 # Reasoning off
 print("Reasoning off")
@@ -130,17 +177,49 @@ resp = client.chat.completions.create(
     model="nvidia/nemotron-super-sft-020426",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Write a haiku about GPUs."}
+        {"role": "user", "content": "Give me 3 facts about SGLang."}
     ],
+    temperature=0,
     max_tokens=256,
     extra_body={"chat_template_kwargs": {"enable_thinking": False}}
 )
 print(resp.choices[0].message.content)
 ```
 
+Output:
+```
+Reasoning on
+User wants a haiku about GPUs. So we respond with a poem of 5-7-5 syllables about GPUs. Ensure
+content is appropriate. Provide haiku.
+
+Silicon engines roar,
+Pixels dance as cores align—
+Light builds virtual worlds.
+
+Reasoning off
+Here are three key facts about SGLang:
+
+1. **SGLang is a high-performance serving system for large language models (LLMs)**
+   Developed by researchers at UC Berkeley and other institutions, SGLang (Structured Generation
+   Language) is designed to efficiently serve LLMs with low latency and high throughput. It optimizes
+   inference by combining techniques like continuous batching, dynamic scheduling, and efficient memory
+   management.
+
+2. **It supports structured and constrained generation**
+   SGLang enables fine-grained control over model outputs through structured generation, allowing users
+   to enforce specific formats (e.g., JSON, regex patterns) or constraints during inference. This makes
+   it ideal for applications requiring reliable, predictable outputs, such as code generation or data
+   extraction.
+
+3. **It integrates with popular LLM frameworks and models**
+   SGLang is compatible with widely used models (e.g., Llama, Mistral) and frameworks (e.g., Hugging
+   Face Transformers, vLLM). It provides a Python API and supports deployment in production
+   environments, making it accessible for developers building LLM-powered applications.
+```
+
 ### 4.3 Tool Calling
 
-To enable tool calling, `--tool-call-parser qwen3_coder` should be appended to the launching command. Call functions using the OpenAI Tools schema and inspect returned `tool_calls`.
+Call functions using the OpenAI Tools schema and inspect returned `tool_calls`.
 
 ```python
 from openai import OpenAI
@@ -180,12 +259,138 @@ completion = client.chat.completions.create(
         {"role": "user", "content": "My bill is $50. What will be the amount for 15% tip?"}
     ],
     tools=TOOLS,
+    temperature=0.6,
+    top_p=0.95,
     max_tokens=512,
     stream=False
 )
 
 print(completion.choices[0].message.reasoning_content)
 print(completion.choices[0].message.tool_calls)
+```
+
+Output:
+```
+The user wants to calculate a 15% tip on a $50 bill. I need to use the calculate_tip function with
+bill_total = 50 and tip_percentage = 15. Let me call the function.
+
+[ChatCompletionMessageFunctionToolCall(id='call_078777c0fb3f4114a70273b0',
+  function=Function(arguments='{"bill_total": 50, "tip_percentage": 15}', name='calculate_tip'),
+  type='function', index=0)]
+```
+
+### 4.4 Controlling Reasoning Budget
+
+The `reasoning_budget` parameter allows you to limit the length of the model's reasoning trace. When the reasoning output reaches the specified token budget, the model will attempt to gracefully end the reasoning at the next newline character. If no newline is encountered within 500 tokens after reaching the budget threshold, the reasoning trace will be forcibly terminated at `reasoning_budget + 500` tokens.
+
+```python
+from typing import Any, Dict, List
+import openai
+from transformers import AutoTokenizer
+
+
+class ThinkingBudgetClient:
+    def __init__(self, base_url: str, api_key: str, tokenizer_name_or_path: str):
+        self.base_url = base_url
+        self.api_key = api_key
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path)
+        self.client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
+
+    def chat_completion(
+        self,
+        model: str,
+        messages: List[Dict[str, Any]],
+        reasoning_budget: int = 512,
+        max_tokens: int = 1024,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        assert (
+            max_tokens > reasoning_budget
+        ), f"reasoning_budget must be smaller than max_tokens. Given {max_tokens=} and {reasoning_budget=}"
+
+        # 1. First call to get reasoning content
+        response = self.client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=reasoning_budget,
+            **kwargs
+        )
+
+        reasoning_content = response.choices[0].message.reasoning_content or ""
+
+        if "</think>" not in reasoning_content:
+            # Reasoning content is too long, close it with a period
+            reasoning_content = f"{reasoning_content}.\n</think>\n\n"
+
+        reasoning_tokens_used = len(
+            self.tokenizer.encode(reasoning_content, add_special_tokens=False)
+        )
+        remaining_tokens = max_tokens - reasoning_tokens_used
+
+        assert (
+            remaining_tokens > 0
+        ), f"remaining tokens must be positive. Given {remaining_tokens=}. Increase max_tokens or lower reasoning_budget."
+
+        # 2. Append reasoning content and call completion to get the final answer
+        messages.append({"role": "assistant", "content": reasoning_content})
+        prompt = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            continue_final_message=True,
+        )
+
+        response = self.client.completions.create(
+            model=model,
+            prompt=prompt,
+            max_tokens=remaining_tokens,
+            **kwargs
+        )
+
+        return {
+            "reasoning_content": reasoning_content.strip().strip("</think>").strip(),
+            "content": response.choices[0].text,
+            "finish_reason": response.choices[0].finish_reason,
+        }
+```
+
+Usage example with `reasoning_budget=128`:
+
+```python
+SERVED_MODEL_NAME = "nvidia/nemotron-super-sft-020426"
+
+client = ThinkingBudgetClient(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY",
+    tokenizer_name_or_path=SERVED_MODEL_NAME
+)
+
+resp = client.chat_completion(
+    model=SERVED_MODEL_NAME,
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Write a haiku about GPUs."}
+    ],
+    temperature=1,
+    max_tokens=512,
+    reasoning_budget=128
+)
+print("Reasoning:", resp["reasoning_content"])
+print("Content:", resp["content"])
+```
+
+Output:
+```
+Reasoning: The user wants a haiku about GPUs. A haiku is 5-7-5 syllable poem. Must be about GPUs.
+Provide a haiku. Ensure correct syllable count. Let's craft: "Silicon minds awaken / Teraflops pulse
+in electric veins / Rendering worlds beyond". Count syllables:
+
+Line1: "Silicon minds awaken" - Si (1) li (2) con (3) minds (4) a (5) wa (6) ken (7) => 7 syllables.
+Need 5. Let's adjust: "Silicon minds awake" => Si(.
+
+Content:
+Silicon minds awake
+Teraflops pulse in electric veins
+Worlds rendered in light
 ```
 
 ---
@@ -204,6 +409,8 @@ print(completion.choices[0].message.tool_calls)
 python3 -m sglang.launch_server \
   --model-path nvidia/nemotron-super-sft-020426 \
   --trust-remote-code \
+  --tp 4 \
+  --ep 1 \
   --max-running-requests 1024 \
   --host 0.0.0.0 \
   --port 30000
@@ -243,6 +450,8 @@ TODO
 python3 -m sglang.launch_server \
   --model-path nvidia/nemotron-super-sft-020426 \
   --trust-remote-code \
+  --tp 4 \
+  --ep 1 \
   --reasoning-parser nano_v3
 ```
 

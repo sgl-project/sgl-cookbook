@@ -22,9 +22,9 @@ const NemotronSuperConfigGenerator = () => {
         name: 'tp',
         title: 'Tensor Parallel (TP)',
         items: [
-          { id: '1', label: 'TP=1', default: true },
+          { id: '1', label: 'TP=1', default: false },
           { id: '2', label: 'TP=2', default: false },
-          { id: '4', label: 'TP=4', default: false },
+          { id: '4', label: 'TP=4', default: true },
           { id: '8', label: 'TP=8', default: false }
         ]
       },
@@ -32,7 +32,8 @@ const NemotronSuperConfigGenerator = () => {
         name: 'kvcache',
         title: 'KV Cache DType',
         items: [
-          { id: 'fp8_e4m3', label: 'fp8_e4m3', default: true },
+          { id: 'none', label: 'None', default: true },
+          { id: 'fp8_e4m3', label: 'fp8_e4m3', default: false },
           { id: 'bf16', label: 'bf16', default: false }
         ]
       },
@@ -66,13 +67,17 @@ const NemotronSuperConfigGenerator = () => {
       cmd += `  --model-path ${modelPath} \\\n`;
       cmd += `  --trust-remote-code \\\n`;
       cmd += `  --tp ${tp} \\\n`;
-      cmd += `  --kv-cache-dtype ${kvcache} \\\n`;
+      cmd += `  --ep 1 \\\n`;
+
+      if (kvcache && kvcache !== 'none') {
+        cmd += `  --kv-cache-dtype ${kvcache} \\\n`;
+      }
 
       for (const [key, option] of Object.entries(this.options)) {
         if (option.commandRule) {
           const rule = option.commandRule(values[key]);
           if (rule) {
-            cmd += `  ${rule}  \\\n`;
+            cmd += `  ${rule} \\\n`;
           }
         }
       }
