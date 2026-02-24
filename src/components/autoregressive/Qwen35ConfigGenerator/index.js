@@ -50,18 +50,18 @@ const Qwen35ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: false },
           { id: 'enabled', label: 'Enabled', default: true }
         ],
-        commandRule: (value) => value === 'enabled' ? '--speculative-algo NEXTN \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
+        commandRule: (value) => value === 'enabled' ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
       }
     },
 
     modelConfigs: {
       h100: { bf16: { tp: 16, mem: 0.8 } },
       h200: { bf16: { tp: 8, mem: 0.8 } },
-      b200: { bf16: { tp: 8, mem: 0.8 } }
+      b200: { bf16: { tp: 8, mem: 0.82 } }
     },
 
     generateCommand: function (values) {
-      const { hardware } = values;
+      const { hardware, speculative } = values;
 
       const modelName = `${this.modelFamily}/Qwen3.5-397B-A17B`;
 
@@ -69,10 +69,9 @@ const Qwen35ConfigGenerator = () => {
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
+      // Initialize the base command
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-
-      // TP setting
       cmd += ` \\\n  --tp ${tpValue}`;
 
       // Apply commandRule from all options
@@ -85,7 +84,18 @@ const Qwen35ConfigGenerator = () => {
         }
       });
 
-      // Memory fraction based on hardware
+      // Append B200-specific backend configurations
+      if (hardware === 'b200') {
+        cmd += ` \\\n  --attention-backend trtllm_mha`;
+        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        cmd += ` \\\n  --disable-radix-cache`;
+        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+        if (speculative === 'disabled') {
+          cmd += ` \\\n  --tokenizer-worker-num 6`;
+        }
+      }
+
+      // Add memory fraction
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
       return cmd;
