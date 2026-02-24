@@ -25,25 +25,25 @@ const Qwen35ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'b200', label: 'B200', default: true },
+          { id: 'h100', label: 'H100', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'h100', label: 'H100', default: false }
+          { id: 'b200', label: 'B200', default: false }
         ]
       },
       quantization: {
         name: 'quantization',
         title: 'Quantization',
         items: [
-          { id: 'bf16', label: 'BF16', default: true },
-          { id: 'fp8', label: 'FP8', default: false }
+          { id: 'bf16', label: 'BF16', default: false },
+          { id: 'fp8', label: 'FP8', default: true }
         ]
       },
       reasoning: {
         name: 'reasoning',
         title: 'Reasoning Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
         ],
         commandRule: (value) => value === 'enabled' ? '--reasoning-parser qwen3' : null
       },
@@ -51,8 +51,8 @@ const Qwen35ConfigGenerator = () => {
         name: 'toolcall',
         title: 'Tool Call Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
         ],
         commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen3_coder' : null
       },
@@ -60,8 +60,8 @@ const Qwen35ConfigGenerator = () => {
         name: 'speculative',
         title: 'Speculative Decoding (MTP)',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
         ],
         commandRule: (value) => value === 'enabled' ? '--speculative-algo NEXTN \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
       }
