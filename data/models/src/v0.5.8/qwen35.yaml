@@ -10,6 +10,9 @@
 #   H100: tp=8 (model ~400GB in FP8, each rank needs ~50GB < 80GB)
 #   H200: tp=8
 #   B200: tp=8
+#
+# GPU requirements (FP4):
+#   B200 (183GB) and B300 (275GB) - FP4 requires Blackwell architecture
 
 vendor: qwen
 
@@ -51,5 +54,29 @@ families:
         quantization: fp8
         hardware:
           H100: { tp: 8 }
-          H200: { tp: 8 }
-          B200: { tp: 8 }
+          H200: { tp: 4 }
+          B200: { tp: 4 }
+          B300: { tp: 2 }
+
+      - name: Qwen3.5-397B-A17B-NVFP4
+        quantization: fp4
+        model_path: nvidia/Qwen3.5-397B-A17B-NVFP4
+        hardware:
+          B200:
+            tp: 4
+            extra_args:
+              - --attention-backend
+              - trtllm_mha
+              - --moe-runner-backend
+              - flashinfer_trtllm
+              - --fp4-gemm-backend
+              - flashinfer_cutlass
+          B300:
+            tp: 2
+            extra_args:
+              - --attention-backend
+              - trtllm_mha
+              - --moe-runner-backend
+              - flashinfer_trtllm
+              - --fp4-gemm-backend
+              - flashinfer_cutlass

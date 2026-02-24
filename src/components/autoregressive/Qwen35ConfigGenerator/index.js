@@ -10,11 +10,17 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   H100: tp=16 (model ~800GB in BF16, each rank needs ~100GB > 80GB)
  *   H200: tp=8
  *   B200: tp=8
+ *   B300: tp=4
  *
  * GPU requirements (FP8):
  *   H100: tp=8 (model ~400GB in FP8, each rank needs ~50GB < 80GB)
- *   H200: tp=8
- *   B200: tp=8
+ *   H200: tp=4
+ *   B200: tp=4
+ *   B300: tp=2
+ *
+ * GPU requirements (FP4):
+ *   B200: tp=4 (FP4 requires Blackwell)
+ *   B300: tp=2 (FP4 requires Blackwell)
  */
 const Qwen35ConfigGenerator = () => {
   const config = {
@@ -24,18 +30,23 @@ const Qwen35ConfigGenerator = () => {
       hardware: {
         name: 'hardware',
         title: 'Hardware Platform',
-        items: [
-          { id: 'h100', label: 'H100', default: true },
-          { id: 'h200', label: 'H200', default: false },
-          { id: 'b200', label: 'B200', default: false }
-        ]
+        getDynamicItems: (values) => {
+          const isNvfp4 = values.quantization === 'fp4';
+          return [
+            { id: 'h100', label: 'H100', default: !isNvfp4, disabled: isNvfp4 },
+            { id: 'h200', label: 'H200', default: false, disabled: isNvfp4 },
+            { id: 'b200', label: 'B200', default: false, disabled: false },
+            { id: 'b300', label: 'B300', default: isNvfp4, disabled: false }
+          ];
+        }
       },
       quantization: {
         name: 'quantization',
         title: 'Quantization',
         items: [
           { id: 'bf16', label: 'BF16', default: false },
-          { id: 'fp8', label: 'FP8', default: true }
+          { id: 'fp8', label: 'FP8', default: true },
+          { id: 'fp4', label: 'FP4', default: false }
         ]
       },
       reasoning: {
@@ -69,17 +80,28 @@ const Qwen35ConfigGenerator = () => {
 
     modelConfigs: {
       h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
-      h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
-      b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } }
+      h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
+      b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.8 } },
+      b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } }
     },
 
     generateCommand: function (values) {
       const { hardware, quantization } = values;
 
-      const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
-      const modelName = `${this.modelFamily}/Qwen3.5-397B-A17B${quantSuffix}`;
+      // Validate hardware supports the quantization
+      const hwConfig = this.modelConfigs[hardware]?.[quantization];
+      if (!hwConfig) {
+        return '# Please select compatible hardware for the chosen quantization\n# FP4 requires B200/B300 (Blackwell)';
+      }
 
-      const hwConfig = this.modelConfigs[hardware][quantization];
+      let modelName;
+      if (quantization === 'fp4') {
+        modelName = 'nvidia/Qwen3.5-397B-A17B-NVFP4';
+      } else {
+        const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
+        modelName = `${this.modelFamily}/Qwen3.5-397B-A17B${quantSuffix}`;
+      }
+
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
@@ -102,6 +124,11 @@ const Qwen35ConfigGenerator = () => {
 
       // Memory fraction based on hardware
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
+
+      // FP4-specific backend settings
+      if (quantization === 'fp4') {
+        cmd += ' \\\n  --attention-backend trtllm_mha \\\n  --moe-runner-backend flashinfer_trtllm \\\n  --fp4-gemm-backend flashinfer_cutlass';
+      }
 
       return cmd;
     }
