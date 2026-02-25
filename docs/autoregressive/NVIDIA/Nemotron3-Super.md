@@ -135,11 +135,11 @@ Output:
 ```
 The first five prime numbers are:
 
-1. 2
-2. 3
-3. 5
-4. 7
-5. 11
+1. **2**
+2. **3**
+3. **5**
+4. **7**
+5. **11**
 ```
 
 ### 4.2 Reasoning
