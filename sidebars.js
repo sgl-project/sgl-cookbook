@@ -255,6 +255,13 @@ const sidebars = {
             'diffusion/Z-Image/Z-Image-Turbo',
           ],
         },
+        {
+          type: 'category',
+          label: 'MOVA',
+          items: [
+            'diffusion/MOVA/MOVA',
+          ],
+        },
       ],
     },
     {
