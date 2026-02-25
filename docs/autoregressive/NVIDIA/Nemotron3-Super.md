@@ -90,23 +90,20 @@ resp = client.chat.completions.create(
     temperature=0.6,
     max_tokens=512,
 )
-print(resp.choices[0].message.reasoning_content)
-print(resp.choices[0].message.content)
+print("Reasoning:", resp.choices[0].message.reasoning_content, "\nContent:", resp.choices[0].message.content)
+print("\n")
 ```
 
 Output:
 ```
-We need to respond with 3 bullet points about SGLang. SGLang is a system for serving large language
-models, focusing on efficient inference, dynamic batching, etc. Provide concise bullet points.
+Reasoning: The user asks: "Give me 3 bullet points about SGLang." Likely they want concise bullet points summarizing SGLang. SGLang is a system for efficient LLM serving, developed by Stanford, focusing on fast inference with dynamic batching, etc. Provide three bullet points. Ensure correct info. Provide concise bullet points.
+ 
+Content: - **High‑throughput LLM serving**: SGLang is a runtime engine designed to accelerate inference for large language models, delivering up to 10× higher throughput than traditional serving stacks by using optimized kernels and efficient memory management.  
 
-- **High‑performance LLM serving:** SGLang is designed to run large language models (LLMs) at low
-  latency and high throughput by leveraging kernel‑level optimizations and GPU‑friendly execution
-  pipelines.
-- **Dynamic batching & streaming:** It supports on‑the‑fly batching of requests and continuous token
-  streaming, enabling efficient handling of varying workloads without sacrificing response time.
-- **Flexible deployment:** The framework works with popular model formats (e.g., Hugging Face, ONNX)
-  and integrates with containerized environments (Docker, Kubernetes), making it easy to plug into
-  existing inference stacks.
+- **Dynamic batching & pipelining**: It supports fine‑grained, request‑level batching and multi‑stage pipelining, allowing the system to continuously pack new queries into GPU work while keeping latency low.  
+
+- **Open‑source & modular**: Built on PyTorch and CUDA, SGLang is released under an MIT license and provides a plug‑and‑play API that can be swapped into existing LLM pipelines (e.g., vLLM, TensorRT‑LLM) for easy performance upgrades.
+
 ```
 
 Streaming chat completion:
