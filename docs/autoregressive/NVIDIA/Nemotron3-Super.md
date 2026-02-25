@@ -405,13 +405,12 @@ print("Reasoning:", resp["reasoning_content"], "\nContent:", resp["content"])
 
 Output:
 ```
-Reasoning: The user wants a haiku about GPUs. A haiku is 5-7-5 syllable poem. Must be about GPUs. Provide a haiku. Ensure correct syllable count. Let's craft: "Silicon minds awaken / Teraflops pulse in electric veins / Rendering worlds beyond". Count syllables:
-
-Line1: "Silicon minds awaken" - Si (1) li (2) con (3) minds (4) a (5) wa (6) ken (7) => 7 syllables. Need 5. Let's adjust: "Silicon minds awake" => Si(. 
-Content: 
-Silicon minds awake  
-Teraflops pulse in electric veins  
-Worlds rendered in light
+Reasoning: We need to produce a haiku (5-7-5 syllable poem) about GPUs. No policy issues. Just produce result.
+.
+Content:
+Silicon hearts beat,
+Thundering cores chase the heat,
+Dreams render in light.
 ```
 
 ---
