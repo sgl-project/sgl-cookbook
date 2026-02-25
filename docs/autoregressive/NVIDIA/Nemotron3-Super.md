@@ -111,7 +111,7 @@ Streaming chat completion:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:30000/v1",
+    base_url="http://localhost:5000/v1",
     api_key="EMPTY",
 )
 
@@ -150,7 +150,7 @@ The model supports two modes — Reasoning ON (default) vs OFF. This can be togg
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:30000/v1",
+    base_url="http://localhost:5000/v1",
     api_key="EMPTY",
 )
 
@@ -222,7 +222,7 @@ Call functions using the OpenAI Tools schema and inspect returned `tool_calls`.
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:30000/v1",
+    base_url="http://localhost:5000/v1",
     api_key="EMPTY",
 )
 
@@ -356,7 +356,7 @@ Usage example with `reasoning_budget=128`:
 SERVED_MODEL_NAME = "nvidia/nemotron-super-sft-020426"
 
 client = ThinkingBudgetClient(
-    base_url="http://localhost:30000/v1",
+    base_url="http://localhost:5000/v1",
     api_key="EMPTY",
     tokenizer_name_or_path=SERVED_MODEL_NAME
 )
@@ -410,7 +410,7 @@ python3 -m sglang.launch_server \
   --ep 1 \
   --max-running-requests 1024 \
   --host 0.0.0.0 \
-  --port 30000
+  --port 5000
 ```
 
 - Benchmark Command:
@@ -419,7 +419,7 @@ python3 -m sglang.launch_server \
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host 127.0.0.1 \
-  --port 30000 \
+  --port 5000 \
   --model nvidia/nemotron-super-sft-020426 \
   --dataset-name random \
   --random-input-len 1024 \
@@ -454,7 +454,7 @@ python3 -m sglang.launch_server \
 
 **Run Benchmark**
 ```bash
-python3 benchmark/gsm8k/bench_sglang.py --port 30000
+python3 benchmark/gsm8k/bench_sglang.py --port 5000
 ```
 
 **Test Results:**
@@ -466,7 +466,7 @@ TODO
 
 **Run Benchmark**
 ```bash
-python3 benchmark/mmlu/bench_sglang.py --port 30000
+python3 benchmark/mmlu/bench_sglang.py --port 5000
 ```
 
 **Test Results:**
