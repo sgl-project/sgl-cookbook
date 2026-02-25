@@ -45,7 +45,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Llama
 
-- [ ] [Llama4-Scout](./autoregressive/Llama/Llama4-Scout.md)
+- [x] [Llama4](./autoregressive/Llama/Llama4.md)
 - [x] [Llama3.3-70B](./autoregressive/Llama/Llama3.3-70B.md)
 - [x] [Llama3.1](./autoregressive/Llama/Llama3.1.md)
 

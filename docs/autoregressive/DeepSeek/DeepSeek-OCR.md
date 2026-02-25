@@ -15,7 +15,7 @@ sidebar_position: 1
 
 **Available Models:**
 
-- **Base Model**: [deepseek-ai/DeepSeek-OCR](https://huggingface.co/deepseek-ai/DeepSeek-OCR) - Recommended for OCR tasks
+- **DeepSeek-OCR**: [deepseek-ai/DeepSeek-OCR](https://huggingface.co/deepseek-ai/DeepSeek-OCR)
 
 **License:**
 To use DeepSeek-OCR, you must agree to DeepSeek's Community License. See [LICENSE](https://huggingface.co/deepseek-ai/DeepSeek-OCR/blob/main/LICENSE) for details.
@@ -38,10 +38,6 @@ import DeepSeekOCRConfigGenerator from '@site/src/components/autoregressive/Deep
 
 <DeepSeekOCRConfigGenerator />
 
-### 3.2 Configuration Tips
-
-For more detailed configuration tips, please refer to [DeepSeek V3/V3.1/R1 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
-
 ## 4. Model Invocation
 
 ### 4.1 Basic Usage
@@ -50,6 +46,44 @@ For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
 
+### 4.2 Prompt Examples
+
+Recommended prompts from the model card:
+
+```
+<image>
+<|grounding|>Convert the document to markdown.
+```
+
+```
+<image>
+Free OCR.
+```
+
+### 4.3 OpenAI-Compatible Request Example
+
+```python
+import requests
+
+url = "http://localhost:30000/v1/chat/completions"
+
+data = {
+    "model": "deepseek-ai/DeepSeek-OCR",
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "<image>\n<|grounding|>Convert the document to markdown."},
+                {"type": "image_url", "image_url": {"url": "https://example.com/your_image.jpg"}},
+            ],
+        }
+    ],
+    "max_tokens": 512,
+}
+
+response = requests.post(url, json=data)
+print(response.text)
+```
 
 ## 5. Benchmark
 

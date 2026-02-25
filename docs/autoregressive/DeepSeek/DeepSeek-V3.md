@@ -29,8 +29,23 @@ import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSee
 
 <DeepSeekConfigGenerator />
 
-### 3.2 Configuration Tips
-For more detailed configuration tips, please refer to [DeepSeek-V3 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
+### 3.2 Hardware Requirements
+
+For hardware requirements, supported weight types, and detailed deployment commands, see [DeepSeek-R1 Hardware Requirements](../DeepSeek/DeepSeek-R1.md#33-hardware-requirements). The same configurations apply to all DeepSeek V3/V3.1/R1 models.
+
+> **Important:** The official DeepSeek V3 is already in FP8 format, so you should not run it with any quantization arguments like `--quantization fp8`.
+
+### 3.3 Configuration Tips
+
+For configuration tips, see [DeepSeek-R1 Configuration Tips](../DeepSeek/DeepSeek-R1.md#34-configuration-tips).
+
+### 3.4 Multi-Node Deployment
+
+For multi-node deployment resources, see [DeepSeek-R1 Multi-Node Deployment](../DeepSeek/DeepSeek-R1.md#35-multi-node-deployment).
+
+### 3.5 Optimizations
+
+For DeepSeek optimizations (MLA, DPA, Multi-Node TP, Block-wise FP8, MTP), see [DeepSeek-R1 Optimizations](../DeepSeek/DeepSeek-R1.md#36-optimizations). The same optimizations apply to all DeepSeek V3/V3.1/R1 models.
 
 ## 4. Model Invocation
 
@@ -38,7 +53,7 @@ For more detailed configuration tips, please refer to [DeepSeek-V3 Usage](https:
 
 For basic API usage and request examples, please refer to:
 
-- [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html)
+- [Basic API Usage](https://docs.sglang.ai/get_started/quick_start.html)
 
 ### 4.2 Advanced Usage
 
@@ -311,6 +326,54 @@ print(final_response.choices[0].message.content)
 # Output: "The weather in Beijing is currently 22°C and sunny."
 ```
 
+**Curl Examples:**
+
+Non-streaming request:
+
+```bash
+curl "http://127.0.0.1:8000/v1/chat/completions" \
+-H "Content-Type: application/json" \
+-d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3-0324", "tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
+```
+
+Expected Response:
+
+```
+{"id":"6501ef8e2d874006bf555bc80cddc7c5","object":"chat.completion","created":1745993638,"model":"deepseek-ai/DeepSeek-V3-0324","choices":[{"index":0,"message":{"role":"assistant","content":null,"reasoning_content":null,"tool_calls":[{"id":"0","index":null,"type":"function","function":{"name":"query_weather","arguments":"{\"city\": \"Qingdao\"}"}}]},"logprobs":null,"finish_reason":"tool_calls","matched_stop":null}],"usage":{"prompt_tokens":116,"total_tokens":138,"completion_tokens":22,"prompt_tokens_details":null}}
+```
+
+Streaming request:
+
+```bash
+curl "http://127.0.0.1:8000/v1/chat/completions" \
+-H "Content-Type: application/json" \
+-d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3-0324","stream":true,"tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
+```
+
+Expected Streamed Chunks (simplified for clarity):
+
+```
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"{\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"city"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\":\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"Q"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"ing"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"dao"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\"}"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":null}}], "finish_reason": "tool_calls"}
+data: [DONE]
+```
+
+The client needs to concatenate all argument fragments from streamed chunks to reconstruct the complete tool call:
+
+```
+{"city": "Qingdao"}
+```
+
+> **Important:**
+> 1. Use a lower `"temperature"` value for better results.
+> 2. To receive more consistent tool call results, it is recommended to use `--chat-template examples/chat_template/tool_chat_template_deepseekv3.jinja`. It provides an improved unified prompt.
+
 ## 5. Benchmark
 
 ### 5.1 Speed Benchmark
@@ -513,3 +576,7 @@ python3 benchmark/mmlu/bench_sglang.py --nsub 10 --port 8000
     Total latency: 58.339
     Average accuracy: 0.871
     ```
+
+## 6. FAQ
+
+For common questions and troubleshooting (e.g., NCCL timeout during model loading), see [DeepSeek-R1 FAQ](../DeepSeek/DeepSeek-R1.md#6-faq).

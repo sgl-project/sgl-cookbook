@@ -2,21 +2,39 @@ import React from 'react';
 import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
- * Llama 4-Scout Configuration Generator
+ * Llama 4 Configuration Generator
+ * Supports Llama 4 Scout and Llama 4 Maverick deployment configuration
  */
-const Llama4ScoutConfigGenerator = () => {
+const Llama4ConfigGenerator = () => {
   const config = {
     modelFamily: 'meta-llama',
 
     options: {
+      model: {
+        name: 'model',
+        title: 'Model',
+        items: [
+          { id: 'scout', label: 'Llama 4 Scout (109B)', default: true },
+          { id: 'maverick', label: 'Llama 4 Maverick (400B)', default: false }
+        ]
+      },
       hardware: {
         name: 'hardware',
         title: 'Hardware Platform',
-        items: [
-          { id: 'b200', label: 'B200', default: false },
-          { id: 'h100', label: 'H100', default: true },
-          { id: 'h200', label: 'H200', default: false }
-        ]
+        getDynamicItems: (values) => {
+          if (values.model === 'maverick') {
+            return [
+              { id: 'b200', label: 'B200', default: false },
+              { id: 'h100', label: 'H100', default: false },
+              { id: 'h200', label: 'H200', default: true }
+            ];
+          }
+          return [
+            { id: 'b200', label: 'B200', default: false },
+            { id: 'h100', label: 'H100', default: true },
+            { id: 'h200', label: 'H200', default: false }
+          ];
+        }
       },
       quantization: {
         name: 'quantization',
@@ -59,16 +77,16 @@ const Llama4ScoutConfigGenerator = () => {
     },
 
     generateCommand: function(values) {
-      const { hardware, quantization, toolcall, speculative, host, port } = values;
+      const { model, hardware, quantization, toolcall, speculative, host, port } = values;
+
+      const isScout = model === 'scout';
+      const modelPath = isScout
+        ? 'meta-llama/Llama-4-Scout-17B-16E-Instruct'
+        : 'meta-llama/Llama-4-Maverick-17B-128E-Instruct';
 
       let cmd = 'python -m sglang.launch_server \\\n';
-      cmd += `  --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct`;
-
-      if (hardware === 'h100' || hardware === 'h200') {
-        cmd += ` \\\n  --tp 8`;
-      } else if (hardware === 'b200') {
-        cmd += ` \\\n  --tp 8`;
-      }
+      cmd += `  --model-path ${modelPath}`;
+      cmd += ` \\\n  --tp 8`;
 
       if (quantization === 'fp8') {
         cmd += ` \\\n  --quantization fp8`;
@@ -79,13 +97,16 @@ const Llama4ScoutConfigGenerator = () => {
       }
 
       if (speculative === 'enabled') {
-        cmd += ` \\\n  --speculative-algorithm EAGLE3 \\\n`;
-        cmd += `  --speculative-draft-model-path lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1 \\\n`;
-        cmd += `  --speculative-num-steps 3 \\\n`;
-        cmd += `  --speculative-eagle-topk 1 \\\n`;
-        cmd += `  --speculative-num-draft-tokens 4 \\\n`;
-        cmd += `  --mem-fraction-static 0.75 \\\n`;
-        cmd += `  --cuda-graph-max-bs 2`;
+        const draftModel = isScout
+          ? 'lmsys/sglang-EAGLE3-Llama-4-Scout-17B-16E-Instruct-v1'
+          : 'nvidia/Llama-4-Maverick-17B-128E-Eagle3';
+        cmd += ` \\\n  --speculative-algorithm EAGLE3`;
+        cmd += ` \\\n  --speculative-draft-model-path ${draftModel}`;
+        cmd += ` \\\n  --speculative-num-steps 3`;
+        cmd += ` \\\n  --speculative-eagle-topk 1`;
+        cmd += ` \\\n  --speculative-num-draft-tokens 4`;
+        cmd += ` \\\n  --mem-fraction-static 0.75`;
+        cmd += ` \\\n  --cuda-graph-max-bs 2`;
       }
 
       cmd += ` \\\n  --enable-multimodal`;
@@ -102,4 +123,4 @@ const Llama4ScoutConfigGenerator = () => {
   return <ConfigGenerator config={config} />;
 };
 
-export default Llama4ScoutConfigGenerator;
+export default Llama4ConfigGenerator;

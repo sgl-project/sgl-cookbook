@@ -40,6 +40,45 @@ import GLM45VConfigGenerator from '@site/src/components/autoregressive/GLM45VCon
 - **Fast Model Loading**: For large models (like the 106B version), you can speed up model loading by using `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'`.
 - For more detailed configuration tips, please refer to [GLM-4.5V/GLM-4.6V Usage](https://docs.sglang.io/basic_usage/glmv.html).
 
+### 3.3 Hardware-Specific Notes
+
+- **H100 with FP8**: Use the FP8 checkpoint for best memory efficiency.
+- **A100 / H100 with BF16 (non-FP8)**: It's recommended to use `--mm-max-concurrent-calls` to control parallel throughput and GPU memory usage during image/video inference.
+- **H200 & B200**: The model can be run "out of the box", supporting full context length plus concurrent image + video processing.
+
+### 3.4 Multimodal Server Parameters
+
+When launching the model server for multimodal support, the following command-line arguments can fine-tune performance:
+
+- `--mm-attention-backend`: Specify multimodal attention backend. E.g. `fa3` (Flash Attention 3).
+- `--mm-max-concurrent-calls <value>`: Maximum number of concurrent asynchronous multimodal data processing calls. Controls parallel throughput and GPU memory usage during image/video inference.
+- `--mm-per-request-timeout <seconds>`: Timeout duration (in seconds) for each multimodal request. Requests exceeding this limit (e.g., for very large video inputs) will be automatically terminated.
+- `--keep-mm-feature-on-device`: Retain multimodal feature tensors on the GPU after processing. Avoids device-to-host memory copies and improves performance for repeated or high-frequency inference workloads.
+- `--mm-enable-dp-encoder`: Place the ViT in data parallel while keeping the LLM in tensor parallel. Consistently lowers TTFT and boosts end-to-end throughput.
+- `SGLANG_USE_CUDA_IPC_TRANSPORT=1`: Shared memory pool based CUDA IPC for multi-modal data transport. Significantly improves end-to-end latency.
+
+**Optimized launch example:**
+
+```bash
+SGLANG_USE_CUDA_IPC_TRANSPORT=1 \
+SGLANG_VLM_CACHE_SIZE_MB=0 \
+python -m sglang.launch_server \
+  --model-path zai-org/GLM-4.5V \
+  --host 0.0.0.0 \
+  --port 30000 \
+  --trust-remote-code \
+  --tp-size 8 \
+  --enable-cache-report \
+  --log-level info \
+  --max-running-requests 64 \
+  --mem-fraction-static 0.65 \
+  --chunked-prefill-size 8192 \
+  --attention-backend fa3 \
+  --mm-attention-backend fa3 \
+  --mm-enable-dp-encoder \
+  --enable-metrics
+```
+
 ## 4. Model Invocation
 
 ### 4.1 Basic Usage
@@ -464,6 +503,38 @@ final_response = client.chat.completions.create(
 
 print(final_response.choices[0].message.content)
 # Output: "The weather in Beijing is currently 22°C and sunny."
+```
+
+#### 4.2.4 Thinking Budget
+
+In SGLang, you can implement thinking budget for GLM-4.5V with `CustomLogitProcessor`.
+
+Launch a server with `--enable-custom-logit-processor` flag on. Then use `Glm4MoeThinkingBudgetLogitProcessor` in the request:
+
+```python
+import openai
+from rich.pretty import pprint
+from sglang.srt.sampling.custom_logit_processor import Glm4MoeThinkingBudgetLogitProcessor
+
+
+client = openai.Client(base_url="http://127.0.0.1:30000/v1", api_key="*")
+response = client.chat.completions.create(
+    model="zai-org/GLM-4.5V",
+    messages=[
+        {
+            "role": "user",
+            "content": "Question: Is Paris the Capital of France?",
+        }
+    ],
+    max_tokens=1024,
+    extra_body={
+        "custom_logit_processor": Glm4MoeThinkingBudgetLogitProcessor().to_str(),
+        "custom_params": {
+            "thinking_budget": 512,
+        },
+    },
+)
+pprint(response)
 ```
 
 ## 5. Benchmark
