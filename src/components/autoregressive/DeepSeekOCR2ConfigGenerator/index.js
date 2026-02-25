@@ -37,7 +37,7 @@ const DeepSeekOCR2ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { strategy } = values;
+      const { hardware, strategy } = values;
 
       const strategyArray = Array.isArray(strategy) ? strategy : [];
 
