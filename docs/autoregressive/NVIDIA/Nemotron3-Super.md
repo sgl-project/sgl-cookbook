@@ -43,7 +43,7 @@ import NemotronSuperConfigGenerator from '@site/src/components/autoregressive/Ne
 
 - **TP support**:
 
-    To set tp size, use `--tp <1|2|4|8>`. TP=4 is recommended for this model.
+    To set tp size, use `--tp <1|2|4|8>`. 
 
 - **Expert Parallelism**:
 
