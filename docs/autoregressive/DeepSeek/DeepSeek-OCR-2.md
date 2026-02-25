@@ -34,7 +34,7 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and deployment strategy.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and deployment strategy. SGLang supports serving FLUX on NVIDIA H200 and B200, and AMD MI300X, MI355X, and MI325X GPUs.
 
 import DeepSeekOCR2ConfigGenerator from '@site/src/components/autoregressive/DeepSeekOCR2ConfigGenerator';
 
