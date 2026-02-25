@@ -64,7 +64,7 @@ const DeepSeekOCR2ConfigGenerator = () => {
       }
 
       if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
-        cmd += ` \\\n  --attention-backend triton`;
+        cmd += ` \\\n  --attention-backend triton` + ` \\\n  --trust-remote-code`;
       }
 
       cmd += ` \\\n  --host 0.0.0.0 \\\n  --port 30000`;
