@@ -60,7 +60,7 @@ import NemotronSuperConfigGenerator from '@site/src/components/autoregressive/Ne
 python3 -m sglang.launch_server \
   --model-path nvidia/nemotron-super-sft-020426 \
   --host 0.0.0.0 \
-  --port 30000 \
+  --port 5000 \
   --log-level warning \
   --trust-remote-code \
   --tp 4 \
@@ -77,7 +77,7 @@ SGLang provides an OpenAI-compatible endpoint. Example with the OpenAI Python cl
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:30000/v1",
+    base_url="http://localhost:5000/v1",
     api_key="EMPTY",
 )
 
