@@ -252,6 +252,7 @@ client = OpenAI(
     api_key="EMPTY",
 )
 
+# Tool calling via OpenAI tools schema
 TOOLS = [
     {
         "type": "function",
@@ -276,7 +277,7 @@ TOOLS = [
 ]
 
 completion = client.chat.completions.create(
-    model="nvidia/nemotron-super-sft-020426",
+    model="nemotron",
     messages=[
         {"role": "system", "content": ""},
         {"role": "user", "content": "My bill is $50. What will be the amount for 15% tip?"}
@@ -294,12 +295,9 @@ print(completion.choices[0].message.tool_calls)
 
 Output:
 ```
-The user wants to calculate a 15% tip on a $50 bill. I need to use the calculate_tip function with
-bill_total = 50 and tip_percentage = 15. Let me call the function.
+The user wants to know the tip amount for a $50 bill with a 15% tip. I need to use the calculate_tip function. The function requires bill_total and tip_percentage. Bill total is 50, tip percentage is 15. I'll call the function.
 
-[ChatCompletionMessageFunctionToolCall(id='call_078777c0fb3f4114a70273b0',
-  function=Function(arguments='{"bill_total": 50, "tip_percentage": 15}', name='calculate_tip'),
-  type='function', index=0)]
+[ChatCompletionMessageFunctionToolCall(id='call_607a46b5f3104184831a7b19', function=Function(arguments='{"bill_total": 50, "tip_percentage": 15}', name='calculate_tip'), type='function', index=0)]
 ```
 
 ### 4.4 Controlling Reasoning Budget
