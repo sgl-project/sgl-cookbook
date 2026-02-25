@@ -149,7 +149,8 @@ sglang serve --model-path OpenMOSS-Team/MOVA-720p
 
 Test Environment:
 
-- Hardware: NVIDIA B200 GPU (8x)
+- Hardware: NVIDIA H200 x 8
+- git revision: 443b1a8
 - Model: OpenMOSS-Team/MOVA-720p
 
 **Server Command**:
@@ -166,6 +167,29 @@ sglang serve --model-path OpenMOSS-Team/MOVA-720p --port 30002 \
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --task image-to-video --dataset vbench --num-prompts 1 --max-concurrency 1 \
     --port 30002
+```
+
+**Result**:
+```
+================= Serving Benchmark Result =================
+Task:                                    image-to-video
+Model:                                   OpenMOSS-Team/MOVA-720p
+Dataset:                                 vbench
+--------------------------------------------------
+Benchmark duration (s):                  590.76
+Request rate:                            inf
+Max request concurrency:                 1
+Successful requests:                     1/1
+--------------------------------------------------
+Request throughput (req/s):              0.00
+Latency Mean (s):                        590.7549
+Latency Median (s):                      590.7549
+Latency P99 (s):                         590.7549
+--------------------------------------------------
+Peak Memory Max (MB):                    74996.00
+Peak Memory Mean (MB):                   74996.00
+Peak Memory Median (MB):                 74996.00
+============================================================
 ```
 
 #### 5.1.2 Generate videos with high concurrency
