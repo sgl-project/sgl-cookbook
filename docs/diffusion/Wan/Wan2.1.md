@@ -19,13 +19,13 @@ Key characteristics:
 For more details, refer to the official Wan2.1 resources:
 
 - **GitHub**: [Wan-Video/Wan2.1](https://github.com/Wan-Video/Wan2.1)
-- **Hugging Face collection**: [Wan-AI Wan2.1](https://huggingface.co/collections/Wan-AI/wan21-67b5ac2a1d8f42b46a19448e)
+- **Hugging Face collection**: [Wan-AI Wan2.1](https://huggingface.co/Wan-AI/Wan2.1-T2V-14B)
 
 ## 2. SGLang-diffusion Installation
 
 SGLang-diffusion offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
 
-Please refer to the [official SGLang-diffusion installation guide](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/install.md) for installation instructions.
+Please refer to the [official SGLang-diffusion installation guide](https://docs.sglang.io/diffusion/installation.html) for installation instructions.
 
 ## 3. Model Deployment
 
@@ -43,7 +43,7 @@ import Wan2_1ConfigGenerator from '@site/src/components/diffusion/Wan2_1ConfigGe
 
 ### 3.2 Configuration Tips
 
-Current supported optimization options are listed in the [SGLang diffusion support matrix](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/support_matrix.md).
+Current supported optimization options are listed in the [SGLang diffusion support matrix](https://docs.sglang.io/diffusion/performance/attention_backends.html#platform-support-matrix).
 
 - `--vae-path`: Path to a custom VAE model or HuggingFace model ID. If not specified, the VAE will be loaded from the main model path.
 - `--num-gpus {NUM_GPUS}`: Number of GPUs to use.
@@ -58,7 +58,7 @@ Current supported optimization options are listed in the [SGLang diffusion suppo
 ### 4.1 Basic Usage
 
 For more API usage and request examples, please refer to:
-[SGLang Diffusion OpenAI API](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/openai_api.md)
+[SGLang Diffusion OpenAI API](https://docs.sglang.io/diffusion/api/openai_api.html)
 
 #### 4.1.1 Launch a server and then send requests
 
@@ -104,7 +104,7 @@ sglang generate "${SERVER_ARGS[@]}" "${SAMPLING_ARGS[@]}"
 
 #### 4.2.1 Cache-DiT Acceleration
 
-SGLang integrates [Cache-DiT](https://github.com/vipshop/cache-dit), a caching acceleration engine for Diffusion Transformers (DiT), to achieve significant inference speedups with minimal quality loss. You can set `SGLANG_CACHE_DIT_ENABLED=True` to enable it. For more details, please refer to the SGLang Cache-DiT [documentation](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/cache_dit.md).
+SGLang integrates [Cache-DiT](https://github.com/vipshop/cache-dit), a caching acceleration engine for Diffusion Transformers (DiT), to achieve significant inference speedups with minimal quality loss. You can set `SGLANG_CACHE_DIT_ENABLED=True` to enable it. For more details, please refer to the SGLang Cache-DiT [documentation](https://docs.sglang.io/diffusion/performance/cache/cache_dit.html).
 
 **Basic Usage**
 
