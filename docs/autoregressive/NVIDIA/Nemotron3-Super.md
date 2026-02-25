@@ -302,7 +302,9 @@ The user wants to know the tip amount for a $50 bill with a 15% tip. I need to u
 
 ### 4.4 Controlling Reasoning Budget
 
-The `reasoning_budget` parameter allows you to limit the length of the model's reasoning trace. When the reasoning output reaches the specified token budget, the model will attempt to gracefully end the reasoning at the next newline character. If no newline is encountered within 500 tokens after reaching the budget threshold, the reasoning trace will be forcibly terminated at `reasoning_budget + 500` tokens.
+The `reasoning_budget` parameter allows you to limit the length of the model's reasoning trace. When the reasoning output reaches the specified token budget, the model will attempt to gracefully end the reasoning at the next newline character. 
+
+If no newline is encountered within 500 tokens after reaching the budget threshold, the reasoning trace will be forcibly terminated at `reasoning_budget + 500` tokens.
 
 ```python
 from typing import Any, Dict, List
@@ -329,49 +331,50 @@ class ThinkingBudgetClient:
             max_tokens > reasoning_budget
         ), f"reasoning_budget must be smaller than max_tokens. Given {max_tokens=} and {reasoning_budget=}"
 
-        # 1. First call to get reasoning content
+        # 1. first call chat completion to get reasoning content
         response = self.client.chat.completions.create(
-            model=model,
-            messages=messages,
-            max_tokens=reasoning_budget,
+            model=model, 
+            messages=messages, 
+            max_tokens=reasoning_budget, 
             **kwargs
         )
-
+        
         reasoning_content = response.choices[0].message.reasoning_content or ""
-
+        
         if "</think>" not in reasoning_content:
-            # Reasoning content is too long, close it with a period
+            # reasoning content is too long, closed with a period (.)
             reasoning_content = f"{reasoning_content}.\n</think>\n\n"
-
+        
         reasoning_tokens_used = len(
             self.tokenizer.encode(reasoning_content, add_special_tokens=False)
         )
         remaining_tokens = max_tokens - reasoning_tokens_used
-
+        
         assert (
             remaining_tokens > 0
         ), f"remaining tokens must be positive. Given {remaining_tokens=}. Increase max_tokens or lower reasoning_budget."
 
-        # 2. Append reasoning content and call completion to get the final answer
+        # 2. append reasoning content to messages and call completion
         messages.append({"role": "assistant", "content": reasoning_content})
         prompt = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
             continue_final_message=True,
         )
-
+        
         response = self.client.completions.create(
-            model=model,
-            prompt=prompt,
-            max_tokens=remaining_tokens,
+            model=model, 
+            prompt=prompt, 
+            max_tokens=remaining_tokens, 
             **kwargs
         )
 
-        return {
+        response_data = {
             "reasoning_content": reasoning_content.strip().strip("</think>").strip(),
             "content": response.choices[0].text,
             "finish_reason": response.choices[0].finish_reason,
         }
+        return response_data
 ```
 
 Usage example with `reasoning_budget=128`:
