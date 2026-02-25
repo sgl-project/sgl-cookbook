@@ -157,21 +157,20 @@ client = OpenAI(
 # Reasoning on (default)
 print("Reasoning on")
 resp = client.chat.completions.create(
-    model="nvidia/nemotron-super-sft-020426",
+    model=SERVED_MODEL_NAME,
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Write a haiku about GPUs."}
     ],
     temperature=1,
-    max_tokens=256,
+    max_tokens=1024,
 )
-print(resp.choices[0].message.reasoning_content)
-print(resp.choices[0].message.content)
-
+print(resp.choices[0].message.reasoning_content, resp.choices[0].message.content)
+print("\n")
 # Reasoning off
 print("Reasoning off")
 resp = client.chat.completions.create(
-    model="nvidia/nemotron-super-sft-020426",
+    model=SERVED_MODEL_NAME,
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Give me 3 facts about SGLang."}
@@ -180,38 +179,65 @@ resp = client.chat.completions.create(
     max_tokens=256,
     extra_body={"chat_template_kwargs": {"enable_thinking": False}}
 )
-print(resp.choices[0].message.content)
+print(resp.choices[0].message.reasoning_content, resp.choices[0].message.content)
 ```
 
 Output:
 ```
 Reasoning on
-User wants a haiku about GPUs. So we respond with a poem of 5-7-5 syllables about GPUs. Ensure
-content is appropriate. Provide haiku.
+We need to write a haiku (5-7-5 syllable poem) about GPUs. Ensure correct syllable count. Haiku about GPUs. Let's craft:
 
-Silicon engines roar,
-Pixels dance as cores align—
-Light builds virtual worlds.
+"Silicon thunder hums,
+parallel cores blaze through night's code,
+pixels whisper dreams."
+
+Count syllables:
+
+Line1: "Silicon (3) thunder (2) hums (1)" = 6? Actually "Silicon" = 3 (sil-i-con), "thunder" = 2, "hums" =1 => total 6. Need 5. Let's adjust.
+
+Maybe "Silicon hearts beat" = 4? Silicon (3) + hearts (1) =4. Better: "Silicon hearts beat" = 4, need 5. Add "silently"? Let's design.
+
+Try: "Silicon hearts beat" (4) add "still" maybe? "Silicon hearts beat still" Counting: Silicon(3) hearts(1) beat(1) still(1) =6. Hmm.
+
+Let's think: "GPU cores pulse" Count: G-P-U (3?) Actually "GPU" pronounced as three letters, each syllable? Usually "GPU" = "jee-pee-you" three syllables? In spoken haiku, each letter counts as one syllable? Usually "GPU" is 3. So "GPU cores pulse" = GPU(3) cores(1) pulse(1) =5. Good! So line1: "GPU cores pulse". That's 5 syllables.
+
+Line2: need 7 syllables describing parallel computation. Example: "massive vectors run like electric rivers" Count: mass-ive (2) vec-tors(2) run(1) like(1) e-lec-tric (3) ri-vers(2) =11. Too many.
+
+Let's craft: "massive arrays compute in silent fire". Count: mass-ive(2) a-rrays(2?) Actually "arrays" = 2. So massive (2) arrays (2) =4, compute (2) =6, in (1)=7, silent (2)=9, fire (1)=10. Too many.
+
+Let's try: "threads weave light through silicon veins". Count: threads(1) weave(1) light(1) through(1) si-li-con(3) veins(1) =8. Need 7. Reduce one syllable. Maybe "threads weave light through silicon". Count: threads1 weave1 light1 through1 si-li-con3 =7. Good.
+
+Line3: 5 syllables about output. Example: "images bloom". That's only 2. Need 5. "images bloom upon the screen". Count: im-ages(2) bloom(1) u-pon(2) the(1) screen(1) =7. Too many.
+
+Maybe "images bloom on glowing screen". Count: im-ages2 bloom1 on1 glow-ing2 screen1 =7. Too high.
+
+Try: "pixels sing, alive, bright". Count: pix-els2 sing1 a-live2 bright1 =6. Too many.
+
+Try: "pixels sing alive". Count: pix-els2 sing1 a-live2 =5. Good.
+
+Now check overall:
+
+Line1: GPU cores pulse (5)
+Line2: threads weave light through silicon (7)
+Line3: pixels sing alive (5)
+
+All good. Provide haiku.
+ **GPU cores pulse**  
+**threads weave light through silicon**  
+**pixels sing alive**
+
 
 Reasoning off
-Here are three key facts about SGLang:
+Here are three key facts about **SGLang**:
 
-1. **SGLang is a high-performance serving system for large language models (LLMs)**
-   Developed by researchers at UC Berkeley and other institutions, SGLang (Structured Generation
-   Language) is designed to efficiently serve LLMs with low latency and high throughput. It optimizes
-   inference by combining techniques like continuous batching, dynamic scheduling, and efficient memory
-   management.
+1. **SGLang is a high-performance serving system for large language models (LLMs)**  
+   Developed by researchers at UC Berkeley and other institutions, SGLang (Structured Generation Language) is designed to efficiently serve LLMs with low latency and high throughput. It optimizes inference by combining techniques like continuous batching, dynamic scheduling, and efficient memory management.
 
-2. **It supports structured and constrained generation**
-   SGLang enables fine-grained control over model outputs through structured generation, allowing users
-   to enforce specific formats (e.g., JSON, regex patterns) or constraints during inference. This makes
-   it ideal for applications requiring reliable, predictable outputs, such as code generation or data
-   extraction.
+2. **It supports structured and constrained generation**  
+   SGLang enables fine-grained control over model outputs through structured generation, allowing users to enforce specific formats (e.g., JSON, regex patterns) or constraints during inference. This makes it ideal for applications requiring reliable, predictable outputs, such as code generation or data extraction.
 
-3. **It integrates with popular LLM frameworks and models**
-   SGLang is compatible with widely used models (e.g., Llama, Mistral) and frameworks (e.g., Hugging
-   Face Transformers, vLLM). It provides a Python API and supports deployment in production
-   environments, making it accessible for developers building LLM-powered applications.
+3. **It integrates with popular LLM frameworks and models**  
+   SGLang is compatible with widely used models (e.g., Llama, Mistral) and frameworks like Hugging Face Transformers and vLLM. It provides a flexible API and supports both open-source and proprietary models, making it easy to deploy in production environments. None
 ```
 
 ### 4.3 Tool Calling
