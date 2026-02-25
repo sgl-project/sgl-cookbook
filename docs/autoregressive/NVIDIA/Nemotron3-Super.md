@@ -383,7 +383,6 @@ Usage example with `reasoning_budget=128`:
 SERVED_MODEL_NAME = "nvidia/nemotron-super-sft-020426"
 
 # Client
-SERVED_MODEL_NAME = "nvidia/nemotron-super-sft-020426"
 client = ThinkingBudgetClient(
     base_url="http://127.0.0.1:5000/v1",
     api_key="null",
