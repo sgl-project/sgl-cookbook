@@ -31,7 +31,7 @@ This section provides deployment configurations optimized for different hardware
 
 Step3-VL-10B is a compact 10B dense model that can run on a single GPU. Recommended starting configurations vary depending on hardware.
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform and quantization method.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform and quantization method. SGLang supports serving Step3-VL-10B on NVIDIA B200, H200, H100, and AMD MI355X, MI325X, MI300X GPUs.
 
 import Step3VL10BConfigGenerator from '@site/src/components/autoregressive/Step3VL10BConfigGenerator';
 
