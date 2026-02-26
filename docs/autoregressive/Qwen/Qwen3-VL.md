@@ -45,6 +45,36 @@ import Qwen3VLConfigGenerator from '@site/src/components/autoregressive/Qwen3VLC
 * **Memory Management** : Set lower `--context-length` to conserve memory. A value of `128000` is sufficient for most scenarios, down from the default 262K.
 * **Expert Parallelism** : SGLang supports Expert Parallelism (EP) via `--ep`, allowing experts in MoE models to be deployed on separate GPUs for better throughput. One thing to note is that, for quantized models, you need to set `--ep` to a value that satisfies the requirement: `(moe_intermediate_size / moe_tp_size) % weight_block_size_n == 0, where moe_tp_size is equal to tp_size divided by ep_size.` Note that EP may perform worse in low concurrency scenarios due to additional communication overhead. Check out [Expert Parallelism Deployment](https://github.com/sgl-project/sglang/blob/main/docs/advanced_features/expert_parallelism.md) for more details.
 * **Kernel Tuning** : For MoE Triton kernel tuning on your specific hardware, refer to [fused_moe_triton](https://github.com/sgl-project/sglang/tree/main/benchmark/kernels/fused_moe_triton).
+* **Multimodal concurrency control** : `--mm-max-concurrent-calls <value>` specifies the maximum number of concurrent asynchronous multimodal data processing calls allowed on the server. Use this to control parallel throughput and GPU memory usage during image/video inference.
+* **Multimodal request timeout** : `--mm-per-request-timeout <seconds>` defines the timeout duration (in seconds) for each multimodal request. If a request exceeds this time limit (e.g., for very large video inputs), it will be automatically terminated.
+* **Keep multimodal features on device** : `--keep-mm-feature-on-device` instructs the server to retain multimodal feature tensors on the GPU after processing. This avoids device-to-host (D2H) memory copies and improves performance for repeated or high-frequency inference workloads.
+
+### 3.3 Hardware-Specific Notes
+
+- On H100 with FP8: Use the FP8 checkpoint for best memory efficiency.
+- On A100 / H100 with BF16 (non-FP8): It's recommended to use `--mm-max-concurrent-calls` to control parallel throughput and GPU memory usage during image/video inference.
+- On H200 & B200: The model can be run "out of the box", supporting full context length plus concurrent image + video processing.
+
+**Example usage with the above optimizations:**
+
+```bash
+SGLANG_USE_CUDA_IPC_TRANSPORT=1 \
+SGLANG_VLM_CACHE_SIZE_MB=0 \
+python -m sglang.launch_server \
+  --model-path Qwen/Qwen3-VL-235B-A22B-Instruct \
+  --host 0.0.0.0 \
+  --port 30000 \
+  --trust-remote-code \
+  --tp-size 8 \
+  --enable-cache-report \
+  --log-level info \
+  --max-running-requests 64 \
+  --mem-fraction-static 0.65 \
+  --chunked-prefill-size 8192 \
+  --attention-backend fa3 \
+  --mm-attention-backend fa3 \
+  --enable-metrics
+```
 
 ## 4. Model Invocation
 

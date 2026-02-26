@@ -43,15 +43,115 @@ import { DeepSeekR1BasicConfigGenerator } from '@site/src/components/autoregress
 
 ### 3.2 Optimal Configurations
 
-Pareto-optimal configurations for B200, H200, MI300X, MI325X, and MI355X hardware.
+Pareto-optimal configurations for B200 and H200 hardware.
 
 import { DeepSeekR1AdvancedConfigGenerator } from '@site/src/components/autoregressive/DeepSeekR1ConfigGenerator';
 
 <DeepSeekR1AdvancedConfigGenerator />
 
-### 3.3 Configuration Tips
+### 3.3 Hardware Requirements
 
-For more detailed configuration tips and advanced tuning, please refer to [DeepSeek V3/V3.1/R1 Usage](https://docs.sglang.io/basic_usage/deepseek_v3.html).
+Recommended hardware configurations by weight type:
+
+| Weight Type | Configuration |
+|------------|-------------------|
+| **Full precision [FP8](https://huggingface.co/deepseek-ai/DeepSeek-R1-0528)** *(recommended)* | 8 x H200 |
+| | 8 x B200 |
+| | 8 x MI300X |
+| | 2 x 8 x H100/800/20 |
+| | Xeon 6980P CPU |
+| **Full precision ([BF16](https://huggingface.co/unsloth/DeepSeek-R1-0528-BF16))** (upcast from original FP8) | 2 x 8 x H200 |
+| | 2 x 8 x MI300X |
+| | 4 x 8 x H100/800/20 |
+| | 4 x 8 x A100/A800 |
+| **Quantized weights ([INT8](https://huggingface.co/meituan/DeepSeek-R1-Channel-INT8))** | 16 x A100/800 |
+| | 32 x L40S |
+| | Xeon 6980P CPU |
+| | 4 x Atlas 800I A3 |
+| **Quantized weights ([W4A8](https://huggingface.co/novita/Deepseek-R1-0528-W4AFP8))** | 8 x H20/100, 4 x H200 |
+| **Quantized weights ([AWQ](https://huggingface.co/QuixiAI/DeepSeek-R1-0528-AWQ))** | 8 x H100/800/20 |
+| | 8 x A100/A800 |
+| **Quantized weights ([MXFP4](https://huggingface.co/amd/DeepSeek-R1-MXFP4-Preview))** | 8, 4 x MI355X/350X |
+| **Quantized weights ([NVFP4](https://huggingface.co/nvidia/DeepSeek-R1-0528-NVFP4-v2))** | 8, 4 x B200 |
+
+> **Important:** The official DeepSeek R1 is already in FP8 format, so you should not run it with any quantization arguments like `--quantization fp8`.
+
+Detailed commands for reference:
+
+- [8 x H200](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#using-docker-recommended)
+- [4 x B200, 8 x B200](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-one-b200-node)
+- [8 x MI300X](https://docs.sglang.io/platforms/amd_gpu.html#running-deepseek-v3)
+- [2 x 8 x H200](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-two-h208-nodes)
+- [4 x 8 x A100](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-four-a1008-nodes)
+- [8 x A100 (AWQ)](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-8-a100a800-with-awq-quantization)
+- [16 x A100 (INT8)](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-16-a100a800-with-int8-quantization)
+- [32 x L40S (INT8)](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-32-l40s-with-int8-quantization)
+- [Xeon 6980P CPU](https://docs.sglang.io/platforms/cpu_server.html#example-running-deepseek-r1)
+- [4 x Atlas 800I A3 (INT8)](https://docs.sglang.io/platforms/ascend_npu_deepseek_example.html#running-deepseek-with-pd-disaggregation-on-4-x-atlas-800i-a3)
+
+### 3.4 Configuration Tips
+
+**Download Weights:** If you encounter errors when starting the server, ensure the weights have finished downloading. It's recommended to download them beforehand or restart multiple times until all weights are downloaded. Please refer to the [DeepSeek V3 official guide](https://huggingface.co/deepseek-ai/DeepSeek-V3-Base#61-inference-with-deepseek-infer-demo-example-only) to download the weights.
+
+
+### 3.5 Multi-Node Deployment
+
+For single-node deployment on 8 x H200, please refer to [this example](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#installation--launch).
+
+Multi-node deployment resources:
+
+- [Deploying DeepSeek on GB200 NVL72 with PD and Large Scale EP](https://lmsys.org/blog/2025-06-16-gb200-part-1/) ([Part I](https://lmsys.org/blog/2025-06-16-gb200-part-1/), [Part II](https://lmsys.org/blog/2025-09-25-gb200-part-2/)) — Comprehensive guide on GB200 optimizations.
+- [Deploying DeepSeek with PD Disaggregation and Large-Scale Expert Parallelism on 96 H100 GPUs](https://lmsys.org/blog/2025-05-05-deepseek-pd-ep/) — Guide on PD disaggregation and large-scale EP.
+- [Serving with two H20*8 nodes](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-two-h208-nodes)
+- [Best Practices for Serving DeepSeek-R1 on H20](https://lmsys.org/blog/2025-09-26-sglang-ant-group/) — Comprehensive guide on H20 optimizations, deployment and performance.
+- [Serving with two H200*8 nodes and docker](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-two-h2008-nodes-and-docker)
+- [Serving with four A100*8 nodes](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-four-a1008-nodes)
+
+### 3.6 Optimizations
+
+SGLang provides many optimizations specifically designed for the DeepSeek models, making it the inference engine [recommended by the official DeepSeek team](https://github.com/deepseek-ai/DeepSeek-V3/tree/main?tab=readme-ov-file#62-inference-with-sglang-recommended) from Day 0. For an overview of implemented features, see the completed [Roadmap](https://github.com/sgl-project/sglang/issues/2591).
+
+#### 3.6.1 Multi-head Latent Attention (MLA) Throughput Optimizations
+
+SGLang implements various MLA throughput optimizations (see [Blog](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations) | [Slides](https://github.com/sgl-project/sgl-learning-materials/blob/main/slides/lmsys_1st_meetup_deepseek_mla.pdf)). Additional features since the blog include CUDA Graph & Torch.compile compatibility and chunked prefix cache. Supported MLA attention backends: [FlashAttention3](https://github.com/Dao-AILab/flash-attention), [Flashinfer](https://docs.flashinfer.ai/api/attention.html#flashinfer-mla), [FlashMLA](https://github.com/deepseek-ai/FlashMLA), [CutlassMLA](https://github.com/sgl-project/sglang/pull/5390), **TRTLLM MLA** (Blackwell), and [Triton](https://github.com/triton-lang/triton). MLA optimization is enabled by default.
+
+#### 3.6.2 Data Parallelism Attention
+
+For details on DP attention, see the [DP/DPA Guide](https://docs.sglang.ai/advanced_features/dp_dpa_smg_guide.html).
+
+DP and TP attention can be flexibly combined. For example, to deploy DeepSeek-R1 on 2 nodes with 8 H100 GPUs each, you can specify `--enable-dp-attention --tp 16 --dp 2`.
+
+> **Caution:** Data parallelism attention is not recommended for low-latency, small-batch use cases. It is optimized for high-throughput scenarios with large batch sizes.
+
+#### 3.6.3 Multi-Node Tensor Parallelism
+
+For users with limited memory on a single node, SGLang supports serving DeepSeek Series Models across multiple nodes using tensor parallelism. This approach partitions the model parameters across multiple GPUs or nodes to handle models that are too large for one node's memory.
+
+**Usage**: Check [here](https://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3#example-serving-with-2-h208) for usage examples.
+
+#### 3.6.4 Block-wise FP8
+
+SGLang implements block-wise FP8 quantization with two key optimizations:
+
+- **Activation**: E4M3 format using per-token-per-128-channel sub-vector scales with online casting.
+- **Weight**: Per-128x128-block quantization for better numerical stability.
+- **DeepGEMM**: The [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM) kernel library optimized for FP8 matrix multiplications.
+
+**Usage**: The activation and weight optimization above are turned on by default for DeepSeek R1 models. DeepGEMM is enabled by default on NVIDIA Hopper/Blackwell GPUs and disabled by default on other devices. DeepGEMM can also be manually turned off by setting the environment variable `SGLANG_ENABLE_JIT_DEEPGEMM=0`.
+
+> **Tip:** Before serving the DeepSeek model, precompile the DeepGEMM kernels to improve first-run performance. The precompilation process typically takes around 10 minutes to complete.
+
+```bash
+python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-R1-0528 --tp 8 --trust-remote-code
+```
+
+#### 3.6.5 Multi-token Prediction
+
+SGLang implements DeepSeek MTP based on [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding), achieving **1.8x** speedup at batch size 1 and **1.5x** at batch size 32 on H200 TP8. The default configuration for DeepSeek models is `--speculative-num-steps 3 --speculative-eagle-topk 1 --speculative-num-draft-tokens 4`.
+
+> **Note:** To enable DeepSeek MTP for large batch sizes (>48), you need to adjust some parameters (Reference [this discussion](https://github.com/sgl-project/sglang/issues/4543#issuecomment-2737413756)):
+> - Adjust `--max-running-requests` beyond the default value of `48` for MTP.
+> - Set `--cuda-graph-bs` to include larger batch sizes beyond the [default captured sizes](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/server_args.py#L888-L895).
 
 ## 4. Model Invocation
 
@@ -71,7 +171,9 @@ DeepSeek-R1 supports advanced reasoning capabilities with built-in thinking proc
 python -m sglang.launch_server \
   --model-path deepseek-ai/DeepSeek-R1-0528 \
   --reasoning-parser deepseek-r1 \
-  --tp 8
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
 ```
 
 **Streaming with Thinking Process:**
@@ -80,7 +182,7 @@ python -m sglang.launch_server \
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:30000/v1",
+    base_url="http://localhost:8000/v1",
     api_key="EMPTY"
 )
 
@@ -148,7 +250,9 @@ python -m sglang.launch_server \
   --reasoning-parser deepseek-r1 \
   --tool-call-parser deepseekv3 \
   --chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja \
-  --tp 8
+  --tp 8 \
+  --host 0.0.0.0 \
+  --port 8000
 ```
 
 **Python Example (with Thinking Process):**
@@ -157,7 +261,7 @@ python -m sglang.launch_server \
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:30000/v1",
+    base_url="http://localhost:8000/v1",
     api_key="EMPTY"
 )
 
@@ -291,6 +395,100 @@ final_response = client.chat.completions.create(
 
 print(final_response.choices[0].message.content)
 # Output: "The weather in Beijing is currently 22°C and sunny."
+```
+
+**Curl Examples:**
+
+Non-streaming request:
+
+```bash
+curl "http://127.0.0.1:8000/v1/chat/completions" \
+-H "Content-Type: application/json" \
+-d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-R1-0528", "tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
+```
+
+Expected Response:
+
+```
+{"id":"6501ef8e2d874006bf555bc80cddc7c5","object":"chat.completion","created":1745993638,"model":"deepseek-ai/DeepSeek-R1-0528","choices":[{"index":0,"message":{"role":"assistant","content":null,"reasoning_content":null,"tool_calls":[{"id":"0","index":null,"type":"function","function":{"name":"query_weather","arguments":"{\"city\": \"Qingdao\"}"}}]},"logprobs":null,"finish_reason":"tool_calls","matched_stop":null}],"usage":{"prompt_tokens":116,"total_tokens":138,"completion_tokens":22,"prompt_tokens_details":null}}
+```
+
+Streaming request:
+
+```bash
+curl "http://127.0.0.1:8000/v1/chat/completions" \
+-H "Content-Type: application/json" \
+-d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-R1-0528","stream":true,"tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
+```
+
+Expected Streamed Chunks (simplified for clarity):
+
+```
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"{\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"city"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\":\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"Q"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"ing"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"dao"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\"}"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":null}}], "finish_reason": "tool_calls"}
+data: [DONE]
+```
+
+The client needs to concatenate all argument fragments from streamed chunks to reconstruct the complete tool call:
+
+```
+{"city": "Qingdao"}
+```
+
+> **Important:**
+> 1. Use a lower `"temperature"` value for better results.
+> 2. To receive more consistent tool call results, it is recommended to use `--chat-template examples/chat_template/tool_chat_template_deepseekr1.jinja`. It provides an improved unified prompt.
+
+#### 4.2.3 Thinking Budget
+
+In SGLang, you can implement thinking budget for DeepSeek R1 with `CustomLogitProcessor`.
+
+Launch a server with `--enable-custom-logit-processor` flag on:
+
+```bash
+python3 -m sglang.launch_server \
+  --model deepseek-ai/DeepSeek-R1 \
+  --tp 8 \
+  --port 8000 \
+  --host 0.0.0.0 \
+  --mem-fraction-static 0.9 \
+  --disable-cuda-graph \
+  --reasoning-parser deepseek-r1 \
+  --enable-custom-logit-processor
+```
+
+Sample Request:
+
+```python
+import openai
+from rich.pretty import pprint
+from sglang.srt.sampling.custom_logit_processor import DeepSeekR1ThinkingBudgetLogitProcessor
+
+
+client = openai.Client(base_url="http://127.0.0.1:8000/v1", api_key="*")
+response = client.chat.completions.create(
+    model="deepseek-ai/DeepSeek-R1",
+    messages=[
+        {
+            "role": "user",
+            "content": "Question: Is Paris the Capital of France?",
+        }
+    ],
+    max_tokens=1024,
+    extra_body={
+        "custom_logit_processor": DeepSeekR1ThinkingBudgetLogitProcessor().to_str(),
+        "custom_params": {
+            "thinking_budget": 512,
+        },
+    },
+)
+pprint(response)
 ```
 
 ## 5. Benchmark
@@ -878,3 +1076,9 @@ Invalid: 0.000
 Latency: 29.185 s
 Output throughput: 4854.672 token/s
 ```
+
+## 6. FAQ
+
+**Q: Model loading is taking too long, and I'm encountering an NCCL timeout. What should I do?**
+
+A: If you're experiencing extended model loading times and an NCCL timeout, you can try increasing the timeout duration. Add the argument `--dist-timeout 3600` when launching your model. This will set the timeout to one hour, which often resolves the issue.

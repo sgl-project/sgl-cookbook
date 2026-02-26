@@ -153,6 +153,8 @@ python -m sglang.launch_server \
   --port 8000
 ```
 
+**Note:** For GLM-4.7, `--tool-call-parser` should be set to `glm47`.
+
 **Python Example (with Thinking Process):**
 
 ```python

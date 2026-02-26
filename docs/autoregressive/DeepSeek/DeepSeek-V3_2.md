@@ -10,11 +10,41 @@ The DeepSeek-V3.2 series includes three model variants, each optimized for diffe
 
 **[DeepSeek-V3.2-Speciale](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Speciale)** is a special variant designed exclusively for deep reasoning tasks. This model is specifically optimized for scenarios requiring complex logical reasoning and deep thinking. For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for deep reasoning tasks, complex logical problems, and mathematical reasoning.
 
+For reporting issues or tracking upcoming features, please refer to the [V3.2 Roadmap](https://github.com/sgl-project/sglang/issues/11060).
+
 ## 2. SGLang Installation
 
 SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+
+**Docker (V3.2-specific images):**
+
+```bash
+# H200/B200
+docker pull lmsysorg/sglang:latest
+
+# MI350/MI355
+docker pull lmsysorg/sglang:v0.5.8-rocm700-mi35x
+
+# MI300
+# v0.5.8-rocm700-mi30x does not include PR #17504. Prefer the newest MI30x ROCm
+# image tag from Docker Hub when available, or build from source (below).
+docker pull lmsysorg/sglang:v0.5.8-rocm700-mi30x
+
+# NPUs
+docker pull lmsysorg/sglang:dsv32-a2
+docker pull lmsysorg/sglang:dsv32-a3
+```
+
+**Build From Source:**
+
+```bash
+git clone https://github.com/sgl-project/sglang
+cd sglang
+pip3 install pip --upgrade
+pip3 install -e "python"
+```
 
 ## 3. Model Deployment
 
@@ -28,8 +58,264 @@ import DeepSeekConfigGenerator from '@site/src/components/autoregressive/DeepSee
 
 <DeepSeekConfigGenerator />
 
-### 3.2 Configuration Tips
-For more detailed configuration tips, please refer to [DeepSeek-V3.2 Usage](https://docs.sglang.io/basic_usage/deepseek_v32.html).
+### 3.2 Launch Examples
+
+To serve [DeepSeek-V3.2-Exp](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp) on 8xH200/B200 GPUs:
+
+```bash
+# Launch with TP + DP (Recommended)
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --dp 8 --enable-dp-attention
+
+# Launch with EP + DP
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --ep 8 --dp 8 --enable-dp-attention
+
+# Launch with Pure TP
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8
+
+# Launch with TP on MI30x/MI35x
+python3 -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --nsa-prefill-backend tilelang --nsa-decode-backend tilelang
+```
+
+### 3.3 Configuration Tips
+
+- **DP Attention (Recommended)**: For DeepSeek V3.2 model, the kernels are customized for the use case of `dp_size=8`, so DP attention (`--dp 8 --enable-dp-attention`) is the recommended configuration for better stability and performance. All test cases use this configuration by default.
+- **Pure TP Mode**: Launching with pure TP (without `--dp` and `--enable-dp-attention`) is also supported. Note that this mode has not been fully validated in PD disaggregation scenarios.
+- **Short-sequence MHA prefill (adaptive)**: For short prefill sequences (default threshold: **2048 tokens**), the NSA backend uses standard MHA automatically (no extra flags). On H200 (SM90) this path uses the FlashAttention variable-length kernel; on B200 (SM100) it uses TRT-LLM ragged MHA. MHA uses `MHA_ONE_SHOT` for best performance — it computes multi-head attention over all tokens (both cached prefix and newly extended tokens) in a single kernel invocation, avoiding the overhead of chunked KV cache processing.
+- **Choices of Attention Kernels**: The attention backend is automatically set to `nsa` for DeepSeek V3.2. Different kernels for sparse prefilling/decoding can be specified by `--nsa-prefill-backend` and `--nsa-decode-backend`:
+  - `flashmla_sparse`: `flash_mla_sparse_fwd` kernel from `flash_mla` library. Runs on both Hopper and Blackwell GPUs. Requires bf16 q, kv inputs.
+  - `flashmla_kv`: `flash_mla_with_kvcache` kernel from `flash_mla` library. Runs on both Hopper and Blackwell GPUs. Requires bf16 q, fp8 k_cache inputs.
+  - `fa3`: `flash_attn_with_kvcache` kernel from `flash_attn` library. Hopper GPUs only. Requires bf16 q, kv inputs.
+  - `tilelang`: `tilelang` implementation that can run on GPU, HPU and NPU.
+  - `aiter`: Aiter kernel on AMD HPUs. Can only be used as decode kernel.
+- **Default configurations by hardware**:
+  - **H200**: `flashmla_sparse` prefill (short-seq uses MHA via FlashAttention varlen), `fa3` decode, `bf16` kv cache dtype.
+  - **B200**: `flashmla_auto` prefill (short-seq uses MHA via TRT-LLM ragged), `flashmla_kv` decode, `fp8_e4m3` kv cache dtype. `flashmla_auto` enables automatic selection of either `flashmla_sparse` or `flashmla_kv` based on KV cache dtype, hardware, and heuristics.
+
+### 3.4 Multi-token Prediction
+
+SGLang implements Multi-Token Prediction (MTP) for DeepSeek V3.2 based on [EAGLE speculative decoding](https://docs.sglang.io/advanced_features/speculative_decoding.html#EAGLE-Decoding). With this optimization, the decoding speed can be improved significantly on small batch sizes. See [this PR](https://github.com/sgl-project/sglang/pull/11652) for more information.
+
+Example usage with DP Attention:
+
+```bash
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --dp 8 --enable-dp-attention --speculative-algorithm EAGLE --speculative-num-steps 3 --speculative-eagle-topk 1 --speculative-num-draft-tokens 4
+```
+
+Example usage with Pure TP:
+
+```bash
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --speculative-algorithm EAGLE --speculative-num-steps 3 --speculative-eagle-topk 1 --speculative-num-draft-tokens 4
+```
+
+- The best configuration for `--speculative-num-steps`, `--speculative-eagle-topk` and `--speculative-num-draft-tokens` can be searched with [bench_speculative.py](https://github.com/sgl-project/sglang/blob/main/scripts/playground/bench_speculative.py) script for given batch size. The minimum configuration is `--speculative-num-steps 1 --speculative-eagle-topk 1 --speculative-num-draft-tokens 2`, which can achieve speedup for larger batch sizes.
+- The default value of `--max-running-requests` is set to `48` for MTP. For larger batch sizes, this value should be increased beyond the default value.
+
+> **Tip:** To enable the experimental overlap scheduler for EAGLE speculative decoding, set the environment variable `SGLANG_ENABLE_SPEC_V2=1`. This can improve performance by enabling overlap scheduling between draft and verification stages.
+
+### 3.5 NVFP4 Checkpoint
+
+To launch DeepSeek V3.2 [NVFP4 checkpoint](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4) on Blackwell devices, specify the quantization method as `modelopt_fp4`, and moe runner backend as one of `flashinfer_trtllm` (recommended), `flashinfer_cutlass` and `flashinfer_cutedsl`. Any other usage (parallelism, reasoning parser, etc.) is the same as the FP8 checkpoint.
+
+```bash
+python -m sglang.launch_server --model nvidia/DeepSeek-V3.2-NVFP4 --tp 4 --quantization modelopt_fp4 --moe-runner-backend flashinfer_trtllm --tool-call-parser deepseekv32 --reasoning-parser deepseek-v3
+```
+
+### 3.6 PD Disaggregation
+
+Prefill Command:
+
+```bash
+python -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2-Exp \
+  --disaggregation-mode prefill \
+  --host $LOCAL_IP \
+  --port $PORT \
+  --tp 8 \
+  --dp 8 \
+  --enable-dp-attention \
+  --dist-init-addr ${HOST}:${DIST_PORT} \
+  --trust-remote-code \
+  --disaggregation-bootstrap-port 8998 \
+  --mem-fraction-static 0.9
+```
+
+Decode Command:
+
+```bash
+python -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2-Exp \
+  --disaggregation-mode decode \
+  --host $LOCAL_IP \
+  --port $PORT \
+  --tp 8 \
+  --dp 8 \
+  --enable-dp-attention \
+  --dist-init-addr ${HOST}:${DIST_PORT} \
+  --trust-remote-code \
+  --mem-fraction-static 0.9
+```
+
+Router Command:
+
+```bash
+python -m sglang_router.launch_router --pd-disaggregation \
+  --prefill $PREFILL_ADDR 8998 \
+  --decode $DECODE_ADDR \
+  --host 127.0.0.1 \
+  --port 8000
+```
+
+For more advanced or production-ready deployment methods (RBG or LWS-based), please refer to the [DeepSeek V3.2 PD documentation](https://docs.sglang.io/references/multi_node_deployment/rbg_pd/deepseekv32_pd.html).
+
+### 3.7 DSA Context Parallel (Experimental)
+
+> **Note:** This feature is only verified on Hopper machines.
+
+For context parallel in DeepSeek V3.2 model, two different modes of splitting tokens are provided, controlled with `--nsa-prefill-cp-mode`.
+
+#### 3.7.1 In-Sequence Splitting (Default)
+
+This mode (`--nsa-prefill-cp-mode in-seq-split`) implements context parallel for DSA by splitting the sequence uniformly between context parallel ranks. At attention stage, each CP rank computes the indexer results of sharded sequence, and collects the whole KV cache through all-gather.
+
+The communication group for context parallel reuses the one for attention TP, thus `cp_size` equals `atten_tp_size = tp_size / dp_size`.
+
+Restrictions:
+- Batch size restricted to 1 for prefill batches
+- Multi-node/PD disaggregation not yet supported
+- `moe_dense_tp_size=1`, `kv_cache_dtype = "bf16"`, `moe_a2a_backend = "deepep"`
+- `tp_size` must be larger than `dp_size` to ensure `cp_size > 1`
+
+For details, see [PR #12065](https://github.com/sgl-project/sglang/pull/12065).
+
+```bash
+# In-seq splitting mode launched with EP + DP
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --ep 8 --dp 2 --enable-dp-attention --enable-nsa-prefill-context-parallel --nsa-prefill-cp-mode in-seq-split --max-running-requests 32
+```
+
+#### 3.7.2 Round-Robin Splitting
+
+This mode (`--nsa-prefill-cp-mode round-robin-split`) distributes tokens across ranks based on `token_idx % cp_size`.
+
+Compared to in-sequence splitting, it additionally supports fused MoE backend (which may deliver better performance in single-machine scenarios), FP8 KV-cache, and multi-batch prefill inference. However, it cannot be used with DP attention.
+
+For details, see [PR #13959](https://github.com/sgl-project/sglang/pull/13959).
+
+```bash
+# Launch with FusedMoe + CP8
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --enable-nsa-prefill-context-parallel --nsa-prefill-cp-mode round-robin-split --max-running-requests 32
+```
+
+#### 3.7.3 Pipeline Parallel + Context Parallel (PP + CP)
+
+This mode combines Pipeline Parallelism (PP) and Context Parallelism (CP) to scale across multiple nodes, achieving better throughput and TTFT. Only tested on H20 96G.
+
+For related development, see [PR #13959](https://github.com/sgl-project/sglang/pull/13959), [Issue #15358](https://github.com/sgl-project/sglang/issues/15358) and [PR #16380](https://github.com/sgl-project/sglang/pull/16380).
+
+**Standard Usage** — PP=2 with CP on 2 nodes (uses fused MoE kernel by default):
+
+Node 0:
+
+```bash
+export SGLANG_PP_LAYER_PARTITION=30,31
+python3 -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2-Exp \
+  --nnodes 2 --node-rank 0 \
+  --dist-init-addr <HEAD_NODE_IP>:62001 \
+  --tp 8 --pp-size 2 \
+  --dp-size 1 --moe-dense-tp-size 1 \
+  --enable-nsa-prefill-context-parallel \
+  --nsa-prefill-cp-mode round-robin-split \
+  --trust-remote-code \
+  --disable-radix-cache \
+  --mem-fraction-static 0.8 \
+  --max-running-requests 128 \
+  --chunked-prefill-size 16384 \
+  --cuda-graph-max-bs 8 \
+  --page-size 64 \
+  --watchdog-timeout 3600 \
+  --host 0.0.0.0 --port 8000 \
+  --tool-call-parser deepseekv32
+```
+
+Node 1:
+
+```bash
+export SGLANG_PP_LAYER_PARTITION=30,31
+python3 -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2-Exp \
+  --nnodes 2 --node-rank 1 \
+  --dist-init-addr <HEAD_NODE_IP>:62001 \
+  --tp 8 --pp-size 2 \
+  --dp-size 1 --moe-dense-tp-size 1 \
+  --enable-nsa-prefill-context-parallel \
+  --nsa-prefill-cp-mode round-robin-split \
+  --trust-remote-code \
+  --disable-radix-cache \
+  --mem-fraction-static 0.8 \
+  --max-running-requests 128 \
+  --chunked-prefill-size 16384 \
+  --cuda-graph-max-bs 8 \
+  --page-size 64 \
+  --watchdog-timeout 3600 \
+  --host 0.0.0.0 --port 8000 \
+  --tool-call-parser deepseekv32
+```
+
+**PD Disaggregation with PP + CP** — Prefill nodes configured with PP + CP:
+
+Prefill Node 0:
+
+```bash
+python -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2-Exp \
+  --served-model-name deepseek-v32 \
+  --nnodes 2 --node-rank 0 \
+  --dist-init-addr <PREFILL_HEAD_IP>:20102 \
+  --tp 8 --pp-size 2 \
+  --dp-size 1 --moe-dense-tp-size 1 \
+  --enable-nsa-prefill-context-parallel \
+  --nsa-prefill-cp-mode round-robin-split \
+  --disaggregation-ib-device mlx5_bond_0,mlx5_bond_1,mlx5_bond_2,mlx5_bond_3 \
+  --trust-remote-code \
+  --disable-radix-cache \
+  --max-running-requests 512 \
+  --chunked-prefill-size 4096 \
+  --context-length 131072 \
+  --mem-fraction-static 0.9 \
+  --page-size 64 \
+  --enable-metrics \
+  --collect-tokens-histogram \
+  --tokenizer-worker-num 8 \
+  --host 0.0.0.0 --port 30000
+```
+
+Prefill Node 1:
+
+```bash
+python -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2-Exp \
+  --served-model-name deepseek-v32-prefill \
+  --nnodes 2 --node-rank 1 \
+  --dist-init-addr <PREFILL_HEAD_IP>:20102 \
+  --tp 8 --pp-size 2 \
+  --dp-size 1 --moe-dense-tp-size 1 \
+  --enable-nsa-prefill-context-parallel \
+  --nsa-prefill-cp-mode round-robin-split \
+  --disaggregation-ib-device mlx5_bond_0,mlx5_bond_1,mlx5_bond_2,mlx5_bond_3 \
+  --trust-remote-code \
+  --disable-radix-cache \
+  --max-running-requests 512 \
+  --chunked-prefill-size 4096 \
+  --context-length 131072 \
+  --mem-fraction-static 0.9 \
+  --page-size 64 \
+  --enable-metrics \
+  --collect-tokens-histogram \
+  --tokenizer-worker-num 8 \
+  --host 0.0.0.0 --port 30000
+```
+
+For Decode nodes, it is recommended to use the **EP mode**.
 
 ## 4. Model Invocation
 
@@ -37,7 +323,7 @@ For more detailed configuration tips, please refer to [DeepSeek-V3.2 Usage](http
 
 For basic API usage and request examples, please refer to:
 
-- [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html)
+- [Basic API Usage](https://docs.sglang.ai/get_started/quick_start.html)
 
 ### 4.2 Advanced Usage
 
@@ -296,6 +582,54 @@ print(final_response.choices[0].message.content)
 # Output: "The weather in Beijing is currently 22°C and sunny."
 ```
 
+**Curl Examples:**
+
+Non-streaming request (using V3.2-Exp with `deepseekv31` parser):
+
+```bash
+curl "http://127.0.0.1:8000/v1/chat/completions" \
+-H "Content-Type: application/json" \
+-d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3.2-Exp", "tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
+```
+
+Expected Response:
+
+```
+{"id":"6501ef8e2d874006bf555bc80cddc7c5","object":"chat.completion","created":1745993638,"model":"deepseek-ai/DeepSeek-V3.2-Exp","choices":[{"index":0,"message":{"role":"assistant","content":null,"reasoning_content":null,"tool_calls":[{"id":"0","index":null,"type":"function","function":{"name":"query_weather","arguments":"{\"city\": \"Qingdao\"}"}}]},"logprobs":null,"finish_reason":"tool_calls","matched_stop":null}],"usage":{"prompt_tokens":116,"total_tokens":138,"completion_tokens":22,"prompt_tokens_details":null}}
+```
+
+Streaming request:
+
+```bash
+curl "http://127.0.0.1:8000/v1/chat/completions" \
+-H "Content-Type: application/json" \
+-d '{"temperature": 0, "max_tokens": 100, "model": "deepseek-ai/DeepSeek-V3.2-Exp","stream":true,"tools": [{"type": "function", "function": {"name": "query_weather", "description": "Get weather of a city, the user should supply a city first", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The city, e.g. Beijing"}}, "required": ["city"]}}}], "messages": [{"role": "user", "content": "How'\''s the weather like in Qingdao today"}]}'
+```
+
+Expected Streamed Chunks (simplified for clarity):
+
+```
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"{\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"city"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\":\""}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"Q"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"ing"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"dao"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"\"}"}}]}}]}
+data: {"choices":[{"delta":{"tool_calls":null}}], "finish_reason": "tool_calls"}
+data: [DONE]
+```
+
+The client needs to concatenate all argument fragments from streamed chunks to reconstruct the complete tool call:
+
+```
+{"city": "Qingdao"}
+```
+
+> **Important:**
+> 1. Use a lower `"temperature"` value for better results.
+> 2. To receive more consistent tool call results, it is recommended to use `--chat-template examples/chat_template/tool_chat_template_deepseekv32.jinja`. It provides an improved unified prompt.
+
 ## 5. Benchmark
 
 ### 5.1 Speed Benchmark
@@ -498,3 +832,124 @@ python3 benchmark/mmlu/bench_sglang.py --nsub 10 --port 8000
     Total latency: 7.961
     Average accuracy: 0.879
     ```
+
+#### 5.2.3 GSM8K Long-Context Benchmark (20-shot)
+
+To test long-context accuracy, run gsm8k with `--num-shots 20`. The results are very close to the 8-shot results:
+
+```bash
+python3 benchmark/gsm8k/bench_sglang.py --num-shots 20 --num-questions 1319 --parallel 1319
+```
+
+```
+Accuracy: 0.956
+Invalid: 0.000
+Latency: 29.545 s
+Output throughput: 4418.617 token/s
+```
+
+#### 5.2.4 GPQA-Diamond Benchmark
+
+Accuracy benchmark on long context with thinking enabled:
+
+```bash
+python3 -m sglang.test.run_eval --port 30000 --eval-name gpqa --num-examples 198 --max-tokens 128000 --repeat 8 --thinking-mode deepseek-v3
+```
+
+The mean accuracy over 8 runs shows 0.797, matching the official tech report number (0.799):
+
+```
+Repeat: 8, mean: 0.797
+Scores: ['0.808', '0.798', '0.808', '0.798', '0.783', '0.788', '0.803', '0.793']
+```
+
+For DeepSeek V3.2, DeepSeek recommends setting sampling parameters to `temperature = 1.0, top_p = 0.95`:
+
+```bash
+python3 -m sglang.test.run_eval --port 30000 --eval-name gpqa --num-examples 198 --max-tokens 128000 --repeat 8 --top-p 0.95 --temperature 1.0 --thinking-mode deepseek-v3
+```
+
+```
+Repeat: 8, mean: 0.840
+Scores: ['0.848', '0.808', '0.848', '0.838', '0.879', '0.813', '0.838', '0.848']
+```
+
+This matches the official score of 0.824 reported in the [DeepSeek-V3.2 technical report](https://huggingface.co/deepseek-ai/DeepSeek-V3.2/blob/main/assets/paper.pdf).
+
+#### 5.2.5 AIME 2025 Benchmark
+
+Prepare the environment by installing NeMo-Skills:
+
+```bash
+pip install git+https://github.com/NVIDIA/NeMo-Skills.git --ignore-installed blinker
+```
+
+Launch the SGLang server:
+
+```bash
+python -m sglang.launch_server --model deepseek-ai/DeepSeek-V3.2-Exp --tp 8 --dp 8 --enable-dp-attention
+```
+
+For `DeepSeek-V3.2` and `DeepSeek-V3.2-Speciale`:
+
+```bash
+python3 -m sglang.launch_server \
+  --model-path deepseek-ai/DeepSeek-V3.2 \
+  --trust-remote-code \
+  --tp-size 8 --dp-size 8 --enable-dp-attention \
+  --tool-call-parser deepseekv32 \
+  --reasoning-parser deepseek-v3
+```
+
+Run the evaluation script:
+
+```bash
+#!/bin/bash
+export NEMO_SKILLS_DISABLE_UNCOMMITTED_CHANGES_CHECK=1
+
+ns prepare_data aime25
+
+PORT=30000
+BACKEND=sglang
+MODEL="deepseek-ai/DeepSeek-V3.2-Exp"  # Change to your model name
+MODEL_NAME="dsv32-fp8"
+
+echo "Starting AIME25 evaluation with model $MODEL on port $PORT using backend $BACKEND..."
+ns eval \
+  --benchmarks=aime25:4 \
+  --server_type=$BACKEND \
+  --model=$MODEL \
+  --server_address=http://localhost:${PORT}/v1 \
+  --output_dir=nemo_skills_aime25_${MODEL_NAME}_output_${BACKEND}_$(date +%Y%m%d_%H%M%S) \
+  ++chat_template_kwargs.thinking=true \
+  ++inference.temperature=1.0 \
+  ++inference.top_p=0.95 \
+  ++inference.tokens_to_generate=64000
+  # ++inference.tokens_to_generate=120000 for Speciale model
+```
+
+**Test Results (8xB200):**
+
+DeepSeek-V3.2-Exp:
+
+| evaluation_mode | num_entries | avg_tokens | gen_seconds | symbolic_correct | no_answer |
+|---|---|---|---|---|---|
+| pass@1[avg-of-4] | 30 | 15040 | 1673 | 87.50% ± 1.67% | 0.00% |
+| majority@4 | 30 | 15040 | 1673 | 90.00% | 0.00% |
+| pass@4 | 30 | 15040 | 1673 | 90.00% | 0.00% |
+
+DeepSeek-V3.2:
+
+| evaluation_mode | num_entries | avg_tokens | gen_seconds | symbolic_correct | no_answer |
+|---|---|---|---|---|---|
+| pass@1[avg-of-4] | 30 | 13550 | 1632 | 92.50% ± 1.67% | 0.00% |
+| majority@4 | 30 | 13550 | 1632 | 94.71% | 0.00% |
+| pass@4 | 30 | 13550 | 1632 | 96.67% | 0.00% |
+
+DeepSeek-V3.2-Speciale:
+
+| evaluation_mode | num_entries | avg_tokens | gen_seconds | symbolic_correct | no_answer |
+|---|---|---|---|---|---|
+| pass@1[avg-of-4] | 30 | 24155 | 3583 | 95.00% ± 1.92% | 0.00% |
+| majority@4 | 30 | 24155 | 3583 | 95.83% | 0.00% |
+| pass@4 | 30 | 24155 | 3583 | 100.00% | 0.00% |
