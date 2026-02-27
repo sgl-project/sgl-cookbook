@@ -17,7 +17,10 @@ const Step3VL10BConfigGenerator = () => {
           { id: 'b200', label: 'B200', default: true },
           { id: 'h100', label: 'H100', default: false },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'a100', label: 'A100', default: false }
+          { id: 'a100', label: 'A100', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -62,7 +65,10 @@ const Step3VL10BConfigGenerator = () => {
         b200: { tp: 1, bf16: true, fp8: true },
         h100: { tp: 1, bf16: true, fp8: true },
         h200: { tp: 1, bf16: true, fp8: true },
-        a100: { tp: 1, bf16: true, fp8: true }
+        a100: { tp: 1, bf16: true, fp8: true },
+        mi300x: { tp: 1, bf16: true, fp8: true },
+        mi325x: { tp: 1, bf16: true, fp8: true },
+        mi355x: { tp: 1, bf16: true, fp8: true }
       }
     },
 
@@ -90,6 +96,9 @@ const Step3VL10BConfigGenerator = () => {
       }
 
       cmd += ' \\\n  --host 0.0.0.0 \\\n  --port 30000';
+      if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
+        cmd += ' \\\n  --attention-backend triton';
+      }
       cmd += ' \\\n  --trust-remote-code';
 
       for (const [key, option] of Object.entries(this.options)) {
