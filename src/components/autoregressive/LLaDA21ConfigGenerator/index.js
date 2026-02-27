@@ -16,7 +16,10 @@ const LLaDA21ConfigGenerator = () => {
         items: [
           { id: 'h100', label: 'H100', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'b200', label: 'B200', default: false }
+          { id: 'b200', label: 'B200', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -57,7 +60,9 @@ const LLaDA21ConfigGenerator = () => {
       args.push(`--trust-remote-code`);
       args.push(`--mem-fraction-static 0.8`);
       args.push(`--max-running-requests 1`);
-      args.push(`--attention-backend flashinfer`);
+      if (hardware === 'h100' || hardware === 'h200' || hardware === 'b200') {
+        args.push(`--attention-backend flashinfer`);
+      }
 
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  ${args.join(' \\\n  ')}`;

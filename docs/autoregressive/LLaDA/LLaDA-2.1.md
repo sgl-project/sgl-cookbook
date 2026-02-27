@@ -35,7 +35,7 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, and decoding mode.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, and decoding mode. SGLang supports serving LLaDA-2.1 on NVIDIA H100, H200, B200, and AMD MI300X, MI325X, MI355X GPUs.
 
 import LLaDA21ConfigGenerator from '@site/src/components/autoregressive/LLaDA21ConfigGenerator';
 
