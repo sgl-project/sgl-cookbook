@@ -12,6 +12,9 @@ const DeepSeekOCR2ConfigGenerator = () => {
         items: [
           { id: 'h200', label: 'H200', default: true },
           { id: 'b200', label: 'B200', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false },
         ]
       },
       quantization: {
@@ -34,7 +37,7 @@ const DeepSeekOCR2ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { strategy } = values;
+      const { hardware, strategy } = values;
 
       const strategyArray = Array.isArray(strategy) ? strategy : [];
 
@@ -58,6 +61,10 @@ const DeepSeekOCR2ConfigGenerator = () => {
       // EP strategy
       if (strategyArray.includes('ep')) {
         cmd += ` \\\n  --ep 1`;
+      }
+
+      if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
+        cmd += ` \\\n  --attention-backend triton` + ` \\\n  --trust-remote-code`;
       }
 
       cmd += ` \\\n  --host 0.0.0.0 \\\n  --port 30000`;
