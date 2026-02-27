@@ -123,6 +123,11 @@ const sidebars = {
           type: 'category',
           label: 'NVIDIA',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/NVIDIA/Nemotron3-Super',
+              label: 'Nemotron3-Super [NEW]',
+            },
             'autoregressive/NVIDIA/Nemotron3-Nano',
           ],
         },
