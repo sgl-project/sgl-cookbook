@@ -65,7 +65,10 @@ const Step3VL10BConfigGenerator = () => {
         b200: { tp: 1, bf16: true, fp8: true },
         h100: { tp: 1, bf16: true, fp8: true },
         h200: { tp: 1, bf16: true, fp8: true },
-        a100: { tp: 1, bf16: true, fp8: true }
+        a100: { tp: 1, bf16: true, fp8: true },
+        mi300x: { tp: 1, bf16: true, fp8: true },
+        mi325x: { tp: 1, bf16: true, fp8: true },
+        mi355x: { tp: 1, bf16: true, fp8: true }
       }
     },
 
