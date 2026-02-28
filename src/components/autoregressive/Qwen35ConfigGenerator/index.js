@@ -74,7 +74,7 @@ const Qwen35ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: false },
           { id: 'enabled', label: 'Enabled', default: true }
         ],
-        commandRule: (value) => value === 'enabled' ? '--speculative-algo NEXTN \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
+        commandRule: (value) => value === 'enabled' ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
       }
     },
 
@@ -86,7 +86,7 @@ const Qwen35ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, quantization } = values;
+      const { hardware, quantization, speculative } = values;
 
       // Validate hardware supports the quantization
       const hwConfig = this.modelConfigs[hardware]?.[quantization];
@@ -105,10 +105,9 @@ const Qwen35ConfigGenerator = () => {
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
+      // Initialize the base command
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
-
-      // TP setting
       cmd += ` \\\n  --tp ${tpValue}`;
 
       // Apply commandRule from all options except quantization (handled via model name)
@@ -122,13 +121,28 @@ const Qwen35ConfigGenerator = () => {
         }
       });
 
-      // Memory fraction based on hardware
-      cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
+      // Enable allreduce fusion for all Qwen3.5 configs.
+      cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+
+      // Append backend configurations
+      if (hardware === 'b200' || hardware === 'b300') {
+        cmd += ` \\\n  --attention-backend trtllm_mha`;
+      }
+
+      // Append B200/B300-specific backend configurations
+      if (hardware === 'b200' || hardware === 'b300') {
+        if (speculative === 'disabled') {
+          cmd += ` \\\n  --tokenizer-worker-num 6`;
+        }
+      }
 
       // FP4-specific backend settings
       if (quantization === 'fp4') {
-        cmd += ' \\\n  --attention-backend trtllm_mha \\\n  --moe-runner-backend flashinfer_trtllm \\\n  --fp4-gemm-backend flashinfer_cutlass';
+        cmd += ' \\\n  --moe-runner-backend flashinfer_trtllm \\\n  --fp4-gemm-backend flashinfer_cutlass \\\n  --kv-cache-dtype fp8_e4m3';
       }
+
+      // Add memory fraction last
+      cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
       return cmd;
     }

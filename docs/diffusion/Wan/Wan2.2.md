@@ -31,7 +31,7 @@ This section provides deployment configurations optimized for different hardware
 
 The Wan2.2 series offers models in various sizes, architectures and input types, optimized for different hardware platforms. The recommended launch configurations vary by hardware and model size.
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size. SGLang supports serving Wan2.2 on NVIDIA B200, H200 and AMD MI300X, MI325X and MI355X GPUs.
 
 import Wan2_2ConfigGenerator from '@site/src/components/diffusion/Wan2_2ConfigGenerator';
 
