@@ -39,6 +39,9 @@ import Qwen3CoderNextConfigGenerator from '@site/src/components/autoregressive/Q
 - **Context Length**: The model supports up to 256K tokens natively. If you encounter OOM issues, try `--context-length 32768`.
 - **Tool Use**: To enable tool calling capabilities, use the `--tool-call-parser qwen3_coder` flag.
 - **Sampling Parameters**: SGLang automatically applies the recommended sampling parameters from the model's `generation_config.json`. No manual configuration is needed.
+- **Mamba Radix Cache**: Qwen3-Coder-Next's hybrid Gated Delta Networks architecture supports two mamba scheduling strategies via `--mamba-scheduler-strategy`:
+  - **V1 (`no_buffer`)**: Default. No overlap scheduler, lower memory usage.
+  - **V2 (`extra_buffer`)**: Enables overlap scheduling and branching point caching with `--mamba-scheduler-strategy extra_buffer --page-size 64`. Requires FLA kernel backend. Trades higher mamba state memory for better throughput. Strictly superior in non-KV-cache-bound scenarios; in KV-cache-bound cases, weigh the overlap scheduling benefit against reduced max concurrency. `--page-size` must satisfy `FLA_CHUNK_SIZE % page_size == 0` or `page_size % FLA_CHUNK_SIZE == 0` (`FLA_CHUNK_SIZE` is currently 64).
 
 ## 4. Model Invocation
 
