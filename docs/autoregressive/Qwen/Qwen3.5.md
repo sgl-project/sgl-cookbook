@@ -52,6 +52,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - The model has ~397B parameters in BF16, requiring ~800GB of GPU memory for weights alone.
 - **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
 - **H200 (141GB)** and **B200 (192GB)** can run with tp=8 on a single node.
+- **MI300X** and **MI355X** can run with tp=8 on a single node as well.
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
 - **Mamba Radix Cache**: Qwen3.5's hybrid Gated Delta Networks architecture supports two mamba scheduling strategies via `--mamba-scheduler-strategy`:
   - **V1 (`no_buffer`)**: Default. No overlap scheduler, lower memory usage.
@@ -62,12 +63,16 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - **CUDA IPC Transport**: Add `SGLANG_USE_CUDA_IPC_TRANSPORT=1` as an environment variable to use CUDA IPC for transferring multimodal features, significantly improving TTFT (Time To First Token). Note: this consumes additional memory proportional to image size, so you may need to lower `--mem-fraction-static` or `--max-running-requests`.
 - **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
+- On AMD GPUs, launch a docker container with ROCm images for 300X:rocm/sgl-dev:v0.5.8.post1-rocm720-mi30x-20260215 
+and 355X:rocm/sgl-dev:v0.5.8.post1-rocm720-mi35x-20260215
 
 | Hardware | TP |
 | -------- | -- |
 | H100     | 16 |
 | H200     | 8  |
 | B200     | 8  |
+| MI300    | 8  |
+| MI355    | 8  |
 
 ## 4. Model Invocation
 
@@ -87,6 +92,18 @@ python -m sglang.launch_server \
   --host 0.0.0.0 \
   --port 30000
 ```
+
+on AMD GPUs for both mI300X and MI355X
+```shell
+python3 -m sglang.launch_server \
+        --port 8000 \
+        --model-path Qwen/Qwen3.5-397B-A17B \
+        --tp-size 8 \
+        --attention-backend triton \
+        --reasoning-parser qwen3 \
+        --tool-call-parser qwen3_coder
+```
+
 
 ### 4.1 Basic Usage
 
