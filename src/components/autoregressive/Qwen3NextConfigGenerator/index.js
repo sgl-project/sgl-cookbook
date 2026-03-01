@@ -63,6 +63,15 @@ const Qwen3NextConfigGenerator = () => {
           { id: 'enabled', label: 'Enabled', default: false }
         ],
         commandRule: (value) => value === 'enabled' ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
+      },
+      mambaCache: {
+        name: 'mambaCache',
+        title: 'Mamba Radix Cache',
+        items: [
+          { id: 'v1', label: 'V1', default: true },
+          { id: 'v2', label: 'V2', default: false }
+        ],
+        commandRule: (value) => value === 'v2' ? '--mamba-scheduler-strategy extra_buffer \\\n  --page-size 64' : null
       }
     },
 

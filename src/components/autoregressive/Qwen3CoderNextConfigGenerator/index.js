@@ -38,6 +38,15 @@ const Qwen3CoderNextConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: false }
         ],
         commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen3_coder' : null
+      },
+      mambaCache: {
+        name: 'mambaCache',
+        title: 'Mamba Radix Cache',
+        items: [
+          { id: 'v1', label: 'V1', default: true },
+          { id: 'v2', label: 'V2', default: false }
+        ],
+        commandRule: (value) => value === 'v2' ? '--mamba-scheduler-strategy extra_buffer \\\n  --page-size 64' : null
       }
     },
 

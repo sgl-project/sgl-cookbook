@@ -53,6 +53,9 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
 - **H200 (141GB)** and **B200 (192GB)** can run with tp=8 on a single node.
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
+- **Mamba Radix Cache**: Qwen3.5's hybrid Gated Delta Networks architecture supports two mamba scheduling strategies via `--mamba-scheduler-strategy`:
+  - **V1 (`no_buffer`)**: Default. No overlap scheduler, lower memory usage.
+  - **V2 (`extra_buffer`)**: Enables overlap scheduling and branching point caching with `--mamba-scheduler-strategy extra_buffer --page-size 64`. Requires FLA kernel backend. Trades higher mamba state memory for better throughput. Strictly superior in non-KV-cache-bound scenarios; in KV-cache-bound cases, weigh the overlap scheduling benefit against reduced max concurrency. `--page-size` must satisfy `FLA_CHUNK_SIZE % page_size == 0` or `page_size % FLA_CHUNK_SIZE == 0` (`FLA_CHUNK_SIZE` is currently 64).
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
 - Context length defaults to 262,144 tokens. If you encounter OOM errors, consider reducing it, but maintain at least 128K to preserve thinking capabilities.
 - To speed up weight loading for this large model, add `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'` to the launch command.
