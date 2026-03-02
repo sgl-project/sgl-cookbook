@@ -51,19 +51,6 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 
 ### 3.2 Configuration Tips
 
-- **BF16**: ~397B parameters require ~800GB of GPU memory for weights.
-  - **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
-  - **H200 (141GB)** runs with tp=8.
-  - **B200 (183GB)** runs with tp=8.
-  - **B300 (275GB)** runs with tp=4.
-- **FP8**: The FP8 quantized model requires ~400GB for weights, cutting memory in half.
-  - **H100** runs with tp=8.
-  - **H200** runs with tp=4.
-  - **B200 (183GB)** runs with tp=4.
-  - **B300 (275GB)** runs with tp=2.
-- **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
-  - **B200 (183GB)** runs with tp=4.
-  - **B300 (275GB)** runs with tp=2.
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
 - Context length defaults to 262,144 tokens. If you encounter OOM errors, consider reducing it, but maintain at least 128K to preserve thinking capabilities.
@@ -71,6 +58,20 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - **CUDA IPC Transport**: Add `SGLANG_USE_CUDA_IPC_TRANSPORT=1` as an environment variable to use CUDA IPC for transferring multimodal features, significantly improving TTFT (Time To First Token). Note: this consumes additional memory proportional to image size, so you may need to lower `--mem-fraction-static` or `--max-running-requests`.
 - **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200/B300.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
+- Hardware requirements:
+    - **BF16**: ~397B parameters require ~800GB of GPU memory for weights.
+        - **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
+        - **H200 (141GB)** runs with tp=8.
+        - **B200 (183GB)** runs with tp=8.
+        - **B300 (275GB)** runs with tp=4.
+    - **FP8**: The FP8 quantized model requires ~400GB for weights, cutting memory in half.
+        - **H100 (80GB)** runs with tp=8.
+        - **H200 (141GB)** runs with tp=4.
+        - **B200 (183GB)** runs with tp=4.
+        - **B300 (275GB)** runs with tp=2.
+    - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
+        - **B200 (183GB)** runs with tp=4.
+        - **B300 (275GB)** runs with tp=2.
 
 | Hardware | Memory | BF16 TP | FP8 TP | FP4 TP |
 | -------- | ------ | ------- | ------ | --------------- |
