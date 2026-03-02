@@ -10,6 +10,8 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   H100: FP8 tp=16, BF16 tp=32
  *   H200: FP8 tp=8, BF16 tp=16
  *   B200: FP8 tp=8, BF16 tp=16
+ *   MI300X/MI325X: BF16 tp=8
+ *   MI355X: BF16 tp=8
  */
 const GLM5ConfigGenerator = () => {
   const config = {
@@ -22,16 +24,26 @@ const GLM5ConfigGenerator = () => {
         items: [
           { id: 'h200', label: 'H200', default: true },
           { id: 'b200', label: 'B200', default: false },
-          { id: 'h100', label: 'H100', default: false }
+          { id: 'h100', label: 'H100', default: false },
+          { id: 'mi300x', label: 'MI300X/MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       quantization: {
         name: 'quantization',
         title: 'Quantization',
-        items: [
-          { id: 'bf16', label: 'BF16', subtitle: 'Full Weights', default: false },
-          { id: 'fp8', label: 'FP8', subtitle: 'High Throughput', default: true }
-        ]
+        getDynamicItems: (values) => {
+          const hw = values.hardware;
+          if (hw === 'mi300x' || hw === 'mi355x') {
+            return [
+              { id: 'bf16', label: 'BF16', subtitle: 'Full Weights', default: true }
+            ];
+          }
+          return [
+            { id: 'bf16', label: 'BF16', subtitle: 'Full Weights', default: false },
+            { id: 'fp8', label: 'FP8', subtitle: 'High Throughput', default: true }
+          ];
+        }
       },
       reasoning: {
         name: 'reasoning',
@@ -58,7 +70,6 @@ const GLM5ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', subtitle: 'Low Latency', default: true },
           { id: 'enabled', label: 'Enabled', subtitle: 'High Throughput', default: false }
         ],
-        // dp value is dynamic (matches tp), handled in generateCommand
         commandRule: null
       },
       speculative: {
@@ -72,36 +83,43 @@ const GLM5ConfigGenerator = () => {
       }
     },
 
-    // BF16 always needs 2x GPUs compared to FP8
     modelConfigs: {
       h100: { fp8: { tp: 16, mem: 0.85 }, bf16: { tp: 32, mem: 0.85 } },
       h200: { fp8: { tp: 8, mem: 0.85 }, bf16: { tp: 16, mem: 0.85 } },
-      b200: { fp8: { tp: 8, mem: 0.9 }, bf16: { tp: 16, mem: 0.9 } }
+      b200: { fp8: { tp: 8, mem: 0.9 }, bf16: { tp: 16, mem: 0.9 } },
+      mi300x: { bf16: { tp: 8, mem: 0.80 } },
+      mi355x: { bf16: { tp: 8, mem: 0.80 } }
     },
 
     generateCommand: function (values) {
       const { hardware, quantization } = values;
+      const isAMD = hardware === 'mi300x' || hardware === 'mi355x';
 
-      const modelSuffix = quantization === 'fp8' ? '-FP8' : '';
+      const effectiveQuant = isAMD ? 'bf16' : quantization;
+      const modelSuffix = effectiveQuant === 'fp8' ? '-FP8' : '';
       const modelName = `${this.modelFamily}/GLM-5${modelSuffix}`;
 
-      // BF16 needs 2x GPUs compared to FP8
-      const hwConfig = this.modelConfigs[hardware][quantization];
+      const hwConfig = this.modelConfigs[hardware][effectiveQuant];
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
 
-      // TP setting
       cmd += ` \\\n  --tp ${tpValue}`;
 
-      // DP Attention: --dp matches --tp
+      if (isAMD) {
+        cmd += ' \\\n  --trust-remote-code';
+        cmd += ' \\\n  --nsa-prefill-backend tilelang';
+        cmd += ' \\\n  --nsa-decode-backend tilelang';
+        cmd += ' \\\n  --chunked-prefill-size 131072';
+        cmd += ' \\\n  --watchdog-timeout 1200';
+      }
+
       if (values.dpattention === 'enabled') {
         cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
       }
 
-      // Apply commandRule from all options
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule) {
           const rule = option.commandRule(values[key]);
@@ -111,7 +129,6 @@ const GLM5ConfigGenerator = () => {
         }
       });
 
-      // Memory fraction based on hardware and quantization
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
       return cmd;

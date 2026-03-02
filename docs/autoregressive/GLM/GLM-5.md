@@ -33,6 +33,12 @@ docker pull lmsysorg/sglang:glm5-hopper
 
 # For Blackwell GPUs (B200)
 docker pull lmsysorg/sglang:glm5-blackwell
+
+# For AMD GPUs (MI300X/MI325X)
+docker pull lmsysorg/sglang:latest-rocm
+
+# For AMD GPUs (MI355X)
+docker pull lmsysorg/sglang:latest-rocm-mi35x
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -41,13 +47,20 @@ For other installation methods, please refer to the [official SGLang installatio
 If you build SGLang from source on Blackwell GPUs, you need to manually compile `sgl-kernel` due to existing kernel issues (Hopper GPUs are unaffected). See [sglang#18595](https://github.com/sgl-project/sglang/issues/18595) for details.
 :::
 
+:::note AMD GPU Transformers Dependency
+GLM-5 requires the latest transformers for the `glm_moe_dsa` architecture. Install from source:
+```bash
+pip install git+https://github.com/huggingface/transformers.git
+```
+:::
+
 ## 3. Model Deployment
 
 This section provides deployment configurations optimized for different hardware platforms and use cases.
 
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and capabilities.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and capabilities. SGLang supports serving GLM-5 on NVIDIA H100, H200, B200, and AMD MI300X/MI325X/MI355X GPUs.
 
 import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigGenerator';
 
@@ -59,13 +72,16 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
 - **DP Attention**: Enables data parallel attention for higher throughput under high concurrency. Note that DP attention trades off low-concurrency latency for high-concurrency throughput — disable it if your workload is latency-sensitive with few concurrent requests.
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
-- BF16 model always requires **2x GPUs** compared to FP8:
+- BF16 model always requires **2x GPUs** compared to FP8 on NVIDIA hardware:
+- **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading).
 
 | Hardware | FP8 | BF16 |
 | -------- | --- | ---- |
 | H100     | tp=16 | tp=32 |
 | H200     | tp=8  | tp=16 |
 | B200     | tp=8  | tp=16 |
+| MI300X/MI325X | — | tp=8 |
+| MI355X   | — | tp=8 |
 
 ## 4. Model Invocation
 
