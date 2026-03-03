@@ -72,8 +72,7 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
 - **DP Attention**: Enables data parallel attention for higher throughput under high concurrency. Note that DP attention trades off low-concurrency latency for high-concurrency throughput — disable it if your workload is latency-sensitive with few concurrent requests.
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
-- BF16 model always requires **2x GPUs** compared to FP8 on NVIDIA hardware:
-- **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading).
+- BF16 model always requires **2x GPUs** compared to FP8 on NVIDIA hardware.
 
 | Hardware | FP8 | BF16 |
 | -------- | --- | ---- |
@@ -82,6 +81,8 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 | B200     | tp=8  | tp=16 |
 | MI300X/MI325X | — | tp=8 |
 | MI355X   | — | tp=8 |
+
+- **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.
 
 ## 4. Model Invocation
 
@@ -617,3 +618,7 @@ subject: world_religions, #q:171, acc: 0.936
 Total latency: 165.275
 Average accuracy: 0.877
 ```
+
+### 5.3 AMD GPU Benchmarks
+
+AMD GPU (MI300X/MI325X/MI355X) benchmarks for GLM-5 are forthcoming. Initial CI accuracy tests on AMD hardware show strong GSM8K results (96.5% on MI325, 97.0% on MI35x) — see [sglang#18911](https://github.com/sgl-project/sglang/pull/18911).

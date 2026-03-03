@@ -34,14 +34,10 @@ const GLM5ConfigGenerator = () => {
         title: 'Quantization',
         getDynamicItems: (values) => {
           const hw = values.hardware;
-          if (hw === 'mi300x' || hw === 'mi355x') {
-            return [
-              { id: 'bf16', label: 'BF16', subtitle: 'Full Weights', default: true }
-            ];
-          }
+          const isAMD = hw === 'mi300x' || hw === 'mi355x';
           return [
-            { id: 'bf16', label: 'BF16', subtitle: 'Full Weights', default: false },
-            { id: 'fp8', label: 'FP8', subtitle: 'High Throughput', default: true }
+            { id: 'bf16', label: 'BF16', subtitle: 'Full Weights', default: isAMD },
+            { id: 'fp8', label: 'FP8', subtitle: 'High Throughput', default: !isAMD, disabled: isAMD, disabledReason: isAMD ? 'FP8 not verified on AMD' : '' }
           ];
         }
       },
@@ -70,11 +66,13 @@ const GLM5ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', subtitle: 'Low Latency', default: true },
           { id: 'enabled', label: 'Enabled', subtitle: 'High Throughput', default: false }
         ],
+        // dp value is dynamic (matches tp), handled in generateCommand
         commandRule: null
       },
       speculative: {
         name: 'speculative',
         title: 'Speculative Decoding',
+        condition: (values) => values.hardware !== 'mi300x' && values.hardware !== 'mi355x',
         items: [
           { id: 'disabled', label: 'Disabled', default: false },
           { id: 'enabled', label: 'Enabled', default: true }
@@ -83,6 +81,7 @@ const GLM5ConfigGenerator = () => {
       }
     },
 
+    // BF16 always needs 2x GPUs compared to FP8
     modelConfigs: {
       h100: { fp8: { tp: 16, mem: 0.85 }, bf16: { tp: 32, mem: 0.85 } },
       h200: { fp8: { tp: 8, mem: 0.85 }, bf16: { tp: 16, mem: 0.85 } },
@@ -95,10 +94,12 @@ const GLM5ConfigGenerator = () => {
       const { hardware, quantization } = values;
       const isAMD = hardware === 'mi300x' || hardware === 'mi355x';
 
+      // AMD only supports BF16; NVIDIA supports both
       const effectiveQuant = isAMD ? 'bf16' : quantization;
       const modelSuffix = effectiveQuant === 'fp8' ? '-FP8' : '';
       const modelName = `${this.modelFamily}/GLM-5${modelSuffix}`;
 
+      // BF16 needs 2x GPUs compared to FP8
       const hwConfig = this.modelConfigs[hardware][effectiveQuant];
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
@@ -106,8 +107,10 @@ const GLM5ConfigGenerator = () => {
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
 
+      // TP setting
       cmd += ` \\\n  --tp ${tpValue}`;
 
+      // AMD-specific: NSA tilelang backend and weight loading config
       if (isAMD) {
         cmd += ' \\\n  --trust-remote-code';
         cmd += ' \\\n  --nsa-prefill-backend tilelang';
@@ -116,10 +119,12 @@ const GLM5ConfigGenerator = () => {
         cmd += ' \\\n  --watchdog-timeout 1200';
       }
 
+      // DP Attention: --dp matches --tp
       if (values.dpattention === 'enabled') {
         cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
       }
 
+      // Apply commandRule from all options
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule) {
           const rule = option.commandRule(values[key]);
@@ -129,6 +134,7 @@ const GLM5ConfigGenerator = () => {
         }
       });
 
+      // Memory fraction based on hardware and quantization
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
       return cmd;
