@@ -28,11 +28,9 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 
 ## 3. Model Deployment
 
-This section provides deployment configurations verified on AMD MI300X, MI325X and MI355X as well as NVIDIA GB200 and B200 hardware platforms.
+This section provides deployment configurations verified on AMD MI300X, MI325X, MI355X and NVIDIA B200, GB200 hardware platforms.
 
-### 3.1 AMD (MI300X/MI325X/MI355X) Configuration
-
-The following configurations have been verified on AMD MI300X, MI325X and MI355X GPUs.
+### 3.1 Configuration
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, and quantization method.
 
@@ -42,38 +40,19 @@ import Qwen3CoderConfigGenerator from '@site/src/components/autoregressive/Qwen3
 
 ### 3.2 Configuration Tips
 
+**AMD (MI300X/MI325X/MI355X):**
 * **Memory Management**: We have verified successful deployment on MI300X/MI325X/MI355X with `--context-length 8192`. Larger context lengths may be supported but require additional memory.
 * **Expert Parallelism**: For 480B-A35B with FP8 quantization, `--ep 2` is required to satisfy the dimension alignment requirement.
 * **Page Size**: `--page-size 32` is recommended for MoE models to optimize memory usage.
 * **Environment Variable**: If you encounter aiter-related issues, try setting `SGLANG_USE_AITER=0`.
+
+**NVIDIA (B200/GB200):**
+* **MOE Runner Backend**: FP8 uses `--moe-runner-backend triton`, NVFP4 uses `--moe-runner-backend flashinfer_cutlass`.
+* **NVFP4 Quantization**: Requires `--quantization modelopt_fp4` and uses a different model path (`nvidia/Qwen3-Coder-...`).
+* **DP Attention**: NVFP4 configuration supports `--enable-dp-attention` for improved throughput.
+
+**General:**
 * **Tool Use**: To enable tool calling capabilities, add `--tool-call-parser qwen3_coder` to the launch command.
-
-
-### 3.3 NVIDIA (B200/GB200) Configuration
-
-The following configurations have been verified on NVIDIA B200 and GB200 GPUs.
-
-#### 3.3.1 FP8 Model
-
-```shell
-python3 -m sglang.launch_server \
-  --model Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \
-  --tp 8 \
-  --ep 2 \
-  --moe-runner-backend triton
-```
-
-#### 3.3.2 NVFP4 Model
-
-```shell
-python3 -m sglang.launch_server \
-  --model nvidia/Qwen3-Coder-480B-A35B-Instruct-NVFP \
-  --tp 8 \
-  --ep 1 \
-  --enable-dp-attention \
-  --moe-runner-backend flashinfer_cutlass \
-  --quantization modelopt_fp4
-```
 
 ## 4. Model Invocation
 
@@ -524,18 +503,9 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200
 
 ##### NVIDIA (B200/GB200)
 
-- **FP8 Model**:
+For deployment commands, see [Section 3.1](#31-configuration).
 
-  - Server Command:
-    ```shell
-    python3 -m sglang.launch_server \
-      --model Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \
-      --tp 8 \
-      --ep 2 \
-      --moe-runner-backend triton
-    ```
-
-  - Results:
+  - Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 (tp=8, ep=2)
     ```
     Accuracy: 0.950
     Invalid: 0.000
@@ -543,20 +513,7 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200
     Output throughput: 2065.515 token/s
     ```
 
-- **NVFP4 Model**:
-
-  - Server Command:
-    ```shell
-    python3 -m sglang.launch_server \
-      --model nvidia/Qwen3-Coder-480B-A35B-Instruct-NVFP \
-      --tp 8 \
-      --ep 1 \
-      --enable-dp-attention \
-      --moe-runner-backend flashinfer_cutlass \
-      --quantization modelopt_fp4
-    ```
-
-  - Results:
+  - nvidia/Qwen3-Coder-480B-A35B-Instruct-NVFP (NVFP4, tp=8, ep=1)
     ```
     Accuracy: 0.970
     Invalid: 0.000

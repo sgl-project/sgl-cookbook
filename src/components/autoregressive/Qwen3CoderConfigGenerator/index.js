@@ -4,7 +4,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 /**
  * Qwen3-Coder Configuration Generator
  * Supports Qwen3-Coder-480B-A35B and Qwen3-Coder-30B-A3B models
- * Verified on AMD MI300X, MI325X and MI355X
+ * Verified on AMD MI300X, MI325X, MI355X and NVIDIA B200, GB200
  */
 const Qwen3CoderConfigGenerator = () => {
   const config = {
@@ -17,7 +17,9 @@ const Qwen3CoderConfigGenerator = () => {
         items: [
           { id: 'mi300x', label: 'MI300X', default: true },
           { id: 'mi325x', label: 'MI325X', default: false },
-          { id: 'mi355x', label: 'MI355X', default: false }
+          { id: 'mi355x', label: 'MI355X', default: false },
+          { id: 'b200', label: 'B200', default: false },
+          { id: 'gb200', label: 'GB200', default: false }
         ]
       },
       modelSize: {
@@ -33,7 +35,8 @@ const Qwen3CoderConfigGenerator = () => {
         title: 'Quantization',
         items: [
           { id: 'bf16', label: 'BF16', default: true },
-          { id: 'fp8', label: 'FP8', default: false }
+          { id: 'fp8', label: 'FP8', default: false },
+          { id: 'nvfp4', label: 'NVFP4', default: false }
         ]
       },
       toolcall: {
@@ -52,7 +55,9 @@ const Qwen3CoderConfigGenerator = () => {
         baseName: '480B-A35B',
         mi300x: { tp: 8 },
         mi325x: { tp: 8 },
-        mi355x: { tp: 8 }
+        mi355x: { tp: 8 },
+        b200: { tp: 8 },
+        gb200: { tp: 8 }
       },
       '30b': {
         baseName: '30B-A3B',
@@ -65,28 +70,63 @@ const Qwen3CoderConfigGenerator = () => {
     generateCommand: function (values) {
       const { hardware, modelSize, quantization } = values;
 
+      const isNvidia = hardware === 'b200' || hardware === 'gb200';
+
       const modelConfig = this.modelConfigs[modelSize];
       const hwConfig = modelConfig[hardware];
 
       if (!hwConfig) {
-        return `# Error: Unknown hardware platform: ${hardware}`;
+        return `# Configuration not available: ${modelSize.toUpperCase()} model has not been verified on ${hardware.toUpperCase()}.`;
+      }
+
+      // NVFP4 is only available on NVIDIA hardware
+      if (quantization === 'nvfp4' && !isNvidia) {
+        return `# NVFP4 quantization is only available on NVIDIA B200/GB200 hardware.`;
+      }
+
+      // BF16 not verified on NVIDIA
+      if (quantization === 'bf16' && isNvidia) {
+        return `# BF16 deployment on ${hardware.toUpperCase()} has not been verified yet. Please use FP8 or NVFP4.`;
       }
 
       // Build model name
-      const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
-      const modelName = `Qwen/Qwen3-Coder-${modelConfig.baseName}-Instruct${quantSuffix}`;
+      let modelName;
+      if (quantization === 'nvfp4') {
+        modelName = `nvidia/Qwen3-Coder-${modelConfig.baseName}-Instruct-NVFP`;
+      } else {
+        const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
+        modelName = `Qwen/Qwen3-Coder-${modelConfig.baseName}-Instruct${quantSuffix}`;
+      }
 
-      let cmd = 'SGLANG_USE_AITER=0 python -m sglang.launch_server \\\n';
+      let cmd = '';
+      if (!isNvidia) {
+        cmd += 'SGLANG_USE_AITER=0 ';
+      }
+      cmd += 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
 
       // TP setting
       cmd += ` \\\n  --tp ${hwConfig.tp}`;
 
-      // FP8 requires EP=2 for 480B model due to MoE dimension alignment
-      // moe_intermediate_size=2560, with tp=8 ep=1: 2560/8=320, 320%128!=0
-      // with tp=8 ep=2: 2560/4=640, 640%128=0 ✓
-      if (modelSize === '480b' && quantization === 'fp8') {
+      // EP and DP attention settings
+      if (quantization === 'nvfp4') {
+        cmd += ` \\\n  --ep 1`;
+        cmd += ` \\\n  --enable-dp-attention`;
+      } else if (modelSize === '480b' && quantization === 'fp8') {
+        // FP8 requires EP=2 for 480B model due to MoE dimension alignment
+        // moe_intermediate_size=2560, with tp=8 ep=1: 2560/8=320, 320%128!=0
+        // with tp=8 ep=2: 2560/4=640, 640%128=0 ✓
         cmd += ` \\\n  --ep 2`;
+      }
+
+      // MOE runner backend for NVIDIA
+      if (isNvidia) {
+        if (quantization === 'nvfp4') {
+          cmd += ` \\\n  --moe-runner-backend flashinfer_cutlass`;
+          cmd += ` \\\n  --quantization modelopt_fp4`;
+        } else if (quantization === 'fp8') {
+          cmd += ` \\\n  --moe-runner-backend triton`;
+        }
       }
 
       // Apply commandRule from all options
@@ -99,15 +139,19 @@ const Qwen3CoderConfigGenerator = () => {
           }
         }
       });
-      // Context length verified on MI300X/MI325X/MI355X
-      cmd += ` \\\n  --context-length 8192`;
 
-      // Page size for MoE models
-      cmd += ` \\\n  --page-size 32`;
+      // AMD-specific flags
+      if (!isNvidia) {
+        // Context length verified on MI300X/MI325X/MI355X
+        cmd += ` \\\n  --context-length 8192`;
 
-      // FP8 requires trust-remote-code
-      if (quantization === 'fp8') {
-        cmd += ` \\\n  --trust-remote-code`;
+        // Page size for MoE models
+        cmd += ` \\\n  --page-size 32`;
+
+        // FP8 requires trust-remote-code
+        if (quantization === 'fp8') {
+          cmd += ` \\\n  --trust-remote-code`;
+        }
       }
 
       return cmd;
