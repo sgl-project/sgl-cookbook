@@ -64,7 +64,7 @@ const KimiK2linearConfigGenerator = () => {
 
       // Model name mapping
       const modelMap = {
-        'instruct': 'Kimi-Linear',
+        'instruct': 'moonshotai/Kimi-Linear-48B-A3B-Instruct',
       };
 
       const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
@@ -80,7 +80,7 @@ const KimiK2linearConfigGenerator = () => {
 
       // Strategy configurations
 
-      const strategyArray = Array.isArray(strategy) ? strategy : [];
+      
       // TP is mandatory
       cmd += ` \\\n  --tp 4`;
 
@@ -104,4 +104,4 @@ const KimiK2linearConfigGenerator = () => {
   return <ConfigGenerator config={config} />;
 };
 
-export default KimiK2ConfigGenerator;
+export default KimiK2linearConfigGenerator;
