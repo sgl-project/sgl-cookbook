@@ -35,10 +35,10 @@ docker pull lmsysorg/sglang:glm5-hopper
 docker pull lmsysorg/sglang:glm5-blackwell
 
 # For AMD MI300X/MI308/MI325X GPUs (gfx942)
-docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi30x-20260214 # this version or newer
+docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi30x-20260219 # this version or newer
 
 # For AMD MI350/MI355 GPUs (gfx950)
-docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi35x-20260214 # this version or newer
+docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi35x-20260219 # this version or newer
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
