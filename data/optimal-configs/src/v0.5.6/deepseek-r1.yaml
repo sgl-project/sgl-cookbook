@@ -9,6 +9,15 @@ ui_options:
     - id: h200
       label: H200
       default: false
+    - id: mi300x
+      label: MI300X
+      default: false
+    - id: mi325x
+      label: MI325X
+      default: false
+    - id: mi355x
+      label: MI355X
+      default: false
 
   quantization:
     - id: fp8
@@ -172,6 +181,148 @@ configs:
       attention_backend: flashinfer
       stream_interval: 10
       decode_log_interval: 1
+
+  - hardware: mi300x
+    quantization: fp8
+    gpu_count: 8
+    scenario: low-latency
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      cuda_graph_max_bs: 128
+      chunked_prefill_size: 131072
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 131072
+      kv_cache_dtype: fp8_e4m3
+      attention_backend: aiter
+      disable_radix_cache: true
+
+  - hardware: mi300x
+    quantization: fp8
+    gpu_count: 8
+    scenario: high-throughput
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      cuda_graph_max_bs: 512
+      chunked_prefill_size: 131072
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 131072
+      kv_cache_dtype: fp8_e4m3
+      attention_backend: aiter
+      disable_radix_cache: true
+
+  - hardware: mi325x
+    quantization: fp8
+    gpu_count: 8
+    scenario: low-latency
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      cuda_graph_max_bs: 128
+      chunked_prefill_size: 131072
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 131072
+      kv_cache_dtype: fp8_e4m3
+      attention_backend: aiter
+      disable_radix_cache: true
+
+  - hardware: mi325x
+    quantization: fp8
+    gpu_count: 8
+    scenario: high-throughput
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 SGLANG_AITER_MLA_PERSIST=1"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      cuda_graph_max_bs: 512
+      chunked_prefill_size: 131072
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 131072
+      kv_cache_dtype: fp8_e4m3
+      attention_backend: aiter
+      disable_radix_cache: true
+
+  - hardware: mi355x
+    quantization: fp8
+    gpu_count: 8
+    scenario: low-latency
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 RCCL_MSCCL_ENABLE=0 ROCM_QUICK_REDUCE_QUANTIZATION=INT4"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      disable_radix_cache: true
+      chunked_prefill_size: 196608
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 196608
+      cuda_graph_max_bs: 128
+      attention_backend: aiter
+
+  - hardware: mi355x
+    quantization: fp8
+    gpu_count: 8
+    scenario: high-throughput
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 RCCL_MSCCL_ENABLE=0 ROCM_QUICK_REDUCE_QUANTIZATION=INT4"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      disable_radix_cache: true
+      chunked_prefill_size: 196608
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 196608
+      cuda_graph_max_bs: 512
+      attention_backend: aiter
+
+  - hardware: mi355x
+    quantization: fp4
+    gpu_count: 8
+    scenario: low-latency
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 ROCM_QUICK_REDUCE_QUANTIZATION=INT4"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      disable_radix_cache: true
+      chunked_prefill_size: 196608
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 196608
+      cuda_graph_max_bs: 128
+      attention_backend: aiter
+      kv_cache_dtype: fp8_e4m3
+
+  - hardware: mi355x
+    quantization: fp4
+    gpu_count: 8
+    scenario: high-throughput
+    parameters:
+      env_vars: "SGLANG_USE_AITER=1 ROCM_QUICK_REDUCE_QUANTIZATION=INT4"
+      model_path: deepseek-ai/DeepSeek-R1-0528
+      trust_remote_code: true
+      tensor_parallel_size: 8
+      mem_fraction_static: 0.8
+      disable_radix_cache: true
+      chunked_prefill_size: 196608
+      num_continuous_decode_steps: 4
+      max_prefill_tokens: 196608
+      cuda_graph_max_bs: 512
+      attention_backend: aiter
+      kv_cache_dtype: fp8_e4m3
 
 validation:
   - hardware: h200
