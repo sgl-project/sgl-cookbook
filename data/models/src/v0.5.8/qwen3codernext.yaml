@@ -1,0 +1,34 @@
+# Qwen3-Coder-Next Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/qwen3codernext.yaml
+
+vendor: qwen
+
+defaults:
+  hardware:
+    H100: { tp: 4 }
+    H200: { tp: 2 }
+    B200: { tp: 2 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Qwen3-Coder-Next
+    description: Qwen3-Coder-Next 80B (3B activated) MOE code-focused model with tool calling support
+    llm:
+      tool_parser: qwen3_coder
+    models:
+      # BF16 variant: requires more TP (H100=4, H200/B200=2)
+      - base_name: ""
+        quantizations: [bf16]
+        capabilities: [instruct]
+
+      # FP8 variant: half the memory, so half the TP (H100=2, H200/B200=1)
+      - base_name: ""
+        quantizations: [fp8]
+        capabilities: [instruct]
+        hardware:
+          H100: { tp: 2 }
+          H200: { tp: 1 }
+          B200: { tp: 1 }

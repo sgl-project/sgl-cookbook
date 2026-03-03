@@ -25,9 +25,8 @@ import {
 } from "./types";
 
 // Path to model YAML files (generated from src/)
-// Version is now a top-level folder, default to v0.5.6
-const VERSION = process.env.SGLANG_VERSION || "v0.5.6";
-const MODELS_DIR = path.join(__dirname, "..", "models", "generated", VERSION);
+// If SGLANG_VERSION is set, only validate that version; otherwise validate all versions
+const MODELS_BASE_DIR = path.join(__dirname, "..", "models", "generated");
 
 /**
  * Load and parse a YAML file as VendorConfig
@@ -38,16 +37,31 @@ function loadYamlAsVendorConfig(filePath: string): VendorConfig {
 }
 
 /**
- * Get all YAML files in the models directory
+ * Get all YAML files across all version directories (or a specific version if SGLANG_VERSION is set)
  */
 function getYamlFiles(): string[] {
-  if (!fs.existsSync(MODELS_DIR)) {
+  if (!fs.existsSync(MODELS_BASE_DIR)) {
     return [];
   }
-  return fs
-    .readdirSync(MODELS_DIR)
-    .filter((f) => f.endsWith(".yaml") || f.endsWith(".yml"))
-    .map((f) => path.join(MODELS_DIR, f));
+
+  const specificVersion = process.env.SGLANG_VERSION;
+  const versionDirs = specificVersion
+    ? [specificVersion]
+    : fs.readdirSync(MODELS_BASE_DIR).filter((d) =>
+        fs.statSync(path.join(MODELS_BASE_DIR, d)).isDirectory()
+      );
+
+  const files: string[] = [];
+  for (const ver of versionDirs) {
+    const versionDir = path.join(MODELS_BASE_DIR, ver);
+    if (!fs.existsSync(versionDir)) continue;
+    const yamlFiles = fs
+      .readdirSync(versionDir)
+      .filter((f) => f.endsWith(".yaml") || f.endsWith(".yml"))
+      .map((f) => path.join(versionDir, f));
+    files.push(...yamlFiles);
+  }
+  return files;
 }
 
 /**
@@ -229,14 +243,15 @@ function runTests(): void {
   const yamlFiles = getYamlFiles();
 
   if (yamlFiles.length === 0) {
-    console.log("No YAML files found in", MODELS_DIR);
+    console.log("No YAML files found in", MODELS_BASE_DIR);
     process.exit(1);
   }
 
   let totalErrors = 0;
 
   for (const filePath of yamlFiles) {
-    const fileName = path.basename(filePath);
+    const versionDir = path.basename(path.dirname(filePath));
+    const fileName = `${versionDir}/${path.basename(filePath)}`;
     console.log(`Validating ${fileName}...`);
 
     try {
