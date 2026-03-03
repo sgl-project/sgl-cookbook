@@ -103,15 +103,33 @@ python -m sglang.launch_server \
   --port 30000
 ```
 
-### 4.1 Basic Usage
+### 4.1 MI300X/MI325X/MI355X (ROCm) Server Command
+
+The following ROCm command is an additional option for AMD GPUs and does not replace the NVIDIA instructions above.
+
+```shell
+python -m sglang.launch_server \
+  --model zai-org/GLM-5 \
+  --tp 8 \
+  --trust-remote-code \
+  --nsa-prefill-backend tilelang \
+  --nsa-decode-backend tilelang \
+  --chunked-prefill-size 131072 \
+  --mem-fraction-static 0.80 \
+  --watchdog-timeout 1200 \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+### 4.2 Basic Usage
 
 For basic API usage and request examples, please refer to:
 
 - [SGLang Basic Usage Guide](https://docs.sglang.ai/basic_usage/send_request.html)
 
-### 4.2 Advanced Usage
+### 4.3 Advanced Usage
 
-#### 4.2.1 Reasoning Parser
+#### 4.3.1 Reasoning Parser
 
 GLM-5 supports Thinking mode **by default**. Enable the reasoning parser during deployment to separate the thinking and content sections. The thinking process is returned via `reasoning_content` in the streaming response.
 
@@ -303,7 +321,7 @@ Calculate the multiplication:
 \]
 ```
 
-#### 4.2.2 Tool Calling
+#### 4.3.2 Tool Calling
 
 GLM-5 supports tool calling capabilities. Enable the tool call parser during deployment. Thinking mode is on by default; to disable it for tool calling requests, pass `extra_body={"chat_template_kwargs": {"enable_thinking": False}}`.
 
@@ -621,4 +639,17 @@ Average accuracy: 0.877
 
 ### 5.3 AMD GPU Benchmarks
 
-AMD GPU (MI300X/MI325X/MI355X) benchmarks for GLM-5 are forthcoming. Initial CI accuracy tests on AMD hardware show strong GSM8K results (96.5% on MI325, 97.0% on MI35x) — see [sglang#18911](https://github.com/sgl-project/sglang/pull/18911).
+#### 5.3.1 GSM8K Benchmark (MI325/MI35x)
+
+- MI325/MI35x Test (GLM-5 BF16, `tp=8`, TileLang NSA backends)
+
+```bash
+python3 benchmark/gsm8k/bench_sglang.py --num-questions 200
+```
+
+```text
+Accuracy: 0.970
+Invalid: 0.000
+```
+
+Results from [AMD nightly CI](https://github.com/sgl-project/sglang/actions/runs/22556197510/attempts/2#summary-65346783629). See also [sglang#18911](https://github.com/sgl-project/sglang/pull/18911).
