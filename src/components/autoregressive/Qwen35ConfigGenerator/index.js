@@ -11,12 +11,18 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   H200: tp=8
  *   B200: tp=8
  *   B300: tp=4
+ *   MI300X: tp=8 (192GB memory)
+ *   MI325X: tp=4 (256GB memory)
+ *   MI355X: tp=4 (288GB memory)
  *
  * GPU requirements (FP8):
  *   H100: tp=8 (model ~400GB in FP8, each rank needs ~50GB < 80GB)
  *   H200: tp=4
  *   B200: tp=4
  *   B300: tp=2
+ *   MI300X: tp=4 (192GB memory)
+ *   MI325X: tp=2 (256GB memory)
+ *   MI355X: tp=2 (288GB memory)
  *
  * GPU requirements (FP4):
  *   B200: tp=4 (FP4 requires Blackwell)
@@ -36,7 +42,10 @@ const Qwen35ConfigGenerator = () => {
             { id: 'h100', label: 'H100', default: !isNvfp4, disabled: isNvfp4 },
             { id: 'h200', label: 'H200', default: false, disabled: isNvfp4 },
             { id: 'b200', label: 'B200', default: false, disabled: false },
-            { id: 'b300', label: 'B300', default: isNvfp4, disabled: false }
+            { id: 'b300', label: 'B300', default: isNvfp4, disabled: false },
+            { id: 'mi300x', label: 'MI300X', default: false, disabled: isNvfp4 },
+            { id: 'mi325x', label: 'MI325X', default: false, disabled: isNvfp4 },
+            { id: 'mi355x', label: 'MI355X', default: false, disabled: isNvfp4 }
           ];
         }
       },
@@ -79,10 +88,24 @@ const Qwen35ConfigGenerator = () => {
       mambaCache: {
         name: 'mambaCache',
         title: 'Mamba Radix Cache',
-        items: [
-          { id: 'v1', label: 'V1', default: true },
-          { id: 'v2', label: 'V2', default: false }
-        ],
+        getDynamicItems: (currentValues) => {
+          const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
+          const isAmdGpu = amdGpus.includes(currentValues.hardware);
+
+          // Show V2 as disabled for AMD GPUs (V2 requires FLA backend, NVIDIA only)
+          if (isAmdGpu) {
+            return [
+              { id: 'v1', label: 'V1', default: true },
+              { id: 'v2', label: 'V2', default: false, disabled: true }
+            ];
+          }
+
+          // Show both V1 and V2 enabled for NVIDIA GPUs
+          return [
+            { id: 'v1', label: 'V1', default: true },
+            { id: 'v2', label: 'V2', default: false }
+          ];
+        },
         commandRule: (value) => value === 'v2' ? '--mamba-scheduler-strategy extra_buffer \\\n  --page-size 64' : null
       }
     },
@@ -91,11 +114,14 @@ const Qwen35ConfigGenerator = () => {
       h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
       h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
       b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.8 } },
-      b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } }
+      b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
+      mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
+      mi325x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } },
+      mi355x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } }
     },
 
     generateCommand: function (values) {
-      const { hardware, quantization, speculative } = values;
+      const { hardware, quantization, speculative, mambaCache } = values;
 
       // Validate hardware supports the quantization
       const hwConfig = this.modelConfigs[hardware]?.[quantization];
@@ -119,11 +145,16 @@ const Qwen35ConfigGenerator = () => {
       cmd += `  --model ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
 
+      // Force Mamba V1 for AMD GPUs (V2 requires FLA backend)
+      const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
+      const actualMambaCache = amdGpus.includes(hardware) ? 'v1' : mambaCache;
+      const adjustedValues = { ...values, mambaCache: actualMambaCache };
+
       // Apply commandRule from all options except quantization (handled via model name)
       Object.entries(this.options).forEach(([key, option]) => {
         if (key === 'quantization') return;
         if (option.commandRule) {
-          const rule = option.commandRule(values[key]);
+          const rule = option.commandRule(adjustedValues[key]);
           if (rule) {
             cmd += ` \\\n  ${rule}`;
           }
@@ -136,6 +167,11 @@ const Qwen35ConfigGenerator = () => {
       // Append backend configurations
       if (hardware === 'b200' || hardware === 'b300') {
         cmd += ` \\\n  --attention-backend trtllm_mha`;
+      }
+
+      // Append AMD GPU-specific backend configurations
+      if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
+        cmd += ` \\\n  --attention-backend triton`;
       }
 
       // Append B200/B300-specific backend configurations
