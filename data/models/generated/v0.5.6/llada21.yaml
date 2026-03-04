@@ -1,0 +1,179 @@
+vendor: inclusionAI
+families:
+- name: LLaDA-2.1
+  description: LLaDA 2.1 diffusion language model series
+  models:
+  - name: LLaDA2.1-mini
+    model_path: inclusionAI/LLaDA2.1-mini
+    attributes:
+      llm:
+        thinking_capability: non_thinking
+        tool_parser: null
+        reasoning_parser: null
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --dllm-algorithm
+            - JointThreshold
+            - --trust-remote-code
+            - --mem-fraction-static
+            - '0.8'
+            - --max-running-requests
+            - '1'
+            - --attention-backend
+            - flashinfer
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --dllm-algorithm
+            - JointThreshold
+            - --trust-remote-code
+            - --mem-fraction-static
+            - '0.8'
+            - --max-running-requests
+            - '1'
+            - --attention-backend
+            - flashinfer
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --dllm-algorithm
+            - JointThreshold
+            - --trust-remote-code
+            - --mem-fraction-static
+            - '0.8'
+            - --max-running-requests
+            - '1'
+            - --attention-backend
+            - flashinfer
+          prefill: null
+          decode: null
+  - name: LLaDA2.1-flash
+    model_path: inclusionAI/LLaDA2.1-flash
+    attributes:
+      llm:
+        thinking_capability: non_thinking
+        tool_parser: null
+        reasoning_parser: null
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --dllm-algorithm
+            - JointThreshold
+            - --trust-remote-code
+            - --mem-fraction-static
+            - '0.8'
+            - --max-running-requests
+            - '1'
+            - --attention-backend
+            - flashinfer
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --dllm-algorithm
+            - JointThreshold
+            - --trust-remote-code
+            - --mem-fraction-static
+            - '0.8'
+            - --max-running-requests
+            - '1'
+            - --attention-backend
+            - flashinfer
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --dllm-algorithm
+            - JointThreshold
+            - --trust-remote-code
+            - --mem-fraction-static
+            - '0.8'
+            - --max-running-requests
+            - '1'
+            - --attention-backend
+            - flashinfer
+          prefill: null
+          decode: null
