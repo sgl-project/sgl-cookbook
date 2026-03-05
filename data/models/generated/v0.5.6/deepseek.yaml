@@ -465,7 +465,7 @@ families:
           attributes:
             nodes: single
             optimization: balanced
-            quantization: modelopt_fp4
+            quantization: nvfp4
           quantized_model_path: null
           engine:
             env_vars: {}
@@ -482,7 +482,7 @@ families:
           attributes:
             nodes: single
             optimization: high-throughput
-            quantization: modelopt_fp4
+            quantization: nvfp4
           quantized_model_path: null
           engine:
             env_vars: {}
@@ -499,7 +499,7 @@ families:
           attributes:
             nodes: single
             optimization: high-throughput
-            quantization: modelopt_fp4
+            quantization: nvfp4
           quantized_model_path: null
           engine:
             env_vars: {}
@@ -516,7 +516,7 @@ families:
           attributes:
             nodes: single
             optimization: low-latency
-            quantization: modelopt_fp4
+            quantization: nvfp4
           quantized_model_path: null
           engine:
             env_vars: {}
