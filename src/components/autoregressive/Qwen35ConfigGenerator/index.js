@@ -49,14 +49,14 @@ const Qwen35ConfigGenerator = () => {
         name: 'model',
         title: 'Model Variant',
         items: [
-          { id: '397b',  label: 'Qwen3.5-397B-A17B (MoE)', default: true  },
-          { id: '122b',  label: 'Qwen3.5-122B-A10B (MoE)', default: false },
-          { id: '35b',   label: 'Qwen3.5-35B-A3B (MoE)',   default: false },
-          { id: '27b',   label: 'Qwen3.5-27B',             default: false },
-          { id: '9b',    label: 'Qwen3.5-9B',              default: false },
-          { id: '4b',    label: 'Qwen3.5-4B',              default: false },
-          { id: '2b',    label: 'Qwen3.5-2B',              default: false },
-          { id: '0.8b',  label: 'Qwen3.5-0.8B',           default: false },
+          { id: '397b',  label: '397B', subtitle: "MoE", default: true  },
+          { id: '122b',  label: '122B', subtitle: "MoE", default: false },
+          { id: '35b',   label: '35B', subtitle: "MoE", default: false },
+          { id: '27b',   label: '27B', subtitle: "Dense", default: false },
+          { id: '9b',    label: '9B', subtitle: "Dense", default: false },
+          { id: '4b',    label: '4B', subtitle: "Dense", default: false },
+          { id: '2b',    label: '2B', subtitle: "Dense", default: false },
+          { id: '0.8b',  label: '0.8B', subtitle: "Dense", default: false },
         ]
       },
       hardware: {
