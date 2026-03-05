@@ -3,7 +3,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
  * DeepSeek V3.2 Configuration Generator
- * Supports DeepSeek-V3.2, V3.2-Speciale, and V3.2-Exp models
+ * Supports DeepSeek-V3.2, V3.2-Speciale, V3.2-Exp, and V3.2-NVFP4 models
  */
 const DeepSeekConfigGenerator = () => {
   const config = {
@@ -27,15 +27,6 @@ const DeepSeekConfigGenerator = () => {
                 { id: 'v32exp', label: 'DeepSeek-V3.2-Exp', default: false },
                 { id: 'v32nvfp4', label: 'DeepSeek-V3.2-NVFP4', default: false }
             ]
-        },
-        quantization: {
-            name: 'quantization',
-            title: 'Quantization',
-            items: [
-                { id: 'none', label: 'None', default: true },
-                { id: 'modelopt_fp4', label: 'ModelOpt FP4', default: false }
-            ],
-            condition: (values) => values.modelname === 'v32nvfp4'
         },
         strategy: {
             name: 'strategy',
@@ -68,9 +59,14 @@ const DeepSeekConfigGenerator = () => {
     },
 
     generateCommand: function(values) {
-        const { hardware, modelname, strategy, reasoningParser, toolcall, quantization } = values;
+        const { hardware, modelname, strategy, reasoningParser, toolcall } = values;
 
         const isNvfp4 = modelname === 'v32nvfp4';
+
+        // Validation: DeepSeek-V3.2-NVFP4 requires B200 (Blackwell)
+        if (isNvfp4 && hardware !== 'b200') {
+            return `# Error: DeepSeek-V3.2-NVFP4 requires NVIDIA B200 (Blackwell) hardware\n# Please select "B200" for Hardware Platform or choose a different model`;
+        }
 
         // Validation: DeepSeek-V3.2-Speciale doesn't support tool calling
         if (modelname === 'v32speciale' && toolcall === 'enabled') {

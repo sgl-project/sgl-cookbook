@@ -450,3 +450,90 @@ families:
             - '4'
           prefill: null
           decode: null
+  - name: DeepSeek-V3.2-NVFP4
+    model_path: nvidia/DeepSeek-V3.2-NVFP4
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: deepseekv32
+        reasoning_parser: deepseek-v3
+        chat_template: null
+    hardware:
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: modelopt_fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --moe-runner-backend
+            - flashinfer_trtllm
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: modelopt_fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: 4
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --moe-runner-backend
+            - flashinfer_trtllm
+          prefill: null
+          decode: null
+        - name: high-throughput-ep
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: modelopt_fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --moe-runner-backend
+            - flashinfer_trtllm
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: modelopt_fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --moe-runner-backend
+            - flashinfer_trtllm
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
