@@ -1,0 +1,44 @@
+# Ring-2.5-1T Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/v0.5.8/ring25.yaml
+#
+# GPU requirements:
+#   H200: tp=8
+#   B200: tp=8
+#   GB200: tp=4
+#   GB300: tp=4
+
+vendor: inclusionAI
+
+defaults:
+  hardware:
+    H200: { tp: 8 }
+    B200: { tp: 8 }
+    GB200: { tp: 4 }
+    GB300: { tp: 4 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Ring-2.5
+    description: Ring-2.5-1T trillion-parameter reasoning model with hybrid linear attention
+    llm:
+      thinking_capability: hybrid
+      tool_parser: qwen
+      reasoning_parser: deepseek-r1
+
+    models:
+      - name: Ring-2.5-1T
+        quantization: fp8
+        extra_args:
+          - --trust-remote-code
+        hardware:
+          H200:
+            tp: 8
+          B200:
+            tp: 8
+          GB200:
+            tp: 4
+          GB300:
+            tp: 4

@@ -5,9 +5,19 @@ sidebar_position: 0
 
 ## 1. Model Introduction
 
-[Z-Image-Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) is a distilled text-to-image diffusion model from the Z-Image family developed by the Tongyi-MAI team. It matches or exceeds leading competitors with only 8 NFEs (Number of Function Evaluations).
+[Z-Image](https://github.com/Tongyi-MAI/Z-Image) is a powerful and highly efficient image generation model family with 6B parameters, developed by Tongyi-MAI. It adopts a Scalable Single-Stream DiT (S3-DiT) architecture, where text, visual semantic tokens, and image VAE tokens are concatenated at the sequence level to serve as a unified input stream, maximizing parameter efficiency compared to dual-stream approaches.
 
-For more details, please refer to the [official Z-Image-Turbo HuggingFace page](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo), the [Blog](https://tongyi-mai.github.io/Z-Image-blog/), and the [Tech Report](https://arxiv.org/abs/2511.22699).
+[Z-Image-Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) is a distilled version of Z-Image that matches or exceeds leading competitors with only 8 NFEs (Number of Function Evaluations). It is powered by two core techniques: **Decoupled-DMD** (few-step distillation) and **DMDR** (fusing DMD with Reinforcement Learning).
+
+**Key Features:**
+
+- **Sub-second Inference Latency**: Achieves sub-second inference on enterprise-grade H800 GPUs and fits comfortably within 16GB VRAM consumer devices
+- **Photorealistic Image Generation**: Excels in high-quality photorealistic image generation with rich aesthetics
+- **Bilingual Text Rendering**: Supports accurate bilingual text rendering in both English and Chinese
+- **Robust Instruction Adherence**: Strong prompt following and instruction adherence capabilities
+- **#1 Open-Source Model**: Ranked 8th overall and #1 among open-source models on the [Artificial Analysis Text-to-Image Leaderboard](https://artificialanalysis.ai/image/leaderboard/text-to-image)
+
+For more details, please refer to the [Z-Image-Turbo HuggingFace page](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo), the [GitHub repository](https://github.com/Tongyi-MAI/Z-Image), and the [technical report (arXiv)](https://arxiv.org/abs/2511.22699).
 
 ## 2. SGLang-diffusion Installation
 
@@ -21,7 +31,7 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-Z-Image-Turbo is a text-to-image model. The recommended launch configurations vary by hardware.
+Z-Image-Turbo is optimized for high-quality image generation with only 8 inference steps. The recommended launch configurations vary by hardware.
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform.
 
