@@ -12,7 +12,7 @@ const ZImageTurboConfigGenerator = () => {
         items: [
           { id: 'mi300x', label: 'MI300X', default: true },
           { id: 'mi325x', label: 'MI325X', default: false },
-          { id: 'mi355x', label: 'MI355X', default: false }
+          { id: 'mi355x', label: 'MI355X', default: false },
           { id: 'b200', label: 'B200', default: true },
           { id: 'h200', label: 'H200', default: false },
           { id: 'h100', label: 'H100', default: false }
