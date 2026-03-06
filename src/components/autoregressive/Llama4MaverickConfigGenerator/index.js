@@ -2,9 +2,9 @@ import React from 'react';
 import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
- * Llama 4-Scout Configuration Generator
+ * Llama 4-Maverick Configuration Generator
  */
-const Llama4ScoutConfigGenerator = () => {
+const Llama4MaverickConfigGenerator = () => {
   const config = {
     modelFamily: 'meta-llama',
 
@@ -13,37 +13,11 @@ const Llama4ScoutConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'b200', label: 'B200', default: false },
-          { id: 'h100', label: 'H100', default: true },
-          { id: 'h200', label: 'H200', default: false },
           { id: 'mi300x', label: 'MI300x', default: false },
           { id: 'mi325x', label: 'MI325x', default: false },
           { id: 'mi355x', label: 'MI355x', default: false }
         ]
       },
-      quantization: {
-        name: 'quantization',
-        title: 'Quantization',
-        items: [
-          { id: 'bf16', label: 'BF16', default: true },
-          { id: 'fp8', label: 'FP8', default: false }
-        ]
-      },
-      toolcall: {
-        name: 'toolcall',
-        title: 'Tool Call Parser',
-        items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
-        ]
-      },
-      speculative: {
-        name: 'speculative',
-        title: 'Speculative Decoding (EAGLE3)',
-        items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enable EAGLE3', default: false }
-        ]
       },
       host: {
         name: 'host',
@@ -107,4 +81,4 @@ const Llama4ScoutConfigGenerator = () => {
   return <ConfigGenerator config={config} />;
 };
 
-export default Llama4ScoutConfigGenerator;
+export default Llama4MaverickConfigGenerator;
