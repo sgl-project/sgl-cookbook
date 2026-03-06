@@ -44,9 +44,9 @@ See [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html).
 
 ### 4.2 Advanced Usage
 - **AMD GPU Model Deployment**
-- Please add the following env args for AMD GPU. 
+- Please add the following env args for AMD GPU.
 ```bash
-export SGLANG_ROCM_FUSED_DECODE_MLA=0 
+export SGLANG_ROCM_FUSED_DECODE_MLA=0
 ```
 
 #### 4.2.1 Reasoning Parser
@@ -518,5 +518,3 @@ Invalid: 0.000
 Latency: 15.956 s
 Output throughput: 1231.699 token/s
 ```
-
-
