@@ -1,0 +1,63 @@
+# NVIDIA Nemotron3-Super Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/v0.5.8/nemotron-super.yaml
+# TODO: Update model_path and family details when the public model name is available.
+
+vendor: nvidia
+
+defaults:
+  hardware:
+    H200: { tp: 1 }
+    B200: { tp: 1 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: tp2
+      nodes: single
+      optimization: balanced
+      tp: 2
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: tp4
+      nodes: single
+      optimization: balanced
+      tp: 4
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: tp8
+      nodes: single
+      optimization: balanced
+      tp: 8
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - fp8_e4m3
+    - name: default-kv-bf16
+      nodes: single
+      optimization: balanced
+      extra_args:
+        - --trust-remote-code
+        - --kv-cache-dtype
+        - bf16
+
+families:
+  - name: Nemotron-3-Super
+    description: NVIDIA Nemotron3-Super model
+    llm:
+      thinking_capability: hybrid
+      tool_parser: qwen3_coder
+      reasoning_parser: nano_v3
+
+    models:
+      # TODO: Update model_path when the public model name is available
+      - name: Nemotron3-Super
+        model_path: nvidia/nemotron-super-sft-020426
+        quantization: bf16
