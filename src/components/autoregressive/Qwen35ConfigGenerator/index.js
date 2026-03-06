@@ -14,7 +14,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *
  * GPU requirements (FP8):
  *   H100: tp=8 (model ~400GB in FP8, each rank needs ~50GB < 80GB)
- *   H200: tp=4
+ *   H200: tp=8, ep=8
  *   B200: tp=4
  *   B300: tp=2
  *
@@ -89,7 +89,7 @@ const Qwen35ConfigGenerator = () => {
 
     modelConfigs: {
       h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
-      h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
+      h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
       b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.8 } },
       b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } }
     },
@@ -112,12 +112,16 @@ const Qwen35ConfigGenerator = () => {
       }
 
       const tpValue = hwConfig.tp;
+      const epValue = hwConfig.ep;
       const memFraction = hwConfig.mem;
 
       // Initialize the base command
       let cmd = 'python -m sglang.launch_server \\\n';
       cmd += `  --model ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
+      if (epValue) {
+        cmd += ` \\\n  --expert-parallel-size ${epValue}`;
+      }
 
       // Apply commandRule from all options except quantization (handled via model name)
       Object.entries(this.options).forEach(([key, option]) => {
@@ -133,13 +137,23 @@ const Qwen35ConfigGenerator = () => {
       // Enable allreduce fusion for all Qwen3.5 configs.
       cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
 
+      // Mamba dtype for hybrid architecture
+      cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+
       // Append backend configurations
-      if (hardware === 'b200' || hardware === 'b300') {
+      if (hardware === 'h200' && quantization === 'fp8') {
+        cmd += ` \\\n  --attention-backend flashinfer`;
+      } else if (hardware === 'b200' || hardware === 'b300') {
         cmd += ` \\\n  --attention-backend trtllm_mha`;
       }
 
-      // Append B200/B300-specific backend configurations
-      if (hardware === 'b200' || hardware === 'b300') {
+      // FP8 KV cache for FP8 quantized models
+      if (quantization === 'fp8') {
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
+      }
+
+      // Tokenizer workers for H200 and B200/B300
+      if (hardware === 'h200' || hardware === 'b200' || hardware === 'b300') {
         if (speculative === 'disabled') {
           cmd += ` \\\n  --tokenizer-worker-num 6`;
         }
