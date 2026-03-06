@@ -80,7 +80,7 @@ const KimiK2linearConfigGenerator = () => {
 
       // Strategy configurations
 
-      
+
       // TP is mandatory
       cmd += ` \\\n  --tp 4`;
 
