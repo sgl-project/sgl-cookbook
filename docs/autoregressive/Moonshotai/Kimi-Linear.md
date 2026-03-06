@@ -1,4 +1,4 @@
-
+# Kimi-Linear
 ## AMD GPU Support
 
 ## 1. Model Introduction
