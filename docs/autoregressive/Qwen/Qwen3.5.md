@@ -31,8 +31,14 @@ SGLang from the main branch is required for Qwen3.5. You can install from source
 # Install from source
 uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=python'
 
-# Or use Docker
+# Or use Docker (NVIDIA GPUs)
 docker pull lmsysorg/sglang:nightly-dev-20260216-d3bae71e
+
+# Or use Docker (AMD MI300X/MI325X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
+
+# Or use Docker (AMD MI355X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi35x
 ```
 
 For the full Docker setup and other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -67,11 +73,17 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **H200 (141GB)** runs with tp=8.
         - **B200 (183GB)** runs with tp=8.
         - **B300 (275GB)** runs with tp=4.
+        - **MI300X (192GB)** runs with tp=8.
+        - **MI325X (256GB)** runs with tp=4.
+        - **MI355X (288GB)** runs with tp=4.
     - **FP8**: The FP8 quantized model requires ~400GB for weights, cutting memory in half.
         - **H100 (80GB)** runs with tp=8.
         - **H200 (141GB)** runs with tp=4.
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
+        - **MI300X (192GB)** runs with tp=4.
+        - **MI325X (256GB)** runs with tp=2.
+        - **MI355X (288GB)** runs with tp=2.
     - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
@@ -82,6 +94,9 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 | H200     | 141GB  | 8       | 4      | N/A             |
 | B200     | 183GB  | 8       | 4      | 4               |
 | B300     | 275GB  | 4       | 2      | 2               |
+| MI300X   | 192GB  | 8       | 4      | N/A             |
+| MI325X   | 256GB  | 4       | 2      | N/A             |
+| MI355X   | 288GB  | 4       | 2      | N/A             |
 
 ## 4. Model Invocation
 
