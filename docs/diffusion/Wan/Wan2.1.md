@@ -70,7 +70,7 @@ curl http://127.0.0.1:3000/v1/images/generations \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "black-forest-labs/FLUX.1-dev",
+    "model": "Wan-AI/Wan2.1-T2V-14B",
     "prompt": "A cute baby sea otter",
     "n": 1,
     "size": "1024x1024",
@@ -114,25 +114,7 @@ SGLANG_CACHE_DIT_ENABLED=true sglang serve --model-path Wan-AI/Wan2.1-T2V-14B
 
 **Advanced Usage**
 
-- DBCache Parameters: DBCache controls block-level caching behavior:
-
-  | Parameter | Env Variable              | Default | Description                              |
-  | --------- | ------------------------- | ------- | ---------------------------------------- |
-  | Fn        | `SGLANG_CACHE_DIT_FN`     | 1       | Number of first blocks to always compute |
-  | Bn        | `SGLANG_CACHE_DIT_BN`     | 0       | Number of last blocks to always compute  |
-  | W         | `SGLANG_CACHE_DIT_WARMUP` | 4       | Warmup steps before caching starts       |
-  | R         | `SGLANG_CACHE_DIT_RDT`    | 0.24    | Residual difference threshold            |
-  | MC        | `SGLANG_CACHE_DIT_MC`     | 3       | Maximum continuous cached steps          |
-
-- TaylorSeer Configuration: TaylorSeer improves caching accuracy using Taylor expansion:
-
-  | Parameter | Env Variable                  | Default | Description                     |
-  | --------- | ----------------------------- | ------- | ------------------------------- |
-  | Enable    | `SGLANG_CACHE_DIT_TAYLORSEER` | false   | Enable TaylorSeer calibrator    |
-  | Order     | `SGLANG_CACHE_DIT_TS_ORDER`   | 1       | Taylor expansion order (1 or 2) |
-
   Combined Configuration Example:
-
   ```bash
   SGLANG_CACHE_DIT_ENABLED=true \
   SGLANG_CACHE_DIT_FN=2 \
@@ -187,7 +169,7 @@ sglang serve --model-path Wan-AI/Wan2.1-T2V-14B
 
 ```bash
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
-    --backend sglang-video --dataset vbench --task t2v --num-prompts 1 --max-concurrency 1
+    --backend sglang-video --dataset vbench --task text-to-video --num-prompts 1 --max-concurrency 1
 ```
 
 #### 5.1.2 Generate videos with high concurrency
