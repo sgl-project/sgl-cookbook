@@ -43,7 +43,7 @@ import { DeepSeekR1BasicConfigGenerator } from '@site/src/components/autoregress
 
 ### 3.2 Optimal Configurations
 
-Pareto-optimal configurations for B200 and H200 hardware.
+Pareto-optimal configurations for B200, H200, MI300X, MI325X, and MI355X hardware.
 
 import { DeepSeekR1AdvancedConfigGenerator } from '@site/src/components/autoregressive/DeepSeekR1ConfigGenerator';
 

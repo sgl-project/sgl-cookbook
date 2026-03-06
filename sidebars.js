@@ -26,10 +26,16 @@ const sidebars = {
           type: 'category',
           label: 'Qwen',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/Qwen/Qwen3.5',
+              label: 'Qwen3.5 [NEW]',
+            },
             'autoregressive/Qwen/Qwen3',
             'autoregressive/Qwen/Qwen3-Next',
             'autoregressive/Qwen/Qwen3-VL',
             'autoregressive/Qwen/Qwen3-Coder',
+            'autoregressive/Qwen/Qwen3-Coder-Next',
             'autoregressive/Qwen/Qwen2.5-VL',
           ],
         },
@@ -42,6 +48,7 @@ const sidebars = {
             'autoregressive/DeepSeek/DeepSeek-V3',
             'autoregressive/DeepSeek/DeepSeek-R1',
             'autoregressive/DeepSeek/DeepSeek-OCR',
+            'autoregressive/DeepSeek/DeepSeek-OCR-2',
           ],
         },
         {
@@ -59,8 +66,13 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/GLM/GLM-5',
+              label: 'GLM-5 [NEW]',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/GLM/GLM-OCR',
-              label: 'GLM-OCR [NEW]',
+              label: 'GLM-OCR',
             },
             'autoregressive/GLM/Glyph',
             'autoregressive/GLM/GLM-4.5V',
@@ -71,7 +83,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/GLM/GLM-4.7-Flash',
-              label: 'GLM-4.7-Flash [NEW]',
+              label: 'GLM-4.7-Flash',
             },
           ],
         },
@@ -99,6 +111,11 @@ const sidebars = {
           type: 'category',
           label: 'MiniMax',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/MiniMax/MiniMax-M2.5',
+              label: 'MiniMax-M2.5 [NEW]',
+            },
             'autoregressive/MiniMax/MiniMax-M2',
           ],
         },
@@ -173,6 +190,32 @@ const sidebars = {
               id: 'autoregressive/StepFun/Step3.5',
               label: 'Step3.5 [NEW]',
             },
+            {
+              type: 'doc',
+              id: 'autoregressive/StepFun/Step3-VL-10B',
+              label: 'Step3-VL-10B [NEW]',
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'InclusionAI',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/InclusionAI/Ling-2.5-1T',
+              label: 'Ling-2.5-1T [NEW]',
+            },
+            {
+              type: 'doc',
+              id: 'autoregressive/InclusionAI/Ring-2.5-1T',
+              label: 'Ring-2.5-1T [NEW]',
+            },
+            {
+              type: 'doc',
+              id: 'autoregressive/LLaDA/LLaDA-2.1',
+              label: 'LLaDA 2.1 [NEW]',
+            },
           ],
         }
       ],
@@ -210,6 +253,13 @@ const sidebars = {
           label: 'Z-Image',
           items: [
             'diffusion/Z-Image/Z-Image-Turbo',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'MOVA',
+          items: [
+            'diffusion/MOVA/MOVA',
           ],
         },
       ],

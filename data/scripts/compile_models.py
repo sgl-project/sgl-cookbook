@@ -183,7 +183,7 @@ def build_named_configuration(
         "attributes": {
             "nodes": config_template.get("nodes", "single"),
             "optimization": config_template.get("optimization", "balanced"),
-            "quantization": quant,
+            "quantization": config_template.get("quantization", quant),
         },
         "quantized_model_path": None,
         "engine": engine_config,
@@ -580,13 +580,18 @@ def build_explicit_model(
     quant_overrides_section = model_def.get("quant_overrides", {})
     quant_overrides = quant_overrides_section.get(quant, {})
 
+    # Use model-level configurations if present, otherwise file-level defaults
+    effective_defaults = defaults
+    if "configurations" in model_def:
+        effective_defaults = {**defaults, "configurations": model_def["configurations"]}
+
     # Build hardware configurations
     hardware = {}
     for hw_name in hardware_list:
         # Start with default config, then merge hardware-specific overrides
         hw_config = {**default_hw_config, **hw_configs.get(hw_name, {})}
         hardware[hw_name] = build_hardware_config(
-            hw_name, hw_config, defaults, quant, quant_overrides,
+            hw_name, hw_config, effective_defaults, quant, quant_overrides,
             speculative_draft_model=speculative_draft_model
         )
 
@@ -604,19 +609,30 @@ def build_explicit_model(
     return result
 
 
-def build_family(company: str, family: dict, defaults: dict) -> dict:
+def build_family(
+    company: str, family: dict, defaults: dict, vendors: dict
+) -> dict:
     """Build a full family configuration."""
     models = []
 
     for model_def in family.get("models", []):
+        # Resolve per-model vendor override for model_path
+        model_company = company
+        if isinstance(model_def, dict) and "vendor" in model_def:
+            model_vendor_id = model_def["vendor"]
+            if model_vendor_id in vendors:
+                model_company = vendors[model_vendor_id]["huggingface_org"]
+            else:
+                model_company = model_vendor_id
+
         # Determine if this is variant generation or explicit model
         if isinstance(model_def, dict) and "base_name" in model_def:
             # Variant generation mode
-            variants = generate_model_variants(company, family, model_def, defaults)
+            variants = generate_model_variants(model_company, family, model_def, defaults)
             models.extend(variants)
         else:
             # Explicit model mode
-            models.append(build_explicit_model(company, family, model_def, defaults))
+            models.append(build_explicit_model(model_company, family, model_def, defaults))
 
     return {
         "name": family["name"],
@@ -649,7 +665,7 @@ def compile_config(source: dict, vendors: dict) -> dict:
 
     families = []
     for family in source.get("families", []):
-        families.append(build_family(company, family, defaults))
+        families.append(build_family(company, family, defaults, vendors))
 
     return {
         "vendor": vendor_id,
