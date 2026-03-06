@@ -8,7 +8,7 @@
 
 - **[Kimi-K2-Instruct](https://huggingface.co/moonshotai/Kimi-K2-Instruct)**: Post-trained model optimized for general-purpose chat and agentic tasks. Compatible with vLLM, SGLang, KTransformers, and TensorRT-LLM.
 - **[Kimi-K2-Thinking](https://huggingface.co/moonshotai/Kimi-K2-Thinking)**: Advanced thinking model with step-by-step reasoning and tool calling. Native INT4 quantization with 256k context window. Ideal for complex reasoning and multi-step tool use.
-
+ROCm Support: Compatible with AMD MI300X GPUs via SGLang (verified).
 For details, see [official documentation](https://github.com/MoonshotAI/Kimi-K2) and [technical report](https://www.arxiv.org/abs/2507.20534).
 
 ## 2. SGLang Installation
@@ -43,6 +43,11 @@ import KimiK2ConfigGenerator from '@site/src/components/autoregressive/KimiK2Con
 See [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html).
 
 ### 4.2 Advanced Usage
+- **AMD GPU Model Deployment**
+- Please add the following env args for AMD GPU.
+```bash
+export SGLANG_ROCM_FUSED_DECODE_MLA=0
+```
 
 #### 4.2.1 Reasoning Parser
 
@@ -332,6 +337,7 @@ final_response = client.chat.completions.create(
 print(final_response.choices[0].message.content)
 # Output: "The weather in Beijing is currently 22°C and sunny."
 ```
+
 
 ## 5. Benchmark
 
