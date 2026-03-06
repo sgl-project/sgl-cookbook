@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
 ---
 # Z-Image-Turbo
 
@@ -43,12 +43,14 @@ import ZImageTurboConfigGenerator from '@site/src/components/diffusion/ZImageTur
 
 Current supported optimization all listed [here](https://github.com/sgl-project/sglang/blob/main/python/sglang/multimodal_gen/docs/support_matrix.md).
 
-- `--vae-path`: Path to a custom VAE model or HuggingFace model ID. If not specified, the VAE will be loaded from the main model path.
+- `--vae-path`: Path to a custom VAE model or HuggingFace model ID (e.g., fal/FLUX.2-Tiny-AutoEncoder). If not specified, the VAE will be loaded from the main model path.
 - `--num-gpus`: Number of GPUs to use
 - `--tp-size`: Tensor parallelism size (only for the encoder; should not be larger than 1 if text encoder offload is enabled, as layer-wise offload plus prefetch is faster)
 - `--sp-degree`: Sequence parallelism size (typically should match the number of GPUs)
 - `--ulysses-degree`: The degree of DeepSpeed-Ulysses-style SP in USP
 - `--ring-degree`: The degree of ring attention-style SP in USP
+
+**AMD ROCm Notes**: Requires SGLang >= v0.5.8.
 
 ## 4. API Usage
 
@@ -60,12 +62,11 @@ For complete API documentation, please refer to the [official API usage guide](h
 import base64
 from openai import OpenAI
 
-client = OpenAI(api_key="EMPTY", base_url="http://localhost:3000/v1")
+client = OpenAI(api_key="EMPTY", base_url="http://localhost:30000/v1")
 
 response = client.images.generate(
     model="Tongyi-MAI/Z-Image-Turbo",
-    prompt="Young Chinese woman in red Hanfu, intricate embroidery. Impeccable makeup, red floral forehead pattern. Elaborate high bun, golden phoenix headdress, red flowers, beads. Holds round folding fan with lady, trees, bird. Soft-lit outdoor night background, silhouetted tiered pagoda, blurred colorful distant lights.",
-    size="1024x1024",
+    prompt="A logo With Bold Large text: SGL Diffusion",
     n=1,
     response_format="b64_json",
 )
@@ -129,21 +130,22 @@ sglang serve --model-path Tongyi-MAI/Z-Image-Turbo
 
 ## 5. Benchmark
 
-### 5.1 Speedup Benchmark
-
-#### 5.1.1 Generate a image
-
 Test Environment:
 
-- Hardware: NVIDIA B300 SXM6 AC (1x)
+- Hardware: AMD Instinct MI300X GPU (1x)
 - Model: Tongyi-MAI/Z-Image-Turbo
-- sglang version: 0.0.0.dev1+gf4417475b
-- git revision: f441747
+- Docker Image: lmsysorg/sglang:v0.5.8-rocm700-mi30x
+- sglang diffusion version: 0.5.8
+
+### 5.1 Speedup Benchmark
+
+#### 5.1.1 Generate an image
 
 **Server Command**:
 
 ```
-sglang serve --model-path Tongyi-MAI/Z-Image-Turbo --port 30000
+sglang serve --model-path Tongyi-MAI/Z-Image-Turbo \
+    --ulysses-degree=1 --ring-degree=1 --port 30000
 ```
 
 **Benchmark Command**:
@@ -161,38 +163,32 @@ Task:                                    text-to-image
 Model:                                   Tongyi-MAI/Z-Image-Turbo
 Dataset:                                 vbench
 --------------------------------------------------
-Benchmark duration (s):                  13.59
+Benchmark duration (s):                  1.84
 Request rate:                            inf
 Max request concurrency:                 1
 Successful requests:                     1/1
 --------------------------------------------------
-Request throughput (req/s):              0.07
-Latency Mean (s):                        13.5904
-Latency Median (s):                      13.5904
-Latency P99 (s):                         13.5904
+Request throughput (req/s):              0.54
+Latency Mean (s):                        1.8435
+Latency Median (s):                      1.8435
+Latency P99 (s):                         1.8435
 --------------------------------------------------
-Peak Memory Max (MB):                    16984.45
-Peak Memory Mean (MB):                   16984.45
-Peak Memory Median (MB):                 16984.45
+Peak Memory Max (MB):                    30689.20
+Peak Memory Mean (MB):                   30689.20
+Peak Memory Median (MB):                 30689.20
 ============================================================
 ```
 
 #### 5.1.2 Generate images with high concurrency
 
-**Server Command** :
-
-```
-sglang serve --model-path Tongyi-MAI/Z-Image-Turbo --port 30000
-```
-
-**Benchmark Command** :
+**Benchmark Command**:
 
 ```
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-image --dataset vbench --task text-to-image --num-prompts 20 --max-concurrency 20
 ```
 
-**Result** :
+**Result**:
 
 ```
 ================= Serving Benchmark Result =================
@@ -200,18 +196,18 @@ Task:                                    text-to-image
 Model:                                   Tongyi-MAI/Z-Image-Turbo
 Dataset:                                 vbench
 --------------------------------------------------
-Benchmark duration (s):                  30.15
+Benchmark duration (s):                  35.32
 Request rate:                            inf
 Max request concurrency:                 20
 Successful requests:                     20/20
 --------------------------------------------------
-Request throughput (req/s):              0.66
-Latency Mean (s):                        21.2048
-Latency Median (s):                      21.1990
-Latency P99 (s):                         29.9739
+Request throughput (req/s):              0.57
+Latency Mean (s):                        18.5672
+Latency Median (s):                      18.5573
+Latency P99 (s):                         34.9880
 --------------------------------------------------
-Peak Memory Max (MB):                    16984.51
-Peak Memory Mean (MB):                   16984.47
-Peak Memory Median (MB):                 16984.46
+Peak Memory Max (MB):                    30689.26
+Peak Memory Mean (MB):                   30689.21
+Peak Memory Median (MB):                 30689.21
 ============================================================
 ```
