@@ -32,7 +32,6 @@ import KimiK25ConfigGenerator from '@site/src/components/autoregressive/KimiK25C
 
 - **Reasoning Parser**: Add `--reasoning-parser kimi_k2` for thinking mode to separate thinking and content.
 - **Tool Call Parser**: Add `--tool-call-parser kimi_k2` for structured tool calls.
-- **Chat Template**: Use `--chat-template kimi_k2` if needed for proper message formatting.
 
 ## 4. Model Invocation
 

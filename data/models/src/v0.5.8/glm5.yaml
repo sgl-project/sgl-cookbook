@@ -39,6 +39,7 @@ families:
   - name: GLM-5
     description: GLM-5 744B (40B active) MoE model with reasoning, coding, and agentic capabilities
     llm:
+      thinking_capability: hybrid
       tool_parser: glm47
       reasoning_parser: glm45
 

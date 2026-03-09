@@ -26,6 +26,11 @@ const sidebars = {
           type: 'category',
           label: 'Qwen',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/Qwen/Qwen3.5',
+              label: 'Qwen3.5 [NEW]',
+            },
             'autoregressive/Qwen/Qwen3',
             'autoregressive/Qwen/Qwen3-Next',
             'autoregressive/Qwen/Qwen3-VL',
@@ -43,6 +48,7 @@ const sidebars = {
             'autoregressive/DeepSeek/DeepSeek-V3',
             'autoregressive/DeepSeek/DeepSeek-R1',
             'autoregressive/DeepSeek/DeepSeek-OCR',
+            'autoregressive/DeepSeek/DeepSeek-OCR-2',
           ],
         },
         {
@@ -105,6 +111,11 @@ const sidebars = {
           type: 'category',
           label: 'MiniMax',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/MiniMax/MiniMax-M2.5',
+              label: 'MiniMax-M2.5 [NEW]',
+            },
             'autoregressive/MiniMax/MiniMax-M2',
           ],
         },
@@ -179,6 +190,32 @@ const sidebars = {
               id: 'autoregressive/StepFun/Step3.5',
               label: 'Step3.5 [NEW]',
             },
+            {
+              type: 'doc',
+              id: 'autoregressive/StepFun/Step3-VL-10B',
+              label: 'Step3-VL-10B [NEW]',
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'InclusionAI',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/InclusionAI/Ling-2.5-1T',
+              label: 'Ling-2.5-1T [NEW]',
+            },
+            {
+              type: 'doc',
+              id: 'autoregressive/InclusionAI/Ring-2.5-1T',
+              label: 'Ring-2.5-1T [NEW]',
+            },
+            {
+              type: 'doc',
+              id: 'autoregressive/LLaDA/LLaDA-2.1',
+              label: 'LLaDA 2.1 [NEW]',
+            },
           ],
         }
       ],
@@ -216,6 +253,13 @@ const sidebars = {
           label: 'Z-Image',
           items: [
             'diffusion/Z-Image/Z-Image-Turbo',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'MOVA',
+          items: [
+            'diffusion/MOVA/MOVA',
           ],
         },
       ],
