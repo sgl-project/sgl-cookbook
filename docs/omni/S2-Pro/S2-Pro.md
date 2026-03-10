@@ -59,7 +59,7 @@ python -m sglang_omni.cli.cli serve \
 
 ### 3.2 Interactive Playground
 
-We provide a Gradio-based interactive playground. We highly recommend using playground since audio data is hard to interact with by CLI.
+We provide a Gradio-based interactive playground. We highly recommend using the playground since audio data is hard to interact with by CLI.
 
 ```bash
 ./playground/tts/start.sh
@@ -98,7 +98,7 @@ curl -X POST http://localhost:8000/v1/audio/speech \
 
 ## 5. Architecture
 
-S2 uses a 3-stage pipeline:
+S2 Pro uses a 3-stage pipeline:
 
 ```
 Text input ──► Preprocessing ──► SGLang AR Engine ──► DAC Vocoder ──► Audio output
@@ -125,20 +125,20 @@ Evaluated on the full seed-tts-eval EN testset (1,088 samples) on a single H200 
 
 ## 7. SGLang Omni Optimizations
 
-By integrating S2's Dual-AR backbone into SGLang's paged-attention engine, we inherit LLM-native optimizations:
+By integrating S2 Pro's Dual-AR backbone into SGLang's paged-attention engine, we inherit LLM-native optimizations:
 
 - **Paged KV cache** — SGLang manages KV cache for the Slow AR path, enabling efficient memory usage and high concurrency.
 - **Radix prefix caching** — Shared system prompt and reference audio prefixes are cached across requests, keeping TTFT consistently low (~18ms).
 - **torch.compile on Fast AR** — The 9-step codebook loop is compiled with torch.compile, achieving 5x speedup over eager mode.
 - **FlashAttention 3** — Forced FA3 backend to match training-time attention numerics, avoiding early-EOS divergence from flashinfer.
 
-## 8. Future Optimization
+## 8. Future Optimizations
 
 To further improve throughput and latency in the future:
 
-- **CUDA Graphs while torch.compile enabled.** The current implementation uses torch.compile on the Fast AR codebook loop (achieving 5x over eager), but does not capture CUDA graphs for the Slow AR path. Enabling CUDA graphs requires resolving numerical divergence from deterministic-mode constraints and adapting SGLang's graph capture to S2's interleaved VQ embedding injection, involving significant engineering that we leave for a future release.
+- **CUDA Graphs while torch.compile enabled.** The current implementation uses torch.compile on the Fast AR codebook loop (achieving 5x over eager), but does not capture CUDA graphs for the Slow AR path. Enabling CUDA graphs requires resolving numerical divergence from deterministic-mode constraints and adapting SGLang's graph capture to S2 Pro's interleaved VQ embedding injection, involving significant engineering that we leave for a future release.
 
-- **Batched Fast AR head processing.** Currently, the Fast AR codebook decoding loop runs sequentially per request. Batching these steps across concurrent requests would improve GPU utilization at higher batch sizes potentially improving throughput.
+- **Batched Fast AR head processing.** Currently, the Fast AR codebook decoding loop runs sequentially per request. Batching these steps across concurrent requests would improve GPU utilization at higher batch sizes, potentially improving throughput.
 
 ## 9. Engineering Appendix
 
@@ -147,7 +147,7 @@ To further improve throughput and latency in the future:
 
 ### BF16 RoPE Precision Mismatch
 
-SGLang's default RoPE implementation precomputes `cos_sin_cache` in float32, but S2's model was trained entirely in bfloat16 including the RoPE frequencies. The precision difference caused logit divergence producing garbled audio with abnormal long sequence of tokens.
+SGLang's default RoPE implementation precomputes `cos_sin_cache` in float32, but S2 Pro's model was trained entirely in bfloat16 including the RoPE frequencies. The precision difference caused logit divergence producing garbled audio with abnormally long sequences of tokens.
 
 It's worth attention for any future engineering for fish audio inference infrastructure, since it's uncommon and hard to debug when accuracy of inference engine is higher than the precision of the model. Below is a simple fix once problem identified.
 
@@ -162,6 +162,6 @@ def _truncate_rope_to_bf16(model: torch.nn.Module) -> None:
 
 ### Attention Backend Divergence Causing Early Stopping
 
-SGLang defaults to flashinfer for attention, but S2 was trained with FlashAttention. When future engineering meet early EOS token issue, this could suggest the fix.
+SGLang defaults to flashinfer for attention, but S2 Pro was trained with FlashAttention. When future engineering meet early EOS token issue, this could suggest the fix.
 
 </details>
