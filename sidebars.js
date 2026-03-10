@@ -269,9 +269,15 @@ const sidebars = {
       label: 'SGLang Omni',
       items: [
         {
-          type: 'doc',
-          id: 'omni/S2-Pro/S2-Pro',
-          label: 'S2 Pro (TTS) [NEW]',
+          type: 'category',
+          label: 'FishAudio',
+          items: [
+            {
+              type: 'doc',
+              id: 'omni/S2-Pro/S2-Pro',
+              label: 'S2 Pro (TTS) [NEW]',
+            },
+          ],
         },
       ],
     },
