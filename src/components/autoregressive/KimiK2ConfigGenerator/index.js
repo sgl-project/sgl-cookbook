@@ -16,9 +16,9 @@ const KimiK2ConfigGenerator = () => {
         items: [
           { id: 'h200', label: 'H200', default: true },
           { id: 'b200', label: 'B200', default: false },
-          { id: 'mi300x', label: 'MI300x', default: false },
-          { id: 'mi325x', label: 'MI325x', default: false },
-          { id: 'mi355x', label: 'MI355x', default: false }
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelname: {
