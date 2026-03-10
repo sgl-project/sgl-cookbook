@@ -1,6 +1,12 @@
 name: Deploy doc to Production
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'src/**'
   workflow_dispatch:
 
 jobs:
