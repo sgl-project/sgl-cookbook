@@ -56,11 +56,10 @@ python3 -m sglang.launch_server \
   --model-path nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16 \
   --host 0.0.0.0 \
   --port 5000 \
-  --log-level warning \
   --trust-remote-code \
   --tp 4 \
   --tool-call-parser qwen3_coder \
-  --reasoning-parser nano_v3
+  --reasoning-parser nemotron_3
 ```
 
 ### 4.1 Basic Usage (OpenAI-Compatible API)
@@ -82,7 +81,7 @@ resp = client.chat.completions.create(
         {"role": "user", "content": "Give me 3 bullet points about SGLang."},
     ],
     temperature=0.6,
-    max_tokens=512,
+    max_tokens=1024,
 )
 print("Reasoning:", resp.choices[0].message.reasoning_content, "\nContent:", resp.choices[0].message.content)
 print("\n")
@@ -90,14 +89,13 @@ print("\n")
 
 Output:
 ```
-Reasoning: The user asks: "Give me 3 bullet points about SGLang." Likely they want concise bullet points summarizing SGLang. SGLang is a system for efficient LLM serving, developed by Stanford, focusing on fast inference with dynamic batching, etc. Provide three bullet points. Ensure correct info. Provide concise bullet points.
+Reasoning: Okay, the user is asking for 3 bullet points about SGLang. Let me recall what I know about SGLang. It's a framework for serving large language models, right? Developed by the team at UC Berkeley and others.
 
-Content: - **High‑throughput LLM serving**: SGLang is a runtime engine designed to accelerate inference for large language models, delivering up to 10× higher throughput than traditional serving stacks by using optimized kernels and efficient memory management.
+First, I should verify the key features. SGLang is known for its high-performance serving capabilities, especially with features like Radix Attention and chunked prefill. Those are important points to mention...(more tokens)
 
-- **Dynamic batching & pipelining**: It supports fine‑grained, request‑level batching and multi‑stage pipelining, allowing the system to continuously pack new queries into GPU work while keeping latency low.
-
-- **Open‑source & modular**: Built on PyTorch and CUDA, SGLang is released under an MIT license and provides a plug‑and‑play API that can be swapped into existing LLM pipelines (e.g., vLLM, TensorRT‑LLM) for easy performance upgrades.
-
+Content: - SGLang introduces **Radix Attention**, an innovative attention mechanism that significantly reduces KV cache memory usage and improves computational efficiency during LLM serving by reusing intermediate states across tokens.
+- It features **chunked prefill** for handling long prompts efficiently, breaking input sequences into manageable chunks to minimize latency and memory pressure while maintaining high throughput.
+- Designed for **high-performance LLM serving**, SGLang achieves superior throughput and lower latency compared to traditional systems (like vLLM or TensorRT-LLM) through optimized kernel fusion, dynamic batching, and seamless integration with Hugging Face Transformers.
 ```
 
 Streaming chat completion:
@@ -127,13 +125,22 @@ for chunk in stream:
 
 Output:
 ```
-The first five prime numbers are:
+The first 5 prime numbers are:
+**2, 3, 5, 7, 11**.
 
-1. **2**
-2. **3**
-3. **5**
-4. **7**
-5. **11**
+### Explanation:
+- A **prime number** is a natural number greater than 1 that has no positive divisors other than 1 and itself.
+- **2** is the smallest and only even prime number.
+- **3** is prime (divisible only by 1 and 3).
+- **4** is not prime (divisible by 2).
+- **5** is prime.
+- **6** is not prime (divisible by 2 and 3).
+- **7** is prime.
+- **8, 9, 10** are not prime.
+- **11** is prime (the fifth in the sequence).
+
+Note: **1 is not considered a prime number** by definition, as it has only one positive divisor.
+This list is universally accepted in mathematics. Let me know if you'd like to explore more primes or related concepts! 😊
 ```
 
 ### 4.2 Reasoning
@@ -151,20 +158,20 @@ client = OpenAI(
 # Reasoning on (default)
 print("Reasoning on")
 resp = client.chat.completions.create(
-    model=SERVED_MODEL_NAME,
+    model="nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Write a haiku about GPUs."}
+        {"role": "user", "content": "Write a haiku about GPUs. Please make thinking process short."}
     ],
     temperature=1,
     max_tokens=1024,
 )
-print(resp.choices[0].message.reasoning_content, resp.choices[0].message.content)
+print(f"Reasoning: \n{resp.choices[0].message.reasoning_content[:200]}... \nContent: \n{resp.choices[0].message.content[:200]}...")
 print("\n")
 # Reasoning off
 print("Reasoning off")
 resp = client.chat.completions.create(
-    model=SERVED_MODEL_NAME,
+    model="nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Give me 3 facts about SGLang."}
@@ -173,65 +180,28 @@ resp = client.chat.completions.create(
     max_tokens=256,
     extra_body={"chat_template_kwargs": {"enable_thinking": False}}
 )
-print(resp.choices[0].message.reasoning_content, resp.choices[0].message.content)
+print(f"Content: \n{resp.choices[0].message.reasoning_content[:200]}...")
 ```
 
 Output:
 ```
 Reasoning on
-We need to write a haiku (5-7-5 syllable poem) about GPUs. Ensure correct syllable count. Haiku about GPUs. Let's craft:
+Reasoning:
+We need to output a haiku about GPUs, with short thinking process. Probably we just need to produce the haiku. No extra commentary needed. Provide a haiku: 5-7-5 syllable lines about GPUs.
 
-"Silicon thunder hums,
-parallel cores blaze through night's code,
-pixels whisper dreams."
-
-Count syllables:
-
-Line1: "Silicon (3) thunder (2) hums (1)" = 6? Actually "Silicon" = 3 (sil-i-con), "thunder" = 2, "hums" =1 => total 6. Need 5. Let's adjust.
-
-Maybe "Silicon hearts beat" = 4? Silicon (3) + hearts (1) =4. Better: "Silicon hearts beat" = 4, need 5. Add "silently"? Let's design.
-
-Try: "Silicon hearts beat" (4) add "still" maybe? "Silicon hearts beat still" Counting: Silicon(3) hearts(1) beat(1) still(1) =6. Hmm.
-
-Let's think: "GPU cores pulse" Count: G-P-U (3?) Actually "GPU" pronounced as three letters, each syllable? Usually "GPU" = "jee-pee-you" three syllables? In spoken haiku, each letter counts as one syllable? Usually "GPU" is 3. So "GPU cores pulse" = GPU(3) cores(1) pulse(1) =5. Good! So line1: "GPU cores pulse". That's 5 syllables.
-
-Line2: need 7 syllables describing parallel computation. Example: "massive vectors run like electric rivers" Count: mass-ive (2) vec-tors(2) run(1) like(1) e-lec-tric (3) ri-vers(2) =11. Too many.
-
-Let's craft: "massive arrays compute in silent fire". Count: mass-ive(2) a-rrays(2?) Actually "arrays" = 2. So massive (2) arrays (2) =4, compute (2) =6, in (1)=7, silent (2)=9, fire (1)=10. Too many.
-
-Let's try: "threads weave light through silicon veins". Count: threads(1) weave(1) light(1) through(1) si-li-con(3) veins(1) =8. Need 7. Reduce one syllable. Maybe "threads weave light through silicon". Count: threads1 weave1 light1 through1 si-li-con3 =7. Good.
-
-Line3: 5 syllables about output. Example: "images bloom". That's only 2. Need 5. "images bloom upon the screen". Count: im-ages(2) bloom(1) u-pon(2) the(1) screen(1) =7. Too many.
-
-Maybe "images bloom on glowing screen". Count: im-ages2 bloom1 on1 glow-ing2 screen1 =7. Too high.
-
-Try: "pixels sing, alive, bright". Count: pix-els2 sing1 a-live2 bright1 =6. Too many.
-
-Try: "pixels sing alive". Count: pix-els2 sing1 a-live2 =5. Good.
-
-Now check overall:
-
-Line1: GPU cores pulse (5)
-Line2: threads weave light through silicon (7)
-Line3: pixels sing alive (5)
-
-All good. Provide haiku.
- **GPU cores pulse**
-**threads weave light through silicon**
-**pixels sing alive**
+Let's deci...
+Content:
+Silicon hearts beat
+Paint vivid worlds with bright light
+GPU dreams rise...
 
 
 Reasoning off
-Here are three key facts about **SGLang**:
+Content:
+Certainly! Here are three accurate and informative facts about **SGLang**:
 
 1. **SGLang is a high-performance serving system for large language models (LLMs)**
-   Developed by researchers at UC Berkeley and other institutions, SGLang (Structured Generation Language) is designed to efficiently serve LLMs with low latency and high throughput. It optimizes inference by combining techniques like continuous batching, dynamic scheduling, and efficient memory management.
-
-2. **It supports structured and constrained generation**
-   SGLang enables fine-grained control over model outputs through structured generation, allowing users to enforce specific formats (e.g., JSON, regex patterns) or constraints during inference. This makes it ideal for applications requiring reliable, predictable outputs, such as code generation or data extraction.
-
-3. **It integrates with popular LLM frameworks and models**
-   SGLang is compatible with widely used models (e.g., Llama, Mistral) and frameworks like Hugging Face Transformers and vLLM. It provides a flexible API and supports both open-source and proprietary models, making it easy to deploy in production environments. None
+   Developed by researchers at UC Berk...
 ```
 
 ### 4.3 Tool Calling
@@ -289,9 +259,9 @@ print(completion.choices[0].message.tool_calls)
 
 Output:
 ```
-The user wants to know the tip amount for a $50 bill with a 15% tip. I need to use the calculate_tip function. The function requires bill_total and tip_percentage. Bill total is 50, tip percentage is 15. I'll call the function.
+The user wants to calculate a 15% tip on a $50 bill. I have a function called calculate_tip that takes bill_total and tip_percentage as parameters. The bill_total is $50, and tip_percentage is 15. I need to call the function with these values. Let me do that.
 
-[ChatCompletionMessageFunctionToolCall(id='call_607a46b5f3104184831a7b19', function=Function(arguments='{"bill_total": 50, "tip_percentage": 15}', name='calculate_tip'), type='function', index=0)]
+[ChatCompletionMessageFunctionToolCall(id='call_ced9a83a3baa448e9d587aaf', function=Function(arguments='{"bill_total": 50, "tip_percentage": 15}', name='calculate_tip'), type='function', index=0)]
 ```
 
 ### 4.4 Controlling Reasoning Budget
@@ -383,7 +353,7 @@ client = ThinkingBudgetClient(
     tokenizer_name_or_path=SERVED_MODEL_NAME
 )
 
- resp = client.chat_completion(
+resp = client.chat_completion(
     model=SERVED_MODEL_NAME,
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
@@ -398,12 +368,16 @@ print("Reasoning:", resp["reasoning_content"], "\nContent:", resp["content"])
 
 Output:
 ```
-Reasoning: We need to produce a haiku (5-7-5 syllable poem) about GPUs. No policy issues. Just produce result.
-.
+Reasoning: Okay, the user wants a haiku about GPUs. Let me recall what a haiku is: a traditional Japanese poem with three lines, 5-7-5 syllable structure. So I need to make sure the syllable count is exact.
+
+First, I should think about what makes GPUs interesting. They're used for graphics rendering, parallel processing, AI, gaming, etc. Maybe focus on their speed, power, or how they handle many tasks at once.
+
+Let me brainstorm some words and phrases related to GPUs: silicon, cores, transistors, parallel, rendering, pixels, frames per second, CUDA, tensor.
 Content:
-Silicon hearts beat,
-Thundering cores chase the heat,
-Dreams render in light.
+
+Silicon minds awaken,
+Thousands of cores hum in unison—
+Lightning paints the void.
 ```
 
 ---
@@ -413,8 +387,11 @@ Dreams render in light.
 ### 5.1 Speed Benchmark
 
 **Test Environment:**
+- Hardware: H200 (4x)
+- Model: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
+- Tensor Parallelism: 4
+- SGLang Version: main branch
 
-- Hardware: TODO
 
 - Model Deployment Command:
 
@@ -446,7 +423,43 @@ python3 -m sglang.bench_serving \
 - **Test Results:**
 
 ```
-TODO
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 256
+Successful requests:                     4096
+Benchmark duration (s):                  623.49
+Total input tokens:                      2081726
+Total input text tokens:                 2081726
+Total generated tokens:                  2087288
+Total generated tokens (retokenized):    2044666
+Request throughput (req/s):              6.57
+Input token throughput (tok/s):          3338.85
+Output token throughput (tok/s):         3347.77
+Peak output token throughput (tok/s):    6349.00
+Peak concurrent requests:                270
+Total token throughput (tok/s):          6686.62
+Concurrency:                             250.35
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   38108.46
+Median E2E Latency (ms):                 37186.80
+P90 E2E Latency (ms):                    69325.24
+P99 E2E Latency (ms):                    77776.90
+---------------Time to First Token----------------
+Mean TTFT (ms):                          436.49
+Median TTFT (ms):                        114.90
+P99 TTFT (ms):                           6938.11
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          75.02
+Median TPOT (ms):                        76.02
+P99 TPOT (ms):                           92.27
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           74.07
+Median ITL (ms):                         38.45
+P95 ITL (ms):                            230.42
+P99 ITL (ms):                            242.70
+Max ITL (ms):                            7181.72
+==================================================
 ```
 
 ### 5.2 Accuracy Benchmark
@@ -454,8 +467,10 @@ TODO
 #### 5.2.1 GSM8K Benchmark
 
 **Environment**
-- Hardware: TODO
-- Model: TODO
+- Hardware: H200 (4x)
+- Model: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
+- Tensor Parallelism: 4
+- SGLang Version: main branch
 
 **Launch Model**
 ```bash
@@ -463,7 +478,7 @@ python3 -m sglang.launch_server \
   --model-path nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16 \
   --trust-remote-code \
   --tp 4 \
-  --reasoning-parser nano_v3
+  --reasoning-parser nemotron_3
 ```
 
 **Run Benchmark**
@@ -473,7 +488,10 @@ python3 benchmark/gsm8k/bench_sglang.py --port 5000
 
 **Test Results:**
 ```
-TODO
+Accuracy: 0.950
+Invalid: 0.000
+Latency: 21.442 s
+Output throughput: 996.815 token/s
 ```
 
 #### 5.2.2 MMLU Benchmark
@@ -485,5 +503,63 @@ python3 benchmark/mmlu/bench_sglang.py --port 5000
 
 **Test Results:**
 ```
-TODO
+subject: abstract_algebra, #q:100, acc: 0.730
+subject: anatomy, #q:135, acc: 0.830
+subject: astronomy, #q:152, acc: 0.934
+subject: business_ethics, #q:100, acc: 0.830
+subject: clinical_knowledge, #q:265, acc: 0.879
+subject: college_biology, #q:144, acc: 0.931
+subject: college_chemistry, #q:100, acc: 0.620
+subject: college_computer_science, #q:100, acc: 0.840
+subject: college_mathematics, #q:100, acc: 0.820
+subject: college_medicine, #q:173, acc: 0.821
+subject: college_physics, #q:102, acc: 0.794
+subject: computer_security, #q:100, acc: 0.880
+subject: conceptual_physics, #q:235, acc: 0.919
+subject: econometrics, #q:114, acc: 0.746
+subject: electrical_engineering, #q:145, acc: 0.828
+subject: elementary_mathematics, #q:378, acc: 0.926
+subject: formal_logic, #q:126, acc: 0.857
+subject: global_facts, #q:100, acc: 0.570
+subject: high_school_biology, #q:310, acc: 0.952
+subject: high_school_chemistry, #q:203, acc: 0.828
+subject: high_school_computer_science, #q:100, acc: 0.940
+subject: high_school_european_history, #q:165, acc: 0.861
+subject: high_school_geography, #q:198, acc: 0.939
+subject: high_school_government_and_politics, #q:193, acc: 0.990
+subject: high_school_macroeconomics, #q:390, acc: 0.928
+subject: high_school_mathematics, #q:270, acc: 0.700
+subject: high_school_microeconomics, #q:238, acc: 0.966
+subject: high_school_physics, #q:151, acc: 0.834
+subject: high_school_psychology, #q:545, acc: 0.960
+subject: high_school_statistics, #q:216, acc: 0.852
+subject: high_school_us_history, #q:204, acc: 0.926
+subject: high_school_world_history, #q:237, acc: 0.937
+subject: human_aging, #q:223, acc: 0.879
+subject: human_sexuality, #q:131, acc: 0.939
+subject: international_law, #q:121, acc: 0.934
+subject: jurisprudence, #q:108, acc: 0.898
+subject: logical_fallacies, #q:163, acc: 0.914
+subject: machine_learning, #q:112, acc: 0.821
+subject: management, #q:103, acc: 0.903
+subject: marketing, #q:234, acc: 0.944
+subject: medical_genetics, #q:100, acc: 0.980
+subject: miscellaneous, #q:783, acc: 0.945
+subject: moral_disputes, #q:346, acc: 0.861
+subject: moral_scenarios, #q:895, acc: 0.542
+subject: nutrition, #q:306, acc: 0.902
+subject: philosophy, #q:311, acc: 0.884
+subject: prehistory, #q:324, acc: 0.920
+subject: professional_accounting, #q:282, acc: 0.805
+subject: professional_law, #q:1534, acc: 0.681
+subject: professional_medicine, #q:272, acc: 0.923
+subject: professional_psychology, #q:612, acc: 0.889
+subject: public_relations, #q:110, acc: 0.800
+subject: security_studies, #q:245, acc: 0.837
+subject: sociology, #q:201, acc: 0.960
+subject: us_foreign_policy, #q:100, acc: 0.920
+subject: virology, #q:166, acc: 0.590
+subject: world_religions, #q:171, acc: 0.906
+Total latency: 150.267
+Average accuracy: 0.841
 ```
