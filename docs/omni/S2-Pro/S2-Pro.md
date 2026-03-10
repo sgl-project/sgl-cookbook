@@ -2,25 +2,101 @@
 sidebar_position: 1
 ---
 
-# SGLang Day-0 Support for FishAudio S2 Text-to-Speech
+# FishAudio S2 Pro
 
-## TLDR
+## 1. Model Introduction
 
-We are excited to announce SGLang's day-0 support for FishAudio S2, a frontier text-to-speech model with high-quality voice cloning capabilities. By integrating S2's backbone into SGLang, we achieve an RTF of 0.34 and 63.3 tok/s on single H200 GPU at single batch size.
+[FishAudio S2 Pro](https://huggingface.co/fishaudio/s2-pro) is a state-of-the-art text-to-speech model developed by [FishAudio](https://fish.audio), featuring fine-grained prosody and emotion control. Built on a Dual-Autoregressive (Dual-AR) transformer architecture with RVQ-based audio codec, S2 Pro achieves state-of-the-art quality across multiple TTS benchmarks.
 
-This work is a collaboration between the SGLang Omni Team and [FishAudio Team](https://fish.audio). We thank the FishAudio team for their support in model architecture and implementation details.
+S2 Pro tops the Audio Turing Test (0.515 posterior mean) and EmergentTTS-Eval (81.88% win rate against gpt-4o-mini-tts) while achieving the lowest WER on Seed-TTS Eval among all evaluated models including closed-source systems. Trained on over 10 million hours of audio across approximately 100 languages and aligned with GRPO-based reinforcement learning, it supports voice cloning and fine-grained inline control of prosody and emotion through natural-language tags.
 
-## Background and Motivation
+**Key Features:**
 
-Text-to-speech has converged on LLM-style autoregressive architectures: a transformer predicts discrete audio tokens, which a codec vocoder decodes into waveforms. It means TTS models face the same inference challenges as LLMs, including growing KV caches to be managed efficiently and the need for production-grade serving infrastructure.
+- **Dual-AR Architecture**: 5B parameter model (4B Slow AR + 400M Fast AR) with RVQ-based audio codec at 10 codebooks (~21 Hz frame rate)
+- **Voice Cloning**: High-quality voice cloning from a short reference audio clip
+- **Prosody & Emotion Control**: Fine-grained inline control of prosody and emotion through natural-language tags
+- **Multilingual**: 80+ language support (Tier 1: Japanese, English, Chinese; Tier 2: Korean, Spanish, Portuguese, Arabic, Russian, French, German)
+- **SGLang Integration**: Inherits LLM-native serving optimizations (paged KV cache, radix prefix caching)
 
-FishAudio S2 is a leading example of this trend. Built on a Dual-AR architecture, S2 achieves state-of-the-art quality across multiple benchmarks while supporting fine-grained inline control of prosody and emotion through natural-language tags. Trained on over 10 million hours of audio across approximately 100 languages and aligned with GRPO-based reinforcement learning, S2 tops the Audio Turing Test (0.515 posterior mean) and EmergentTTS-Eval (81.88% win rate against gpt-4o-mini-tts) while achieving the lowest WER on Seed-TTS Eval among all evaluated models including closed-source systems. For more details on S2's model design and training, see FishAudio's S2 release blog post.
+**License:** [FISH AUDIO RESEARCH LICENSE AGREEMENT](https://huggingface.co/fishaudio/s2-pro/blob/main/LICENSE.md)
 
-S2's Dual-AR architecture is structurally isomorphic to standard autoregressive LLMs, so it can directly inherit LLM-native serving optimizations with minimal modification, perfectly matching the strength of SGLang.
+This work is a collaboration between the SGLang Omni Team and [FishAudio Team](https://fish.audio). For more details on S2 Pro's model design and training, see FishAudio's [S2 release blog post](https://fish.audio/blog/fish-audio-open-sources-s2/).
 
-The integration challenge is that TTS models aren't pure text-in, text-out transformers. S2 interleaves VQ codebook embeddings into the token stream during decoding, runs multiple Fast AR decoder steps after each Slow AR step, and requires constrained decoding to enforce codebook structure. Integrating this into SGLang's forward path while preserving prefix caching required careful adaptation of the Model Runner and scheduling.
+## 2. Installation
 
-## Architecture
+S2 Pro uses `sglang-omni`, an ecosystem project for SGLang. Start with the Docker image, then install the `sglang-omni` package inside the container.
+
+### 2.1 Docker
+
+```bash
+docker pull frankleeeee/sglang-omni:dev
+
+docker run -it --shm-size 32g --gpus all frankleeeee/sglang-omni:dev /bin/zsh
+```
+
+### 2.2 Install sglang-omni (inside Docker)
+
+```bash
+git clone https://github.com/sgl-project-dev/sglang-omni.git
+cd sglang-omni
+uv venv .venv -p 3.12 && source .venv/bin/activate
+uv pip install -v ".[s2pro]"
+huggingface-cli download fishaudio/s2-pro
+```
+
+## 3. Model Deployment
+
+S2 Pro can be served via an OpenAI-compatible HTTP server or explored interactively through a Gradio playground.
+
+### 3.1 Server
+
+```bash
+python -m sglang_omni.cli.cli serve \
+    --model-path fishaudio/s2-pro \
+    --config examples/configs/s2pro_tts.yaml \
+    --port 8000
+```
+
+### 3.2 Interactive Playground
+
+We provide a Gradio-based interactive playground. We highly recommend using playground since audio data is hard to interact with by CLI.
+
+```bash
+./playground/tts/start.sh
+```
+
+## 4. Model Invocation
+
+### 4.1 Text-to-Speech
+
+Generate speech from text using the OpenAI-compatible `/v1/audio/speech` endpoint.
+
+:::note
+Without a reference audio clip, the generated voice will use a default voice. Provide a reference audio for voice cloning.
+:::
+
+```bash
+curl -X POST http://localhost:8000/v1/audio/speech \
+    -H "Content-Type: application/json" \
+    -d '{"input": "Hello, how are you?"}' \
+    --output output.wav
+```
+
+### 4.2 Voice Cloning
+
+Provide a reference audio file and its transcript for high-quality voice cloning:
+
+```bash
+curl -X POST http://localhost:8000/v1/audio/speech \
+    -H "Content-Type: application/json" \
+    -d '{
+        "input": "Hello, how are you?",
+        "references": [{"audio_path": "ref.wav", "text": "Transcript of ref audio."}]
+    }' \
+    --output output.wav
+```
+
+## 5. Architecture
 
 S2 uses a 3-stage pipeline:
 
@@ -35,8 +111,7 @@ Text input ──► Preprocessing ──► SGLang AR Engine ──► DAC Voco
 
 **Stage 3 — Vocoder:** The accumulated codebook indices are decoded into a waveform by a DAC codec, producing the final audio output.
 
-
-## Performance
+## 6. Performance
 
 Evaluated on the full seed-tts-eval EN testset (1,088 samples) on a single H200 GPU.
 
@@ -48,76 +123,7 @@ Evaluated on the full seed-tts-eval EN testset (1,088 samples) on a single H200 
 | TTFT (mean) | 19.6 ms | 22.0 ms | 31.6 ms | 50.7 ms |
 | TTFB (mean) | 172.8 ms | 249.9 ms | 319.1 ms | 509.6 ms |
 
-## Installation and Quick Start
-
-### Docker
-
-```bash
-docker pull frankleeeee/sglang-omni:dev
-
-docker run -it --shm-size 32g --gpus all frankleeeee/sglang-omni:dev /bin/zsh
-```
-
-### Install sglang-omni (inside Docker)
-
-```bash
-git clone https://github.com/sgl-project-dev/sglang-omni.git
-cd sglang-omni
-uv venv .venv -p 3.12 && source .venv/bin/activate
-uv pip install -v ".[s2pro]"
-huggingface-cli download fishaudio/s2-pro
-```
-
-### Playground and Server
-
-We provide a Gradio-based interactive playground and a server for production deployment. We highly recommend using playground since audio data is hard to interact with by CLI.
-
-1. Interactive Playground
-
-```bash
- ./playground/tts/start.sh
-```
-
-2. Server
-
-```bash
-python -m sglang_omni.cli.cli serve \
-    --model-path fishaudio/s2-pro \
-    --config examples/configs/s2pro_tts.yaml \
-    --port 8000
-```
-
-<details>
-<summary>curl commands</summary>
-
-1. Text-to-Speech
-
-Note that without reference audio, the generated audio sounds like a robot.
-
-```bash
-curl -X POST http://localhost:8000/v1/audio/speech \
-    -H "Content-Type: application/json" \
-    -d '{"input": "Hello, how are you?"}' \
-    --output output.wav
-```
-
-2. Voice Cloning
-
-```bash
-curl -X POST http://localhost:8000/v1/audio/speech \
-    -H "Content-Type: application/json" \
-    -d '{
-        "input": "Hello, how are you?",
-        "references": [{"audio_path": "ref.wav", "text": "Transcript of ref audio."}]
-    }' \
-    --output output.wav
-```
-
-</details>
-
-We highly recommend using playground since audio data is hard to interact with by CLI.
-
-## Optimizations with SGLang Omni
+## 7. SGLang Omni Optimizations
 
 By integrating S2's Dual-AR backbone into SGLang's paged-attention engine, we inherit LLM-native optimizations:
 
@@ -126,7 +132,7 @@ By integrating S2's Dual-AR backbone into SGLang's paged-attention engine, we in
 - **torch.compile on Fast AR** — The 9-step codebook loop is compiled with torch.compile, achieving 5x speedup over eager mode.
 - **FlashAttention 3** — Forced FA3 backend to match training-time attention numerics, avoiding early-EOS divergence from flashinfer.
 
-## Future Optimization
+## 8. Future Optimization
 
 To further improve throughput and latency in the future:
 
@@ -134,7 +140,7 @@ To further improve throughput and latency in the future:
 
 - **Batched Fast AR head processing.** Currently, the Fast AR codebook decoding loop runs sequentially per request. Batching these steps across concurrent requests would improve GPU utilization at higher batch sizes potentially improving throughput.
 
-## Engineering Appendix
+## 9. Engineering Appendix
 
 <details>
 <summary>Engineering Appendix</summary>
