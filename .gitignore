@@ -28,3 +28,6 @@ __pycache__
 .venv
 .ruff_cache
 uv.lock
+
+# Claude Code local settings
+.claude/
