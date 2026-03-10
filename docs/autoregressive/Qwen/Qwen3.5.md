@@ -17,7 +17,16 @@ Qwen3.5 features a Gated Delta Networks combined with sparse Mixture-of-Experts 
 
 **Available Models:**
 
-- **BF16 (Full precision)**: [Qwen/Qwen3.5-397B-A17B](https://huggingface.co/Qwen/Qwen3.5-397B-A17B)
+| Model | BF16 (Full precision) | FP8 (8-bit Quantized) | FP4 (4-bit Quantized) |
+|-------|------|-----|-----|
+| Qwen3.5-397B-A17B | [Qwen/Qwen3.5-397B-A17B](https://huggingface.co/Qwen/Qwen3.5-397B-A17B) | [Qwen/Qwen3.5-397B-A17B-FP8](https://huggingface.co/Qwen/Qwen3.5-397B-A17B-FP8) | [nvidia/Qwen3.5-397B-A17B-NVFP4](https://huggingface.co/nvidia/Qwen3.5-397B-A17B-NVFP4) |
+| Qwen3.5-122B-A10B | [Qwen/Qwen3.5-122B-A10B](https://huggingface.co/Qwen/Qwen3.5-122B-A10B) | [Qwen/Qwen3.5-122B-A10B-FP8](https://huggingface.co/Qwen/Qwen3.5-122B-A10B-FP8) | - |
+| Qwen3.5-35B-A3B | [Qwen/Qwen3.5-35B-A3B](https://huggingface.co/Qwen/Qwen3.5-35B-A3B) | [Qwen/Qwen3.5-35B-A3B-FP8](https://huggingface.co/Qwen/Qwen3.5-35B-A3B-FP8) | - |
+| Qwen3.5-27B | [Qwen/Qwen3.5-27B](https://huggingface.co/Qwen/Qwen3.5-27B) | [Qwen/Qwen3.5-27B-FP8](https://huggingface.co/Qwen/Qwen3.5-27B-FP8) | - |
+| Qwen3.5-9B | [Qwen/Qwen3.5-9B](https://huggingface.co/Qwen/Qwen3.5-9B) | - | - |
+| Qwen3.5-4B | [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) | - | - |
+| Qwen3.5-2B | [Qwen/Qwen3.5-2B](https://huggingface.co/Qwen/Qwen3.5-2B) | - | - |
+| Qwen3.5-0.8B | [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B) | - | - |
 
 **License:** Apache 2.0
 
@@ -49,9 +58,6 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 
 ### 3.2 Configuration Tips
 
-- The model has ~397B parameters in BF16, requiring ~800GB of GPU memory for weights alone.
-- **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
-- **H200 (141GB)** and **B200 (192GB)** can run with tp=8 on a single node.
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
 - **Mamba Radix Cache**: Qwen3.5's hybrid Gated Delta Networks architecture supports two mamba scheduling strategies via `--mamba-scheduler-strategy`:
   - **V1 (`no_buffer`)**: Default. No overlap scheduler, lower memory usage.
@@ -60,14 +66,29 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - Context length defaults to 262,144 tokens. If you encounter OOM errors, consider reducing it, but maintain at least 128K to preserve thinking capabilities.
 - To speed up weight loading for this large model, add `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'` to the launch command.
 - **CUDA IPC Transport**: Add `SGLANG_USE_CUDA_IPC_TRANSPORT=1` as an environment variable to use CUDA IPC for transferring multimodal features, significantly improving TTFT (Time To First Token). Note: this consumes additional memory proportional to image size, so you may need to lower `--mem-fraction-static` or `--max-running-requests`.
-- **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200.
+- **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200/B300.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
+- Hardware requirements:
+    - **BF16**: ~397B parameters require ~800GB of GPU memory for weights.
+        - **H100 (80GB)** requires tp=16 (2 nodes) since each rank needs ~100GB at tp=8.
+        - **H200 (141GB)** runs with tp=8.
+        - **B200 (183GB)** runs with tp=8.
+        - **B300 (275GB)** runs with tp=4.
+    - **FP8**: The FP8 quantized model requires ~400GB for weights, cutting memory in half.
+        - **H100 (80GB)** runs with tp=8.
+        - **H200 (141GB)** runs with tp=4.
+        - **B200 (183GB)** runs with tp=4.
+        - **B300 (275GB)** runs with tp=2.
+    - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
+        - **B200 (183GB)** runs with tp=4.
+        - **B300 (275GB)** runs with tp=2.
 
-| Hardware | TP |
-| -------- | -- |
-| H100     | 16 |
-| H200     | 8  |
-| B200     | 8  |
+| Hardware | Memory | BF16 TP | FP8 TP | FP4 TP |
+| -------- | ------ | ------- | ------ | --------------- |
+| H100     | 80GB   | 16      | 8      | N/A             |
+| H200     | 141GB  | 8       | 4      | N/A             |
+| B200     | 183GB  | 8       | 4      | 4               |
+| B300     | 275GB  | 4       | 2      | 2               |
 
 ## 4. Model Invocation
 
