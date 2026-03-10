@@ -89,7 +89,7 @@ const MiniMaxM25ConfigGenerator = () => {
 
       // TP and EP size based on GPU count
       // NVIDIA: EP only for 8-GPU configuration
-      // AMD: EP=TP for all configurations (better memory efficiency for MoE models)
+      // AMD: EP=TP for all configurations
       if (gpuCount === '8gpu') {
         cmd += ` \\\n  --tp 8`;
         cmd += ` \\\n  --ep 8`;
