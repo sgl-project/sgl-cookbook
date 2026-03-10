@@ -22,7 +22,6 @@ const NemotronSuperConfigGenerator = () => {
         name: 'tp',
         title: 'Tensor Parallel (TP)',
         items: [
-          { id: '1', label: 'TP=1', default: false },
           { id: '2', label: 'TP=2', default: false },
           { id: '4', label: 'TP=4', default: true },
           { id: '8', label: 'TP=8', default: false }
@@ -44,7 +43,7 @@ const NemotronSuperConfigGenerator = () => {
           { id: 'enabled', label: 'Enabled', default: true },
           { id: 'disabled', label: 'Disabled', default: false }
         ],
-        commandRule: (value) => value === 'enabled' ? '--reasoning-parser nano_v3' : null
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser nemotron_3' : null
       },
       toolcall: {
         name: 'toolcall',
@@ -67,7 +66,6 @@ const NemotronSuperConfigGenerator = () => {
       cmd += `  --model-path ${modelPath} \\\n`;
       cmd += `  --trust-remote-code \\\n`;
       cmd += `  --tp ${tp} \\\n`;
-      cmd += `  --ep 1 \\\n`;
 
       if (kvcache && kvcache !== 'none') {
         cmd += `  --kv-cache-dtype ${kvcache} \\\n`;
