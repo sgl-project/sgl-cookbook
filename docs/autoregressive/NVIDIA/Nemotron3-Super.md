@@ -15,11 +15,17 @@ At a high level:
 
 ## 2. SGLang Installation
 
-Refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html), or install via:
+SGLang from the main branch is required for Nemotron3-Super. You can install from source and with a nightly docker.
+
 ```bash
-pip install sglang
+# Install from source
+uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=python'
+
+# Or use Docker
+docker pull lmsysorg/sglang:nightly-dev-20260310-0fd9a57d
 ```
 
+For the full Docker setup and other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
 
 ## 3. Model Deployment
 
