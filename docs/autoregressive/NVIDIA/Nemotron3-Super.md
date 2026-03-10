@@ -12,8 +12,6 @@ At a high level:
 - **Non-uniform layer ordering:** The order and mix of these specialized layers is not a simple, rigid pattern, enabling the model to trade off sequence modeling, routing capacity, and expressivity across depth.
 - **Deployment-friendly precision:** Use BF16 for accuracy-sensitive and evaluation workloads; use FP8 for latency- and throughput-critical serving on recent NVIDIA GPUs.
 
-> **Note:** The public model name will be updated once it is officially released. The placeholder model path used in this guide is `nvidia/nemotron-super-sft-020426`.
-
 
 ## 2. SGLang Installation
 
@@ -39,15 +37,12 @@ import NemotronSuperConfigGenerator from '@site/src/components/autoregressive/Ne
 
 - **Attention backend**:
 
-    **H200/B200**: use flashinfer attention backend by default.
+    **H200**: Use flash attention 3 backend by default.
+    **B200**: Use
 
 - **TP support**:
 
-    To set tp size, use `--tp <1|2|4|8>`. 
-
-- **Expert Parallelism**:
-
-    Use `--ep 1` for single-node deployments.
+    To set tp size, use `--tp <2|4|8>`.
 
 - **FP8 KV cache**:
 
@@ -58,13 +53,12 @@ import NemotronSuperConfigGenerator from '@site/src/components/autoregressive/Ne
 
 ```shell
 python3 -m sglang.launch_server \
-  --model-path nvidia/nemotron-super-sft-020426 \
+  --model-path nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16 \
   --host 0.0.0.0 \
   --port 5000 \
   --log-level warning \
   --trust-remote-code \
   --tp 4 \
-  --ep 1 \
   --tool-call-parser qwen3_coder \
   --reasoning-parser nano_v3
 ```
@@ -82,7 +76,7 @@ client = OpenAI(
 )
 
 resp = client.chat.completions.create(
-    model="nvidia/nemotron-super-sft-020426",
+    model="nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
     messages=[
         {"role": "system", "content": "You are a helpful AI assistant."},
         {"role": "user", "content": "Give me 3 bullet points about SGLang."},
@@ -97,10 +91,10 @@ print("\n")
 Output:
 ```
 Reasoning: The user asks: "Give me 3 bullet points about SGLang." Likely they want concise bullet points summarizing SGLang. SGLang is a system for efficient LLM serving, developed by Stanford, focusing on fast inference with dynamic batching, etc. Provide three bullet points. Ensure correct info. Provide concise bullet points.
- 
-Content: - **High‑throughput LLM serving**: SGLang is a runtime engine designed to accelerate inference for large language models, delivering up to 10× higher throughput than traditional serving stacks by using optimized kernels and efficient memory management.  
 
-- **Dynamic batching & pipelining**: It supports fine‑grained, request‑level batching and multi‑stage pipelining, allowing the system to continuously pack new queries into GPU work while keeping latency low.  
+Content: - **High‑throughput LLM serving**: SGLang is a runtime engine designed to accelerate inference for large language models, delivering up to 10× higher throughput than traditional serving stacks by using optimized kernels and efficient memory management.
+
+- **Dynamic batching & pipelining**: It supports fine‑grained, request‑level batching and multi‑stage pipelining, allowing the system to continuously pack new queries into GPU work while keeping latency low.
 
 - **Open‑source & modular**: Built on PyTorch and CUDA, SGLang is released under an MIT license and provides a plug‑and‑play API that can be swapped into existing LLM pipelines (e.g., vLLM, TensorRT‑LLM) for easy performance upgrades.
 
@@ -116,7 +110,7 @@ client = OpenAI(
 )
 
 stream = client.chat.completions.create(
-    model="nvidia/nemotron-super-sft-020426",
+    model="nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
     messages=[
         {"role": "system", "content": "You are a helpful AI assistant."},
         {"role": "user", "content": "What are the first 5 prime numbers?"}
@@ -222,21 +216,21 @@ Line2: threads weave light through silicon (7)
 Line3: pixels sing alive (5)
 
 All good. Provide haiku.
- **GPU cores pulse**  
-**threads weave light through silicon**  
+ **GPU cores pulse**
+**threads weave light through silicon**
 **pixels sing alive**
 
 
 Reasoning off
 Here are three key facts about **SGLang**:
 
-1. **SGLang is a high-performance serving system for large language models (LLMs)**  
+1. **SGLang is a high-performance serving system for large language models (LLMs)**
    Developed by researchers at UC Berkeley and other institutions, SGLang (Structured Generation Language) is designed to efficiently serve LLMs with low latency and high throughput. It optimizes inference by combining techniques like continuous batching, dynamic scheduling, and efficient memory management.
 
-2. **It supports structured and constrained generation**  
+2. **It supports structured and constrained generation**
    SGLang enables fine-grained control over model outputs through structured generation, allowing users to enforce specific formats (e.g., JSON, regex patterns) or constraints during inference. This makes it ideal for applications requiring reliable, predictable outputs, such as code generation or data extraction.
 
-3. **It integrates with popular LLM frameworks and models**  
+3. **It integrates with popular LLM frameworks and models**
    SGLang is compatible with widely used models (e.g., Llama, Mistral) and frameworks like Hugging Face Transformers and vLLM. It provides a flexible API and supports both open-source and proprietary models, making it easy to deploy in production environments. None
 ```
 
@@ -302,7 +296,7 @@ The user wants to know the tip amount for a $50 bill with a 15% tip. I need to u
 
 ### 4.4 Controlling Reasoning Budget
 
-The `reasoning_budget` parameter allows you to limit the length of the model's reasoning trace. When the reasoning output reaches the specified token budget, the model will attempt to gracefully end the reasoning at the next newline character. 
+The `reasoning_budget` parameter allows you to limit the length of the model's reasoning trace. When the reasoning output reaches the specified token budget, the model will attempt to gracefully end the reasoning at the next newline character.
 
 If no newline is encountered within 500 tokens after reaching the budget threshold, the reasoning trace will be forcibly terminated at `reasoning_budget + 500` tokens.
 
@@ -333,23 +327,23 @@ class ThinkingBudgetClient:
 
         # 1. first call chat completion to get reasoning content
         response = self.client.chat.completions.create(
-            model=model, 
-            messages=messages, 
-            max_tokens=reasoning_budget, 
+            model=model,
+            messages=messages,
+            max_tokens=reasoning_budget,
             **kwargs
         )
-        
+
         reasoning_content = response.choices[0].message.reasoning_content or ""
-        
+
         if "</think>" not in reasoning_content:
             # reasoning content is too long, closed with a period (.)
             reasoning_content = f"{reasoning_content}.\n</think>\n\n"
-        
+
         reasoning_tokens_used = len(
             self.tokenizer.encode(reasoning_content, add_special_tokens=False)
         )
         remaining_tokens = max_tokens - reasoning_tokens_used
-        
+
         assert (
             remaining_tokens > 0
         ), f"remaining tokens must be positive. Given {remaining_tokens=}. Increase max_tokens or lower reasoning_budget."
@@ -361,11 +355,11 @@ class ThinkingBudgetClient:
             tokenize=False,
             continue_final_message=True,
         )
-        
+
         response = self.client.completions.create(
-            model=model, 
-            prompt=prompt, 
-            max_tokens=remaining_tokens, 
+            model=model,
+            prompt=prompt,
+            max_tokens=remaining_tokens,
             **kwargs
         )
 
@@ -380,7 +374,7 @@ class ThinkingBudgetClient:
 Usage example with `reasoning_budget=128`:
 
 ```python
-SERVED_MODEL_NAME = "nvidia/nemotron-super-sft-020426"
+SERVED_MODEL_NAME = "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16"
 
 # Client
 client = ThinkingBudgetClient(
@@ -426,10 +420,9 @@ Dreams render in light.
 
 ```shell
 python3 -m sglang.launch_server \
-  --model-path nvidia/nemotron-super-sft-020426 \
+  --model-path nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16 \
   --trust-remote-code \
   --tp 4 \
-  --ep 1 \
   --max-running-requests 1024 \
   --host 0.0.0.0 \
   --port 5000
@@ -442,7 +435,7 @@ python3 -m sglang.bench_serving \
   --backend sglang \
   --host 127.0.0.1 \
   --port 5000 \
-  --model nvidia/nemotron-super-sft-020426 \
+  --model nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16 \
   --dataset-name random \
   --random-input-len 1024 \
   --random-output-len 1024 \
@@ -467,10 +460,9 @@ TODO
 **Launch Model**
 ```bash
 python3 -m sglang.launch_server \
-  --model-path nvidia/nemotron-super-sft-020426 \
+  --model-path nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16 \
   --trust-remote-code \
   --tp 4 \
-  --ep 1 \
   --reasoning-parser nano_v3
 ```
 

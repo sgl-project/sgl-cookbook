@@ -33,7 +33,6 @@ families:
       reasoning_parser: nemotron_3
 
     models:
-      # TODO: Update model_path when the public model name is available
       - name: Nemotron3-Super
-        model_path: nvidia/nemotron-super-sft-020426
+        model_path: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
         quantization: bf16

@@ -4,7 +4,7 @@ families:
   description: NVIDIA Nemotron3-Super model
   models:
   - name: Nemotron3-Super
-    model_path: nvidia/nemotron-super-sft-020426
+    model_path: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
     attributes:
       llm:
         thinking_capability: hybrid

@@ -60,7 +60,7 @@ const NemotronSuperConfigGenerator = () => {
       const { tp, kvcache } = values;
 
       // TODO: Update model path when the public model name is available
-      const modelPath = 'nvidia/nemotron-super-sft-020426';
+      const modelPath = 'nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16';
 
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelPath} \\\n`;
