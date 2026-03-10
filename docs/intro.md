@@ -32,8 +32,9 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [x] [Qwen3](./autoregressive/Qwen/Qwen3.md)
 - [x] [Qwen3-Next](./autoregressive/Qwen/Qwen3-Next.md)
 - [x] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
-- [ ] [Qwen3-Coder](./autoregressive/Qwen/Qwen3-Coder.md)
-- [ ] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
+- [x] [Qwen3-Coder](./autoregressive/Qwen/Qwen3-Coder.md)
+- [x] [Qwen3-Coder-Next](./autoregressive/Qwen/Qwen3-Coder-Next.md)
+- [x] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
 
 #### DeepSeek
 
@@ -42,6 +43,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [x] [DeepSeek-V3](./autoregressive/DeepSeek/DeepSeek-V3.md)
 - [x] [DeepSeek-R1](./autoregressive/DeepSeek/DeepSeek-R1.md)
 - [x] [DeepSeek-OCR](./autoregressive/DeepSeek/DeepSeek-OCR.md)
+- [x] [DeepSeek-OCR-2](./autoregressive/DeepSeek/DeepSeek-OCR-2.md)
 
 #### Llama
 
@@ -51,7 +53,9 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### GLM
 
-- [ ] [GLM-Glyph](./autoregressive/GLM/Glyph.md)
+- [x] [GLM-5](./autoregressive/GLM/GLM-5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [GLM-OCR](./autoregressive/GLM/GLM-OCR.md)
+- [x] [GLM-Glyph](./autoregressive/GLM/Glyph.md)
 - [x] [GLM-4.5](./autoregressive/GLM/GLM-4.5.md)
 - [x] [GLM-4.5V](./autoregressive/GLM/GLM-4.5V.md)
 - [x] [GLM-4.6](./autoregressive/GLM/GLM-4.6.md)
@@ -65,12 +69,13 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Moonshotai
 
-- [x] [Kimi-K2](./autoregressive/Moonshotai/Kimi-K2.md)
-- [ ] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
 - [x] [Kimi-K2.5](./autoregressive/Moonshotai/Kimi-K2.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Kimi-K2](./autoregressive/Moonshotai/Kimi-K2.md)
+- [x] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
 
 #### MiniMax
 
+- [x] [MiniMax-M2.5](./autoregressive/MiniMax/MiniMax-M2.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 - [ ] [MiniMax-M2](./autoregressive/MiniMax/MiniMax-M2.md)
 
 #### NVIDIA
@@ -79,7 +84,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Ernie
 
-- [ ] [Ernie4.5](./autoregressive/Ernie/Ernie4.5.md)
+- [x] [Ernie4.5](./autoregressive/Ernie/Ernie4.5.md)
 - [ ] [Ernie4.5-VL](./autoregressive/Ernie/Ernie4.5-VL.md)
 
 #### InternVL
@@ -105,7 +110,18 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### FlashLabs
 
-- [x] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md)<span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+
+#### StepFun
+
+- [x] [Step3.5](./autoregressive/StepFun/Step3.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Step3-VL-10B](./autoregressive/StepFun/Step3-VL-10B.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+
+#### InclusionAI
+
+- [x] [Ling-2.5-1T](./autoregressive/InclusionAI/Ling-2.5-1T.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Ring-2.5-1T](./autoregressive/InclusionAI/Ring-2.5-1T.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [LLaDA 2.1](./autoregressive/LLaDA/LLaDA-2.1.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 
 ### Diffusion Models
 
@@ -113,19 +129,29 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 - [x] [FLUX](./diffusion/FLUX/FLUX.md)
 
-#### Qwen-Image
-
-- [ ] [Qwen-Image](./diffusion/Qwen-Image/Qwen-Image.md)
-- [x] [Qwen-Image-Edit](./diffusion/Qwen-Image/Qwen-Image-Edit.md)
-
 #### Wan
 
 - [ ] [Wan2.1](./diffusion/Wan/Wan2.1.md)
 - [x] [Wan2.2](./diffusion/Wan/Wan2.2.md)
 
+#### Qwen-Image
+
+- [x] [Qwen-Image](./diffusion/Qwen-Image/Qwen-Image.md)
+- [x] [Qwen-Image-Edit](./diffusion/Qwen-Image/Qwen-Image-Edit.md)
+
 #### Z-Image
 
-- [ ] [Z-Image](./diffusion/Z-Image/Z-Image-Turbo.md)
+- [x] [Z-Image](./diffusion/Z-Image/Z-Image-Turbo.md)
+
+#### MOVA
+
+- [x] [MOVA](./diffusion/MOVA/MOVA.md)
+
+### SGLang Omni
+
+#### FishAudio
+
+- [x] [S2 Pro (TTS)](./omni/S2-Pro/S2-Pro.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 
 ### Benchmarks
 
@@ -148,26 +174,38 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 We believe the best documentation comes from practitioners. Whether you've optimized SGLang for a specific model, solved a tricky deployment challenge, or discovered performance improvements, we encourage you to contribute your recipes!
 
+**Contribution templates — start here:**
+
+- [Autoregressive Model Template](https://github.com/sgl-project/sgl-cookbook/issues/16) — Full template for LLM recipes (deployment, API usage, benchmarks)
+- [Diffusion Model Template](https://github.com/sgl-project/sgl-cookbook/issues/32) — Template for image/video generation models
+
+> **Maintainers:** We have a Claude Code skill that automates most of the contribution workflow — from scaffolding docs, config generators, YAML configs, to sidebar updates. Run `/add-model` in [Claude Code](https://claude.ai/claude-code) to use it.
+
 **Ways to contribute:**
 
 - Add a new recipe for a model not yet covered
-- Improve existing recipes with additional tips or configurations
+- Add AMD MI300X/MI325X/MI355X GPU support to existing models
+- Improve existing recipes with benchmarks, tips, or configurations
 - Report issues or suggest enhancements
-- Share your production deployment experiences
 
-**To contribute:**
+**Quick start:**
 
 ```shell
 # Fork the repo and clone locally
-git clone https://github.com/YOUR_USERNAME/sglang-cookbook.git
-cd sglang-cookbook
+git clone https://github.com/YOUR_USERNAME/sgl-cookbook.git
+cd sgl-cookbook
+
+# Install dependencies and start dev server
+npm install && npm start
 
 # Create a new branch
 git checkout -b add-my-recipe
 
-# Add your recipe following the template in DeepSeek-V3.2
+# Add your recipe following the templates above
 # Submit a PR!
 ```
+
+Each model recipe needs 3 files: a `.md` doc, a ConfigGenerator component, and a `sidebars.js` entry. Use [DeepSeek-V3.2](./autoregressive/DeepSeek/DeepSeek-V3_2.md) as a reference. All deployment commands must use `sglang serve` (not the deprecated `python -m sglang.launch_server`).
 
 ## 🛠️ Local Development
 

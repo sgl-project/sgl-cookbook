@@ -18,7 +18,7 @@ Ask the user for:
    - YAML: `models` list with different `base_name` entries, `quantizations` arrays
    - Documentation: model name references and deployment examples
    - See `Qwen3CoderConfigGenerator` and `Qwen3NextConfigGenerator` for multi-variant examples.
-3. **Full Deployment Command** - Complete SGLang launch command including all strategy and optimization flags (tp, dp, ep, enable_dp_attention, etc.). If the model card already provides an SGLang deployment command, offer it as a default option.
+3. **Full Deployment Command** - Complete SGLang launch command using `sglang serve` (NOT the deprecated `python -m sglang.launch_server`), including all strategy and optimization flags (tp, dp, ep, enable_dp_attention, etc.). If the model card already provides an SGLang deployment command, offer it as a default option — but verify it uses the current `sglang serve` format.
 4. **SGLang Version** - The SGLang version the user is testing on (e.g., `v0.5.8`). This determines the version subdirectory for YAML configs (`data/models/src/<version>/`).
 5. **Hardware Platforms** - Ask which hardware platforms have been tested. Only include tested platforms in the ConfigGenerator and YAML. Do NOT assume AMD GPU support unless explicitly confirmed.
 
@@ -41,6 +41,9 @@ Read these files to understand existing patterns before creating anything:
 - YAML source files are in `data/models/src/<version>/` (NOT directly in `data/models/src/`). The version directory corresponds to the SGLang version being tested. Create it if it doesn't exist.
 - The base `ConfigGenerator` component is at `src/components/base/ConfigGenerator`
 - AMD GPUs (MI300X/MI325X/MI355X) typically need `--attention-backend triton` — only include if tested
+- AMD Docker image naming: `rocm720-mi30x` for MI300X/MI325X, `rocm720-mi35x` for MI355X
+- **CRITICAL**: All commands must use `sglang serve`, never `python -m sglang.launch_server` (deprecated)
+- Before creating a new model, check open PRs (`gh pr list --search "<model name>"`) to avoid duplicate work
 - For models with `commandRule` on options, use the pattern from existing generators to apply rules via `Object.entries(this.options).forEach(...)`
 
 ### Step 1: Create documentation file
@@ -156,14 +159,16 @@ Add these to the documentation.
 
 ## Phase 6: Final Review
 
-Can be triggered with `/add-model review`.
+Can be triggered with `/add-model review`. Also consider running `/review-pr` on the PR for an automated checklist pass.
 
 Review the complete documentation for:
 - Nested code block formatting (use ```````` for outer blocks containing ` ``` `)
-- Consistent port numbers across all commands
+- Consistent port numbers across all commands (use 30000, not 8000)
 - No duplicate deployment commands (reference the one at the top of Section 4)
 - All `TODO` placeholders replaced with actual results
 - ConfigGenerator defaults match the documented deployment command
+- ConfigGenerator `export default` matches the actual class name (common copy-paste bug)
+- All commands use `sglang serve` — no deprecated `python -m sglang.launch_server`
 - Reasoning mode examples show both thinking-on and thinking-off patterns (for hybrid reasoning models)
 - `modelConfigs` include both `tp` and `mem` values per hardware/quantization
 - DP attention `--dp` value dynamically matches `--tp` in the generator
