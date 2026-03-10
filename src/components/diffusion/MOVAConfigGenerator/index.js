@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import styles from '../../base/ConfigGenerator/styles.module.css';
 
-const QwenImageEditConfigGenerator = () => {
+const MOVAConfigGenerator = () => {
   const baseConfig = {
-    modelFamily: 'Qwen-Image-Edit',
+    modelFamily: 'MOVA',
 
     options: {
       hardware: {
@@ -13,18 +13,40 @@ const QwenImageEditConfigGenerator = () => {
           { id: 'b200', label: 'B200', default: true },
           { id: 'h200', label: 'H200', default: false },
           { id: 'h100', label: 'H100', default: false },
-          { id: 'mi300x', label: 'MI300X', default: false },
-          { id: 'mi325x', label: 'MI325X', default: false },
-          { id: 'mi355x', label: 'MI355X', default: false }
+          { id: 'a100', label: 'A100', default: false }
+        ]
+      },
+      resolution: {
+        name: 'resolution',
+        title: 'Resolution',
+        items: [
+          { id: '360p', label: '360p', subtitle: 'Fast inference, lower VRAM', default: true },
+          { id: '720p', label: '720p', subtitle: 'Higher resolution', default: false }
         ]
       }
     },
 
     generateCommand: function(values) {
-      return `sglang serve \\
-  --model-path Qwen/Qwen-Image-Edit-2511 \\
-  --ulysses-degree=1 \\
-  --ring-degree=1`;
+      const { resolution } = values;
+      const modelPath = resolution === '720p'
+        ? 'OpenMOSS-Team/MOVA-720p'
+        : 'OpenMOSS-Team/MOVA-360p';
+
+      return `export SG_OUTPUT_DIR=/root/output_mova
+mkdir -p "$SG_OUTPUT_DIR"
+
+sglang serve \\
+  --model-path ${modelPath} \\
+  --host 0.0.0.0 \\
+  --port 30002 \\
+  --adjust-frames false \\
+  --num-gpus 8 \\
+  --ring-degree 2 \\
+  --ulysses-degree 4 \\
+  --tp 1 \\
+  --enable-torch-compile \\
+  --save-output \\
+  --output-dir "$SG_OUTPUT_DIR"`;
     }
   };
 
@@ -47,7 +69,7 @@ const QwenImageEditConfigGenerator = () => {
 
   return (
     <div className={styles.configContainer}>
-      {Object.entries(baseConfig.options).map(([key, option], index) => (
+      {Object.entries(baseConfig.options).map(([key, option]) => (
         <div key={key} className={styles.optionCard}>
           <div className={styles.optionTitle}>
             {option.title}
@@ -87,4 +109,4 @@ const QwenImageEditConfigGenerator = () => {
   );
 };
 
-export default QwenImageEditConfigGenerator;
+export default MOVAConfigGenerator;

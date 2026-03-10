@@ -1,19 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import styles from '../../base/ConfigGenerator/styles.module.css';
 
-const QwenImageEditConfigGenerator = () => {
+const QwenImageConfigGenerator = () => {
   const baseConfig = {
-    modelFamily: 'Qwen-Image-Edit',
+    modelFamily: 'Qwen-Image',
 
     options: {
       hardware: {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'b200', label: 'B200', default: true },
-          { id: 'h200', label: 'H200', default: false },
-          { id: 'h100', label: 'H100', default: false },
-          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi300x', label: 'MI300X', default: true },
           { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi355x', label: 'MI355X', default: false }
         ]
@@ -22,7 +19,7 @@ const QwenImageEditConfigGenerator = () => {
 
     generateCommand: function(values) {
       return `sglang serve \\
-  --model-path Qwen/Qwen-Image-Edit-2511 \\
+  --model-path Qwen/Qwen-Image \\
   --ulysses-degree=1 \\
   --ring-degree=1`;
     }
@@ -87,4 +84,4 @@ const QwenImageEditConfigGenerator = () => {
   );
 };
 
-export default QwenImageEditConfigGenerator;
+export default QwenImageConfigGenerator;

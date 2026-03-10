@@ -16,6 +16,7 @@ sidebar_position: 4
 - **Multilingual Code Support**: Proficient in Python, JavaScript, TypeScript, Java, C++, Go, Rust, and many other programming languages.
 - **MoE Architecture**: Efficient Mixture-of-Experts design for optimal performance-to-cost ratio.
 - **ROCm Support**: Compatible with AMD MI300X, MI325X and MI355X GPUs via SGLang (verified).
+- **NVIDIA GPU Support**: Compatible with NVIDIA GB200 and B200 GPUs via SGLang (verified).
 
 For more details, please refer to the [official Qwen3-Coder GitHub Repository](https://github.com/QwenLM/Qwen3-Coder).
 
@@ -27,11 +28,9 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 
 ## 3. Model Deployment
 
-This section provides deployment configurations verified on AMD MI300X, MI325X and MI355X hardware platforms.
+This section provides deployment configurations verified on AMD MI300X, MI325X, MI355X and NVIDIA B200, GB200 hardware platforms.
 
-### 3.1 Basic Configuration
-
-The following configurations have been verified on AMD MI300X, MI325X and MI355X GPUs.
+### 3.1 Configuration
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model size, and quantization method.
 
@@ -41,12 +40,19 @@ import Qwen3CoderConfigGenerator from '@site/src/components/autoregressive/Qwen3
 
 ### 3.2 Configuration Tips
 
+**AMD (MI300X/MI325X/MI355X):**
 * **Memory Management**: We have verified successful deployment on MI300X/MI325X/MI355X with `--context-length 8192`. Larger context lengths may be supported but require additional memory.
 * **Expert Parallelism**: For 480B-A35B with FP8 quantization, `--ep 2` is required to satisfy the dimension alignment requirement.
 * **Page Size**: `--page-size 32` is recommended for MoE models to optimize memory usage.
 * **Environment Variable**: If you encounter aiter-related issues, try setting `SGLANG_USE_AITER=0`.
-* **Tool Use**: To enable tool calling capabilities, add `--tool-call-parser qwen3_coder` to the launch command.
 
+**NVIDIA (B200/GB200):**
+* **MOE Runner Backend**: FP8 uses `--moe-runner-backend triton`, NVFP4 uses `--moe-runner-backend flashinfer_cutlass`.
+* **NVFP4 Quantization**: Requires `--quantization modelopt_fp4` and uses a different model path (`nvidia/Qwen3-Coder-...`).
+* **DP Attention**: NVFP4 configuration supports `--enable-dp-attention` for improved throughput.
+
+**General:**
+* **Tool Use**: To enable tool calling capabilities, add `--tool-call-parser qwen3_coder` to the launch command.
 
 ## 4. Model Invocation
 
@@ -483,6 +489,8 @@ Max ITL (ms):                            36863.32
 python3 -m sglang.test.few_shot_gsm8k --num-questions 200
 ```
 
+##### AMD (MI300X/MI325X/MI355X)
+
 - **Results**:
 
   - Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8
@@ -491,4 +499,24 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200
     Invalid: 0.000
     Latency: 23.084 s
     Output throughput: 1148.425 token/s
+    ```
+
+##### NVIDIA (B200/GB200)
+
+For deployment commands, see [Section 3.1](#31-configuration).
+
+  - Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 (tp=8, ep=2)
+    ```
+    Accuracy: 0.950
+    Invalid: 0.000
+    Latency: 12.914 s
+    Output throughput: 2065.515 token/s
+    ```
+
+  - nvidia/Qwen3-Coder-480B-A35B-Instruct-NVFP (NVFP4, tp=8, ep=1)
+    ```
+    Accuracy: 0.970
+    Invalid: 0.000
+    Latency: 71.280 s
+    Output throughput: 390.080 token/s
     ```
