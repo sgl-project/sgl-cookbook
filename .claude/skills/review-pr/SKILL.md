@@ -24,7 +24,7 @@ Given a PR number, fetch the diff and run the full checklist. Report findings cl
 
 ### 3. Hardware specs (AMD)
 - MI300X = 192GB HBM3 per card
-- MI325X = 256GB HBM3 per card  
+- MI325X = 256GB HBM3 per card
 - MI355X = 288GB HBM3E per card
 - TP degree must be consistent with model size ÷ GPU memory per card
 
