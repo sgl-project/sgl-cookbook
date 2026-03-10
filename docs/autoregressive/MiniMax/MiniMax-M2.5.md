@@ -61,15 +61,11 @@ import MiniMaxM25ConfigGenerator from '@site/src/components/autoregressive/MiniM
 
 **Hardware Requirements: AMD**
 
-MiniMax-M2.5 has ~23GB of weights, allowing flexible deployment on AMD GPUs:
+- **2-GPU deployment**: Requires 2× high-memory GPUs (e.g., MI300X, MI325X, MI355X) with TP=2
+- **4-GPU deployment**: Requires 4× GPUs (e.g., MI300X, MI325X, MI355X) with TP=4
+- **8-GPU deployment**: Requires 8× GPUs (e.g., MI300X, MI325X, MI355X) with TP=8
 
-| Hardware | Memory | Minimum GPU Count | Supported TP Configurations |
-| -------- | ------ | ----------------- | --------------------------- |
-| MI300X   | 192GB  | 2                 | TP=2, TP=4, or TP=8         |
-| MI325X   | 256GB  | 2                 | TP=2, TP=4, or TP=8         |
-| MI355X   | 288GB  | 2                 | TP=2, TP=4, or TP=8         |
-
-**Note on Expert Parallelism (EP):** For MoE models, EP can be set to 1 (all experts on each GPU) or EP=TP (experts distributed across GPUs). Setting EP=TP is recommended for better memory efficiency.
+**Note on Expert Parallelism (EP):** For MoE models, EP can be set to 1 (all experts on each GPU) or EP=TP (experts distributed across GPUs).
 
 ## 4. Model Invocation
 
