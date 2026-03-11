@@ -41,6 +41,15 @@ const NemotronSuperConfigGenerator = () => {
           { id: '8', label: 'TP=8', default: false }
         ]
       },
+      mtp: {
+        name: 'mtp',
+        title: 'Multi-token Prediction (MTP)',
+        items: [
+          { id: 'enabled', label: 'Enabled', default: false },
+          { id: 'disabled', label: 'Disabled', default: true }
+        ],
+        commandRule: (value) => value === 'enabled' ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4 \\\n  --disable-radix-cache' : null
+      },
       kvcache: {
         name: 'kvcache',
         title: 'KV Cache DType',
