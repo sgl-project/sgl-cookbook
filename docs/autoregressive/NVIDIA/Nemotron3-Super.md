@@ -6,13 +6,12 @@
 
 Nemotron 3 Super is a 120B parameter hybrid MoE model that activates only 12B parameters per forward pass, delivering strong accuracy for coding, tool calling, and instruction following at a fraction of the cost. It also supports a 1M token context window so agents can keep conversation history and plan state in view across long workflows.
 
-<!-- TODO: Update model description, parameter count, and architecture details once the model is publicly available. -->
+Architecture and key features:
 
-At a high level:
-
-- **Hybrid layer stack (Mamba2 + MoE + attention):** The network is composed of interleaved layers that are *either* Mamba2, *or* MoE feed-forward, *or* attention-only.
-- **Non-uniform layer ordering:** The order and mix of these specialized layers is not a simple, rigid pattern, enabling the model to trade off sequence modeling, routing capacity, and expressivity across depth.
-- **Deployment-friendly precision:** Use BF16 for accuracy-sensitive and evaluation workloads; use FP8 for latency- and throughput-critical serving on recent NVIDIA GPUs.
+- **Hybrid Transformer-Mamba Architecture (MoE):** Combines Mixture of Experts with a hybrid Transformer-Mamba architecture, enabling efficient routing and sequence modeling in a single stack.
+- **Highest throughput efficiency in its size category:** Delivers up to 5x higher throughput compared to the previous Nemotron Super model (Llama Nemotron Super 1.5).
+- **Multi-Token Prediction (MTP):** By predicting several future tokens simultaneously in a single forward pass, MTP drastically accelerates the generation of long-form text.
+- **Thinking Budget support:** Supports Thinking Budget for optimal accuracy with minimum reasoning token generation.
 
 
 ## 2. SGLang Installation
