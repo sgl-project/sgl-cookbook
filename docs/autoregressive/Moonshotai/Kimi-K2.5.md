@@ -16,6 +16,16 @@ For details, see [official documentation](https://huggingface.co/moonshotai/Kimi
 
 Refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
 
+**For AMD MI300X/MI325X/MI355X GPUs:**
+
+```bash
+# Docker (AMD MI300X/MI325X)
+docker pull rocm/sgl-dev:v0.5.9-rocm720-mi30x-20260226 # v0.5.9 or later
+
+# Docker (AMD MI355X)
+docker pull rocm/sgl-dev:v0.5.9-rocm720-mi35x-20260226 # v0.5.9 or later
+```
+
 ## 3. Model Deployment
 
 This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
