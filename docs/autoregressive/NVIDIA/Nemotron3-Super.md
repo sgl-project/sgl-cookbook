@@ -2,7 +2,9 @@
 
 ## 1. Model Introduction
 
-`NVIDIA Nemotron3-Super` is a hybrid LLM from NVIDIA that combines Mixture-of-Experts (MoE) feed-forward layers, Mamba2 sequence-modeling layers, and standard self-attention layers in a single stack, enabling efficient and high-quality inference.
+`NVIDIA Nemotron3-Super` is a leading open model in the Nemotron 3 family, built for running many collaborating agents together. It is optimized for agentic systems that chain planning, reasoning, and tool use—workloads that generate far more tokens than single-turn chat and require strong reasoning at every step.
+
+Nemotron 3 Super is a 120B-parameter hybrid Mixture-of-Experts (MoE) model that activates only 12B parameters per forward pass, delivering strong accuracy for coding, tool calling, and instruction following at a fraction of the cost. It also supports a 1M-token context window so agents can keep conversation history and plan state in view across long workflows.
 
 <!-- TODO: Update model description, parameter count, and architecture details once the model is publicly available. -->
 
