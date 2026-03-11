@@ -1,15 +1,29 @@
 import React from 'react';
 import ConfigGenerator from '../../base/ConfigGenerator';
 
+const MODEL_PATHS = {
+  'bf16': 'nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16',
+  'fp8':  'nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8',
+  'nvfp4': 'nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4',
+};
+
 /**
  * NVIDIA Nemotron3-Super Configuration Generator
- * TODO: Update modelPath when the public model name is available.
  */
 const NemotronSuperConfigGenerator = () => {
   const config = {
     modelFamily: 'nvidia',
 
     options: {
+      model: {
+        name: 'model',
+        title: 'Model',
+        items: [
+          { id: 'bf16',   label: 'BF16',   default: true  },
+          { id: 'fp8',    label: 'FP8',    default: false },
+          { id: 'nvfp4',  label: 'NVFP4',  default: false },
+        ]
+      },
       hardware: {
         name: 'hardware',
         title: 'Hardware Platform',
@@ -57,10 +71,9 @@ const NemotronSuperConfigGenerator = () => {
     },
 
     generateCommand: function(values) {
-      const { tp, kvcache } = values;
+      const { tp, kvcache, model } = values;
 
-      // TODO: Update model path when the public model name is available
-      const modelPath = 'nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16';
+      const modelPath = MODEL_PATHS[model] || MODEL_PATHS['bf16'];
 
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelPath} \\\n`;
