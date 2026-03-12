@@ -18,11 +18,9 @@ Refer to the [official SGLang installation guide](https://docs.sglang.ai/get_sta
 
 ## 3. Model Deployment
 
-This section provides a progressive guide from quick deployment to performance optimization, suitable for users at different levels.
-
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, model variant, deployment strategy, and capabilities.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, deployment strategy, and capabilities.
 
 import KimiK25ConfigGenerator from '@site/src/components/autoregressive/KimiK25ConfigGenerator';
 
@@ -30,7 +28,9 @@ import KimiK25ConfigGenerator from '@site/src/components/autoregressive/KimiK25C
 
 ### 3.2 Configuration Tips
 
-- **Reasoning Parser**: Add `--reasoning-parser kimi_k2` for thinking mode to separate thinking and content.
+- **Memory**: Requires 8 GPUs with ≥140GB each (H200/B300). Use `--context-length 128000` to conserve memory.
+- **DP Attention**: Enable with `--dp <N> --enable-dp-attention` for production throughput. A common choice is to set `--dp` equal to `--tp`, but this is not required.
+- **Reasoning Parser**: Add `--reasoning-parser kimi_k2` to separate thinking and content in model outputs.
 - **Tool Call Parser**: Add `--tool-call-parser kimi_k2` for structured tool calls.
 
 ## 4. Model Invocation
@@ -71,9 +71,7 @@ response = client.chat.completions.create(
                 }
             ]
         }
-    ],
-    temperature=0.7,
-    max_tokens=2048
+    ]
 )
 
 print(response.choices[0].message.content)
@@ -82,169 +80,136 @@ print(response.choices[0].message.content)
 **Output Example:**
 
 ```text
-This image shows a **receipt from Auntie Anne's**, the pretzel restaurant chain. Here's a detailed breakdown:
+This image shows a **receipt from Auntie Anne's** (a pretzel franchise restaurant).
 
-## Header
-- **Logo**: The Auntie Anne's logo featuring a pretzel with a halo
-- **Store name**: "Auntie Anne's" in stylized text
-- Store location/address information (blurred out)
+## Key Details:
 
-## Purchase Details
-- **Item**: CINNAMON SUGAR (likely a cinnamon sugar pretzel)
-- **Quantity**: 1
-- **Unit price**: 17,000
-- **Line total**: 17,000
+**Item Purchased:**
+- **CINNAMON SUGAR** - 1 unit × 17,000 = **17,000**
 
-## Financial Summary
-- **SUB TOTAL**: 17,000
-- **GRAND TOTAL**: 17,000
-- **CASH IDR**: 20,000 (payment in Indonesian Rupiah)
-- **CHANGE DUE**: 3,000
+**Payment Summary:**
+- **SUB TOTAL:** 17,000
+- **GRAND TOTAL:** 17,000
+- **CASH IDR:** 20,000 (Indonesian Rupiah)
+- **CHANGE DUE:** 3,000
 
-## Key Observations
-- The currency is **Indonesian Rupiah (IDR)**
-- Customer paid 20,000 IDR in cash
-- Change received: 3,000 IDR
-- Bottom section contains blurred transaction details (likely date, time, receipt number, cashier ID)
+## Context:
+The receipt indicates a transaction in **Indonesian Rupiah (IDR)**. A customer purchased one Cinnamon Sugar pretzel for 17,000 IDR, paid with a 20,000 IDR note, and received 3,000 IDR in change.
 
-The receipt is printed on white thermal paper and appears to be placed on a dark surface. The transaction shows a straightforward single-item purchase.
+The top of the receipt shows the Auntie Anne's logo (a heart-shaped pretzel with a halo), and some text appears blurred for privacy, likely obscuring the store location, date, and transaction number. The receipt is printed on white thermal paper.
 ```
 
 #### 4.2.2 Reasoning Output
 
-Kimi-K2.5 supports both thinking mode and instant mode. You can get the reasoning content by calling the `reasoning_content` field in the response.
+Kimi-K2.5 supports both thinking mode (default) and instant mode.
 
-**Usage:**
+**Thinking Mode (default)** — reasoning content is automatically separated:
 
 ```python
-import openai
-import base64
-import requests
-def simple_chat(client: openai.OpenAI, model_name: str):
-    messages = [
-        {'role': 'system', 'content': 'You are Kimi, an AI assistant created by Moonshot AI.'},
-        {
-            'role': 'user',
-            'content': [
-                {'type': 'text', 'text': 'which one is bigger, 9.11 or 9.9? think carefully.'}
-            ],
-        },
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY"
+)
+
+response = client.chat.completions.create(
+    model="moonshotai/Kimi-K2.5",
+    messages=[
+        {"role": "user", "content": "Which one is bigger, 9.11 or 9.9? Think carefully."}
     ]
-    response = client.chat.completions.create(
-        model=model_name, messages=messages, stream=False, max_tokens=4096
-    )
-    print('====== Below is reasoning_content in Thinking Mode ======')
-    print(f'reasoning content: {response.choices[0].message.reasoning_content}')
-    print('====== Below is response in Thinking Mode ======')
-    print(f'response: {response.choices[0].message.content}')
+)
 
-    response = client.chat.completions.create(
-        model=model_name,
-        messages=messages,
-        stream=False,
-        max_tokens=4096,
-        extra_body= {'chat_template_kwargs': {"thinking": False}} # To use instant mode
-    )
-    print('====== Below is response in Instant Mode ======')
-    print(f'response: {response.choices[0].message.content}')
+print("====== Reasoning Content (Thinking Mode) ======")
+print(response.choices[0].message.reasoning_content)
+print("====== Response (Thinking Mode) ======")
+print(response.choices[0].message.content)
+```
 
-if __name__ == "__main__":
-    client = openai.OpenAI(api_key="sk-123456", base_url="http://localhost:30000/v1")
-    simple_chat(client, "moonshotai/Kimi-K2.5")
+**Instant Mode (thinking off)** — disable thinking for faster responses:
+
+```python
+response = client.chat.completions.create(
+    model="moonshotai/Kimi-K2.5",
+    messages=[
+        {"role": "user", "content": "Which one is bigger, 9.11 or 9.9? Think carefully."}
+    ],
+    extra_body={"chat_template_kwargs": {"thinking": False}}
+)
+
+print("====== Response (Instant Mode) ======")
+print(response.choices[0].message.content)
 ```
 
 **Output Example:**
 
 ```text
-====== Below is reasoning_content in Thinking Mode ======
-reasoning content: The user is asking which number is bigger, 9.11 or 9.9. This is a classic "trick" question that plays on how people sometimes compare decimals incorrectly by treating them like strings or whole numbers.
+====== Reasoning Content (Thinking Mode) ======
+The user is asking which number is bigger: 9.11 or 9.9.
 
-Let me think through this carefully:
+At first glance, someone might think 9.11 is bigger because 11 > 9, but that's incorrect because we're dealing with decimal numbers, not whole numbers.
 
-9.11 vs 9.9
-
-When comparing decimals, I need to look at the place values:
-- 9.11 = 9 + 1/10 + 1/100 = 9 + 0.1 + 0.01 = 9.11
-- 9.9 = 9 + 9/10 = 9 + 0.9 = 9.90
-
-Now comparing 9.11 and 9.90:
-- The integer parts are both 9, so we look at the tenths place.
-- 9.11 has 1 in the tenths place
-- 9.90 has 9 in the tenths place
-- Since 9 > 1, we have 9.9 > 9.11
-
-Alternatively, thinking about it as money:
-- $9.11 is nine dollars and eleven cents
-- $9.90 is nine dollars and ninety cents
-- 90 cents is more than 11 cents, so $9.90 > $9.11
-
-Another way:
+Let me compare them properly:
 - 9.9 = 9.90
-- 9.90 > 9.11
+- 9.11
 
-Common mistake: People might think 11 > 9, so 9.11 > 9.9, but that's wrong because 9.9 is actually 9.90, not 9.09 or something. The decimal places need to be aligned.
+When comparing decimals, we look at each place value from left to right:
+- Units place: 9 = 9 (tie)
+- Tenths place: 9 vs 1
 
-So the answer is 9.9 is bigger than 9.11.
+Since 9 > 1, we have 9.9 > 9.11.
 
-Wait, I should make sure I'm not falling into any traps here. The user said "think carefully" which suggests they know about the common confusion between 9.11 and 9.9 (similar to the famous 0.999... = 1 debates, or the "9.11 vs 9.9" meme that went around regarding version numbers or dates).
+Alternatively, we can think of it as:
+- 9.9 = 9 + 9/10 = 9 + 0.9 = 9.90
+- 9.11 = 9 + 11/100 = 9 + 0.11
 
-Let me double-check:
-- 9.11 = 9.110
-- 9.9 = 9.900
-- 9.900 > 9.110
+Since 0.90 > 0.11, then 9.9 > 9.11.
 
-Yes, 9.9 is definitely bigger.
+So the answer is clearly 9.9 is bigger.
 
-I should explain this clearly by showing the decimal expansion or using the money analogy, as that's intuitive.
-====== Below is response in Thinking Mode ======
-response: **9.9 is bigger** than 9.11.
+The "think carefully" hint suggests the user is trying to catch the common error where people compare 11 and 9 as whole numbers rather than understanding decimal place value (tenths vs hundredths).
 
-Here's why people often get this wrong: They compare the numbers after the decimal point as if they were whole numbers ("11" vs "9") and think 11 > 9, so 9.11 must be larger. But that's incorrect because **9.9 is actually 9.90**, not 9.09.
+I should explain this clearly to avoid confusion.
+====== Response (Thinking Mode) ======
+**9.9 is bigger.**
 
-Think of it like money:
-- **9.11** = $\$9.11$ (9 dollars and 11 cents)
-- **9.9** = $\$9.90$ (9 dollars and 90 cents)
+Here's why this can be tricky: Many people instinctively compare 11 and 9 and think "11 is bigger than 9," but that's comparing the wrong place values.
 
-Comparing the decimal places:
-- 9.**1**1 vs 9.**9**0
-- The tenths place: **1** vs **9**
-- Since 9 > 1, we have 9.90 > 9.11
+When comparing decimals, align them by place value:
+- 9.9 = 9.**90**
+- 9.11 = 9.**11**
 
-Or mathematically:
-$$9.9 - 9.11 = 0.79$$
+After the decimal point:
+- The first digit (tenths place): **9** vs **1**
+- Since 9 > 1, we stop there. **9.9 is larger.**
 
-So **9.9 is larger by 0.79**.
-====== Below is response in Instant Mode ======
-response:  I need to compare 9.11 and 9.9.
+Think of it as money:
+- $9.90 (nine dollars and ninety cents)
+- $9.11 (nine dollars and eleven cents)
 
-Let me think carefully. This is a common trick question because of how we read version numbers vs. decimal numbers.
+$9.90 is clearly more than $9.11.
+====== Response (Instant Mode) ======
+ Let me think through this carefully.
 
-**As decimal numbers:**
-- 9.11 = 9 + 11/100 = 9.11
-- 9.9 = 9 + 9/10 = 9.90
+**9.9 is bigger than 9.11**
 
-Since 9.90 > 9.11, **9.9 is bigger** (as decimals).
+Here's why: When comparing decimals, we need to align them by their decimal places:
 
-**However**, if this were software version numbers (like "version 9.11" vs "version 9.9"), then 9.11 would be newer/bigger (11 > 9 in the versioning scheme).
+- 9.9 = 9.90
+- 9.11 = 9.11
 
-Given the notation with decimal points, the most natural interpretation is **decimal numbers**, so **9.9 is bigger**.
+Now comparing:
+- The whole number parts are equal (9 = 9)
+- Comparing tenths: **9 > 1**
+
+So 9.90 > 9.11
+
+A common mistake is thinking 11 hundredths is larger than 9 tenths, but 9 tenths = 90 hundredths, which is clearly larger than 11 hundredths.
 ```
 
 #### 4.2.3 Tool Calling
 
-Kimi-K2.5 supports tool calling capabilities for agentic tasks. Enable the tool call parser during deployment:
-
-**Deployment Command:**
-
-```shell
-python -m sglang.launch_server \
-  --model moonshotai/Kimi-K2.5 \
-  --tool-call-parser kimi_k2 \
-  --tp 8 \
-  --trust-remote-code
-```
-
-**Python Example:**
+Kimi-K2.5 supports tool calling capabilities for agentic tasks:
 
 ```python
 from openai import OpenAI
@@ -280,14 +245,12 @@ tools = [
     }
 ]
 
-# Make request with streaming
 response = client.chat.completions.create(
     model="moonshotai/Kimi-K2.5",
     messages=[
         {"role": "user", "content": "What's the weather in Beijing?"}
     ],
     tools=tools,
-    temperature=0.7,
     stream=True
 )
 
@@ -298,49 +261,35 @@ for chunk in response:
     if chunk.choices and len(chunk.choices) > 0:
         delta = chunk.choices[0].delta
 
-        # Accumulate tool calls
         if hasattr(delta, 'tool_calls') and delta.tool_calls:
             for tool_call in delta.tool_calls:
                 index = tool_call.index
                 if index not in tool_calls_accumulator:
-                    tool_calls_accumulator[index] = {
-                        'name': None,
-                        'arguments': ''
-                    }
-
+                    tool_calls_accumulator[index] = {'name': None, 'arguments': ''}
                 if tool_call.function:
                     if tool_call.function.name:
                         tool_calls_accumulator[index]['name'] = tool_call.function.name
                     if tool_call.function.arguments:
                         tool_calls_accumulator[index]['arguments'] += tool_call.function.arguments
 
-        # Print content
         if delta.content:
             print(delta.content, end="", flush=True)
 
-# Print accumulated tool calls
 for index, tool_call in sorted(tool_calls_accumulator.items()):
-    print(f"🔧 Tool Call: {tool_call['name']}")
-    print(f"   Arguments: {tool_call['arguments']}")
-
-print()
+    print(f"Tool Call: {tool_call['name']}")
+    print(f"  Arguments: {tool_call['arguments']}")
 ```
 
 **Output Example:**
 
 ```text
-🔧 Tool Call: get_weather
-   Arguments: {"location":"Beijing"}
+Tool Call: get_weather
+  Arguments: {"location": "Beijing"}
 ```
 
 **Handling Tool Call Results:**
 
 ```python
-# After getting the tool call, execute the function
-def get_weather(location, unit="celsius"):
-    # Your actual weather API call here
-    return f"The weather in {location} is 22°{unit[0].upper()} and sunny."
-
 # Send tool result back to the model
 messages = [
     {"role": "user", "content": "What's the weather in Beijing?"},
@@ -359,18 +308,24 @@ messages = [
     {
         "role": "tool",
         "tool_call_id": "call_123",
-        "content": get_weather("Beijing", "celsius")
+        "content": "The weather in Beijing is 22°C and sunny."
     }
 ]
 
 final_response = client.chat.completions.create(
     model="moonshotai/Kimi-K2.5",
-    messages=messages,
-    temperature=0.7
+    messages=messages
 )
 
 print(final_response.choices[0].message.content)
-# Output: "The weather in Beijing is currently 22°C and sunny."
+```
+
+**Output Example:**
+
+```text
+The weather in Beijing is **22°C and sunny**. ☀️
+
+It's a nice day there with comfortable temperatures and clear skies!
 ```
 
 #### 4.2.4 Multimodal + Tool Calling (Agentic Vision)
@@ -424,25 +379,118 @@ response = client.chat.completions.create(
             ]
         }
     ],
-    tools=tools,
-    temperature=0.7,
-    max_tokens=2048
+    tools=tools
 )
 
-print(response.choices[0].message)
+msg = response.choices[0].message
+
+# Print reasoning process
+if msg.reasoning_content:
+    print("=== Reasoning ===")
+    print(msg.reasoning_content)
+
+# Print response content
+if msg.content:
+    print("=== Content ===")
+    print(msg.content)
+
+# Print tool calls
+if msg.tool_calls:
+    print("=== Tool Calls ===")
+    for tc in msg.tool_calls:
+        print(f"  Function: {tc.function.name}")
+        print(f"  Arguments: {tc.function.arguments}")
 ```
 
 **Output Example:**
 
 ```text
-ChatCompletionMessage(content="I can see from the receipt that the product is **CINNAMON SUGAR** from Auntie Anne's, which is their classic **Cinnamon Sugar Pretzel**. Let me search for similar items for you. ", refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=[ChatCompletionMessageFunctionToolCall(id='functions.search_product:0', function=Function(arguments='{"query": "cinnamon sugar pretzel"}', name='search_product'), type='function', index=0)], reasoning_content='The user is asking me to identify a product from a receipt and search for similar items. Looking at the receipt, I can see the product is "CINNAMON SUGAR" from Auntie Anne\'s. The price is 17,000 (which appears to be Indonesian Rupiah based on the "CASH IDR" text).\n \n Auntie Anne\'s is a chain that sells pretzels, so this is likely a Cinnamon Sugar Pretzel. I should search for this product to find similar items.\n \n Let me use the search_product function to search for "cinnamon sugar pretzel" or similar terms. ')
+=== Reasoning ===
+The user is asking me to identify a product from a receipt and search for similar items.
+Looking at the receipt, I can see:
+
+ 1. The store is "Auntie Anne's" - which is a popular pretzel chain
+ 2. The product purchased is "CINNAMON SUGAR"
+ 3. Price is 17,000 (likely Indonesian Rupiah based on "CASH IDR")
+ 4. Quantity is 1
+
+So the product is a Cinnamon Sugar pretzel from Auntie Anne's.
+Now I need to search for this product or similar items using the search_product function.
+=== Content ===
+I can see from the receipt that the product is a **Cinnamon Sugar** item from **Auntie Anne's** (the famous pretzel chain). This appears to be a Cinnamon Sugar Pretzel purchased for 17,000 IDR (Indonesian Rupiah).
+
+Let me search for this product and similar items:
+=== Tool Calls ===
+  Function: search_product
+  Arguments: {"query": "Auntie Anne's Cinnamon Sugar Pretzel"}
 ```
 
 ## 5. Benchmark
 
-This section uses **industry-standard configurations** for comparable benchmark results.
+### 5.1 Accuracy Benchmark
 
-### 5.1 Speed Benchmark
+#### 5.1.1 MMMU Benchmark
+
+You can evaluate the model's accuracy using the MMMU benchmark, which tests multimodal understanding and reasoning across various subjects:
+
+- **Benchmark Command:**
+
+```shell
+python3 benchmark/mmmu/bench_sglang.py \
+    --response-answer-regex "(?i)(?:answer|ans)[:\s]*(?:\*\*)?[\(\[]?([A-Za-z])[\)\]]?(?:\*\*)?" \
+    --port 30000 \
+    --concurrency 64
+```
+
+- **Result:**
+
+```text
+Benchmark time: 2785.4322692090645
+answers saved to: ./answer_sglang.json
+Evaluating...
+answers saved to: ./answer_sglang.json
+{'Accounting': {'acc': 0.667, 'num': 30},
+ 'Agriculture': {'acc': 0.567, 'num': 30},
+ 'Architecture_and_Engineering': {'acc': 0.733, 'num': 30},
+ 'Art': {'acc': 0.833, 'num': 30},
+ 'Art_Theory': {'acc': 0.8, 'num': 30},
+ 'Basic_Medical_Science': {'acc': 0.833, 'num': 30},
+ 'Biology': {'acc': 0.6, 'num': 30},
+ 'Chemistry': {'acc': 0.633, 'num': 30},
+ 'Clinical_Medicine': {'acc': 0.733, 'num': 30},
+ 'Computer_Science': {'acc': 0.667, 'num': 30},
+ 'Design': {'acc': 0.7, 'num': 30},
+ 'Diagnostics_and_Laboratory_Medicine': {'acc': 0.5, 'num': 30},
+ 'Economics': {'acc': 0.867, 'num': 30},
+ 'Electronics': {'acc': 0.3, 'num': 30},
+ 'Energy_and_Power': {'acc': 0.767, 'num': 30},
+ 'Finance': {'acc': 0.833, 'num': 30},
+ 'Geography': {'acc': 0.667, 'num': 30},
+ 'History': {'acc': 0.767, 'num': 30},
+ 'Literature': {'acc': 0.767, 'num': 30},
+ 'Manage': {'acc': 0.733, 'num': 30},
+ 'Marketing': {'acc': 0.833, 'num': 30},
+ 'Materials': {'acc': 0.567, 'num': 30},
+ 'Math': {'acc': 0.633, 'num': 30},
+ 'Mechanical_Engineering': {'acc': 0.567, 'num': 30},
+ 'Music': {'acc': 0.5, 'num': 30},
+ 'Overall': {'acc': 0.698, 'num': 900},
+ 'Overall-Art and Design': {'acc': 0.708, 'num': 120},
+ 'Overall-Business': {'acc': 0.787, 'num': 150},
+ 'Overall-Health and Medicine': {'acc': 0.74, 'num': 150},
+ 'Overall-Humanities and Social Science': {'acc': 0.75, 'num': 120},
+ 'Overall-Science': {'acc': 0.66, 'num': 150},
+ 'Overall-Tech and Engineering': {'acc': 0.595, 'num': 210},
+ 'Pharmacy': {'acc': 0.767, 'num': 30},
+ 'Physics': {'acc': 0.767, 'num': 30},
+ 'Psychology': {'acc': 0.667, 'num': 30},
+ 'Public_Health': {'acc': 0.867, 'num': 30},
+ 'Sociology': {'acc': 0.8, 'num': 30}}
+eval out saved to ./val_sglang.json
+Overall accuracy: 0.698
+```
+
+### 5.2 Speed Benchmark
 
 **Test Environment:**
 
@@ -451,23 +499,25 @@ This section uses **industry-standard configurations** for comparable benchmark 
 - Tensor Parallelism: 8
 - SGLang Version: 0.5.6.post2
 
-#### 5.1.1 Benchmark Commands
+We use SGLang's built-in benchmarking tool with the `random` dataset for standardized performance evaluation.
 
-**Scenario 1: Chat (1K/1K) - Most Important**
+#### 5.2.1 Latency Benchmark
 
-- **Model Deployment**
+- **Model Deployment:**
 
 ```bash
-python -m sglang.launch_server \
-  --model moonshotai/Kimi-K2.5 \
+sglang serve \
+  --model-path moonshotai/Kimi-K2.5 \
   --tp 8 \
-  --trust-remote-code
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
 ```
 
-- Low Concurrency (Latency-Optimized)
+- **Benchmark Command:**
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.5 \
   --dataset-name random \
@@ -477,6 +527,8 @@ python -m sglang.bench_serving \
   --max-concurrency 1 \
   --request-rate inf
 ```
+
+- **Results:**
 
 ```
 ============ Serving Benchmark Result ============
@@ -575,7 +627,7 @@ Max ITL (ms):                            655.61
 - High Concurrency (Throughput-Optimized)
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.5 \
   --dataset-name random \
@@ -585,6 +637,8 @@ python -m sglang.bench_serving \
   --max-concurrency 100 \
   --request-rate inf
 ```
+
+- **Results:**
 
 ```
 ============ Serving Benchmark Result ============
@@ -916,67 +970,4 @@ P95 ITL (ms):                            1869.15
 P99 ITL (ms):                            2708.95
 Max ITL (ms):                            7778.47
 ==================================================
-```
-
-### 5.2 Accuracy Benchmark
-
-#### 5.2.1 MMMU Benchmark
-
-You can evaluate the model's accuracy using the MMMU dataset with `lmms_eval`:
-
-- Benchmark Command:
-
-```shell
-python3 benchmark/mmmu/bench_sglang.py \
-    --response-answer-regex "<\|begin_of_box\|>(.*)<\|end_of_box\|>" \
-    --port 30000 \
-    --concurrency 64
-```
-
-- Result:
-
-```text
-Benchmark time: 2903.3503892859444
-answers saved to: ./answer_sglang.json
-Evaluating...
-answers saved to: ./answer_sglang.json
-{'Accounting': {'acc': 0.8, 'num': 30},
- 'Agriculture': {'acc': 0.667, 'num': 30},
- 'Architecture_and_Engineering': {'acc': 0.733, 'num': 30},
- 'Art': {'acc': 0.7, 'num': 30},
- 'Art_Theory': {'acc': 0.833, 'num': 30},
- 'Basic_Medical_Science': {'acc': 0.667, 'num': 30},
- 'Biology': {'acc': 0.69, 'num': 29},
- 'Chemistry': {'acc': 0.5, 'num': 30},
- 'Clinical_Medicine': {'acc': 0.467, 'num': 30},
- 'Computer_Science': {'acc': 0.6, 'num': 30},
- 'Design': {'acc': 0.8, 'num': 30},
- 'Diagnostics_and_Laboratory_Medicine': {'acc': 0.4, 'num': 30},
- 'Economics': {'acc': 0.733, 'num': 30},
- 'Electronics': {'acc': 0.633, 'num': 30},
- 'Energy_and_Power': {'acc': 0.867, 'num': 30},
- 'Finance': {'acc': 0.897, 'num': 29},
- 'Geography': {'acc': 0.6, 'num': 30},
- 'History': {'acc': 0.333, 'num': 30},
- 'Literature': {'acc': 0.5, 'num': 30},
- 'Manage': {'acc': 0.7, 'num': 30},
- 'Marketing': {'acc': 0.933, 'num': 30},
- 'Materials': {'acc': 0.733, 'num': 30},
- 'Math': {'acc': 0.867, 'num': 30},
- 'Mechanical_Engineering': {'acc': 0.733, 'num': 30},
- 'Music': {'acc': 0.567, 'num': 30},
- 'Overall': {'acc': 0.678, 'num': 898},
- 'Overall-Art and Design': {'acc': 0.725, 'num': 120},
- 'Overall-Business': {'acc': 0.812, 'num': 149},
- 'Overall-Health and Medicine': {'acc': 0.593, 'num': 150},
- 'Overall-Humanities and Social Science': {'acc': 0.475, 'num': 120},
- 'Overall-Science': {'acc': 0.711, 'num': 149},
- 'Overall-Tech and Engineering': {'acc': 0.71, 'num': 210},
- 'Pharmacy': {'acc': 0.633, 'num': 30},
- 'Physics': {'acc': 0.9, 'num': 30},
- 'Psychology': {'acc': 0.467, 'num': 30},
- 'Public_Health': {'acc': 0.8, 'num': 30},
- 'Sociology': {'acc': 0.6, 'num': 30}}
-eval out saved to ./val_sglang.json
-Overall accuracy: 0.678
 ```

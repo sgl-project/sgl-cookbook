@@ -51,7 +51,7 @@ const NemotronNano3ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: true },
           { id: 'enabled', label: 'Enabled', default: false }
         ],
-        commandRule: (value) => value === 'enabled' ? '--reasoning-parser nano_v3' : null
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser nemotron_3' : null
       },
       toolcall: {
         name: 'toolcall',

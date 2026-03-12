@@ -38,7 +38,8 @@ import NemotronNano3ConfigGenerator from '@site/src/components/autoregressive/Ne
 
 - **Attention backend**:
 
-    **H200/B200**: use flashinfer attention backend by default.
+    **H200**: Use flash attention 3 backend by default.
+    **B200**: Use flashinfer backend by default.
 
 - **TP support**:
 
@@ -103,7 +104,7 @@ for chunk in stream:
 ```
 
 ### 4.2 Reasoning
-To enable reasoning, `--reasoning-parser nano_v3` should be appended to the launching command. The model supports two modes - Reasoning ON (default) vs OFF. This can be toggled by setting enable_thinking to False, as shown below.
+To enable reasoning, `--reasoning-parser nemotron_3` should be appended to the launching command. The model supports two modes - Reasoning ON (default) vs OFF. This can be toggled by setting enable_thinking to False, as shown below.
 
 ```python
 from openai import OpenAI
@@ -356,7 +357,7 @@ Max ITL (ms):                            5237.28
 python3 -m sglang.launch_server \
   --model-path nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16 \
   --trust-remote-code \
-  --reasoning-parser nano_v3
+  --reasoning-parser nemotron_3
 ```
 
 **Run Benchmark with lm-eval**
