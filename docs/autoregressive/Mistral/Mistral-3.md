@@ -17,7 +17,7 @@ Apache 2.0 License: Open-source license allowing usage and modification for both
 Large Context Window: Supports a 256k context window.
 
 
-For further details, please refer to the [official documentation][(https://github.com/mistralai)]
+For further details, please refer to the [official documentation](https://github.com/mistralai)
 
 
 ## 2. SGLang Installation
