@@ -13,7 +13,7 @@ const Llama4MaverickConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'mi300x', label: 'MI300x', default: false },
+          { id: 'mi300x', label: 'MI300x', default: true },
           { id: 'mi325x', label: 'MI325x', default: false },
           { id: 'mi355x', label: 'MI355x', default: false }
         ]
