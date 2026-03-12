@@ -16,7 +16,7 @@ const Ministral3ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'mi300x', label: 'MI300x', default: false },
+          { id: 'mi300x', label: 'MI300x', default:true},
           { id: 'mi325x', label: 'MI325x', default: false },
           { id: 'mi355x', label: 'MI355x', default: false }
         ]
@@ -40,8 +40,8 @@ const Ministral3ConfigGenerator = () => {
         name: 'toolcall',
         title: 'Tool Call Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'enabled', label: 'enabled', default: true },
+          { id: 'enabled', label: 'enabled', default: false }
         ],
         commandRule: (value) => value === 'enabled' ? '--tool-call-parser mistral' : null
       }
@@ -98,4 +98,4 @@ const Ministral3ConfigGenerator = () => {
   return <ConfigGenerator config={config} />;
 };
 
-export default Devstral2ConfigGenerator;
+export default Ministral3ConfigGenerator;
