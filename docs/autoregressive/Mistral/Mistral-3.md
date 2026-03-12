@@ -37,7 +37,15 @@ import Ministral3ConfigGenerator from '@site/src/components/autoregressive/Minis
 <Ministral3ConfigGenerator />
 
 ### 3.2 Configuration Tips
-For more detailed configuration tips, please refer to [Mistral-3 Usage](https://cookbook.sglang.io/docs/autoregressive/Mistral/Mistral-3).
+#### Context length vs memory: 
+Ministral-3 advertises a long context window; if you are memory-constrained, start by lowering --context-length (for example 32768) and increase once things are stable.
+
+#### Pre-installation steps inside the docker
+Adding the following steps after launching the docker
+```shell
+pip install mistral-common --upgrade
+pip install transformers==5.0.0.rc0
+```
 
 ## 4. Model Invocation
 
@@ -53,7 +61,7 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 Launch the docker
 ```shell
-docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
 ```
 
 ```shell
@@ -65,21 +73,14 @@ docker run -d -it --ipc=host --network=host --privileged \
   -v /:/work \
   -e SHELL=/bin/bash \
   --name Ministral \
-  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
+ lmsysorg/sglang:v0.5.9-rocm720-mi30x \
   /bin/bash
-```
-
-#### 4.2.2 Pre-installation steps inside the docker
-
-```shell
-pip install mistral-common --upgrade
-pip install transformers==5.0.0.rc0
 ```
 
 
 #### 4.2.3 Launch the server
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path mistralai/Ministral-3-14B-Instruct-2512 \
   --tp 1 \
   --trust-remote-code
@@ -103,16 +104,16 @@ This section uses **industry-standard configurations** for comparable benchmark 
 - Model Deployment Command:
 
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path mistralai/Ministral-3-14B-Instruct-2512 \
   --tp 1 \
   --trust-remote-code
 ```
 
-##### 5.1.1.1 Low Concurrency
+#####  Low Concurrency
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model mistralai/Ministral-3-14B-Instruct-2512 \
   --dataset-name random \
@@ -163,10 +164,10 @@ Max ITL (ms):                            8.45
 ==================================================
 ```
 
-##### 5.1.1.2 Medium Concurrency
+##### Medium Concurrency
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model mistralai/Ministral-3-14B-Instruct-2512 \
   --dataset-name random \
@@ -216,10 +217,10 @@ Max ITL (ms):                            888.63
 ==================================================
 ```
 
-##### 5.1.1.3 High Concurrency
+##### High Concurrency
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model mistralai/Ministral-3-14B-Instruct-2512 \
   --dataset-name random \
