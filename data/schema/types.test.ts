@@ -88,7 +88,8 @@ function isValidConfigAttributes(attrs: unknown): attrs is ConfigAttributes {
     a.quantization !== "int4" &&
     a.quantization !== "bf16" &&
     a.quantization !== "fp4" &&
-    a.quantization !== "mxfp4"
+    a.quantization !== "mxfp4" &&
+    a.quantization !== "nvfp4"
   )
     return false;
 

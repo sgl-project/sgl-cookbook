@@ -32,8 +32,9 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [x] [Qwen3](./autoregressive/Qwen/Qwen3.md)
 - [x] [Qwen3-Next](./autoregressive/Qwen/Qwen3-Next.md)
 - [x] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
-- [ ] [Qwen3-Coder](./autoregressive/Qwen/Qwen3-Coder.md)
-- [ ] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
+- [x] [Qwen3-Coder](./autoregressive/Qwen/Qwen3-Coder.md)
+- [x] [Qwen3-Coder-Next](./autoregressive/Qwen/Qwen3-Coder-Next.md)
+- [x] [Qwen2.5-VL](./autoregressive/Qwen/Qwen2.5-VL.md)
 
 #### DeepSeek
 
@@ -42,6 +43,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [x] [DeepSeek-V3](./autoregressive/DeepSeek/DeepSeek-V3.md)
 - [x] [DeepSeek-R1](./autoregressive/DeepSeek/DeepSeek-R1.md)
 - [x] [DeepSeek-OCR](./autoregressive/DeepSeek/DeepSeek-OCR.md)
+- [x] [DeepSeek-OCR-2](./autoregressive/DeepSeek/DeepSeek-OCR-2.md)
 
 #### Llama
 
@@ -51,13 +53,15 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### GLM
 
-- [ ] [GLM-Glyph](./autoregressive/GLM/Glyph.md)
-- [x] [GLM-4.5](./autoregressive/GLM/GLM-4.5.md)
+- [x] [GLM-5](./autoregressive/GLM/GLM-5.md)
+- [x] [GLM-OCR](./autoregressive/GLM/GLM-OCR.md)
+- [x] [GLM-Glyph](./autoregressive/GLM/Glyph.md)
 - [x] [GLM-4.5V](./autoregressive/GLM/GLM-4.5V.md)
 - [x] [GLM-4.6](./autoregressive/GLM/GLM-4.6.md)
 - [x] [GLM-4.6V](./autoregressive/GLM/GLM-4.6V.md)
+- [x] [GLM-4.5](./autoregressive/GLM/GLM-4.5.md)
 - [x] [GLM-4.7](./autoregressive/GLM/GLM-4.7.md)
-- [x] [GLM-4.7-Flash](./autoregressive/GLM/GLM-4.7-Flash.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [GLM-4.7-Flash](./autoregressive/GLM/GLM-4.7-Flash.md)
 
 #### OpenAI
 
@@ -65,21 +69,23 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Moonshotai
 
+- [x] [Kimi-K2.5](./autoregressive/Moonshotai/Kimi-K2.5.md)
 - [x] [Kimi-K2](./autoregressive/Moonshotai/Kimi-K2.md)
-- [ ] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
-- [x] [Kimi-K2.5](./autoregressive/Moonshotai/Kimi-K2.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
 
 #### MiniMax
 
+- [x] [MiniMax-M2.5](./autoregressive/MiniMax/MiniMax-M2.5.md)
 - [ ] [MiniMax-M2](./autoregressive/MiniMax/MiniMax-M2.md)
 
 #### NVIDIA
 
+- [x] [Nemotron3-Super](./autoregressive/NVIDIA/Nemotron3-Super.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 - [x] [Nemotron-Nano-3-30B-A3B](./autoregressive/NVIDIA/Nemotron3-Nano.md)
 
 #### Ernie
 
-- [ ] [Ernie4.5](./autoregressive/Ernie/Ernie4.5.md)
+- [x] [Ernie4.5](./autoregressive/Ernie/Ernie4.5.md)
 - [ ] [Ernie4.5-VL](./autoregressive/Ernie/Ernie4.5-VL.md)
 
 #### InternVL
@@ -105,7 +111,18 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### FlashLabs
 
-- [x] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md)<span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md)
+
+#### StepFun
+
+- [x] [Step3.5](./autoregressive/StepFun/Step3.5.md)
+- [x] [Step3-VL-10B](./autoregressive/StepFun/Step3-VL-10B.md)
+
+#### InclusionAI
+
+- [x] [Ling-2.5-1T](./autoregressive/InclusionAI/Ling-2.5-1T.md)
+- [x] [Ring-2.5-1T](./autoregressive/InclusionAI/Ring-2.5-1T.md)
+- [x] [LLaDA 2.1](./autoregressive/LLaDA/LLaDA-2.1.md)
 
 ### Diffusion Models
 
@@ -115,7 +132,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Qwen-Image
 
-- [ ] [Qwen-Image](./diffusion/Qwen-Image/Qwen-Image.md)
+- [x] [Qwen-Image](./diffusion/Qwen-Image/Qwen-Image.md)
 - [x] [Qwen-Image-Edit](./diffusion/Qwen-Image/Qwen-Image-Edit.md)
 
 #### Wan
@@ -125,7 +142,17 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Z-Image
 
-- [ ] [Z-Image](./diffusion/Z-Image/Z-Image-Turbo.md)
+- [x] [Z-Image](./diffusion/Z-Image/Z-Image-Turbo.md)
+
+#### MOVA
+
+- [x] [MOVA](./diffusion/MOVA/MOVA.md)
+
+### SGLang Omni
+
+#### FishAudio
+
+- [x] [S2 Pro (TTS)](./omni/S2-Pro/S2-Pro.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 
 ### Benchmarks
 

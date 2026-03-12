@@ -3,7 +3,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
  * DeepSeek V3.2 Configuration Generator
- * Supports DeepSeek-V3.2, V3.2-Speciale, and V3.2-Exp models
+ * Supports DeepSeek-V3.2, V3.2-Speciale, V3.2-Exp, and V3.2-NVFP4 models
  */
 const DeepSeekConfigGenerator = () => {
   const config = {
@@ -25,7 +25,8 @@ const DeepSeekConfigGenerator = () => {
             items: [
                 { id: 'v32', label: 'DeepSeek-V3.2', default: true },
                 { id: 'v32speciale', label: 'DeepSeek-V3.2-Speciale', default: false },
-                { id: 'v32exp', label: 'DeepSeek-V3.2-Exp', default: false }
+                { id: 'v32exp', label: 'DeepSeek-V3.2-Exp', default: false },
+                { id: 'v32nvfp4', label: 'DeepSeek-V3.2-NVFP4', default: false }
             ]
         },
         strategy: {
@@ -61,6 +62,13 @@ const DeepSeekConfigGenerator = () => {
     generateCommand: function(values) {
         const { hardware, modelname, strategy, reasoningParser, toolcall } = values;
 
+        const isNvfp4 = modelname === 'v32nvfp4';
+
+        // Validation: DeepSeek-V3.2-NVFP4 requires B200 (Blackwell)
+        if (isNvfp4 && hardware !== 'b200') {
+            return `# Error: DeepSeek-V3.2-NVFP4 requires NVIDIA B200 (Blackwell) hardware\n# Please select "B200" for Hardware Platform or choose a different model`;
+        }
+
         // Validation: DeepSeek-V3.2-Speciale doesn't support tool calling
         if (modelname === 'v32speciale' && toolcall === 'enabled') {
             return `# Error: DeepSeek-V3.2-Speciale doesn't support tool calling\n# Please select "Disabled" for Tool Call Parser or choose a different model`;
@@ -70,10 +78,12 @@ const DeepSeekConfigGenerator = () => {
         const modelMap = {
             'v32': 'DeepSeek-V3.2',
             'v32exp': 'DeepSeek-V3.2-Exp',
-            'v32speciale': 'DeepSeek-V3.2-Speciale'
+            'v32speciale': 'DeepSeek-V3.2-Speciale',
+            'v32nvfp4': 'DeepSeek-V3.2-NVFP4'
         };
 
-        const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
+        const modelFamily = isNvfp4 ? 'nvidia' : this.modelFamily;
+        const modelName = `${modelFamily}/${modelMap[modelname]}`;
 
         let cmd = 'python3 -m sglang.launch_server \\\n';
         cmd += `  --model-path ${modelName}`;
@@ -85,14 +95,24 @@ const DeepSeekConfigGenerator = () => {
 
         // Strategy configurations
         const strategyArray = Array.isArray(strategy) ? strategy : [];
-        // TP is mandatory
-        cmd += ` \\\n  --tp 8`;
+        // TP size: 4 for NVFP4 (Blackwell), 8 for others
+        const tpSize = isNvfp4 ? 4 : 8;
+        const dpSize = isNvfp4 ? 4 : 8;
+        const epSize = isNvfp4 ? 4 : 8;
+        cmd += ` \\\n  --tp ${tpSize}`;
         if (strategyArray.includes('dp')) {
-            cmd += ` \\\n  --dp 8 \\\n  --enable-dp-attention`;
+            cmd += ` \\\n  --dp ${dpSize} \\\n  --enable-dp-attention`;
         }
         if (strategyArray.includes('ep')) {
-            cmd += ` \\\n  --ep 8`;
+            cmd += ` \\\n  --ep ${epSize}`;
         }
+
+        // Quantization (for NVFP4)
+        if (isNvfp4) {
+            cmd += ` \\\n  --quantization modelopt_fp4`;
+            cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        }
+
         // Multi-token prediction (MTP) configuration
         if (strategyArray.includes('mtp')) {
             cmd += ` \\\n  --speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4`;
@@ -102,7 +122,7 @@ const DeepSeekConfigGenerator = () => {
         if (toolcall === 'enabled' && modelname !== 'v32speciale') {
             if (modelname === 'v32exp') {
                 cmd += ` \\\n  --tool-call-parser deepseekv31`;
-            } else if (modelname === 'v32') {
+            } else if (modelname === 'v32' || isNvfp4) {
                 cmd += ` \\\n  --tool-call-parser deepseekv32`;
             }
         }

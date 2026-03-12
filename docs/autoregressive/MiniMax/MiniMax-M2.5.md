@@ -19,6 +19,16 @@ SGLang offers multiple installation methods. You can choose the most suitable in
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
+**For AMD MI300X/MI325X/MI355X GPUs:**
+
+```bash
+# Docker (AMD MI300X/MI325X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
+
+# Docker (AMD MI355X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi35x
+```
+
 ## 3. Model Deployment
 
 This section provides deployment configurations optimized for different hardware platforms and use cases.
@@ -41,13 +51,21 @@ import MiniMaxM25ConfigGenerator from '@site/src/components/autoregressive/MiniM
 | `--reasoning-parser`        | Reasoning parser for thinking mode              | `minimax-append-think`          |
 | `--trust-remote-code`       | Required for MiniMax model loading              | Always enabled                   |
 | `--mem-fraction-static`     | Static memory fraction for KV cache             | `0.85`                          |
-| `--tp-size`                 | Tensor parallelism size                         | `4` (4-GPU) or `8` (8-GPU)     |
+| `--tp-size`                 | Tensor parallelism size                         | `2` (2-GPU)  or `4` (4-GPU) or `8` (8-GPU)     |
 | `--ep-size`                 | Expert parallelism size                         | `8` (for 8-GPU deployment)      |
 
-**Hardware Requirements:**
+**Hardware Requirements: NVIDIA**
 
 - **4-GPU deployment**: Requires 4× high-memory GPUs (e.g., H200, B200, A100, H100) with TP=4
 - **8-GPU deployment**: Requires 8× GPUs (e.g., H200, B200, A100, H100) with TP=8 and EP=8
+
+**Hardware Requirements: AMD**
+
+- **2-GPU deployment**: Requires 2× high-memory GPUs (e.g., MI300X, MI325X, MI355X) with TP=2
+- **4-GPU deployment**: Requires 4× GPUs (e.g., MI300X, MI325X, MI355X) with TP=4
+- **8-GPU deployment**: Requires 8× GPUs (e.g., MI300X, MI325X, MI355X) with TP=8
+
+**Note on Expert Parallelism (EP):** For MoE models, EP can be set to 1 (all experts on each GPU) or EP=TP (experts distributed across GPUs).
 
 ## 4. Model Invocation
 

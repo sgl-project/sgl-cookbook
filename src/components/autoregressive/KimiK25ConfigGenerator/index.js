@@ -3,7 +3,11 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
  * Kimi-K2.5 Configuration Generator
- * Supports Kimi-K2.5 multimodal agentic model
+ * Supports Kimi-K2.5 multimodal agentic model with reasoning and tool calling
+ *
+ * GPU requirements:
+ *   H200: tp=8
+ *   B300: tp=8
  */
 const KimiK25ConfigGenerator = () => {
   const config = {
@@ -18,55 +22,68 @@ const KimiK25ConfigGenerator = () => {
           { id: 'b300', label: 'B300', default: false }
         ]
       },
-      strategy: {
-        name: 'strategy',
-        title: 'Deployment Strategy',
-        type: 'checkbox',
-        items: [
-          { id: 'tp', label: 'TP', default: true, required: true }
-        ]
-      },
       reasoning: {
         name: 'reasoning',
         title: 'Reasoning Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
-        ]
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
+        ],
+        commandRule: (value) => value === 'enabled' ? '--reasoning-parser kimi_k2' : null
       },
       toolcall: {
         name: 'toolcall',
         title: 'Tool Call Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
-        ]
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
+        ],
+        commandRule: (value) => value === 'enabled' ? '--tool-call-parser kimi_k2' : null
+      },
+      dpattention: {
+        name: 'dpattention',
+        title: 'DP Attention',
+        items: [
+          { id: 'disabled', label: 'Disabled', subtitle: 'Low Latency', default: true },
+          { id: 'enabled', label: 'Enabled', subtitle: 'High Throughput', default: false }
+        ],
+        commandRule: null
       }
     },
 
+    modelConfigs: {
+      h200: { tp: 8 },
+      b300: { tp: 8 }
+    },
+
     generateCommand: function (values) {
-      const { hardware, strategy, reasoning, toolcall } = values;
+      const { hardware } = values;
 
       const modelName = `${this.modelFamily}/Kimi-K2.5`;
+      const hwConfig = this.modelConfigs[hardware];
+      const tpValue = hwConfig.tp;
 
-      let cmd = 'python3 -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
+      cmd += ` \\\n  --tp ${tpValue}`;
+      cmd += ' \\\n  --trust-remote-code';
 
-      // TP is mandatory
-      cmd += ` \\\n  --tp 8`;
-
-      // Add trust-remote-code (required for Kimi-K2.5)
-      cmd += ` \\\n  --trust-remote-code`;
-
-      // Add tool-call-parser if enabled
-      if (toolcall === 'enabled') {
-        cmd += ` \\\n  --tool-call-parser kimi_k2`;
+      // DP Attention: --dp matches --tp
+      if (values.dpattention === 'enabled') {
+        cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
       }
 
-      // Add reasoning-parser if enabled
-      if (reasoning === 'enabled') {
-        cmd += ` \\\n  --reasoning-parser kimi_k2`;
-      }
+      // Apply commandRule from all options
+      Object.entries(this.options).forEach(([key, option]) => {
+        if (option.commandRule) {
+          const rule = option.commandRule(values[key]);
+          if (rule) {
+            cmd += ` \\\n  ${rule}`;
+          }
+        }
+      });
+
+      cmd += ' \\\n  --host 0.0.0.0 \\\n  --port 30000';
 
       return cmd;
     }
