@@ -1,0 +1,82 @@
+vendor: moonshotai
+families:
+- name: Kimi-K2.5
+  description: Kimi-K2.5 native multimodal agentic model with thinking and instant modes
+  models:
+  - name: Kimi-K2.5
+    model_path: moonshotai/Kimi-K2.5
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: kimi_k2
+        reasoning_parser: kimi_k2
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      B300:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null

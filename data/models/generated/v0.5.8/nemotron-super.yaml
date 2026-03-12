@@ -1,0 +1,90 @@
+vendor: nvidia
+families:
+- name: Nemotron-3-Super
+  description: NVIDIA Nemotron3-Super model
+  models:
+  - name: Nemotron3-Super
+    model_path: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: qwen3_coder
+        reasoning_parser: nemotron_3
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default-kv-fp8
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: default-kv-bf16
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - bf16
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default-kv-fp8
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - fp8_e4m3
+          prefill: null
+          decode: null
+        - name: default-kv-bf16
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+            - --kv-cache-dtype
+            - bf16
+          prefill: null
+          decode: null

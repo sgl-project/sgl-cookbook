@@ -38,7 +38,8 @@ import NemotronNano3ConfigGenerator from '@site/src/components/autoregressive/Ne
 
 - **Attention backend**:
 
-    **H200/B200**: use flashinfer attention backend by default.
+    **H200**: Use flash attention 3 backend by default.
+    **B200**: Use flashinfer backend by default.
 
 - **TP support**:
 

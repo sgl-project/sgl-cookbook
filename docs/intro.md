@@ -60,8 +60,9 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [x] [GLM-4.5V](./autoregressive/GLM/GLM-4.5V.md)
 - [x] [GLM-4.6](./autoregressive/GLM/GLM-4.6.md)
 - [x] [GLM-4.6V](./autoregressive/GLM/GLM-4.6V.md)
+- [x] [GLM-4.5](./autoregressive/GLM/GLM-4.5.md)
 - [x] [GLM-4.7](./autoregressive/GLM/GLM-4.7.md)
-- [x] [GLM-4.7-Flash](./autoregressive/GLM/GLM-4.7-Flash.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [GLM-4.7-Flash](./autoregressive/GLM/GLM-4.7-Flash.md)
 
 #### OpenAI
 
@@ -80,6 +81,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### NVIDIA
 
+- [x] [Nemotron3-Super](./autoregressive/NVIDIA/Nemotron3-Super.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 - [x] [Nemotron-Nano-3-30B-A3B](./autoregressive/NVIDIA/Nemotron3-Nano.md)
 
 #### Ernie
