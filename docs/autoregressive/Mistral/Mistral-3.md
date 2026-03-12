@@ -37,16 +37,13 @@ import Ministral3ConfigGenerator from '@site/src/components/autoregressive/Minis
 <Ministral3ConfigGenerator />
 
 ### 3.2 Configuration Tips
-#### Context length vs memory: 
-Ministral-3 advertises a long context window; if you are memory-constrained, start by lowering --context-length (for example 32768) and increase once things are stable.
+**Context length vs memory**: Ministral-3 advertises a long context window; if you are memory-constrained, start by lowering --context-length (for example 32768) and increase once things are stable.
 
-#### Pre-installation steps inside the docker
-Adding the following steps after launching the docker
+**Pre-installation steps**: Adding the following steps after launching the docker
 ```shell
 pip install mistral-common --upgrade
 pip install transformers==5.0.0.rc0
 ```
-
 ## 4. Model Invocation
 
 ### 4.1 Basic Usage
