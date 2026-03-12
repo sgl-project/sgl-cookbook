@@ -1,7 +1,6 @@
 
 # Mistral 3
 
-## AMD GPU Support
 
 ## 1. Model Introduction
 The largest model in the Ministral 3 family, Ministral 3 14B offers frontier capabilities and performance comparable to its larger Mistral Small 3.2 24B counterpart. A powerful and efficient language model with vision capabilities.
