@@ -51,12 +51,12 @@ const Ministral3ConfigGenerator = () => {
       small: {
         modelId: 'mistralai/Ministral-3-8B-Instruct-2512',
         tpByHardware: { mi300x: 1, mi325x: 1, mi355x: 1 },
-        allowedWeights: ['fp8']
+        allowedWeights: ['bf16','fp8']
       },
       large: {
         modelId: 'mistralai/Ministral-3-14B-Instruct-2512',
         tpByHardware: { mi300x: 1, mi325x: 1, mi355x: 1 },
-        allowedWeights: ['fp8']
+        allowedWeights: ['bf16','fp8']
       }
     },
 
