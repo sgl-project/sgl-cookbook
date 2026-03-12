@@ -24,7 +24,8 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 ### 2.1 AMD Docker
 #### 2.1.1 Launch docker
 ```shell
-docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
+
 docker run -d -it --ipc=host --network=host --privileged \
   --cap-add=CAP_SYS_ADMIN \
   --device=/dev/kfd --device=/dev/dri --device=/dev/mem \
@@ -33,7 +34,7 @@ docker run -d -it --ipc=host --network=host --privileged \
   -v /:/work \
   -e SHELL=/bin/bash \
   --name Minimax \
-  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
+ lmsysorg/sglang:v0.5.9-rocm720-mi30x \
   /bin/bash
 ```
 
@@ -79,7 +80,7 @@ For basic API usage and request examples, please refer to:
 #### 4.2.1 Reasoning Parser
 Server Command:
 ```
-    python3 -m sglang.launch_server \
+    sglang serve \
     --model-path MiniMaxAI/MiniMax-M2 \
     --tp-size 4 \
     --reasoning-parser minimax-append-think \
@@ -200,7 +201,7 @@ Both methods confirm the result.
 
 Server Command:
 ```
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2 \
     --tp-size 4 \
     --tool-call-parser minimax-m2 \
@@ -343,7 +344,7 @@ This should return the current weather information for Beijing, which I can then
 **Model Deployment**:
 
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2 \
     --tp-size 4 \
     --trust-remote-code \
@@ -524,7 +525,7 @@ Max ITL (ms):                            986.14
 
 - **Server Command**:
 ```
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2 \
     --tp-size 4 \
     --trust-remote-code \
