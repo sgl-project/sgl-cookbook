@@ -57,7 +57,7 @@ For basic API usage and request examples, please refer to:
 
 #### 4.2.1 Launch the docker
 ```shell
-docker pull lmsysorg/sglang:v0.5.7-rocm700-mi30x
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
 ```
 
 ```shell
@@ -69,7 +69,7 @@ docker run -d -it --ipc=host --network=host --privileged \
   -v /:/work \
   -e SHELL=/bin/bash \
   --name Llama4 \
-  lmsysorg/sglang:v0.5.7-rocm700-mi30x \
+  lmsysorg/sglang:v0.5.9-rocm720-mi30x \
   /bin/bash
 ```
 
@@ -80,7 +80,7 @@ docker run -d -it --ipc=host --network=host --privileged \
 8-GPU deployment command:
 
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
@@ -91,7 +91,7 @@ python3 -m sglang.launch_server \
 8-GPU deployment command:
 
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --tp 8 \
   --context-length 1000000 \
@@ -116,7 +116,7 @@ sglang version: 0.5.7
 - **Model Deployment**
 
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
@@ -127,7 +127,7 @@ python3 -m sglang.launch_server \
 ### 5.1.1 Low Concurrency (Latency-Optimized)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -183,7 +183,7 @@ Max ITL (ms):                            10.44
 ### 5.1.2 Medium Concurrency (Balanced)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -236,7 +236,7 @@ Max ITL (ms):                            74.05
 ### 5.1.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -302,7 +302,7 @@ sglang version: 0.5.7
 - **Model Deployment**
 
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --tp 8 \
   --context-length 1000000 \
@@ -313,7 +313,7 @@ python3 -m sglang.launch_server \
 ### 5.2.1 Low Concurrency (Latency-Optimized)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --dataset-name random \
@@ -368,7 +368,7 @@ Max ITL (ms):                            7.02
 ### 5.2.2 Medium Concurrency (Balanced)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --dataset-name random \
@@ -421,7 +421,7 @@ Max ITL (ms):                            868.54
 ### 5.2.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --dataset-name random \
