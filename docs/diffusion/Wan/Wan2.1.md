@@ -63,14 +63,14 @@ For more API usage and request examples, please refer to:
 #### 4.1.1 Launch a server and then send requests
 
 ```bash
-sglang serve --model-path Wan-AI/Wan2.1-T2V-14B --port 3000
+sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers --port 3000
 
 curl http://127.0.0.1:3000/v1/images/generations \
   -o >(jq -r '.data[0].b64_json' | base64 --decode > example.png) \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "Wan-AI/Wan2.1-T2V-14B",
+    "model": "Wan-AI/Wan2.1-T2V-14B-Diffusers",
     "prompt": "A cute baby sea otter",
     "n": 1,
     "size": "1024x1024",
@@ -82,7 +82,7 @@ curl http://127.0.0.1:3000/v1/images/generations \
 
 ```bash
 SERVER_ARGS=(
-  --model-path Wan-AI/Wan2.1-T2V-14B
+  --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers
   --text-encoder-cpu-offload
   --pin-cpu-memory
   --num-gpus 4
@@ -109,7 +109,7 @@ SGLang integrates [Cache-DiT](https://github.com/vipshop/cache-dit), a caching a
 **Basic Usage**
 
 ```bash
-SGLANG_CACHE_DIT_ENABLED=true sglang serve --model-path Wan-AI/Wan2.1-T2V-14B
+SGLANG_CACHE_DIT_ENABLED=true sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers
 ```
 
 **Advanced Usage**
@@ -124,7 +124,7 @@ SGLANG_CACHE_DIT_ENABLED=true sglang serve --model-path Wan-AI/Wan2.1-T2V-14B
   SGLANG_CACHE_DIT_MC=4 \
   SGLANG_CACHE_DIT_TAYLORSEER=true \
   SGLANG_CACHE_DIT_TS_ORDER=2 \
-  sglang serve --model-path Wan-AI/Wan2.1-T2V-14B
+  sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers
   ```
 
 #### 4.2.2 GPU Optimization
@@ -147,11 +147,17 @@ SGLang supports applying Wan2.1 LoRA adapters on top of base models:
 **Example**:
 
 ```bash
-sglang serve --model-path Wan-AI/Wan2.1-T2V-14B --port 3000 \
+sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers --port 3000 \
     --lora-path NIVEDAN/wan2.1-lora
 ```
 
 ## 5. Benchmark
+
+Test Environment:
+
+- Hardware: AMD MI300X GPU (1x)
+- Model: Wan-AI/Wan2.2-T2V-A14B-Diffusers
+- SGLang Docker Image Version: 0.5.9
 
 ### 5.1 How to Run Benchmarks with SGLang
 
@@ -162,7 +168,7 @@ You can use the built-in SGLang diffusion benchmark script to evaluate Wan2.1 pe
 **Server Command**:
 
 ```bash
-sglang serve --model-path Wan-AI/Wan2.1-T2V-14B
+sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers
 ```
 
 **Benchmark Command**:
@@ -172,7 +178,31 @@ python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
     --backend sglang-video --dataset vbench --task text-to-video --num-prompts 1 --max-concurrency 1
 ```
 
-#### 5.1.2 Generate videos with high concurrency
+**Result**:
+
+```
+================= Serving Benchmark Result =================
+Task:                                    text-to-video
+Model:                                   Wan-AI/Wan2.1-T2V-14B-Diffusers
+Dataset:                                 vbench
+--------------------------------------------------
+Benchmark duration (s):                  1958.41
+Request rate:                            inf
+Max request concurrency:                 1
+Successful requests:                     1/1
+--------------------------------------------------
+Request throughput (req/s):              0.00
+Latency Mean (s):                        1958.4059
+Latency Median (s):                      1958.4059
+Latency P99 (s):                         1958.4059
+--------------------------------------------------
+Peak Memory Max (MB):                    59662.00
+Peak Memory Mean (MB):                   59662.00
+Peak Memory Median (MB):                 59662.00
+============================================================
+```
+
+#### 5.1.2 Generate videos with Cache-DiT acceleration
 
 **Server Command**:
 
@@ -185,14 +215,36 @@ SGLANG_CACHE_DIT_RDT=0.4 \
 SGLANG_CACHE_DIT_MC=4 \
 SGLANG_CACHE_DIT_TAYLORSEER=true \
 SGLANG_CACHE_DIT_TS_ORDER=2 \
-sglang serve --model-path Wan-AI/Wan2.1-T2V-14B
+sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers
 ```
 
 **Benchmark Command**:
 
 ```bash
 python3 -m sglang.multimodal_gen.benchmarks.bench_serving \
-    --backend sglang-video --dataset vbench --task t2v --num-prompts 20 --max-concurrency 20
+    --backend sglang-video --dataset vbench --task text-to-video --num-prompts 1 --max-concurrency 1
 ```
 
-For general notes on interpreting these results and comparing across models, see the [Diffusion Model Benchmark](../../base/benchmarks/diffusion_model_benchmark.md).
+**Result**:
+
+```
+================= Serving Benchmark Result =================
+Task:                                    text-to-video
+Model:                                   Wan-AI/Wan2.1-T2V-14B-Diffusers
+Dataset:                                 vbench
+--------------------------------------------------
+Benchmark duration (s):                  556.99
+Request rate:                            inf
+Max request concurrency:                 1
+Successful requests:                     1/1
+--------------------------------------------------
+Request throughput (req/s):              0.00
+Latency Mean (s):                        556.9885
+Latency Median (s):                      556.9885
+Latency P99 (s):                         556.9885
+--------------------------------------------------
+Peak Memory Max (MB):                    69306.00
+Peak Memory Mean (MB):                   69306.00
+Peak Memory Median (MB):                 69306.00
+============================================================
+```
