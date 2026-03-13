@@ -41,6 +41,9 @@ Read these files to understand existing patterns before creating anything:
 - YAML source files are in `data/models/src/<version>/` (NOT directly in `data/models/src/`). The version directory corresponds to the SGLang version being tested. Create it if it doesn't exist.
 - The base `ConfigGenerator` component is at `src/components/base/ConfigGenerator`
 - AMD GPUs (MI300X/MI325X/MI355X) typically need `--attention-backend triton` — only include if tested
+- AMD Docker image naming: `rocm720-mi30x` for MI300X/MI325X, `rocm720-mi35x` for MI355X
+- **CRITICAL**: All commands must use `sglang serve`, never `python -m sglang.launch_server` (deprecated)
+- Before creating a new model, check open PRs (`gh pr list --search "<model name>"`) to avoid duplicate work
 - For models with `commandRule` on options, use the pattern from existing generators to apply rules via `Object.entries(this.options).forEach(...)`
 
 ### Step 1: Create documentation file
@@ -177,14 +180,16 @@ Add these to the documentation.
 
 ## Phase 6: Final Review
 
-Can be triggered with `/add-model review`.
+Can be triggered with `/add-model review`. Also consider running `/review-pr` on the PR for an automated checklist pass.
 
 Review the complete documentation for:
 - Nested code block formatting (use ```````` for outer blocks containing ` ``` `)
-- Consistent port numbers across all commands
+- Consistent port numbers across all commands (use 30000, not 8000)
 - No duplicate deployment commands (reference the one at the top of Section 4)
 - All `TODO` placeholders replaced with actual results
 - ConfigGenerator defaults match the documented deployment command
+- ConfigGenerator `export default` matches the actual class name (common copy-paste bug)
+- All commands use `sglang serve` — no deprecated `python -m sglang.launch_server`
 - Reasoning mode examples show both thinking-on and thinking-off patterns (for hybrid reasoning models)
 - `modelConfigs` include both `tp` and `mem` values per hardware/quantization
 - DP attention `--dp` value dynamically matches `--tp` in the generator
