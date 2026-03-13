@@ -7,6 +7,10 @@ defaults:
   hardware:
     H200: { tp: 8 }
     B300: { tp: 8 }
+    MI300X: { tp: 4 }
+    MI325X: { tp: 4 }
+    MI350X: { tp: 4 }
+    MI355X: { tp: 4 }
   configurations:
     - name: default
       nodes: single
