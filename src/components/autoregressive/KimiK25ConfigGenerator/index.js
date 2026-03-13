@@ -106,6 +106,11 @@ const KimiK25ConfigGenerator = () => {
         }
       });
 
+      // AMD: FP8 KV cache for memory efficiency
+      if (isAMD) {
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
+      }
+
       cmd += ' \\\n  --host 0.0.0.0 \\\n  --port 30000';
 
       return cmd;
