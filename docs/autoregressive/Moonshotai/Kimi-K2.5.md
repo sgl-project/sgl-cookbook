@@ -1000,7 +1000,6 @@ SGLANG_USE_AITER=1 SGLANG_ROCM_FUSED_DECODE_MLA=0 \
 sglang serve \
   --model-path moonshotai/Kimi-K2.5 \
   --tp 4 \
-  --chunked-prefill-size 131072 \
   --mem-fraction-static 0.8 \
   --trust-remote-code \
   --reasoning-parser kimi_k2 \
