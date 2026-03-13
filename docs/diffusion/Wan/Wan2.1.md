@@ -63,9 +63,9 @@ For more API usage and request examples, please refer to:
 #### 4.1.1 Launch a server and then send requests
 
 ```bash
-sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers --port 3000
+sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers --port 30000
 
-curl http://127.0.0.1:3000/v1/images/generations \
+curl http://127.0.0.1:30000/v1/images/generations \
   -o >(jq -r '.data[0].b64_json' | base64 --decode > example.png) \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -147,7 +147,7 @@ SGLang supports applying Wan2.1 LoRA adapters on top of base models:
 **Example**:
 
 ```bash
-sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers --port 3000 \
+sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers --port 30000 \
     --lora-path NIVEDAN/wan2.1-lora
 ```
 
@@ -156,7 +156,7 @@ sglang serve --model-path Wan-AI/Wan2.1-T2V-14B-Diffusers --port 3000 \
 Test Environment:
 
 - Hardware: AMD MI300X GPU (1x)
-- Model: Wan-AI/Wan2.2-T2V-A14B-Diffusers
+- Model: Wan-AI/Wan2.1-T2V-14B-Diffusers
 - SGLang Docker Image Version: 0.5.9
 
 ### 5.1 How to Run Benchmarks with SGLang
