@@ -55,17 +55,17 @@ const Wan2_1ConfigGenerator = () => {
 
     modelConfigs: {
       't2v-14b': {
-        repoId: 'Wan-AI/Wan2.1-T2V-14B',
+        repoId: 'Wan-AI/Wan2.1-T2V-14B-Diffusers',
         supportedLoras: [
           { id: 'general', label: 'General Wan2.1 LoRA', path: 'NIVEDAN/wan2.1-lora' },
         ],
       },
       't2v-1_3b': {
-        repoId: 'Wan-AI/Wan2.1-T2V-1.3B',
+        repoId: 'Wan-AI/Wan2.1-T2V-1.3B-Diffusers',
         supportedLoras: [],
       },
       'i2v-14b': {
-        repoId: 'Wan-AI/Wan2.1-I2V-14B-720P',
+        repoId: 'Wan-AI/Wan2.1-I2V-14B-720P-Diffusers',
         supportedLoras: [
           { id: 'fight', label: 'Fight Style LoRA', path: 'valiantcat/Wan2.1-Fight-LoRA' },
         ],
