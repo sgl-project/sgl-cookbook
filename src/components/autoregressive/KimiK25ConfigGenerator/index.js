@@ -88,9 +88,6 @@ const KimiK25ConfigGenerator = () => {
       cmd += ` \\\n  --tp ${tpValue}`;
       cmd += ' \\\n  --trust-remote-code';
 
-      // Chunked prefill for large context
-      cmd += ' \\\n  --chunked-prefill-size 131072';
-
       // DP Attention: --dp matches --tp
       if (values.dpattention === 'enabled') {
         cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
