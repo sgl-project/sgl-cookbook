@@ -186,21 +186,23 @@ Add to docs.
 
 ## Phase 6: Final Review
 
-Can trigger with `/add-model review`. Also run `/review-pr` for automated checklist.
+Can be triggered with `/add-model review`. Also consider running `/review-pr` on the PR for an automated checklist pass.
 
-Check:
-- Nested code blocks formatted correctly
-- Port 30000 everywhere
-- No duplicate deployment commands
-- All `TODO` placeholders filled
-- ConfigGenerator defaults match the docs
-- `export default` matches the class name
-- All commands use `sglang serve --model-path`
-- Reasoning examples cover both modes (hybrid models)
-- `modelConfigs` have `tp` and `mem` per hardware/quantization
-- DP `--dp` dynamically matches `--tp`
-- Homepage (`docs/intro.md`) includes the new model, matches sidebar order
-- NEW tag count on homepage ≤ 3
+Review the complete documentation for:
+- Nested code block formatting (use ```````` for outer blocks containing ` ``` `)
+- Consistent port numbers across all commands (use 30000, not 8000)
+- No duplicate deployment commands (reference the one at the top of Section 4)
+- All `TODO` placeholders replaced with actual results
+- ConfigGenerator defaults match the documented deployment command
+- ConfigGenerator `export default` matches the actual class name (common copy-paste bug)
+- All commands use `sglang serve` — no deprecated `python -m sglang.launch_server`
+- Reasoning mode examples show both thinking-on and thinking-off patterns (for hybrid reasoning models)
+- `modelConfigs` include both `tp` and `mem` values per hardware/quantization
+- DP attention `--dp` value dynamically matches `--tp` in the generator
+- All commands use `sglang serve --model-path` (NOT `python -m sglang.launch_server`)
+- Homepage (`docs/intro.md`) includes the new model entry and matches sidebar order
+- NEW tag count on homepage is 3 or fewer
+- Raw API response objects (e.g., `ChatCompletionMessage(...)`) are formatted into readable structured output (Reasoning/Content/Tool Calls sections)
 
 ## Git Workflow
 
