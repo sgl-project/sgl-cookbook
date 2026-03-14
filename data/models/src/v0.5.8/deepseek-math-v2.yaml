@@ -2,15 +2,15 @@
 # This file is compiled to data/models/generated/deepseek-math-v2.yaml
 #
 # GPU requirements:
-#   B200/B300 (180GB): BF16 tp=16 (16 cards required)
+#   B200/B300 (180GB): BF16 tp=8
 #   H200 (80GB): Insufficient memory
 
 vendor: deepseek-ai
 
 defaults:
   hardware:
-    B200: { tp: 16 }
-    B300: { tp: 16 }
+    B200: { tp: 8 }
+    B300: { tp: 8 }
   configurations:
     - name: default
       nodes: single
@@ -18,7 +18,7 @@ defaults:
     - name: high-throughput-dp
       nodes: single
       optimization: high-throughput
-      dp: 16
+      dp: 8
       enable_dp_attention: true
 
 families:

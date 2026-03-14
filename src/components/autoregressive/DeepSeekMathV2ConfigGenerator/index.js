@@ -7,8 +7,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  * with BF16 quantization, reasoning parser, and DP attention
  *
  * GPU requirements:
- *   B200/B300 (180GB) 8 cards: BF16 tp=8 (no --mem-fraction-static)
- *   B200/B300 (180GB) 16 cards: BF16 tp=16
+ *   B200/B300 (180GB): BF16 tp=8
  *   H200 (80GB): Insufficient memory
  */
 const DeepSeekMathV2ConfigGenerator = () => {
