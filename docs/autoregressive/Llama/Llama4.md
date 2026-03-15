@@ -13,7 +13,7 @@ The highly capable Llama 4 Maverick with 17B active parameters out of ~400B tota
 The efficient Llama 4 Scout also has 17B active parameters out of ~109B total, using just 16 experts.
 Both models leverage early fusion for native multimodality, enabling them to process text and image inputs. Maverick and Scout are both trained on up to 40 trillion tokens on data encompassing 200 languages (with specific fine-tuning support for 12 languages including Arabic, Spanish, German, and Hindi).
 
-For more details, please refer to the [official llama4 Repository] (https://www.llama.com/models/llama-4/)
+For more details, please refer to the official llama4 Repository:https://www.llama.com/models/llama-4/
 
 ## 2. SGLang Installation
 
@@ -98,26 +98,21 @@ sglang serve \
 ### 5.1 Speed Benchmark
 Test Environment:
 
-Hardware: AMD MI300X GPU
+Hardware: AMD MI300x GPU
 
 Model: Llama-4-Scout
 
 Tensor Parallelism: 8
 
-sglang version: 0.5.7
-
-
-
+sglang version: 0.5.9
 
 - **Model Deployment**
-
 ```bash
 sglang serve \
   --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --tp 8 \
   --context-length 1000000 \
   --trust-remote-code
-
 ```
 
 ### 5.1.1 Low Concurrency (Latency-Optimized)
@@ -173,9 +168,6 @@ P99 ITL (ms):                            7.52
 Max ITL (ms):                            10.44
 ==================================================
 ```
-
-
-
 ### 5.1.2 Medium Concurrency (Balanced)
 - Benchmark Command:
 ```bash
@@ -228,7 +220,6 @@ P99 ITL (ms):                            67.88
 Max ITL (ms):                            74.05
 ==================================================
 ```
-
 ### 5.1.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
 ```bash
@@ -282,28 +273,25 @@ Max ITL (ms):                            226.06
 ==================================================
 ```
 
-
 ### 5.2 Speed Benchmark
 Test Environment:
 
-Hardware: AMD MI300X GPU
+Hardware: AMD MI300x GPU
 
 Model: Llama-4-Maverick
 
 Tensor Parallelism: 8
 
-sglang version: 0.5.7
+sglang version: 0.5.9
 
 
 - **Model Deployment**
-
 ```bash
 sglang serve \
   --model-path meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --tp 8 \
   --context-length 1000000 \
   --trust-remote-code
-
 ```
 
 ### 5.2.1 Low Concurrency (Latency-Optimized)
@@ -358,9 +346,6 @@ P99 ITL (ms):                            6.08
 Max ITL (ms):                            7.02
 ==================================================
 ```
-
-
-
 ### 5.2.2 Medium Concurrency (Balanced)
 - Benchmark Command:
 ```bash
@@ -413,7 +398,6 @@ P99 ITL (ms):                            55.62
 Max ITL (ms):                            868.54
 ==================================================
 ```
-
 ### 5.2.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
 ```bash
