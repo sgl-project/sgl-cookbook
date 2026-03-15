@@ -18,7 +18,7 @@ Ask the user for:
    - YAML: `models` list with different `base_name` entries, `quantizations` arrays
    - Documentation: model name references and deployment examples
    - See `Qwen3CoderConfigGenerator` and `Qwen3NextConfigGenerator` for multi-variant examples.
-3. **Full Deployment Command** - Complete SGLang launch command including all strategy and optimization flags (tp, dp, ep, enable_dp_attention, etc.). If the model card already provides an SGLang deployment command, offer it as a default option.
+3. **Full Deployment Command** - Complete SGLang launch command using `sglang serve --model-path` (NOT `python -m sglang.launch_server`, which is deprecated per issue #33). Include all strategy and optimization flags (tp, dp, ep, enable_dp_attention, etc.). If the model card already provides an SGLang deployment command, offer it as a default option but ensure it uses `sglang serve`.
 4. **SGLang Version** - The SGLang version the user is testing on (e.g., `v0.5.8`). This determines the version subdirectory for YAML configs (`data/models/src/<version>/`).
 5. **Hardware Platforms** - Ask which hardware platforms have been tested. Only include tested platforms in the ConfigGenerator and YAML. Do NOT assume AMD GPU support unless explicitly confirmed.
 
@@ -41,6 +41,9 @@ Read these files to understand existing patterns before creating anything:
 - YAML source files are in `data/models/src/<version>/` (NOT directly in `data/models/src/`). The version directory corresponds to the SGLang version being tested. Create it if it doesn't exist.
 - The base `ConfigGenerator` component is at `src/components/base/ConfigGenerator`
 - AMD GPUs (MI300X/MI325X/MI355X) typically need `--attention-backend triton` — only include if tested
+- AMD Docker image naming: `rocm720-mi30x` for MI300X/MI325X, `rocm720-mi35x` for MI355X
+- **CRITICAL**: All commands must use `sglang serve`, never `python -m sglang.launch_server` (deprecated)
+- Before creating a new model, check open PRs (`gh pr list --search "<model name>"`) to avoid duplicate work
 - For models with `commandRule` on options, use the pattern from existing generators to apply rules via `Object.entries(this.options).forEach(...)`
 
 ### Step 1: Create documentation file
@@ -55,10 +58,11 @@ Create `docs/autoregressive/<Vendor>/<ModelName>.md` with ALL sections pre-popul
 **Benchmark commands reference:**
 - GSM8K: `python3 benchmark/gsm8k/bench_sglang.py --port <port>`
 - MMLU: `python3 benchmark/mmlu/bench_sglang.py --port <port>`
+- MMMU: `python3 benchmark/mmmu/bench_sglang.py --port <port>` — uses a universal answer regex `(?i)(?:answer|ans)[:\s]*(?:\*\*)?[\(\[]?([A-Za-z])[\)\]]?(?:\*\*)?` that works across models. Do NOT use model-specific parsing (e.g., `<|begin_of_box|>`) as it breaks when models produce standard answer formats.
 - Latency benchmark: `python3 -m sglang.bench_serving --backend sglang --num-prompts 10 --max-concurrency 1 ...`
 - Throughput benchmark: `python3 -m sglang.bench_serving --backend sglang --num-prompts 1000 --max-concurrency 100 ...`
 
-Keep benchmarks concise — only include latency and throughput for speed benchmarks. Do NOT add multiple scenarios (chat/reasoning/summarization) or multiple concurrency levels unless the user requests it.
+Keep benchmarks concise — only include latency and throughput for speed benchmarks. Do NOT add multiple scenarios (chat/reasoning/summarization) or multiple concurrency levels unless the user requests it. Order benchmarks as **Accuracy first, then Speed** (accuracy is more important to readers).
 
 **Important**:
 - When the output contains nested markdown code blocks (e.g., model outputs python code), use four backticks ```````` for the outer block to avoid rendering issues.
@@ -71,9 +75,15 @@ Keep benchmarks concise — only include latency and throughput for speed benchm
 - For **models with separate Instruct/Thinking variants** (e.g., Qwen3-Next): The model name changes (e.g., `-Instruct` vs `-Thinking`), handled by ConfigGenerator
 - Ask the user which pattern applies if unclear from the model card
 
-### Step 2: Update sidebar
+### Step 2: Update sidebar and homepage
 
 Edit `sidebars.js` to add the new entry under the appropriate vendor category.
+
+**Also update `docs/intro.md` (homepage):**
+- Add the new model entry under the correct vendor section
+- Use `- [x]` if documentation has real content, `- [ ]` if it's a stub/placeholder
+- Do NOT add a `NEW` tag unless you also audit the existing tags — keep the total number of `NEW` tags across the homepage to **3 or fewer**. If adding a new one, remove the oldest `NEW` tag(s) first. Check git history to determine which existing `NEW` entries are oldest.
+- Ensure the order of entries in `intro.md` matches the order in `sidebars.js`
 
 ### Step 3: Create config generator component
 
@@ -91,12 +101,13 @@ Key considerations:
 
 **DP Attention option:**
 - If the model supports DP attention, add it as an option with `Disabled (Low Latency)` / `Enabled (High Throughput)` labels.
-- The `--dp` value should **dynamically match** `--tp` value — handle this in `generateCommand`, NOT via a static `commandRule`. Example:
+- The `--dp` value **commonly matches** `--tp` value but this is NOT mandatory. Handle DP in `generateCommand`, NOT via a static `commandRule`. Example:
   ```js
   if (values.dpattention === 'enabled') {
     cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
   }
   ```
+- In configuration tips, describe `--dp` matching `--tp` as a "common pattern" rather than a requirement.
 
 **Large models (>400B parameters):**
 - BF16 typically requires **2x GPUs** compared to FP8. Structure `modelConfigs` to reflect this per hardware platform.
@@ -117,17 +128,30 @@ Include configurations for:
 - `high-throughput-dp` — if DP attention is supported (dp + enable_dp_attention)
 - `speculative-mtp` or `speculative-eagle` — if speculative decoding is supported
 
+**YAML `thinking_capability` values:**
+The valid enum values are: `non_thinking`, `thinking`, `hybrid`. Do NOT use `hybrid_thinking` or other variants — pre-commit validation will reject them.
+
 ## Phase 3: Compile, Validate, and Start Dev Server
 
-Run compilation and validation:
+**Ensure venv exists** — if `.venv/` doesn't exist, create it:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate && pip install pre-commit pyyaml
+```
 
+Run compilation and validation:
 ```bash
 source .venv/bin/activate && python data/scripts/compile_models.py
 cd data/schema && npm install && npm test
 ```
 
-Start dev server to verify rendering:
+**Run a full build** to catch import errors, broken links, and component issues:
+```bash
+npm run build
+```
+This is more reliable than `npm start` for catching errors — the dev server may silently ignore issues that fail the production build.
 
+Start dev server to verify rendering:
 ```bash
 npm start
 ```
@@ -156,14 +180,35 @@ Add these to the documentation.
 
 ## Phase 6: Final Review
 
-Can be triggered with `/add-model review`.
+Can be triggered with `/add-model review`. Also consider running `/review-pr` on the PR for an automated checklist pass.
 
 Review the complete documentation for:
 - Nested code block formatting (use ```````` for outer blocks containing ` ``` `)
-- Consistent port numbers across all commands
+- Consistent port numbers across all commands (use 30000, not 8000)
 - No duplicate deployment commands (reference the one at the top of Section 4)
 - All `TODO` placeholders replaced with actual results
 - ConfigGenerator defaults match the documented deployment command
+- ConfigGenerator `export default` matches the actual class name (common copy-paste bug)
+- All commands use `sglang serve` — no deprecated `python -m sglang.launch_server`
 - Reasoning mode examples show both thinking-on and thinking-off patterns (for hybrid reasoning models)
 - `modelConfigs` include both `tp` and `mem` values per hardware/quantization
 - DP attention `--dp` value dynamically matches `--tp` in the generator
+- All commands use `sglang serve --model-path` (NOT `python -m sglang.launch_server`)
+- Homepage (`docs/intro.md`) includes the new model entry and matches sidebar order
+- NEW tag count on homepage is 3 or fewer
+- Raw API response objects (e.g., `ChatCompletionMessage(...)`) are formatted into readable structured output (Reasoning/Content/Tool Calls sections)
+
+## Git Workflow
+
+**Always create a new branch for PRs** — never commit directly to main.
+
+```bash
+git checkout -b add-<model-name>
+# ... make changes ...
+git add <specific files>
+git commit -m "Add <Model Name> cookbook"
+git push -u origin add-<model-name>
+gh pr create --title "Add <Model Name> cookbook" --body "..."
+```
+
+When checking homepage entries (`- [x]` vs `- [ ]`), verify the doc has **real content** — not just a stub with "Community contribution welcome". A file existing or having many lines does not mean it has actual content.
