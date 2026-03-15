@@ -14,7 +14,7 @@ const MiniMaxM2ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi300x', label: 'MI300X', default: true },
           { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi355x', label: 'MI355X', default: false }
         ]
@@ -72,7 +72,7 @@ const MiniMaxM2ConfigGenerator = () => {
       // Strategy configurations
       const strategyArray = Array.isArray(strategy) ? strategy : [];
       // TP is mandatory
-      cmd += ` \\\n  --tp 8`;
+      cmd += ` \\\n  --tp 4`;
 
 
       // Add trust-remote-code (required for MiniMax-M2)
