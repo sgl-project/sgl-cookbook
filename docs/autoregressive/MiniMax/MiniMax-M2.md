@@ -25,7 +25,8 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 #### 2.1.1 Launch docker
 ```shell
 docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
-
+```
+```shell
 docker run -d -it --ipc=host --network=host --privileged \
   --cap-add=CAP_SYS_ADMIN \
   --device=/dev/kfd --device=/dev/dri --device=/dev/mem \
