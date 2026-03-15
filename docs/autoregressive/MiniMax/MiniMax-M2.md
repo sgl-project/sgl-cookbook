@@ -92,7 +92,7 @@ Test Code:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:8000/v1",
+    base_url="http://localhost:30000/v1",
     api_key="EMPTY"
 )
 
@@ -356,7 +356,7 @@ sglang serve \
 ### 5.1.1 Low Concurrency (Latency-Optimized)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model MiniMaxAI/MiniMax-M2 \
   --dataset-name random \
@@ -413,7 +413,7 @@ Max ITL (ms):                            23.64
 ### 5.1.2 Medium Concurrency (Balanced)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model MiniMaxAI/MiniMax-M2 \
   --dataset-name random \
@@ -468,7 +468,7 @@ Max ITL (ms):                            1192.51
 ### 5.1.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
 ```bash
-python3 -m sglang.bench_serving \
+sglang serve \
   --backend sglang \
   --model MiniMaxAI/MiniMax-M2 \
   --dataset-name random \
