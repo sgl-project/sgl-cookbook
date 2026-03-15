@@ -66,7 +66,7 @@ const MiniMaxM2ConfigGenerator = () => {
 
       const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
 
-      let cmd = 'python3 -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
 
       // Strategy configurations
