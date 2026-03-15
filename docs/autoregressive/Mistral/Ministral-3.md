@@ -1,6 +1,4 @@
-
-# Mistral 3
-
+# Ministral-3
 
 ## 1. Model Introduction
 The largest model in the Ministral 3 family, Ministral 3 14B offers frontier capabilities and performance comparable to its larger Mistral Small 3.2 24B counterpart. A powerful and efficient language model with vision capabilities.
@@ -110,7 +108,7 @@ sglang serve \
 #####  Low Concurrency
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model mistralai/Ministral-3-14B-Instruct-2512 \
   --dataset-name random \
@@ -164,7 +162,7 @@ Max ITL (ms):                            8.45
 ##### Medium Concurrency
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model mistralai/Ministral-3-14B-Instruct-2512 \
   --dataset-name random \
@@ -217,7 +215,7 @@ Max ITL (ms):                            888.63
 ##### High Concurrency
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model mistralai/Ministral-3-14B-Instruct-2512 \
   --dataset-name random \
