@@ -31,12 +31,26 @@ Given a PR number, fetch the diff and run the full checklist. Report findings cl
 ### 4. ConfigGenerator
 - Options and `generateCommand` function match the doc
 - AMD hardware options use correct card names and memory values
+- `export default` matches the actual class name (watch for copy-paste bugs)
 
-### 5. Links
+### 5. Port consistency
+- All examples should use port 30000 (not 8000 or other non-standard ports)
+
+### 6. Quantization consistency
+- FP4 quantization should only appear for NVIDIA Blackwell GPUs (B200), never for AMD
+- BF16 and FP8 are supported on both NVIDIA and AMD platforms
+
+### 7. Duplicate PR check
+- Check if another open PR targets the same model — flag conflicts to avoid wasted effort
+
+### 8. Sidebar entry
+- If the PR adds a new model, verify `sidebars.js` is updated with the new entry
+
+### 9. Links
 - HuggingFace model URLs are valid and point to the right model
 - No references to `sgl-project-dev` org (use `sgl-project`)
 
-### 6. Build check
+### 10. Build check
 Run after reviewing:
 ```bash
 npm run build
