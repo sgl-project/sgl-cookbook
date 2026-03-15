@@ -2,7 +2,7 @@ import React from 'react';
 import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
- * Mistral 3 Configuration Generator
+ * Ministral-3 Configuration Generator
  * Covers:
  * - mistralai/Ministral-3-14B-Instruct-2512
  * - mistralai/Ministral-3-8B-Instruct-2512
@@ -29,19 +29,12 @@ const Ministral3ConfigGenerator = () => {
           { id: 'large', label: 'Ministral-3-14B-Instruct-2512', default: false }
         ]
       },
-      weights: {
-        name: 'weights',
-        title: 'Weights / Precision',
-        items: [
-          { id: 'fp8', label: 'FP8', default: true }
-        ]
-      },
       toolcall: {
         name: 'toolcall',
         title: 'Tool Call Parser',
         items: [
           { id: 'enabled', label: 'enabled', default: true },
-          { id: 'enabled', label: 'enabled', default: false }
+          { id: 'disabled', label: 'disabled', default: false }
         ],
         commandRule: (value) => value === 'enabled' ? '--tool-call-parser mistral' : null
       }
@@ -51,12 +44,12 @@ const Ministral3ConfigGenerator = () => {
       small: {
         modelId: 'mistralai/Ministral-3-8B-Instruct-2512',
         tpByHardware: { mi300x: 1, mi325x: 1, mi355x: 1 },
-        allowedWeights: ['bf16','fp8']
+        allowedWeights: ['bf16']
       },
       large: {
         modelId: 'mistralai/Ministral-3-14B-Instruct-2512',
         tpByHardware: { mi300x: 1, mi325x: 1, mi355x: 1 },
-        allowedWeights: ['bf16','fp8']
+        allowedWeights: ['bf16']
       }
     },
 
@@ -74,7 +67,7 @@ const Ministral3ConfigGenerator = () => {
       const tp = modelCfg.tpByHardware[hardware];
       if (!tp) return `# Error: Unknown hardware platform: ${hardware}`;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
 
 
       cmd += `  --model ${modelCfg.modelId}`;
