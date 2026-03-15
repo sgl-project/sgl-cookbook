@@ -1,5 +1,3 @@
-## AMD GPU Support
-
 ## 1. Model Introduction
 
 [Llama 4](https://github.com/meta-llama/llama-models/blob/main/models/llama4/MODEL_CARD.md) is Meta's latest generation of open-source LLM model with industry-leading performance.
@@ -16,14 +14,11 @@ Both models leverage early fusion for native multimodality, enabling them to pro
 
 For more details, please refer to the [official llama4 Repository] (https://www.llama.com/models/llama-4/)
 
-
-
 ## 2. SGLang Installation
 
 SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
-
 
 ## 3. Model Deployment
 
@@ -127,7 +122,7 @@ sglang serve \
 ### 5.1.1 Low Concurrency (Latency-Optimized)
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -183,7 +178,7 @@ Max ITL (ms):                            10.44
 ### 5.1.2 Medium Concurrency (Balanced)
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -236,7 +231,7 @@ Max ITL (ms):                            74.05
 ### 5.1.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Scout-17B-16E-Instruct \
   --dataset-name random \
@@ -313,7 +308,7 @@ sglang serve \
 ### 5.2.1 Low Concurrency (Latency-Optimized)
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --dataset-name random \
@@ -368,7 +363,7 @@ Max ITL (ms):                            7.02
 ### 5.2.2 Medium Concurrency (Balanced)
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --dataset-name random \
@@ -421,7 +416,7 @@ Max ITL (ms):                            868.54
 ### 5.2.3 High Concurrency (Throughput-Optimized)
 - Benchmark Command:
 ```bash
-sglang serve \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model meta-llama/Llama-4-Maverick-17B-128E-Instruct \
   --dataset-name random \
