@@ -28,7 +28,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Qwen
 
-- [x] [Qwen3.5](./autoregressive/Qwen/Qwen3.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Qwen3.5](./autoregressive/Qwen/Qwen3.5.md)
 - [x] [Qwen3](./autoregressive/Qwen/Qwen3.md)
 - [x] [Qwen3-Next](./autoregressive/Qwen/Qwen3-Next.md)
 - [x] [Qwen3-VL](./autoregressive/Qwen/Qwen3-VL.md)
@@ -102,6 +102,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Mistral
 
+- [x] [Mistral Small 4](./autoregressive/Mistral/Mistral-Small-4.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
 - [ ] [Mistral-3](./autoregressive/Mistral/Mistral-3.md)
 - [x] [Devstral 2](./autoregressive/Mistral/Devstral-2.md)
 

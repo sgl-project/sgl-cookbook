@@ -1,0 +1,34 @@
+# Mistral Small 4 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/v0.5.8/mistral-small-4.yaml
+#
+# Note: Mistral Small 4 support requires a custom SGLang build (not yet in mainline).
+#
+# GPU requirements (BF16, ~238 GB weights):
+#   H200 (80 GB): tp=4
+#   B200 (192 GB): tp=2
+
+vendor: mistralai
+
+defaults:
+  hardware:
+    H200: { tp: 4 }
+    B200: { tp: 2 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Mistral-Small-4
+    description: Mistral Small 4 119B MoE (128 experts, 4 active) with hybrid reasoning, vision, and tool calling
+    llm:
+      thinking_capability: hybrid
+      tool_parser: mistral
+      reasoning_parser: mistral
+
+    models:
+      - name: Mistral-Small-4-119B-2602
+        quantization: bf16
+        hardware:
+          H200: { tp: 4 }
+          B200: { tp: 2 }

@@ -1,0 +1,333 @@
+---
+
+## sidebar_position: 1
+
+# Mistral Small 4
+
+## 1. Model Introduction
+
+**Mistral Small 4** is a powerful hybrid model from Mistral AI that unifies the capabilities of three different model families — **Instruct**, **Reasoning** (formerly called Magistral), and **Agentic (formerly called Devstral)** — into a single, unified model.
+
+With its multimodal capabilities, efficient MoE architecture, and flexible mode switching, Mistral Small 4 is a versatile general-purpose model for virtually any task. In a latency-optimized setup, it achieves a 40% reduction in end-to-end completion time; in a throughput-optimized setup, it delivers 3× more requests per second compared to Mistral Small 3.
+
+**Key Features:**
+
+- **Hybrid Reasoning**: Switch between instant reply mode and deep reasoning/thinking mode — reasoning effort is configurable per request
+- **Vision**: Accepts both text and image inputs, providing insights based on visual content
+- **Function Calling**: Native tool calling and JSON output support with best-in-class agentic capabilities
+- **Multilingual**: Supports dozens of languages including English, French, Spanish, German, Chinese, Japanese, Korean, Arabic, and more
+- **Long Context**: 256K context window reccomended, but can go up to 1M
+- **Efficient MoE**: 119B total parameters, 128 experts, 4 active per token (6.5B activated parameters)
+- **Apache 2.0 License**: Open-source, usable and modifiable for commercial and non-commercial purposes
+- Reasoning effort supported are only **"none" and "high"**
+
+**Architecture:**
+
+- Same general architecture as Mistral 3
+- MoE: 128 experts, 4 active per token
+- 119B total parameters, 6.5B activated per token
+- Multimodal input: text + image
+
+**Models:**
+
+- **[mistralai/Mistral-Small-4-119B-2603](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603)**
+- **[mistralai/Leanstral-2603](https://huggingface.co/mistralai/Leanstral-2603)
+- **[mistralai/Mistral-Small-4-119B-2603-NVFP4](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-NVFP4)**
+
+---
+
+## 2. SGLang Installation
+
+SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
+
+Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+
+:::caution Custom SGLang build required
+Mistral Small 4 support is not yet in mainline SGLang. A custom build with Mistral-architecture patches is required. Follow the SGLang build-from-source instructions and apply the relevant patches from the SGLang repository.
+:::
+
+---
+
+## 3. Model Deployment
+
+### 3.1 Basic Configuration
+
+**Interactive Command Generator**: Use the configuration selector below to generate a launch command for Mistral Small 4.
+
+import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/MistralSmall4ConfigGenerator';
+
+### 3.2 Configuration Tips
+
+- **Tensor Parallelism**: Mistral Small 4 in BF16 (~238 GB) requires at least 4× H200 (80 GB each) or 2× B200 (192 GB each).
+- **Reasoning effort**: Reasoning depth is configurable per request via `reasoning_effort` (`"none"`, `"low"`, `"medium"`, `"high"`). No restart required — toggle per call.
+- **Context length vs memory**: The model advertises a 256K context window. If you are memory-constrained, lower `--context-length` (e.g. `32768`) and increase once things are stable.
+- **Tool calling**: Enable `--tool-call-parser mistral` to activate native function calling support.
+- **Reasoning parser**: Enable `--reasoning-parser mistral` to separate `reasoning_content` from the main response content.
+
+---
+
+## 4. Model Invocation
+
+Deploy the model (example with H200 × 4):
+
+```shell
+sglang serve --model-path mistralai/Mistral-Small-4-119B-2602 \
+  --tp 4 \
+  --tool-call-parser mistral \
+  --reasoning-parser mistral
+```
+
+### 4.1 Thinking Mode (Default — Reasoning On)
+
+Mistral Small 4 is a hybrid reasoning model. By default, the model produces a thinking trace alongside its final response. Use `reasoning_effort` to control depth.
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY",
+)
+
+response = client.chat.completions.create(
+    model="mistralai/Mistral-Small-4-119B-2602",
+    messages=[
+        {"role": "user", "content": "Solve step by step: what is 17 × 23 + 144 / 12?"},
+    ],
+    extra_body={"reasoning_effort": "high"},
+)
+
+print("Reasoning:", response.choices[0].message.reasoning_content)
+print("Answer:", response.choices[0].message.content)
+```
+
+**Output:**
+
+```
+Reasoning: TODO
+Answer: TODO
+```
+
+### 4.2 Instruct Mode (Reasoning Off)
+
+To skip the reasoning trace and get a fast direct response, set `reasoning_effort` to `"none"`:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY",
+)
+
+response = client.chat.completions.create(
+    model="mistralai/Mistral-Small-4-119B-2602",
+    messages=[
+        {"role": "user", "content": "Write a Python function to reverse a string."},
+    ],
+    extra_body={"reasoning_effort": "none"},
+)
+
+print(response.choices[0].message.content)
+```
+
+**Output:**
+
+```
+TODO
+```
+
+### 4.3 Streaming with Reasoning
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY",
+)
+
+stream = client.chat.completions.create(
+    model="mistralai/Mistral-Small-4-119B-2602",
+    messages=[
+        {"role": "user", "content": "Explain the difference between async and threading in Python."},
+    ],
+    extra_body={"reasoning_effort": "medium"},
+    stream=True,
+)
+
+print("=== Reasoning ===")
+for chunk in stream:
+    delta = chunk.choices[0].delta
+    if hasattr(delta, "reasoning_content") and delta.reasoning_content:
+        print(delta.reasoning_content, end="", flush=True)
+    elif delta.content:
+        print("\n=== Response ===")
+        print(delta.content, end="", flush=True)
+print()
+```
+
+**Output:**
+
+```
+=== Reasoning ===
+TODO
+=== Response ===
+TODO
+```
+
+### 4.4 Tool Calling
+
+Mistral Small 4 supports native function calling. Enable with `--tool-call-parser mistral`:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY",
+)
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a city",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {"type": "string", "description": "City name"},
+                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                },
+                "required": ["location"],
+            },
+        },
+    }
+]
+
+response = client.chat.completions.create(
+    model="mistralai/Mistral-Small-4-119B-2602",
+    messages=[{"role": "user", "content": "What's the weather in Paris?"}],
+    tools=tools,
+    tool_choice="auto",
+)
+
+tool_calls = response.choices[0].message.tool_calls
+for tc in tool_calls:
+    print(f"Tool: {tc.function.name}")
+    print(f"Args: {tc.function.arguments}")
+```
+
+**Output:**
+
+```
+Tool: get_weather
+Args: TODO
+```
+
+### 4.5 Vision (Image Input)
+
+Mistral Small 4 accepts image inputs alongside text:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:30000/v1",
+    api_key="EMPTY",
+)
+
+response = client.chat.completions.create(
+    model="mistralai/Mistral-Small-4-119B-2602",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Describe what you see in this image."},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png"},
+                },
+            ],
+        }
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+**Output:**
+
+```
+TODO
+```
+
+---
+
+## 5. Benchmarks
+
+### 5.1 Accuracy Benchmarks
+
+#### GSM8K
+
+```bash
+python3 benchmark/gsm8k/bench_sglang.py --port 30000
+```
+
+**Results:**
+
+```
+TODO
+```
+
+#### MMLU
+
+```bash
+python3 benchmark/mmlu/bench_sglang.py --port 30000
+```
+
+**Results:**
+
+```
+TODO
+```
+
+### 5.2 Speed Benchmarks
+
+#### Latency (Low Concurrency)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --random-input-len 1024 \
+  --random-output-len 512 \
+  --port 30000
+```
+
+**Results:**
+
+```
+TODO
+```
+
+#### Throughput (High Concurrency)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --num-prompts 1000 \
+  --max-concurrency 100 \
+  --random-input-len 1024 \
+  --random-output-len 512 \
+  --port 30000
+```
+
+**Results:**
+
+```
+TODO
+```
+

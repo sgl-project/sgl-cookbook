@@ -1,0 +1,48 @@
+vendor: mistralai
+families:
+- name: Mistral-Small-4
+  description: Mistral Small 4 119B MoE (128 experts, 4 active) with hybrid reasoning, vision, and tool calling
+  models:
+  - name: Mistral-Small-4-119B-2602
+    model_path: mistralai/Mistral-Small-4-119B-2602
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: mistral
+        reasoning_parser: mistral
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
