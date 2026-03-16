@@ -164,6 +164,7 @@ const sidebars = {
           type: 'category',
           label: 'Mistral',
           items: [
+            'autoregressive/Mistral/Mistral-Small-4',
             'autoregressive/Mistral/Mistral-3',
             'autoregressive/Mistral/Devstral-2',
           ],
