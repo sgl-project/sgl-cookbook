@@ -1,6 +1,6 @@
 ---
-
-## sidebar_position: 1
+sidebar_position: 1
+---
 
 # Mistral Small 4
 
@@ -31,7 +31,7 @@ With its multimodal capabilities, efficient MoE architecture, and flexible mode 
 **Models:**
 
 - **[mistralai/Mistral-Small-4-119B-2603](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603)**
-- **[mistralai/Leanstral-2603](https://huggingface.co/mistralai/Leanstral-2603)
+- **[mistralai/Leanstral-2603](https://huggingface.co/mistralai/Leanstral-2603)**
 - **[mistralai/Mistral-Small-4-119B-2603-NVFP4](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-NVFP4)**
 
 ---
