@@ -30,9 +30,9 @@ With its multimodal capabilities, efficient MoE architecture, and flexible mode 
 
 **Models:**
 
-- **[mistralai/Mistral-Small-4-119B-2603](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603)**
-- **[mistralai/Leanstral-2603](https://huggingface.co/mistralai/Leanstral-2603)**
+- **[mistralai/Mistral-Small-4-119B-2603](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603)** (FP8)
 - **[mistralai/Mistral-Small-4-119B-2603-NVFP4](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-NVFP4)**
+- **[mistralai/Leanstral-2603](https://huggingface.co/mistralai/Leanstral-2603)** — same architecture, use the same launch commands as Mistral-Small-4-119B-2603
 
 ---
 
@@ -42,8 +42,8 @@ SGLang offers multiple installation methods. You can choose the most suitable in
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
-:::caution Custom SGLang build required
-Mistral Small 4 support is not yet in mainline SGLang. A custom build with Mistral-architecture patches is required. Follow the SGLang build-from-source instructions and apply the relevant patches from the SGLang repository.
+:::info
+Mistral Small 4 support is available via [sgl-project/sglang#20708](https://github.com/sgl-project/sglang/pull/20708). It reuses the MistralLarge3/DeepSeekV3 backend with the Pixtral vision encoder.
 :::
 
 ---
@@ -60,7 +60,7 @@ import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/Mi
 
 ### 3.2 Configuration Tips
 
-- **Tensor Parallelism**: Mistral Small 4 in BF16 (~238 GB) requires at least 4× H200 (80 GB each) or 2× B200 (192 GB each).
+- **Tensor Parallelism**: Mistral Small 4 FP8 (~119 GB) requires tp=2 on Hopper (H100/H200), tp=1 on Blackwell (B200/B300). NVFP4 (~60 GB, Blackwell only) runs with tp=1.
 - **Reasoning effort**: Reasoning depth is configurable per request via `reasoning_effort` (`"none"`, `"high"`). No restart required — toggle per call.
 - **Context length vs memory**: The model advertises a 1M context window, with 256K context window reccomended. If you are memory-constrained, lower `--context-length` (e.g. `32768`) and increase once things are stable.
 - **Tool calling**: Enable `--tool-call-parser mistral` to activate native function calling support.
@@ -70,12 +70,24 @@ import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/Mi
 
 ## 4. Model Invocation
 
-Deploy the model (example with H200 × 4):
+Deploy the model:
 
 ```shell
+# FP8 on Hopper (H100/H200)
 sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
-  --tp 4 \
-  --load-format mistral \
+  --tp 2 \
+  --tool-call-parser mistral \
+  --reasoning-parser mistral
+
+# FP8 on Blackwell (B200/B300)
+sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
+  --attention-backend flashinfer \
+  --tool-call-parser mistral \
+  --reasoning-parser mistral
+
+# NVFP4 on Blackwell (B200/B300)
+sglang serve --model-path mistralai/Mistral-Small-4-119B-2603-NVFP4 \
+  --attention-backend flashinfer \
   --tool-call-parser mistral \
   --reasoning-parser mistral
 ```
@@ -93,7 +105,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="mistralai/Mistral-Small-4-119B-2602",
+    model="mistralai/Mistral-Small-4-119B-2603",
     messages=[
         {"role": "user", "content": "Solve step by step: what is 17 × 23 + 144 / 12?"},
     ],
@@ -124,7 +136,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="mistralai/Mistral-Small-4-119B-2602",
+    model="mistralai/Mistral-Small-4-119B-2603",
     messages=[
         {"role": "user", "content": "Write a Python function to reverse a string."},
     ],
@@ -151,11 +163,11 @@ client = OpenAI(
 )
 
 stream = client.chat.completions.create(
-    model="mistralai/Mistral-Small-4-119B-2602",
+    model="mistralai/Mistral-Small-4-119B-2603",
     messages=[
         {"role": "user", "content": "Explain the difference between async and threading in Python."},
     ],
-    extra_body={"reasoning_effort": "medium"},
+    extra_body={"reasoning_effort": "high"},
     stream=True,
 )
 
@@ -210,7 +222,7 @@ tools = [
 ]
 
 response = client.chat.completions.create(
-    model="mistralai/Mistral-Small-4-119B-2602",
+    model="mistralai/Mistral-Small-4-119B-2603",
     messages=[{"role": "user", "content": "What's the weather in Paris?"}],
     tools=tools,
     tool_choice="auto",
@@ -242,7 +254,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="mistralai/Mistral-Small-4-119B-2602",
+    model="mistralai/Mistral-Small-4-119B-2603",
     messages=[
         {
             "role": "user",
@@ -333,4 +345,3 @@ python3 -m sglang.bench_serving \
 ```
 TODO
 ```
-

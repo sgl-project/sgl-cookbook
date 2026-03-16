@@ -3,24 +3,40 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
  * Mistral Small 4 Configuration Generator
- * Supports mistralai/Mistral-Small-4-119B-2602
- * 119B MoE (128 experts, 4 active = 6.5B activated params), BF16
+ * Supports mistralai/Mistral-Small-4-119B-2603 (FP8)
+ *         mistralai/Mistral-Small-4-119B-2603-NVFP4
+ * 119B MoE (128 experts, 4 active = 6.5B activated params)
  *
- * GPU requirements (BF16, ~238 GB weights):
- *   H200 (80 GB): tp=4 (4× H200 = 320 GB)
- *   B200 (192 GB): tp=2 (2× B200 = 384 GB)
+ * GPU requirements (FP8, ~119 GB weights):
+ *   H100 (80 GB):  tp=2 (2× H100 = 160 GB)
+ *   H200 (141 GB): tp=2 (2× H200 = 282 GB)
+ *   B200 (192 GB): tp=1
+ *   B300 (288 GB): tp=1
  */
 const MistralSmall4ConfigGenerator = () => {
   const config = {
-    modelId: 'mistralai/Mistral-Small-4-119B-2602',
+    modelId: 'mistralai/Mistral-Small-4-119B-2603',
 
     options: {
       hardware: {
         name: 'hardware',
         title: 'Hardware Platform',
+        getDynamicItems: (values) => {
+          const isNvfp4 = values.quantization === 'fp4';
+          return [
+            { id: 'h100', label: 'H100', default: !isNvfp4, disabled: isNvfp4 },
+            { id: 'h200', label: 'H200', default: false, disabled: isNvfp4 },
+            { id: 'b200', label: 'B200', default: isNvfp4, disabled: false },
+            { id: 'b300', label: 'B300', default: false, disabled: false },
+          ];
+        }
+      },
+      quantization: {
+        name: 'quantization',
+        title: 'Quantization',
         items: [
-          { id: 'h200', label: 'H200', default: true },
-          { id: 'b200', label: 'B200', default: false },
+          { id: 'fp8', label: 'FP8', default: true },
+          { id: 'fp4', label: 'NVFP4', subtitle: 'Blackwell only', default: false },
         ]
       },
       reasoning: {
@@ -44,23 +60,34 @@ const MistralSmall4ConfigGenerator = () => {
     },
 
     modelConfigs: {
-      h200: { bf16: { tp: 4 } },
-      b200: { bf16: { tp: 2 } },
+      h100: { fp8: { tp: 2 } },
+      h200: { fp8: { tp: 2 } },
+      b200: { fp8: { tp: 1 }, fp4: { tp: 1 } },
+      b300: { fp8: { tp: 1 }, fp4: { tp: 1 } },
     },
 
     generateCommand: function (values) {
-      const { hardware } = values;
+      const { hardware, quantization } = values;
 
-      const hwConfig = this.modelConfigs[hardware];
-      if (!hwConfig) return `# Error: Unknown hardware platform: ${hardware}`;
+      const hwConfig = this.modelConfigs[hardware]?.[quantization];
+      if (!hwConfig) return `# Error: Unknown hardware/quantization combination`;
 
-      const { tp } = hwConfig.bf16;
+      const { tp } = hwConfig;
 
-      let cmd = `sglang serve --model-path ${this.modelId}`;
+      const modelName = quantization === 'fp4'
+        ? 'mistralai/Mistral-Small-4-119B-2603-NVFP4'
+        : this.modelId;
+
+      let cmd = `sglang serve --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tp}`;
-      cmd += ` \\\n  --load-format mistral`;
+
+      // Blackwell GPUs need flashinfer attention backend
+      if (hardware === 'b200' || hardware === 'b300') {
+        cmd += ` \\\n  --attention-backend flashinfer`;
+      }
 
       Object.entries(this.options).forEach(([key, option]) => {
+        if (key === 'quantization' || key === 'hardware') return;
         if (option.commandRule) {
           const rule = option.commandRule(values[key]);
           if (rule) cmd += ` \\\n  ${rule}`;
