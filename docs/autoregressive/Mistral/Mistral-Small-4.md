@@ -59,8 +59,8 @@ import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/Mi
 ### 3.2 Configuration Tips
 
 - **Tensor Parallelism**: Mistral Small 4 in BF16 (~238 GB) requires at least 4× H200 (80 GB each) or 2× B200 (192 GB each).
-- **Reasoning effort**: Reasoning depth is configurable per request via `reasoning_effort` (`"none"`, `"low"`, `"medium"`, `"high"`). No restart required — toggle per call.
-- **Context length vs memory**: The model advertises a 256K context window. If you are memory-constrained, lower `--context-length` (e.g. `32768`) and increase once things are stable.
+- **Reasoning effort**: Reasoning depth is configurable per request via `reasoning_effort` (`"none"`, `"high"`). No restart required — toggle per call.
+- **Context length vs memory**: The model advertises a 1M context window, with 256K context window reccomended. If you are memory-constrained, lower `--context-length` (e.g. `32768`) and increase once things are stable.
 - **Tool calling**: Enable `--tool-call-parser mistral` to activate native function calling support.
 - **Reasoning parser**: Enable `--reasoning-parser mistral` to separate `reasoning_content` from the main response content.
 
@@ -71,15 +71,16 @@ import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/Mi
 Deploy the model (example with H200 × 4):
 
 ```shell
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2602 \
+sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
   --tp 4 \
   --tool-call-parser mistral \
   --reasoning-parser mistral
+  --load-format mistral
 ```
 
-### 4.1 Thinking Mode (Default — Reasoning On)
+### 4.1 Thinking Mode
 
-Mistral Small 4 is a hybrid reasoning model. By default, the model produces a thinking trace alongside its final response. Use `reasoning_effort` to control depth.
+Mistral Small 4 is a hybrid reasoning model. By default, it does not produce a default reasoning response. Use `--reasoning_effort high` to toggle reasoning on.
 
 ```python
 from openai import OpenAI
