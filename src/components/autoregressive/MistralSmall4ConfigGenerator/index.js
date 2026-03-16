@@ -44,8 +44,8 @@ const MistralSmall4ConfigGenerator = () => {
     },
 
     modelConfigs: {
-      h200: { bf16: { tp: 4, mem: 0.85 } },
-      b200: { bf16: { tp: 2, mem: 0.85 } },
+      h200: { bf16: { tp: 4 } },
+      b200: { bf16: { tp: 2 } },
     },
 
     generateCommand: function (values) {
@@ -54,10 +54,11 @@ const MistralSmall4ConfigGenerator = () => {
       const hwConfig = this.modelConfigs[hardware];
       if (!hwConfig) return `# Error: Unknown hardware platform: ${hardware}`;
 
-      const { tp, mem } = hwConfig.bf16;
+      const { tp } = hwConfig.bf16;
 
       let cmd = `sglang serve --model-path ${this.modelId}`;
       cmd += ` \\\n  --tp ${tp}`;
+      cmd += ` \\\n  --load-format mistral`;
 
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule) {
@@ -65,8 +66,6 @@ const MistralSmall4ConfigGenerator = () => {
           if (rule) cmd += ` \\\n  ${rule}`;
         }
       });
-
-      cmd += ` \\\n  --mem-fraction-static ${mem}`;
 
       return cmd;
     }

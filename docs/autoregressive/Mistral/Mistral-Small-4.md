@@ -56,6 +56,8 @@ Mistral Small 4 support is not yet in mainline SGLang. A custom build with Mistr
 
 import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/MistralSmall4ConfigGenerator';
 
+<MistralSmall4ConfigGenerator />
+
 ### 3.2 Configuration Tips
 
 - **Tensor Parallelism**: Mistral Small 4 in BF16 (~238 GB) requires at least 4× H200 (80 GB each) or 2× B200 (192 GB each).
@@ -73,9 +75,9 @@ Deploy the model (example with H200 × 4):
 ```shell
 sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
   --tp 4 \
+  --load-format mistral \
   --tool-call-parser mistral \
   --reasoning-parser mistral
-  --load-format mistral
 ```
 
 ### 4.1 Thinking Mode
