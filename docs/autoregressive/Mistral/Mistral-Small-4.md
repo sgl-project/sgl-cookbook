@@ -16,7 +16,7 @@ With its multimodal capabilities, efficient MoE architecture, and flexible mode 
 - **Vision**: Accepts both text and image inputs, providing insights based on visual content
 - **Function Calling**: Native tool calling and JSON output support with best-in-class agentic capabilities
 - **Multilingual**: Supports dozens of languages including English, French, Spanish, German, Chinese, Japanese, Korean, Arabic, and more
-- **Long Context**: 256K context window reccomended, but can go up to 1M
+- **Context Window**: 256K context window
 - **Efficient MoE**: 119B total parameters, 128 experts, 4 active per token (6.5B activated parameters)
 - **Apache 2.0 License**: Open-source, usable and modifiable for commercial and non-commercial purposes
 - Reasoning effort supported are only **"none" and "high"**
@@ -68,7 +68,7 @@ import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/Mi
 
 - **Tensor Parallelism**: Mistral Small 4 FP8 (~119 GB) requires tp=2 on Hopper (H100/H200), tp=1 on Blackwell (B200/B300). NVFP4 (~60 GB, Blackwell only) runs with tp=1.
 - **Reasoning effort**: Reasoning depth is configurable per request via `reasoning_effort` (`"none"`, `"high"`). No restart required — toggle per call.
-- **Context length vs memory**: The model advertises a 1M context window, with 256K context window reccomended. If you are memory-constrained, lower `--context-length` (e.g. `32768`) and increase once things are stable.
+- **Context length vs memory**: The model has a 256K context window. If you are memory-constrained, lower `--context-length` (e.g. `32768`) and increase once things are stable.
 - **Tool calling**: Enable `--tool-call-parser mistral` to activate native function calling support.
 - **Reasoning parser**: Enable `--reasoning-parser mistral` to separate `reasoning_content` from the main response content.
 
