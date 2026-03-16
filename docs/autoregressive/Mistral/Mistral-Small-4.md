@@ -43,8 +43,14 @@ SGLang offers multiple installation methods. You can choose the most suitable in
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
 :::info
-Mistral Small 4 support is available via [sgl-project/sglang#20708](https://github.com/sgl-project/sglang/pull/20708). It reuses the MistralLarge3/DeepSeekV3 backend with the Pixtral vision encoder.
+Mistral Small 4 support is available via [sgl-project/sglang#20708](https://github.com/sgl-project/sglang/pull/20708).
 :::
+
+### Docker
+
+```bash
+docker pull lmsysorg/sglang:mistral-small-4
+```
 
 ---
 
