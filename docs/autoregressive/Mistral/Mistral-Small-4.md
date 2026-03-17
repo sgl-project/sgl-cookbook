@@ -78,36 +78,6 @@ import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/Mi
 
 ## 4. Model Invocation
 
-Deploy the model:
-
-```shell
-# FP8 on Hopper (H100/H200)
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
-  --tp 2 \
-  --tool-call-parser mistral \
-  --reasoning-parser mistral
-
-# FP8 on Blackwell (B200/B300)
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
-  --tool-call-parser mistral \
-  --reasoning-parser mistral
-
-# NVFP4 on Blackwell (B200/B300)
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2603-NVFP4 \
-  --tool-call-parser mistral \
-  --reasoning-parser mistral
-
-# FP8 with EAGLE speculative decoding (H100/H200, add --tp 2 for Hopper)
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
-  --tool-call-parser mistral \
-  --reasoning-parser mistral \
-  --speculative-algorithm EAGLE \
-  --speculative-draft-model-path mistralai/Mistral-Small-4-119B-2603-eagle \
-  --speculative-num-steps 3 \
-  --speculative-eagle-topk 1 \
-  --speculative-num-draft-tokens 4
-```
-
 ### 4.1 Thinking Mode
 
 Mistral Small 4 is a hybrid reasoning model. By default, it does not produce a default reasoning response. Use `--reasoning_effort high` to toggle reasoning on.
