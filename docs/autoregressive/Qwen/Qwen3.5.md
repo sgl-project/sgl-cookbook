@@ -141,7 +141,7 @@ sglang serve \
   --host 0.0.0.0 \
   --port 30000
 ```
-> Note : To run Qwen3.5-397B-A17B Model, it needs minimum of 8x MI300x GPUs (TP8) or 4x MI325X/MI355X GPUs (TP4) 
+> **Note:** TP8 works on all MI GPUs. For MI325X/MI355X, you can use --tp 4 as the minimum requirement.
 
 ### 4.1 Basic Usage
 
