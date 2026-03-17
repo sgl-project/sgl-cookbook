@@ -137,8 +137,11 @@ sglang serve \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3_coder \
   --mem-fraction-static 0.8 \
-  --attention-backend triton
+  --attention-backend triton \
+  --host 0.0.0.0 \
+  --port 30000
 ```
+> Note : To run Qwen3.5-397B-A17B Model, it needs minimum of 8x MI300x GPUs (TP8) or 4x MI325X/MI355X GPUs (TP4) 
 
 ### 4.1 Basic Usage
 
