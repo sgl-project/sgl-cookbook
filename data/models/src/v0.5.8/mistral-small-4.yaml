@@ -23,6 +23,20 @@ defaults:
     - name: default
       nodes: single
       optimization: balanced
+    - name: speculative-eagle
+      nodes: single
+      optimization: low-latency
+      extra_args:
+        - --speculative-algorithm
+        - EAGLE
+        - --speculative-draft-model-path
+        - mistralai/Mistral-Small-4-119B-2603-eagle
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
 
 families:
   - name: Mistral-Small-4
