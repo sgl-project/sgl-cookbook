@@ -33,6 +33,7 @@ With its multimodal capabilities, efficient MoE architecture, and flexible mode 
 - **[mistralai/Mistral-Small-4-119B-2603](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603)** (FP8)
 - **[mistralai/Mistral-Small-4-119B-2603-NVFP4](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-NVFP4)**
 - **[mistralai/Leanstral-2603](https://huggingface.co/mistralai/Leanstral-2603)** — same architecture, use the same launch commands as Mistral-Small-4-119B-2603
+- **[mistralai/Mistral-Small-4-119B-2603-eagle](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-eagle)** — EAGLE speculative decoding weights for faster inference
 
 ---
 
@@ -71,32 +72,11 @@ import MistralSmall4ConfigGenerator from '@site/src/components/autoregressive/Mi
 - **Context length vs memory**: The model has a 256K context window. If you are memory-constrained, lower `--context-length` (e.g. `32768`) and increase once things are stable.
 - **Tool calling**: Enable `--tool-call-parser mistral` to activate native function calling support.
 - **Reasoning parser**: Enable `--reasoning-parser mistral` to separate `reasoning_content` from the main response content.
+- **Speculative decoding (EAGLE)**: Enable with `--speculative-algorithm EAGLE --speculative-draft-model-path mistralai/Mistral-Small-4-119B-2603-eagle` using the [EAGLE weights](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-eagle) for lower latency.
 
 ---
 
 ## 4. Model Invocation
-
-Deploy the model:
-
-```shell
-# FP8 on Hopper (H100/H200)
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
-  --tp 2 \
-  --tool-call-parser mistral \
-  --reasoning-parser mistral
-
-# FP8 on Blackwell (B200/B300)
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2603 \
-  --attention-backend flashinfer \
-  --tool-call-parser mistral \
-  --reasoning-parser mistral
-
-# NVFP4 on Blackwell (B200/B300)
-sglang serve --model-path mistralai/Mistral-Small-4-119B-2603-NVFP4 \
-  --attention-backend flashinfer \
-  --tool-call-parser mistral \
-  --reasoning-parser mistral
-```
 
 ### 4.1 Thinking Mode
 
@@ -125,8 +105,28 @@ print("Answer:", response.choices[0].message.content)
 **Output:**
 
 ```
-Reasoning: TODO
-Answer: TODO
+Reasoning: First, I'll break down the problem into two parts: the multiplication and
+the division. According to the order of operations (PEMDAS/BODMAS), multiplication and
+division are performed from left to right before addition.
+
+17 × 23 = 17 × (20 + 3) = (17 × 20) + (17 × 3) = 340 + 51 = 391
+144 / 12 = 12
+
+Finally, add the results: 391 + 12 = 403
+
+Answer: The solution to the problem is as follows:
+
+1. First, perform the multiplication: 17 × 23.
+   - 17 × 20 = 340
+   - 17 × 3 = 51
+   - 340 + 51 = 391
+
+2. Then, perform the division: 144 / 12 = 12.
+
+3. Finally, add the results:
+   - 391 + 12 = 403
+
+**Answer:** \boxed{403}
 ```
 
 ### 4.2 Instruct Mode (Reasoning Off)
@@ -154,9 +154,45 @@ print(response.choices[0].message.content)
 
 **Output:**
 
+````
+# Python Function to Reverse a String
+
+Here are several ways to write a Python function to reverse a string:
+
+## Method 1: Using String Slicing (Most Pythonic)
+```python
+def reverse_string(s):
+    """Reverse a string using slicing."""
+    return s[::-1]
 ```
-TODO
+
+## Method 2: Using a Loop
+```python
+def reverse_string(s):
+    """Reverse a string using a loop."""
+    reversed_str = ""
+    for char in s:
+        reversed_str = char + reversed_str
+    return reversed_str
 ```
+
+## Method 3: Using reversed() function
+```python
+def reverse_string(s):
+    """Reverse a string using reversed() function."""
+    return ''.join(reversed(s))
+```
+
+The first method using string slicing (`s[::-1]`) is generally the most efficient and
+recommended approach in Python.
+
+Example usage:
+```python
+original = "Hello, World!"
+reversed_str = reverse_string(original)
+print(reversed_str)  # Output: "!dlroW ,olleH"
+```
+````
 
 ### 4.3 Streaming with Reasoning
 
@@ -192,9 +228,16 @@ print()
 
 ```
 === Reasoning ===
-TODO
+Okay, the user is asking about the difference between async and threading in Python.
+I need to break this down clearly, covering the key aspects of both, like their
+purposes, performance characteristics, and use cases...
 === Response ===
-TODO
+In Python, **`async`/`asyncio`** and **`threading`** are two different concurrency
+models, each suited for specific use cases. Here's a breakdown of their key differences:
+
+### 1. Model of Concurrency
+- **Threading**: Based on preemptive multitasking using OS threads.
+- **Async** (`asyncio`): Based on cooperative multitasking. Tasks voluntarily yield...
 ```
 
 ### 4.4 Tool Calling
@@ -244,7 +287,7 @@ for tc in tool_calls:
 
 ```
 Tool: get_weather
-Args: TODO
+Args: {"location": "Paris"}
 ```
 
 ### 4.5 Vision (Image Input)
@@ -268,7 +311,7 @@ response = client.chat.completions.create(
                 {"type": "text", "text": "Describe what you see in this image."},
                 {
                     "type": "image_url",
-                    "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png"},
+                    "image_url": {"url": "https://raw.githubusercontent.com/sgl-project/sglang/main/assets/logo.png"},
                 },
             ],
         }
@@ -281,7 +324,10 @@ print(response.choices[0].message.content)
 **Output:**
 
 ```
-TODO
+The image is a copyright symbol, represented by a stylized version of the lowercase
+letter "c" inside a circle. The "c" is depicted in a white or light-colored font, and
+the circle is orange. The design is simple yet striking, using oval and elliptical
+shapes to create a distinct symbol which signifies copyright protection.
 ```
 
 ---

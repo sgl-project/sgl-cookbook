@@ -57,6 +57,15 @@ const MistralSmall4ConfigGenerator = () => {
         ],
         commandRule: (value) => value === 'enabled' ? '--tool-call-parser mistral' : null
       },
+      speculative: {
+        name: 'speculative',
+        title: 'Speculative Decoding (EAGLE)',
+        items: [
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
+        ],
+        commandRule: (value) => value === 'enabled' ? '--speculative-algorithm EAGLE \\\n  --speculative-draft-model-path mistralai/Mistral-Small-4-119B-2603-eagle \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
+      },
     },
 
     modelConfigs: {
@@ -80,11 +89,6 @@ const MistralSmall4ConfigGenerator = () => {
 
       let cmd = `sglang serve --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tp}`;
-
-      // Blackwell GPUs need flashinfer attention backend
-      if (hardware === 'b200' || hardware === 'b300') {
-        cmd += ` \\\n  --attention-backend flashinfer`;
-      }
 
       Object.entries(this.options).forEach(([key, option]) => {
         if (key === 'quantization' || key === 'hardware') return;
