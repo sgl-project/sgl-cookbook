@@ -1,0 +1,35 @@
+# Step-3.5-Flash Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/step35.yaml
+
+vendor: stepfun-ai
+
+defaults:
+  hardware:
+    H200: { tp: 4 }
+    MI300X: { tp: 4, ep: 4 }
+    MI325X: { tp: 4, ep: 4 }
+    MI350X: { tp: 4, ep: 4 }
+    MI355X: { tp: 4, ep: 4 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      extra_args:
+        - --trust-remote-code
+
+families:
+  - name: Step-3.5-Flash
+    description: StepFun Step-3.5-Flash production-grade reasoning engine with hybrid SWA/GA attention and 288-expert MoE (196B total, 11B active)
+    llm:
+      tool_parser: step3p5
+      reasoning_parser: step3p5
+
+    models:
+      - name: Step-3.5-Flash
+        llm:
+          thinking_capability: thinking
+      - name: Step-3.5-Flash-FP8
+        llm:
+          thinking_capability: thinking
+          quantizations:
+            - fp8
