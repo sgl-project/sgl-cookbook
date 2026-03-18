@@ -8,6 +8,10 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  * GPU requirements:
  *   H200: tp=8
  *   B300: tp=8
+ *   MI300X: tp=4 (64 heads / 4 = 16 heads per GPU, AITER MLA requires heads_per_gpu % 16 == 0)
+ *   MI325X: tp=4 (same constraint as MI300X)
+ *   MI350X: tp=4 (same constraint as MI300X)
+ *   MI355X: tp=4 (same constraint as MI300X)
  */
 const KimiK25ConfigGenerator = () => {
   const config = {
@@ -19,7 +23,11 @@ const KimiK25ConfigGenerator = () => {
         title: 'Hardware Platform',
         items: [
           { id: 'h200', label: 'H200', default: true },
-          { id: 'b300', label: 'B300', default: false }
+          { id: 'b300', label: 'B300', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi350x', label: 'MI350X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       reasoning: {
@@ -53,17 +61,29 @@ const KimiK25ConfigGenerator = () => {
 
     modelConfigs: {
       h200: { tp: 8 },
-      b300: { tp: 8 }
+      b300: { tp: 8 },
+      mi300x: { tp: 4 },
+      mi325x: { tp: 4 },
+      mi350x: { tp: 4 },
+      mi355x: { tp: 4 }
     },
 
     generateCommand: function (values) {
       const { hardware } = values;
+      const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi350x' || hardware === 'mi355x';
 
       const modelName = `${this.modelFamily}/Kimi-K2.5`;
       const hwConfig = this.modelConfigs[hardware];
       const tpValue = hwConfig.tp;
 
-      let cmd = 'sglang serve \\\n';
+      let cmd = '';
+
+      // AMD ROCm environment variables
+      if (isAMD) {
+        cmd += 'SGLANG_USE_AITER=1 SGLANG_ROCM_FUSED_DECODE_MLA=0 \\\n';
+      }
+
+      cmd += 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
       cmd += ' \\\n  --trust-remote-code';
@@ -82,6 +102,11 @@ const KimiK25ConfigGenerator = () => {
           }
         }
       });
+
+      // AMD: FP8 KV cache for memory efficiency
+      if (isAMD) {
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
+      }
 
       cmd += ' \\\n  --host 0.0.0.0 \\\n  --port 30000';
 

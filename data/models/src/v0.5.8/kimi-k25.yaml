@@ -7,6 +7,10 @@ defaults:
   hardware:
     H200: { tp: 8 }
     B300: { tp: 8 }
+    MI300X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
+    MI325X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
+    MI350X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
+    MI355X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
   configurations:
     - name: default
       nodes: single

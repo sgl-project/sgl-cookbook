@@ -28,7 +28,9 @@ import KimiK25ConfigGenerator from '@site/src/components/autoregressive/KimiK25C
 
 ### 3.2 Configuration Tips
 
-- **Memory**: Requires 8 GPUs with ≥140GB each (H200/B300). Use `--context-length 128000` to conserve memory.
+- **Memory**: Requires GPUs with ≥140GB each. Supported platforms: H200 (8×, TP=8), B300 (8×, TP=8), MI300X/MI325X (4×, TP=4), MI350X/MI355X (4×, TP=4). Use `--context-length 128000` to conserve memory.
+- **AMD GPU TP Constraint**: On AMD GPUs, TP must be ≤ 4 (not 8). Kimi-K2.5 has 64 attention heads; the AITER MLA kernel requires `heads_per_gpu % 16 == 0`. With TP=4, each GPU gets 16 heads (valid). With TP=8, each GPU gets 8 heads (invalid).
+- **AMD Docker Image**: Use `lmsysorg/sglang:v0.5.9-rocm700-mi35x` for MI350X/MI355X and `lmsysorg/sglang:v0.5.9-rocm700-mi30x` for MI300X/MI325X. The ROCm 7.2 images (`rocm720`) have an AITER compatibility issue.
 - **DP Attention**: Enable with `--dp <N> --enable-dp-attention` for production throughput. A common choice is to set `--dp` equal to `--tp`, but this is not required.
 - **Reasoning Parser**: Add `--reasoning-parser kimi_k2` to separate thinking and content in model outputs.
 - **Tool Call Parser**: Add `--tool-call-parser kimi_k2` for structured tool calls.
@@ -969,5 +971,148 @@ Median ITL (ms):                         296.17
 P95 ITL (ms):                            1869.15
 P99 ITL (ms):                            2708.95
 Max ITL (ms):                            7778.47
+==================================================
+```
+
+### 5.3 Speed Benchmark (AMD MI350X)
+
+**Test Environment:**
+
+- Hardware: AMD Instinct MI350X GPU (4x)
+- Model: Kimi-K2.5 (BF16)
+- Tensor Parallelism: 4
+- SGLang Version: 0.5.9
+- Docker Image: `lmsysorg/sglang:v0.5.9-rocm700-mi35x`
+- ROCm: 7.0
+
+We use SGLang's built-in benchmarking tool with the `random` dataset for standardized performance evaluation.
+
+:::info AMD GPU TP Constraint
+Kimi-K2.5 requires TP ≤ 4 on AMD GPUs. The model has 64 attention heads, and the AITER MLA kernel requires `heads_per_gpu % 16 == 0`. With TP=4, each GPU gets 16 heads (valid). With TP=8, each GPU gets 8 heads (invalid).
+:::
+
+#### 5.3.1 Latency Benchmark
+
+- **Model Deployment:**
+
+```bash
+SGLANG_USE_AITER=1 SGLANG_ROCM_FUSED_DECODE_MLA=0 \
+sglang serve \
+  --model-path moonshotai/Kimi-K2.5 \
+  --tp 4 \
+  --mem-fraction-static 0.8 \
+  --trust-remote-code \
+  --reasoning-parser kimi_k2 \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+- **Benchmark Command:**
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --request-rate inf
+```
+
+- **Results:**
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  155.81
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4222
+Request throughput (req/s):              0.06
+Input token throughput (tok/s):          39.16
+Output token throughput (tok/s):         27.09
+Peak output token throughput (tok/s):    29.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          66.24
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   15576.22
+Median E2E Latency (ms):                 12539.80
+P90 E2E Latency (ms):                    28150.56
+P99 E2E Latency (ms):                    34873.51
+---------------Time to First Token----------------
+Mean TTFT (ms):                          563.50
+Median TTFT (ms):                        594.92
+P99 TTFT (ms):                           830.31
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          35.61
+Median TPOT (ms):                        35.66
+P99 TPOT (ms):                           35.77
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           35.66
+Median ITL (ms):                         35.69
+P95 ITL (ms):                            35.96
+P99 ITL (ms):                            36.13
+Max ITL (ms):                            36.92
+==================================================
+```
+
+- Medium Concurrency (Balanced)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
+```
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  526.66
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40798
+Request throughput (req/s):              0.15
+Input token throughput (tok/s):          75.32
+Output token throughput (tok/s):         77.48
+Peak output token throughput (tok/s):    96.00
+Peak concurrent requests:                18
+Total token throughput (tok/s):          152.80
+Concurrency:                             14.59
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   96023.27
+Median E2E Latency (ms):                 93940.20
+P90 E2E Latency (ms):                    159449.54
+P99 E2E Latency (ms):                    194706.61
+---------------Time to First Token----------------
+Mean TTFT (ms):                          989.08
+Median TTFT (ms):                        886.42
+P99 TTFT (ms):                           1543.60
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          191.04
+Median TPOT (ms):                        195.20
+P99 TPOT (ms):                           238.84
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           186.68
+Median ITL (ms):                         183.82
+P95 ITL (ms):                            189.90
+P99 ITL (ms):                            673.64
+Max ITL (ms):                            1633.20
 ==================================================
 ```
