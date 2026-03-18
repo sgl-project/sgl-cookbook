@@ -107,7 +107,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 
 ## 4. Model Invocation
 
-### NVIDIA :
+**NVIDIA:**
 
 Deploy Qwen3.5-397B-A17B with the following command (H200, all features enabled):
 
@@ -126,7 +126,7 @@ sglang serve \
   --port 30000
 ```
 
-### AMD :
+**AMD:**
 
 Deploy Qwen3.5-397B-A17B with the following command (MI300X/MI325X/MI355X):
 
