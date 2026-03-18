@@ -95,8 +95,9 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -112,8 +113,9 @@ families:
             ep: null
             enable_dp_attention: true
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
       MI325X:
@@ -131,8 +133,9 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -148,8 +151,9 @@ families:
             ep: null
             enable_dp_attention: true
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
       MI350X:
@@ -167,8 +171,9 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -184,8 +189,9 @@ families:
             ep: null
             enable_dp_attention: true
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
       MI355X:
@@ -203,8 +209,9 @@ families:
             ep: null
             enable_dp_attention: null
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
         - name: high-throughput-dp
@@ -220,7 +227,8 @@ families:
             ep: null
             enable_dp_attention: true
             extra_args:
+            - --kv-cache-dtype
+            - fp8_e4m3
             - --trust-remote-code
-            - --kv-cache-dtype fp8_e4m3
           prefill: null
           decode: null
