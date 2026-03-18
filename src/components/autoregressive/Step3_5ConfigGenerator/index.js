@@ -7,10 +7,10 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *
  * GPU requirements:
  *   H200: tp=4 (BF16), tp=4 (FP8)
- *   MI300X: tp=4 (FP8)
- *   MI325X: tp=4 (FP8)
- *   MI350X: tp=4 (FP8)
- *   MI355X: tp=4 (FP8)
+ *   MI300X: tp=4 (BF16/FP8)
+ *   MI325X: tp=4 (BF16/FP8)
+ *   MI350X: tp=4 (BF16/FP8)
+ *   MI355X: tp=4 (BF16/FP8)
  */
 const Step3_5ConfigGenerator = () => {
   const config = {
