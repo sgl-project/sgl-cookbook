@@ -6,10 +6,10 @@ vendor: stepfun-ai
 defaults:
   hardware:
     H200: { tp: 4 }
-    MI300X: { tp: 4 }
-    MI325X: { tp: 4 }
-    MI350X: { tp: 4 }
-    MI355X: { tp: 4 }
+    MI300X: { tp: 4, ep: 4 }
+    MI325X: { tp: 4, ep: 4 }
+    MI350X: { tp: 4, ep: 4 }
+    MI355X: { tp: 4, ep: 4 }
   configurations:
     - name: default
       nodes: single

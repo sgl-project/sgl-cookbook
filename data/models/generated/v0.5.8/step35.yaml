@@ -43,7 +43,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
@@ -61,7 +61,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
@@ -79,7 +79,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
@@ -97,7 +97,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
@@ -142,7 +142,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
@@ -160,7 +160,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
@@ -178,7 +178,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
@@ -196,7 +196,7 @@ families:
             env_vars: {}
             tp: 4
             dp: null
-            ep: null
+            ep: 4
             enable_dp_attention: null
             extra_args:
             - --trust-remote-code
