@@ -55,3 +55,7 @@ vendors:
   inclusionAI:
     name: InclusionAI (Ant Group)
     huggingface_org: inclusionAI
+
+  stepfun-ai:
+    name: StepFun
+    huggingface_org: stepfun-ai

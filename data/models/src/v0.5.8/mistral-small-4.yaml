@@ -1,0 +1,60 @@
+# Mistral Small 4 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/v0.5.8/mistral-small-4.yaml
+#
+# GPU requirements (FP8, ~119 GB weights):
+#   H100 (80 GB):  tp=2
+#   H200 (141 GB): tp=2
+#   B200 (192 GB): tp=1
+#   B300 (288 GB): tp=1
+#
+# GPU requirements (NVFP4, ~60 GB weights, Blackwell only):
+#   B200 (192 GB): tp=1
+#   B300 (288 GB): tp=1
+
+vendor: mistralai
+
+defaults:
+  hardware:
+    H100: { tp: 2 }
+    H200: { tp: 2 }
+    B200: { tp: 1 }
+    B300: { tp: 1 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+    - name: speculative-eagle
+      nodes: single
+      optimization: low-latency
+      extra_args:
+        - --speculative-algorithm
+        - EAGLE
+        - --speculative-draft-model-path
+        - mistralai/Mistral-Small-4-119B-2603-eagle
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
+
+families:
+  - name: Mistral-Small-4
+    description: Mistral Small 4 119B MoE (128 experts, 4 active) with hybrid reasoning, vision, and tool calling
+    llm:
+      thinking_capability: hybrid
+      tool_parser: mistral
+      reasoning_parser: mistral
+
+    models:
+      # FP8 (default checkpoint)
+      - name: Mistral-Small-4-119B-2603
+        quantization: fp8
+
+      # NVFP4 (Blackwell only)
+      - name: Mistral-Small-4-119B-2603-NVFP4
+        model_path: mistralai/Mistral-Small-4-119B-2603-NVFP4
+        quantization: fp4
+        hardware:
+          B200: { tp: 1 }
+          B300: { tp: 1 }

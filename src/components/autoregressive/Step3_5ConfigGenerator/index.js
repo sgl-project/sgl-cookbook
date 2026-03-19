@@ -4,6 +4,13 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 /**
  * Step-3.5-Flash Configuration Generator
  * Supports Step-3.5-Flash with speculative decoding
+ *
+ * GPU requirements:
+ *   H200: tp=4 (BF16), tp=4 (FP8)
+ *   MI300X: tp=4 (BF16/FP8)
+ *   MI325X: tp=4 (BF16/FP8)
+ *   MI350X: tp=4 (BF16/FP8)
+ *   MI355X: tp=4 (BF16/FP8)
  */
 const Step3_5ConfigGenerator = () => {
   const config = {
@@ -15,6 +22,10 @@ const Step3_5ConfigGenerator = () => {
         title: 'Hardware Platform',
         items: [
           { id: 'h200', label: 'H200', default: true },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi350x', label: 'MI350X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       modelsize: {
@@ -72,28 +83,39 @@ const Step3_5ConfigGenerator = () => {
         baseName: '196b',
         isMOE: true,
         h200: { tp: 4, bf16: true },
+        mi300x: { tp: 4, bf16: true },
+        mi325x: { tp: 4, bf16: true },
+        mi350x: { tp: 4, bf16: true },
+        mi355x: { tp: 4, bf16: true },
       },
     },
 
     generateCommand: function (values) {
       const { hardware, modelsize: modelSize, quantization, reasoningParser } = values;
+      const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi350x' || hardware === 'mi355x';
 
       const config = this.modelConfigs[modelSize];
       const hwConfig = config[hardware];
       const quantSuffix = quantization === 'fp8' ? '-FP8' : '';
       const modelName = `stepfun-ai/Step-3.5-Flash${quantSuffix}`;
 
+      let tpValue = hwConfig.tp;
+
       let cmd = '';
 
       cmd += 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
 
-      if (hwConfig.tp > 1) {
-        cmd += ` \\\n  --tp ${hwConfig.tp}`;
+      if (tpValue > 1) {
+        cmd += ` \\\n  --tp ${tpValue}`;
       }
-      if (quantSuffix==='-FP8'){
-        cmd += ` \\\n  --ep ${hwConfig.tp}`;
+      // EP required for FP8, and for AMD BF16 (AITER CK GEMM N=320 crash without EP)
+      if (quantSuffix === '-FP8' || isAMD) {
+        cmd += ` \\\n  --ep ${tpValue}`;
       }
+
+      // Trust remote code for custom architecture
+      cmd += ' \\\n  --trust-remote-code';
 
       for (const [key, option] of Object.entries(this.options)) {
 

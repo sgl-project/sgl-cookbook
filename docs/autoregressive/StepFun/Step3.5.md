@@ -17,7 +17,7 @@ This generation delivers comprehensive upgrades across the board:
 
 Step-3.5-Flash is currently available in SGLang via Docker image install.
 
-### Docker
+### Docker (NVIDIA)
 ```
 # Pull the docker image
 docker pull lmsysorg/sglang:dev-pr-18084
@@ -28,6 +28,24 @@ docker run -it --gpus all \
   --ipc=host \
   --network=host \
   lmsysorg/sglang:dev-pr-18084 bash
+```
+
+### Docker (AMD ROCm)
+```bash
+# For MI300X/MI325X
+docker pull lmsysorg/sglang:v0.5.9-rocm700-mi30x
+
+# For MI350X/MI355X
+docker pull lmsysorg/sglang:v0.5.9-rocm700-mi35x
+
+docker run -it \
+  --device=/dev/kfd --device=/dev/dri \
+  --shm-size=32g \
+  --ipc=host \
+  --network=host \
+  --group-add video --cap-add=SYS_PTRACE \
+  --security-opt seccomp=unconfined \
+  lmsysorg/sglang:v0.5.9-rocm700-mi30x bash  # or mi35x for MI350X/MI355X
 ```
 
 ## 3.Model Deployment
@@ -43,6 +61,13 @@ The Step-3.5-Flash series comes in only one sizes. Recommended starting configur
 import Step3_5ConfigGenerator from '@site/src/components/autoregressive/Step3_5ConfigGenerator';
 
 <Step3_5ConfigGenerator />
+
+### 3.2 Configuration Tips
+
+- **Memory**: Requires GPUs with high VRAM capacity. Supported platforms: H200 (4×, TP=4), MI300X/MI325X/MI350X/MI355X (4×, TP=4 EP=4).
+- **AMD Docker Image**: Use `lmsysorg/sglang:v0.5.9-rocm700-mi30x` for MI300X/MI325X and `lmsysorg/sglang:v0.5.9-rocm700-mi35x` for MI350X/MI355X.
+- **AMD Expert Parallelism Required**: On AMD GPUs, always use `--ep 4` with `--tp 4`. Both BF16 and FP8 models require expert parallelism. Without EP, the MoE intermediate dimension is split across GPUs (N=320), which triggers an AITER CK GEMM incompatibility. With EP=4, each GPU handles 72 full experts (N=1280), which works correctly with cuda graph enabled.
+- **AITER JIT Compilation**: First inference on AMD may take 30-40 seconds for AITER kernel JIT compilation. Subsequent requests use cached kernels.
 
 ## 4.Model Invocation
 
@@ -70,7 +95,7 @@ sglang serve \
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:8000/v1",
+    base_url="http://localhost:30000/v1",
     api_key="EMPTY"
 )
 
