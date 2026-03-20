@@ -1,6 +1,48 @@
 import React, { useState, useMemo } from 'react';
 import styles from '../../base/ConfigGenerator/styles.module.css';
 
+const MODELSIZE_DEFS = [
+  {
+    id: '14b',
+    label: '14B',
+    subtitle: 'High-quality, 480P/720P',
+    default: true,
+    validTasks: ['t2v', 'i2v'],
+  },
+  {
+    id: '1_3b',
+    label: '1.3B',
+    subtitle: 'Lightweight, 480P',
+    default: false,
+    validTasks: ['t2v'],
+  },
+];
+
+const modelConfigs = {
+  't2v-14b': {
+    repoId: 'Wan-AI/Wan2.1-T2V-14B-Diffusers',
+    supportedLoras: [
+      { id: 'general', label: 'General Wan2.1 LoRA', path: 'NIVEDAN/wan2.1-lora' },
+    ],
+  },
+  't2v-1_3b': {
+    repoId: 'Wan-AI/Wan2.1-T2V-1.3B-Diffusers',
+    supportedLoras: [],
+  },
+  'i2v-14b': {
+    repoId: 'Wan-AI/Wan2.1-I2V-14B-720P-Diffusers',
+    supportedLoras: [
+      { id: 'fight', label: 'Fight Style LoRA', path: 'valiantcat/Wan2.1-Fight-LoRA' },
+    ],
+  },
+};
+
+function modelSizeItemsForTask(task) {
+  return MODELSIZE_DEFS.filter((item) => item.validTasks.includes(task)).map(
+    ({ validTasks, ...rest }) => rest
+  );
+}
+
 const Wan2_1ConfigGenerator = () => {
   const baseConfig = {
     modelFamily: 'Wan2.1',
@@ -9,11 +51,7 @@ const Wan2_1ConfigGenerator = () => {
       hardware: {
         name: 'hardware',
         title: 'Hardware Platform',
-        items: [
-          { id: 'mi300x', label: 'MI300X', default: true },
-          { id: 'mi325x', label: 'MI325X', default: false },
-          { id: 'mi355x', label: 'MI355X', default: false },
-        ],
+        items: [{ id: 'mi300x', label: 'MI300X/MI325X/MI355X', default: true }],
       },
       task: {
         name: 'task',
@@ -26,22 +64,7 @@ const Wan2_1ConfigGenerator = () => {
       modelsize: {
         name: 'modelsize',
         title: 'Model Variant',
-        items: [
-          {
-            id: '14b',
-            label: '14B',
-            subtitle: 'High-quality, 480P/720P',
-            default: true,
-            validTasks: ['t2v', 'i2v'],
-          },
-          {
-            id: '1_3b',
-            label: '1.3B',
-            subtitle: 'Lightweight, 480P',
-            default: false,
-            validTasks: ['t2v'],
-          },
-        ],
+        items: MODELSIZE_DEFS.map(({ validTasks, ...rest }) => rest),
       },
       bestPractice: {
         name: 'bestPractice',
@@ -53,45 +76,27 @@ const Wan2_1ConfigGenerator = () => {
       },
     },
 
-    modelConfigs: {
-      't2v-14b': {
-        repoId: 'Wan-AI/Wan2.1-T2V-14B-Diffusers',
-        supportedLoras: [
-          { id: 'general', label: 'General Wan2.1 LoRA', path: 'NIVEDAN/wan2.1-lora' },
-        ],
-      },
-      't2v-1_3b': {
-        repoId: 'Wan-AI/Wan2.1-T2V-1.3B-Diffusers',
-        supportedLoras: [],
-      },
-      'i2v-14b': {
-        repoId: 'Wan-AI/Wan2.1-I2V-14B-720P-Diffusers',
-        supportedLoras: [
-          { id: 'fight', label: 'Fight Style LoRA', path: 'valiantcat/Wan2.1-Fight-LoRA' },
-        ],
-      },
-    },
+    modelConfigs,
 
     generateCommand: function (values) {
       const { task, modelsize, selectedLoraPath, bestPractice } = values;
       const configKey = `${task}-${modelsize}`;
-      const config = this.modelConfigs[configKey];
+      const mc = this.modelConfigs[configKey];
 
-      if (!config) return `# Error: Invalid configuration`;
+      if (!mc) return `# Error: Invalid configuration`;
 
       let command = `sglang serve \\
-  --model-path ${config.repoId} \\
+  --model-path ${mc.repoId} \\
   --dit-layerwise-offload true`;
 
       if (bestPractice === 'on') {
         command += ` \\
   --num-gpus 4 \\
   --ulysses-degree 2 \\
-  --enable-cfg-parallel
-  `;
+  --enable-cfg-parallel`;
       }
 
-      if (selectedLoraPath && selectedLoraPath !== 'none') {
+      if (selectedLoraPath) {
         command += ` \\
   --lora-path ${selectedLoraPath}`;
       }
@@ -101,124 +106,151 @@ const Wan2_1ConfigGenerator = () => {
   };
 
   const getInitialState = () => {
-    const initialState = {};
-    Object.entries(baseConfig.options).forEach(([key, option]) => {
-      const defaultItem = option.items.find((item) => item.default);
-      initialState[key] = defaultItem ? defaultItem.id : option.items[0].id;
-    });
-    initialState.selectedLoraPath = 'none';
-    return initialState;
+    const task = 't2v';
+    const sizes = modelSizeItemsForTask(task);
+    const modelsize = sizes.find((s) => s.default)?.id || sizes[0].id;
+    const configKey = `${task}-${modelsize}`;
+    const supported = modelConfigs[configKey]?.supportedLoras || [];
+    return {
+      hardware: 'mi300x',
+      task,
+      modelsize,
+      bestPractice: 'off',
+      selectedLoraPath: supported[0]?.path ?? '',
+    };
   };
 
   const [values, setValues] = useState(getInitialState);
 
-  const availableLoras = useMemo(() => {
-    const configKey = `${values.task}-${values.modelsize}`;
-    return baseConfig.modelConfigs[configKey]?.supportedLoras || [];
-  }, [values.task, values.modelsize]);
-
   const handleRadioChange = (optionName, itemId) => {
     setValues((prev) => {
-      const newValues = { ...prev, [optionName]: itemId };
+      let next = { ...prev, [optionName]: itemId };
 
-      // Keep 1.3B only for T2V
-      if (optionName === 'task' && itemId === 'i2v' && newValues.modelsize === '1_3b') {
-        newValues.modelsize = '14b';
+      if (optionName === 'task') {
+        const sizes = modelSizeItemsForTask(itemId);
+        if (!sizes.some((s) => s.id === next.modelsize)) {
+          next.modelsize = sizes.find((s) => s.default)?.id || sizes[0].id;
+        }
       }
 
-      const configKey = `${newValues.task}-${newValues.modelsize}`;
-      const nextSupported = baseConfig.modelConfigs[configKey]?.supportedLoras || [];
-      const isValid = nextSupported.some((l) => l.path === prev.selectedLoraPath);
-      if (!isValid) {
-        newValues.selectedLoraPath = 'none';
+      if (optionName === 'task' || optionName === 'modelsize') {
+        const key = `${next.task}-${next.modelsize}`;
+        const supported = modelConfigs[key]?.supportedLoras || [];
+        if (supported.length === 0) {
+          next.selectedLoraPath = '';
+        } else if (
+          next.selectedLoraPath &&
+          !supported.some((l) => l.path === next.selectedLoraPath)
+        ) {
+          next.selectedLoraPath = supported[0].path;
+        }
       }
-      return newValues;
+
+      return next;
     });
   };
 
   const handleLoraToggle = (path) => {
     setValues((prev) => ({
       ...prev,
-      selectedLoraPath: prev.selectedLoraPath === path ? 'none' : path,
+      selectedLoraPath: prev.selectedLoraPath === path ? '' : path,
     }));
   };
 
   const command = baseConfig.generateCommand(values);
 
+  const modelSizeItems = modelSizeItemsForTask(values.task);
+  const loraConfigKey = `${values.task}-${values.modelsize}`;
+  const availableLoras = modelConfigs[loraConfigKey]?.supportedLoras || [];
+
   return (
     <div className={styles.configContainer}>
-      {Object.entries(baseConfig.options).map(([key, option]) => {
-        const itemsToDisplay =
-          key === 'modelsize'
-            ? option.items.filter((item) => item.validTasks.includes(values.task))
-            : option.items;
-
-        return (
-          <div key={key} className={styles.optionCard}>
-            <div className={styles.optionTitle}>{option.title}</div>
-            <div className={styles.optionItems}>
-              {itemsToDisplay.map((item) => {
-                const isChecked = values[key] === item.id;
-                return (
-                  <label
-                    key={item.id}
-                    className={`${styles.optionLabel} ${isChecked ? styles.checked : ''}`}
-                  >
-                    <input
-                      type="radio"
-                      name={option.name}
-                      checked={isChecked}
-                      onChange={() => handleRadioChange(key, item.id)}
-                      className={styles.hiddenInput}
-                    />
-                    {item.label}
-                    {item.subtitle && (
-                      <small className={styles.subtitle}>{item.subtitle}</small>
-                    )}
-                  </label>
-                );
-              })}
-            </div>
+      {Object.entries(baseConfig.options).map(([key, option]) => (
+        <div key={key} className={styles.optionCard}>
+          <div className={styles.optionTitle}>{option.title}</div>
+          <div className={styles.optionItems}>
+            {key === 'modelsize'
+              ? modelSizeItems.map((item) => {
+                  const isChecked = values[option.name] === item.id;
+                  return (
+                    <label
+                      key={item.id}
+                      className={`${styles.optionLabel} ${isChecked ? styles.checked : ''}`}
+                    >
+                      <input
+                        type="radio"
+                        name={option.name}
+                        value={item.id}
+                        checked={isChecked}
+                        onChange={() => handleRadioChange(option.name, item.id)}
+                        className={styles.hiddenInput}
+                      />
+                      {item.label}
+                      {item.subtitle && (
+                        <small className={styles.subtitle}>{item.subtitle}</small>
+                      )}
+                    </label>
+                  );
+                })
+              : option.items.map((item) => {
+                  const isChecked = values[option.name] === item.id;
+                  return (
+                    <label
+                      key={item.id}
+                      className={`${styles.optionLabel} ${isChecked ? styles.checked : ''}`}
+                    >
+                      <input
+                        type="radio"
+                        name={option.name}
+                        value={item.id}
+                        checked={isChecked}
+                        onChange={() => handleRadioChange(option.name, item.id)}
+                        className={styles.hiddenInput}
+                      />
+                      {item.label}
+                      {item.subtitle && (
+                        <small className={styles.subtitle}>{item.subtitle}</small>
+                      )}
+                    </label>
+                  );
+                })}
           </div>
-        );
-      })}
-
-      <div className={styles.optionCard}>
-        <div className={styles.optionTitle}>
-          Select LoRA Model (Only some of the supported LoRAs are listed here)
         </div>
-        <div className={styles.optionItems}>
-          {availableLoras.length === 0 && (
-            <div style={{ color: '#999', fontSize: '0.9rem', padding: '10px' }}>
-              No LoRA models available for this model.
-            </div>
-          )}
+      ))}
 
-          {availableLoras.map((lora) => {
-            const isSelected = values.selectedLoraPath === lora.path;
-            return (
-              <label
-                key={lora.id}
-                className={`${styles.optionLabel} ${isSelected ? styles.checked : ''}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLoraToggle(lora.path);
-                }}
-              >
-                <input
-                  type="radio"
-                  name="loraModelSelection"
-                  checked={isSelected}
-                  readOnly
-                  className={styles.hiddenInput}
-                />
-                {lora.label}
-                <small className={styles.subtitle}>{lora.path}</small>
-              </label>
-            );
-          })}
+      {availableLoras.length > 0 && (
+        <div className={styles.optionCard}>
+          <div className={styles.optionTitle}>
+            Select LoRA Model (Only some of the supported LoRAs are listed here)
+          </div>
+          <div className={styles.optionItems}>
+            {availableLoras.map((lora) => {
+              const isChecked = values.selectedLoraPath === lora.path;
+              return (
+                <label
+                  key={lora.id}
+                  className={`${styles.optionLabel} ${isChecked ? styles.checked : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLoraToggle(lora.path);
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="selectedLoraPath"
+                    value={lora.path}
+                    checked={isChecked}
+                    readOnly
+                    className={styles.hiddenInput}
+                  />
+                  {lora.label}
+                  <small className={styles.subtitle}>{lora.path}</small>
+                </label>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className={styles.commandCard}>
         <div className={styles.commandTitle}>Generated Command</div>

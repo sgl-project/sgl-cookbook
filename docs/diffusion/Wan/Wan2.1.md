@@ -35,7 +35,7 @@ This section provides deployment configurations optimized for different hardware
 
 The Wan2.1 series offers models in multiple sizes and resolutions, optimized for different hardware platforms. The recommended launch configurations vary by hardware and model size.
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform and model variant.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate an appropriate deployment command for your model variant and options.
 
 import Wan2_1ConfigGenerator from '@site/src/components/diffusion/Wan2_1ConfigGenerator';
 
