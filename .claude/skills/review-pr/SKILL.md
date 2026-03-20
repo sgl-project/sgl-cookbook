@@ -5,7 +5,7 @@ description: Review a pull request against the cookbook contribution checklist. 
 
 # Review PR
 
-Given a PR number, fetch the diff and run the full checklist. Report findings clearly.
+Fetch the diff, run the checklist, report what you find.
 
 ## Usage
 
@@ -13,55 +13,101 @@ Given a PR number, fetch the diff and run the full checklist. Report findings cl
 /review-pr <PR number>
 ```
 
+## Steps
+
+1. `gh pr view <N> --json title,body,files,author,baseRefName,headRefName`
+2. `gh pr diff <N>`
+3. `gh pr list --state open --search "<model name>"` (duplicate check)
+4. Run every checklist item against the diff
+5. Output per-file verdicts and overall recommendation
+
 ## Checklist
 
 ### 1. File hygiene
-- No stray files: `package-lock.json`, `.claude/settings.local.json`, unrelated `.gitignore` changes
-- Only expected files changed: `.md` doc + `src/components/.../index.js` + optional `data/` YAML
+- No stray files (`package-lock.json`, `.claude/settings.local.json`, unrelated `.gitignore` changes)
+- Only expected files: `.md` doc, `src/components/.../index.js`, optional `data/` YAML
+- Files must end with a trailing newline — flag `\ No newline at end of file`
 
 ### 2. Launch command
-- Must use `sglang serve` — flag any use of `python -m sglang.launch_server` (deprecated, see issue #33)
+- Must use `sglang serve` — flag `python -m sglang.launch_server` (deprecated, issue #33)
+- Applies to docs AND ConfigGenerator `generateCommand`
+- New PRs should fix pre-existing deprecated commands, not pile on more hardware
 
-### 3. Hardware specs (AMD)
-- MI300X = 192GB HBM3 per card
-- MI325X = 256GB HBM3 per card
-- MI355X = 288GB HBM3E per card
-- TP degree must be consistent with model size ÷ GPU memory per card
+### 3. Hardware specs
 
-### 4. ConfigGenerator
-- Options and `generateCommand` function match the doc
-- AMD hardware options use correct card names and memory values
-- `export default` matches the actual class name (watch for copy-paste bugs)
+| GPU    | Memory |
+|--------|--------|
+| A100   | 80GB   |
+| H100   | 80GB   |
+| H200   | 141GB  |
+| B200   | 183GB  |
+| B300   | 275GB  |
+| MI300X | 192GB  |
+| MI325X | 256GB  |
+| MI350X | 288GB  |
+| MI355X | 288GB  |
+
+- TP must make sense: `model_weight_GB / (tp * gpu_mem)` should fit with ~20-30% headroom
+- BF16 ≈ params * 2 GB, FP8 ≈ params * 1 GB, FP4 ≈ params * 0.5 GB
+
+### 4. ConfigGenerator quality
+- Must extend the base `ConfigGenerator` from `../../base/ConfigGenerator` — no custom standalone React components
+- `generateCommand` output must match what the docs describe
+- GPU names uppercase: `MI300X` not `MI300x`
+- `export default` matches the component name (copy-paste trap)
+- Hardware selection must actually change the generated command
+- `modelConfigs` needs an entry for every hardware option (missing = runtime crash)
+- Model path in `generateCommand` must match the right model (e.g., don't use Scout path in a Maverick generator)
+- Option IDs must be unique — two items with `id: 'enabled'` is a bug
+- Each option group needs exactly one `default: true`
+- Watch for JS syntax errors (mismatched braces, trailing commas)
+- If a quantization/weight option exists in the UI, it must do something in `generateCommand` — dead options are misleading
+- New hardware should come with `data/models/src/` YAML updates
 
 ### 5. Port consistency
-- All examples should use port 30000 (not 8000 or other non-standard ports)
+- Use `--port 30000` everywhere (not 8000)
+- Applies to both docs and generated commands
 
-### 6. Quantization consistency
-- FP4 quantization should only appear for NVIDIA Blackwell GPUs (B200), never for AMD
-- BF16 and FP8 are supported on both NVIDIA and AMD platforms
+### 6. Quantization rules
+- FP4 is Blackwell-only (B200/B300) — never AMD
+- BF16 and FP8 work on both NVIDIA and AMD
+- AMD FP4 options must be `disabled: true` in the UI
 
-### 7. Duplicate PR check
-- Check if another open PR targets the same model — flag conflicts to avoid wasted effort
+### 7. Duplicate PRs
+- Another open PR for the same model? Flag it
+- Compare which is more complete (YAML, benchmarks, correct commands)
+- Note merge conflict risk if they touch the same files
 
-### 8. Sidebar entry
-- If the PR adds a new model, verify `sidebars.js` is updated with the new entry
+### 8. Sidebar
+- New model → `sidebars.js` must be updated
+- Deleted/renamed doc file → sidebar reference must follow
+- Removed `sidebar_position` frontmatter → flag (affects ordering)
 
 ### 9. Links
-- HuggingFace model URLs are valid and point to the right model
-- No references to `sgl-project-dev` org (use `sgl-project`)
+- HuggingFace URLs point to the right model
+- No `sgl-project-dev` references (use `sgl-project`)
+- Docker images should come from `lmsysorg/sglang` — flag alternatives like `rocm/sgl-dev`
+- Docs links use `docs.sglang.io` (canonical — `.ai` 301-redirects there)
+- Markdown links well-formed: `[text](url)` not `[text] (url)`
 
-### 10. Build check
-Run after reviewing:
+### 10. Scope
+- Do the changes match what the PR title says?
+- Flag global changes hiding behind a platform-specific title (e.g., "H200 FP8" PR that adds `--kv-cache-dtype` to every platform)
+
+### 11. Benchmarks
+- Benchmarks use `python3 -m sglang.bench_serving`, not `sglang serve` with benchmark flags
+- Deploy and benchmark are separate steps
+
+### 12. Build
 ```bash
 npm run build
 ```
-Fix any import errors before approving.
 
-## Output format
+## Output
 
-For each file changed, give a one-line verdict:
+Per file:
 - ✅ PASS
-- ⚠️ ISSUE: <what's wrong>
-- 🔴 BLOCK: <must fix before merge>
+- ⚠️ ISSUE: <what>
+- 🔴 BLOCK: <what>
 
-End with overall: **APPROVE** / **REQUEST CHANGES** / **BLOCKED**
+Overall: **APPROVE** / **REQUEST CHANGES** / **BLOCKED**
