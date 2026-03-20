@@ -82,6 +82,8 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 | MI300X/MI325X | — | tp=8 |
 | MI355X   | — | tp=8 |
 
+- **B200 (FP8)**: Use `--ep 1 --attention-backend nsa --nsa-decode-backend trtllm --nsa-prefill-backend trtllm --moe-runner-backend flashinfer_trtllm --enable-flashinfer-allreduce-fusion` for optimized NSA and MoE backends on Blackwell. Also add `--kv-cache-dtype fp8_e4m3 --quantization fp8` for FP8 KV cache and weight quantization.
+
 - **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.
 
 ## 4. Model Invocation
