@@ -7,8 +7,8 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  * with BF16 quantization, reasoning parser, and DP attention
  *
  * GPU requirements:
- *   B200/B300 (180GB): BF16 tp=8
- *   H200 (80GB): Insufficient memory
+ *   B200 (183GB): BF16 tp=8
+ *   B300 (275GB): BF16 tp=8
  */
 const DeepSeekMathV2ConfigGenerator = () => {
   const config = {
@@ -19,9 +19,8 @@ const DeepSeekMathV2ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'h200', label: 'H200', subtitle: '80GB', default: false },
-          { id: 'b200', label: 'B200', subtitle: '180GB', default: true },
-          { id: 'b300', label: 'B300', subtitle: '180GB', default: false }
+          { id: 'b200', label: 'B200', subtitle: '183GB', default: true },
+          { id: 'b300', label: 'B300', subtitle: '275GB', default: false }
         ]
       },
       reasoning: {
@@ -44,20 +43,14 @@ const DeepSeekMathV2ConfigGenerator = () => {
       }
     },
 
-    // BF16 only, B200/B300 tp=8, H200 insufficient memory
+    // BF16 only, B200/B300 tp=8
     modelConfigs: {
       b200: { bf16: { tp: 8, mem: null } },
-      b300: { bf16: { tp: 8, mem: null } },
-      h200: null  // Insufficient memory
+      b300: { bf16: { tp: 8, mem: null } }
     },
 
     generateCommand: function (values) {
       const { hardware } = values;
-
-      // Check for insufficient memory
-      if (hardware === 'h200') {
-        return '# Error: H200 (80GB) has insufficient memory for DeepSeek-Math-V2\n# This model requires at least 180GB GPU memory per card\n# Please use B200 or B300 (180GB) instead';
-      }
 
       const modelName = `${this.modelFamily}/DeepSeek-Math-V2`;
 
@@ -93,6 +86,8 @@ const DeepSeekMathV2ConfigGenerator = () => {
       if (memFraction) {
         cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
       }
+
+      cmd += ' \\\n  --host 0.0.0.0 \\\n  --port 30000';
 
       return cmd;
     }

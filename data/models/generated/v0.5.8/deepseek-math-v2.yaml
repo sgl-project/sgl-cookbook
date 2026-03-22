@@ -1,0 +1,78 @@
+vendor: deepseek-ai
+families:
+- name: DeepSeek-Math-V2
+  description: DeepSeek-Math-V2 mathematical reasoning model with strong theorem-proving capabilities
+  models:
+  - name: DeepSeek-Math-V2
+    model_path: deepseek-ai/DeepSeek-Math-V2
+    attributes:
+      llm:
+        thinking_capability: thinking
+        tool_parser: null
+        reasoning_parser: deepseek-r1
+        chat_template: null
+    hardware:
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+      B300:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null

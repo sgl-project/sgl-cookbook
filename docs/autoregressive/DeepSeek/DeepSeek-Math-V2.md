@@ -9,7 +9,7 @@
 - **Strong Theorem-Proving**: Gold-level performance on IMO 2025 and CMO 2024
 - **Self-Verifiable Reasoning**: Implements self-verifiable mathematical reasoning for improved accuracy
 - **Competition-Level Math**: Near-perfect score (118/120) on Putnam 2024
-- **Large Model**: Requires high-memory GPUs (B200 180GB recommended)
+- **Large MoE Model**: ~671B total parameters, requires high-memory GPUs (B200 183GB or B300 275GB)
 
 **Available Models:**
 
@@ -38,8 +38,8 @@ import DeepSeekMathV2ConfigGenerator from '@site/src/components/autoregressive/D
 
 **Hardware Requirements:**
 
-- **B200/B300 (180GB)**: BF16 tp=8
-- **H200 (80GB)**: Insufficient memory for this model
+- **B200 (183GB)**: BF16 tp=8
+- **B300 (275GB)**: BF16 tp=8
 
 **DP Attention:**
 
@@ -57,7 +57,9 @@ Deploy the model using the command generated above. Example for B200:
 sglang serve --model-path deepseek-ai/DeepSeek-Math-V2 \
   --tp 8 \
   --ep 8 \
-  --reasoning-parser deepseek-r1
+  --reasoning-parser deepseek-r1 \
+  --host 0.0.0.0 \
+  --port 30000
 ```
 
 ### 4.2 Mathematical Reasoning
@@ -394,7 +396,7 @@ Output throughput: 540.162 token/s
 
 **Test Environment:**
 
-- Hardware: NVIDIA B200 GPU (8x, 180GB each)
+- Hardware: NVIDIA B200 GPU (8x, 183GB each)
 - Model: DeepSeek-Math-V2
 - Tensor Parallelism: 8
 - SGLang Version: 0.5.8

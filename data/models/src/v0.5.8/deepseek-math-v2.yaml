@@ -2,8 +2,8 @@
 # This file is compiled to data/models/generated/deepseek-math-v2.yaml
 #
 # GPU requirements:
-#   B200/B300 (180GB): BF16 tp=8
-#   H200 (80GB): Insufficient memory
+#   B200 (183GB): BF16 tp=8
+#   B300 (275GB): BF16 tp=8
 
 vendor: deepseek-ai
 
@@ -29,6 +29,6 @@ families:
       reasoning_parser: deepseek-r1
 
     models:
-      # DeepSeek-Math-V2 BF16 - requires B200 (180GB)
+      # DeepSeek-Math-V2 BF16 - requires B200 (183GB) or B300 (275GB)
       - name: DeepSeek-Math-V2
         quantization: bf16
