@@ -55,7 +55,7 @@ const sidebars = {
           type: 'category',
           label: 'Llama',
           items: [
-            'autoregressive/Llama/Llama4-Scout',
+            'autoregressive/Llama/Llama4',
             'autoregressive/Llama/Llama3.3-70B',
             'autoregressive/Llama/Llama3.1',
           ],
@@ -165,7 +165,7 @@ const sidebars = {
           label: 'Mistral',
           items: [
             'autoregressive/Mistral/Mistral-Small-4',
-            'autoregressive/Mistral/Mistral-3',
+            'autoregressive/Mistral/Ministral-3',
             'autoregressive/Mistral/Devstral-2',
           ],
         },
