@@ -23,29 +23,23 @@ With advances in both pre-training (28.5T tokens) and post-training via [slime](
 
 ## 2. SGLang Installation
 
-SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
+### Nvidia GPUs
 
-GLM-5 requires a specific SGLang Docker image or install from source:
-
+GLM-5 is runnable on latest main branch. Please install with
 ```bash
-# For Hopper GPUs (H100/H200)
-docker pull lmsysorg/sglang:glm5-hopper
+uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=python'
+```
+For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
 
-# For Blackwell GPUs (B200)
-docker pull lmsysorg/sglang:glm5-blackwell
 
+### AMD GPUs
+```bash
 # For AMD MI300X/MI308/MI325X GPUs (gfx942)
 docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi30x-20260219 # this version or newer
 
 # For AMD MI350/MI355 GPUs (gfx950)
 docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi35x-20260219 # this version or newer
 ```
-
-For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
-
-:::note Blackwell (B200) Source Build
-If you build SGLang from source on Blackwell GPUs, you need to manually compile `sgl-kernel` due to existing kernel issues (Hopper GPUs are unaffected). See [sglang#18595](https://github.com/sgl-project/sglang/issues/18595) for details.
-:::
 
 :::note AMD GPU Transformers Dependency
 GLM-5 requires the latest transformers for the `glm_moe_dsa` architecture. Install from source:
