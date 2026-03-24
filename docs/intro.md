@@ -47,7 +47,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Llama
 
-- [ ] [Llama4-Scout](./autoregressive/Llama/Llama4-Scout.md)
+- [ ] [Llama4](./autoregressive/Llama/Llama4.md)
 - [x] [Llama3.3-70B](./autoregressive/Llama/Llama3.3-70B.md)
 - [x] [Llama3.1](./autoregressive/Llama/Llama3.1.md)
 
@@ -104,7 +104,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 #### Mistral
 
 - [x] [Mistral Small 4](./autoregressive/Mistral/Mistral-Small-4.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
-- [ ] [Mistral-3](./autoregressive/Mistral/Mistral-3.md)
+- [ ] [Ministral-3](./autoregressive/Mistral/Ministral-3.md)
 - [x] [Devstral 2](./autoregressive/Mistral/Devstral-2.md)
 
 #### Xiaomi

@@ -18,7 +18,6 @@ const Llama4MaverickConfigGenerator = () => {
           { id: 'mi355x', label: 'MI355x', default: false }
         ]
       },
-      },
       host: {
         name: 'host',
         title: 'Host',
