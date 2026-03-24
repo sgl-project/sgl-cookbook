@@ -6,177 +6,183 @@ disable-model-invocation: true
 
 # Add New Model to SGLang Cookbook
 
-This is an interactive, multi-step workflow. Collect inputs incrementally from the user as needed — do NOT ask for everything upfront.
+Interactive, multi-step workflow. Collect inputs incrementally — don't ask for everything upfront.
 
 ## Phase 1: Collect Initial Inputs
 
 Ask the user for:
 
-1. **Model Card** - HuggingFace model name or URL (e.g., `Qwen/Qwen3-Coder-Next` or `https://huggingface.co/deepseek-ai/DeepSeek-V3`). Fetch the page to extract model description, supported capabilities, and other details. If the model is not yet public or the page is inaccessible, ask the user to paste as much information as they know (model name, parameter count, architecture, capabilities, context length, etc.).
-2. **Model Variants** - Check if the model family has multiple size variants (e.g., 480B/30B) and quantization options (e.g., BF16/FP8). Ask the user which variants to include. This affects:
-   - ConfigGenerator: `modelSize` option with `modelConfigs` per size, `quantization` option for BF16/FP8
-   - YAML: `models` list with different `base_name` entries, `quantizations` arrays
-   - Documentation: model name references and deployment examples
-   - See `Qwen3CoderConfigGenerator` and `Qwen3NextConfigGenerator` for multi-variant examples.
-3. **Full Deployment Command** - Complete SGLang launch command using `sglang serve --model-path` (NOT `python -m sglang.launch_server`, which is deprecated per issue #33). Include all strategy and optimization flags (tp, dp, ep, enable_dp_attention, etc.). If the model card already provides an SGLang deployment command, offer it as a default option but ensure it uses `sglang serve`.
-4. **SGLang Version** - The SGLang version the user is testing on (e.g., `v0.5.8`). This determines the version subdirectory for YAML configs (`data/models/src/<version>/`).
-5. **Hardware Platforms** - Ask which hardware platforms have been tested. Only include tested platforms in the ConfigGenerator and YAML. Do NOT assume AMD GPU support unless explicitly confirmed.
+1. **Model Card** — HuggingFace model name or URL (e.g., `Qwen/Qwen3-Coder-Next`). Fetch the page to extract description, capabilities, etc. If the model isn't public yet, ask the user to paste what they know (name, param count, architecture, capabilities, context length).
+2. **Model Variants** — Multiple sizes (e.g., 480B/30B) or quantizations (BF16/FP8)? Which to include? This affects ConfigGenerator options, YAML entries, and doc examples. See `Qwen3CoderConfigGenerator` and `Qwen3NextConfigGenerator` for multi-variant patterns.
+3. **Deployment Command** — Full `sglang serve --model-path` command with all flags (tp, dp, ep, etc.). Not `python -m sglang.launch_server` (deprecated, issue #33). If the model card provides one, use it as starting point but verify format.
+4. **SGLang Version** — Version being tested (e.g., `v0.5.8`). Determines YAML directory: `data/models/src/<version>/`.
+5. **Hardware Platforms** — Which platforms are tested? Show the full list (A100, H100, H200, B200, B300, MI300X, MI325X, MI350X, MI355X) and let the user pick. Only include tested platforms — don't assume anything. For each, confirm TP degree and any platform-specific flags.
 
 ## Phase 2: Create Scaffolding
 
-With model card and deployment command in hand, read ALL reference templates first, then create files.
+Read ALL reference templates first, then create files.
 
 ### Reference Templates
 
-Read these files to understand existing patterns before creating anything:
-- **Doc template**: Find a similar model doc under `docs/autoregressive/` (e.g., `Qwen3-Coder.md` for a Qwen model, `DeepSeek-V3_2.md` for DeepSeek)
-- **ConfigGenerator template**: Find a similar generator under `src/components/autoregressive/` (e.g., `Qwen3NextConfigGenerator/index.js`, `Qwen3CoderConfigGenerator/index.js`)
-- **YAML template**: `data/models/src/<version>/<similar-model>.yaml` (e.g., `qwen3next.yaml`). List `data/models/src/` to see available version directories.
+- **Doc**: Find a similar model under `docs/autoregressive/` (e.g., `Qwen3-Coder.md`, `DeepSeek-V3_2.md`)
+- **ConfigGenerator**: Similar generator under `src/components/autoregressive/` (e.g., `Qwen3NextConfigGenerator/index.js`)
+- **YAML**: `data/models/src/<version>/<similar-model>.yaml`. List `data/models/src/` for available versions.
 - **Sidebar**: `sidebars.js`
 - **Vendors**: `data/models/vendors.yaml`
 
-### Important Patterns
+### Key Rules
 
-- ConfigGenerator components are placed FLAT under `src/components/autoregressive/<ModelNameConfigGenerator>/index.js` (NOT nested in vendor folders)
-- YAML source files are in `data/models/src/<version>/` (NOT directly in `data/models/src/`). The version directory corresponds to the SGLang version being tested. Create it if it doesn't exist.
-- The base `ConfigGenerator` component is at `src/components/base/ConfigGenerator`
-- AMD GPUs (MI300X/MI325X/MI355X) typically need `--attention-backend triton` — only include if tested
-- AMD Docker image naming: `rocm720-mi30x` for MI300X/MI325X, `rocm720-mi35x` for MI355X
-- **CRITICAL**: All commands must use `sglang serve`, never `python -m sglang.launch_server` (deprecated)
-- Before creating a new model, check open PRs (`gh pr list --search "<model name>"`) to avoid duplicate work
-- For models with `commandRule` on options, use the pattern from existing generators to apply rules via `Object.entries(this.options).forEach(...)`
+- ConfigGenerator goes FLAT under `src/components/autoregressive/<ModelNameConfigGenerator>/index.js` (not nested in vendor folders)
+- YAML source files go in `data/models/src/<version>/` (not directly in `data/models/src/`)
+- Base `ConfigGenerator` component: `src/components/base/ConfigGenerator`
+- All commands use `sglang serve` — never `python -m sglang.launch_server`
+- All files end with a trailing newline
+- Check open PRs first (`gh pr list --search "<model name>"`) to avoid duplicate work
+- For `commandRule` options, follow the `Object.entries(this.options).forEach(...)` pattern from existing generators
 
-### Step 1: Create documentation file
+### Hardware Reference
 
-Create `docs/autoregressive/<Vendor>/<ModelName>.md` with ALL sections pre-populated:
+Only include platforms the user has actually tested.
+
+| Platform | Vendor | Memory | Docker Image |
+|----------|--------|--------|--------------|
+| A100     | NVIDIA | 80GB   | `lmsysorg/sglang:<ver>` |
+| H100     | NVIDIA | 80GB   | `lmsysorg/sglang:<ver>` |
+| H200     | NVIDIA | 141GB  | `lmsysorg/sglang:<ver>` |
+| B200     | NVIDIA | 183GB  | `lmsysorg/sglang:<ver>` |
+| B300     | NVIDIA | 275GB  | `lmsysorg/sglang:<ver>` |
+| MI300X   | AMD    | 192GB  | `lmsysorg/sglang:<ver>-rocm720-mi30x` |
+| MI325X   | AMD    | 256GB  | `lmsysorg/sglang:<ver>-rocm720-mi30x` |
+| MI350X   | AMD    | 288GB  | `lmsysorg/sglang:<ver>-rocm720-mi35x` |
+| MI355X   | AMD    | 288GB  | `lmsysorg/sglang:<ver>-rocm720-mi35x` |
+
+**TP calculation**: `model_weight_GB / gpu_mem_GB`, round up to nearest power of 2. Leave 20-30% headroom.
+- BF16 ≈ params * 2 GB, FP8 ≈ params * 1 GB, FP4 ≈ params * 0.5 GB
+- FP4 is Blackwell-only (B200/B300)
+- MoE models: use total weight size (all experts), not active params
+
+**Platform-specific flags** (only add if tested):
+- Blackwell (B200/B300): may need `--attention-backend trtllm_mha`
+- AMD: typically needs `--attention-backend triton`
+- AMD env vars: `SGLANG_USE_AITER=1`, `SGLANG_ROCM_FUSED_DECODE_MLA=0`
+- AMD MoE/MLA: check AITER kernel constraints on TP (e.g., `heads_per_gpu % 16 == 0`)
+
+### Step 1: Create documentation
+
+Create `docs/autoregressive/<Vendor>/<ModelName>.md`:
 - Section 1: Model introduction (from model card)
-- Section 2: SGLang installation instructions
-- Section 3: Model deployment section (embed the config generator component)
-- Section 4: Model invocation — include deployment command at the TOP of this section, then pre-fill test scripts (code generation, streaming, tool calling if supported) with `TODO` placeholders for outputs. This allows the user to copy commands directly from the rendered page.
-- Section 5: Benchmarks — pre-fill with benchmark commands and `TODO` placeholders for results
+- Section 2: SGLang installation
+- Section 3: Deployment (embed ConfigGenerator component)
+- Section 4: Invocation — deployment command at top, then test scripts (code gen, streaming, tool calling) with `TODO` output placeholders
+- Section 5: Benchmarks with `TODO` result placeholders
 
-**Benchmark commands reference:**
+Benchmark commands:
 - GSM8K: `python3 benchmark/gsm8k/bench_sglang.py --port <port>`
 - MMLU: `python3 benchmark/mmlu/bench_sglang.py --port <port>`
-- MMMU: `python3 benchmark/mmmu/bench_sglang.py --port <port>` — uses a universal answer regex `(?i)(?:answer|ans)[:\s]*(?:\*\*)?[\(\[]?([A-Za-z])[\)\]]?(?:\*\*)?` that works across models. Do NOT use model-specific parsing (e.g., `<|begin_of_box|>`) as it breaks when models produce standard answer formats.
-- Latency benchmark: `python3 -m sglang.bench_serving --backend sglang --num-prompts 10 --max-concurrency 1 ...`
-- Throughput benchmark: `python3 -m sglang.bench_serving --backend sglang --num-prompts 1000 --max-concurrency 100 ...`
+- MMMU: `python3 benchmark/mmmu/bench_sglang.py --port <port>` — uses a universal answer regex that works across models. Don't use model-specific parsing (e.g., `<|begin_of_box|>`) as it breaks with standard answer formats.
+- Latency: `python3 -m sglang.bench_serving --backend sglang --num-prompts 10 --max-concurrency 1 ...`
+- Throughput: `python3 -m sglang.bench_serving --backend sglang --num-prompts 1000 --max-concurrency 100 ...`
 
-Keep benchmarks concise — only include latency and throughput for speed benchmarks. Do NOT add multiple scenarios (chat/reasoning/summarization) or multiple concurrency levels unless the user requests it. Order benchmarks as **Accuracy first, then Speed** (accuracy is more important to readers).
+Keep benchmarks concise. Order: accuracy first, then speed. Don't add multiple scenarios or concurrency levels unless asked.
 
-**Important**:
-- When the output contains nested markdown code blocks (e.g., model outputs python code), use four backticks ```````` for the outer block to avoid rendering issues.
-- Do NOT hardcode sampling parameters (`temperature`, `top_p`, `top_k`) in code examples. SGLang automatically applies the recommended parameters from the model's `generation_config.json`.
-
-**Reasoning / Thinking mode in code examples:**
-- For **hybrid reasoning models** (thinking is always on by default), show TWO examples:
-  1. **Thinking mode (default)**: No extra parameters needed, show `reasoning_content` streaming
-  2. **Instruct mode (thinking off)**: Show `extra_body={"chat_template_kwargs": {"enable_thinking": False}}`
-- For **models with separate Instruct/Thinking variants** (e.g., Qwen3-Next): The model name changes (e.g., `-Instruct` vs `-Thinking`), handled by ConfigGenerator
-- Ask the user which pattern applies if unclear from the model card
+Notes:
+- Nested code blocks: use four backticks ```````` for the outer block
+- Don't hardcode sampling params (`temperature`, `top_p`) — SGLang uses `generation_config.json` defaults
+- Hybrid reasoning models: show both thinking-on (default) and thinking-off (`enable_thinking: False`) examples
+- Separate Instruct/Thinking variants (e.g., Qwen3-Next): model name changes, handled by ConfigGenerator
+- Format raw API response objects (e.g., `ChatCompletionMessage(...)`) into readable structured output
 
 ### Step 2: Update sidebar and homepage
 
-Edit `sidebars.js` to add the new entry under the appropriate vendor category.
+Edit `sidebars.js` — add the new entry under the right vendor.
 
-**Also update `docs/intro.md` (homepage):**
-- Add the new model entry under the correct vendor section
-- Use `- [x]` if documentation has real content, `- [ ]` if it's a stub/placeholder
-- Do NOT add a `NEW` tag unless you also audit the existing tags — keep the total number of `NEW` tags across the homepage to **3 or fewer**. If adding a new one, remove the oldest `NEW` tag(s) first. Check git history to determine which existing `NEW` entries are oldest.
-- Ensure the order of entries in `intro.md` matches the order in `sidebars.js`
+Update `docs/intro.md` (homepage):
+- Add model under the correct vendor section
+- `- [x]` if doc has real content, `- [ ]` if stub/placeholder
+- Keep `NEW` tags to 3 or fewer total — if adding one, remove the oldest first (check git history)
+- Entry order in `intro.md` should match `sidebars.js`
 
-### Step 3: Create config generator component
+### Step 3: Create ConfigGenerator
 
-Create `src/components/autoregressive/<ModelName>ConfigGenerator/index.js` based on the deployment command provided.
+Create `src/components/autoregressive/<ModelName>ConfigGenerator/index.js`.
 
-Key considerations:
 - Use the base `ConfigGenerator` component
-- Define `modelConfigs` with per-hardware settings including `tp` and `mem` (mem-fraction-static), e.g.: `h200: { fp8: { tp: 8, mem: 0.85 }, bf16: { tp: 16, mem: 0.85 } }`. The `mem` value varies by hardware and quantization — ask the user for tested values.
-- Add `commandRule` for optional features (tool calling, reasoning parser, etc.)
-- Default all parsers to **Enabled** (e.g., tool call parser, reasoning parser) — users can disable if needed
-
-**Reasoning parser option:**
-- For **hybrid reasoning models**: Use "Reasoning Parser" with Enabled/Disabled toggle (NOT "Thinking Capabilities" with Instruct/Thinking). The model always supports thinking; the parser just separates the output.
-- For **models with separate variants**: Use "Thinking" option with Instruct/Thinking toggle that changes the model name suffix.
-
-**DP Attention option:**
-- If the model supports DP attention, add it as an option with `Disabled (Low Latency)` / `Enabled (High Throughput)` labels.
-- The `--dp` value **commonly matches** `--tp` value but this is NOT mandatory. Handle DP in `generateCommand`, NOT via a static `commandRule`. Example:
+- `modelConfigs` with per-hardware `tp` and `mem` values: `h200: { fp8: { tp: 8, mem: 0.85 }, bf16: { tp: 16, mem: 0.85 } }`
+- Only list tested platforms in hardware options
+- Platform detection in `generateCommand`:
   ```js
-  if (values.dpattention === 'enabled') {
-    cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
-  }
+  const isAMD = ['mi300x','mi325x','mi350x','mi355x'].includes(hardware);
+  const isBlackwell = ['b200','b300'].includes(hardware);
+  if (isAMD) { /* AMD-specific flags */ }
+  if (isBlackwell) { /* Blackwell-specific flags */ }
   ```
-- In configuration tips, describe `--dp` matching `--tp` as a "common pattern" rather than a requirement.
+- `commandRule` for optional features (tool calling, reasoning parser, etc.)
+- Default parsers to Enabled
 
-**Large models (>400B parameters):**
-- BF16 typically requires **2x GPUs** compared to FP8. Structure `modelConfigs` to reflect this per hardware platform.
-- Some hardware/quantization combos may not fit at all — do NOT add error messages, simply omit those combos or let the user decide.
+**Reasoning parser**: For hybrid models, use Enabled/Disabled toggle (the model always thinks; parser just separates output). For separate Instruct/Thinking variants, toggle changes the model name suffix.
 
-**For models with multiple variants**, add selector options:
-- `modelSize` option: e.g., `{ id: '480b', label: '480B', subtitle: 'MOE' }` — maps to different `modelConfigs` entries with per-hardware tp/ep
-- `quantization` option: e.g., `{ id: 'bf16', label: 'BF16' }, { id: 'fp8', label: 'FP8' }` — affects model name suffix (e.g., `-FP8`) and may require extra flags (e.g., `--ep 2`, `--trust-remote-code`)
+**DP Attention**: `Disabled (Low Latency)` / `Enabled (High Throughput)`. The `--dp` value commonly matches `--tp` but this isn't mandatory. Handle in `generateCommand`, not via static `commandRule`:
+```js
+if (values.dpattention === 'enabled') {
+  cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
+}
+```
+In config tips, describe `--dp` matching `--tp` as a common pattern, not a requirement.
 
-See `GLM5ConfigGenerator` (hybrid reasoning + DP attention + per-hardware mem), `Qwen3CoderConfigGenerator` (multi-size + quantization), and `Qwen3NextConfigGenerator` (quantization + thinking variants) for reference patterns.
+**Large models (>400B)**: BF16 needs ~2x GPUs vs FP8. Reflect this in `modelConfigs`. Omit combos that don't fit.
 
-### Step 4: Add model configuration
+**Multiple variants**: Add `modelSize` and/or `quantization` selectors. See `GLM5ConfigGenerator`, `Qwen3CoderConfigGenerator`, `Qwen3NextConfigGenerator` for patterns.
 
-Create `data/models/src/<version>/<modelname>.yaml` to define hardware configs and parallelism strategies. Use the SGLang version from Phase 1. Create the version directory if it doesn't exist.
+### Step 4: Add YAML config
 
-Include configurations for:
-- `default` — balanced single-node deployment
-- `high-throughput-dp` — if DP attention is supported (dp + enable_dp_attention)
-- `speculative-mtp` or `speculative-eagle` — if speculative decoding is supported
+Create `data/models/src/<version>/<modelname>.yaml`:
+- `default` — balanced single-node
+- `high-throughput-dp` — if DP attention supported
+- `speculative-mtp` or `speculative-eagle` — if speculative decoding supported
 
-**YAML `thinking_capability` values:**
-The valid enum values are: `non_thinking`, `thinking`, `hybrid`. Do NOT use `hybrid_thinking` or other variants — pre-commit validation will reject them.
+Valid `thinking_capability` enum values: `non_thinking`, `thinking`, `hybrid`. Don't use `hybrid_thinking` or other variants — pre-commit validation rejects them.
 
-## Phase 3: Compile, Validate, and Start Dev Server
+## Phase 3: Compile, Validate, Build
 
-**Ensure venv exists** — if `.venv/` doesn't exist, create it:
+Ensure venv exists:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate && pip install pre-commit pyyaml
 ```
 
-Run compilation and validation:
+Compile and validate:
 ```bash
 source .venv/bin/activate && python data/scripts/compile_models.py
 cd data/schema && npm install && npm test
 ```
 
-**Run a full build** to catch import errors, broken links, and component issues:
+Full build (catches import errors, broken links, component issues — more reliable than dev server):
 ```bash
 npm run build
 ```
-This is more reliable than `npm start` for catching errors — the dev server may silently ignore issues that fail the production build.
 
-Start dev server to verify rendering:
+Dev server for visual check:
 ```bash
 npm start
 ```
 
-Verify the new page renders correctly at `http://localhost:3000`.
+Check the page renders at `http://localhost:3000`.
 
 ## Phase 4: Interactive Testing
 
-The user will deploy the model and run the test scripts from the documentation page. They will paste results back, and we update the `TODO` placeholders with actual outputs.
-
-This covers:
-1. **Model Invocation** — code generation, streaming, tool calling results
-2. **Speed Benchmarks** — latency and throughput results
-3. **Accuracy Benchmarks** — GSM8K, MMLU results
+User deploys the model, runs test scripts, pastes results. Replace `TODO` placeholders with actual outputs:
+1. Invocation results (code gen, streaming, tool calls)
+2. Accuracy benchmarks (GSM8K, MMLU)
+3. Speed benchmarks (latency, throughput)
 
 ## Phase 5: Configuration Tips
 
-Ask the user for any extra information:
-- Recommended settings
-- Known issues or limitations
-- Optimization tips
-- DP attention trade-offs (high throughput vs low latency)
+Ask for:
+- Recommended settings, known issues, optimization tips
+- DP attention trade-offs
 - Hardware-specific `mem-fraction-static` values
 
-Add these to the documentation.
+Add to docs.
 
 ## Phase 6: Final Review
 
@@ -200,7 +206,7 @@ Review the complete documentation for:
 
 ## Git Workflow
 
-**Always create a new branch for PRs** — never commit directly to main.
+Always create a new branch — never commit to main directly.
 
 ```bash
 git checkout -b add-<model-name>
@@ -211,4 +217,4 @@ git push -u origin add-<model-name>
 gh pr create --title "Add <Model Name> cookbook" --body "..."
 ```
 
-When checking homepage entries (`- [x]` vs `- [ ]`), verify the doc has **real content** — not just a stub with "Community contribution welcome". A file existing or having many lines does not mean it has actual content.
+When checking homepage entries, verify the doc has real content — not just a "Community contribution welcome" stub.
