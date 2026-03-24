@@ -42,6 +42,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 - [x] [DeepSeek-V3.1](./autoregressive/DeepSeek/DeepSeek-V3_1.md)
 - [x] [DeepSeek-V3](./autoregressive/DeepSeek/DeepSeek-V3.md)
 - [x] [DeepSeek-R1](./autoregressive/DeepSeek/DeepSeek-R1.md)
+- [x] [DeepSeek-Math-V2](./autoregressive/DeepSeek/DeepSeek-Math-V2.md)
 - [x] [DeepSeek-OCR](./autoregressive/DeepSeek/DeepSeek-OCR.md)
 - [x] [DeepSeek-OCR-2](./autoregressive/DeepSeek/DeepSeek-OCR-2.md)
 
