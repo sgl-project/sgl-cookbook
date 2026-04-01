@@ -109,7 +109,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 
 **NVIDIA:**
 
-Deploy Qwen3.5-397B-A17B with the following command (H200, all features enabled):
+Deploy Qwen3.5-397B-A17B with the following command (H200, BF16, all features enabled):
 
 ```shell
 sglang serve \
@@ -125,6 +125,32 @@ sglang serve \
   --host 0.0.0.0 \
   --port 30000
 ```
+
+Deploy Qwen3.5-397B-A17B-FP8 with the following command (H200, FP8, MTP/EAGLE speculative decoding enabled):
+
+```shell
+sglang serve \
+  --model-path Qwen/Qwen3.5-397B-A17B-FP8 \
+  --tp 8 \
+  --expert-parallel-size 8 \
+  --quantization fp8 \
+  --kv-cache-dtype fp8_e4m3 \
+  --reasoning-parser qwen3 \
+  --tool-call-parser qwen3_coder \
+  --speculative-algorithm EAGLE \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --attention-backend flashinfer \
+  --enable-flashinfer-allreduce-fusion \
+  --chunked-prefill-size 16384 \
+  --mem-fraction-static 0.8 \
+  --disable-radix-cache \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+> **Note:** FP8 quantization halves memory requirements (~400GB vs ~800GB), enabling tp=8 with ep=8 on a single H200 node. EAGLE speculative decoding reduces latency for interactive workloads. Radix cache is disabled as it conflicts with EAGLE.
 
 **AMD:**
 
