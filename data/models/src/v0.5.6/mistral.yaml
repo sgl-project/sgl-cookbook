@@ -1,5 +1,5 @@
 # Mistral AI Model Configurations
-# This file is compiled to data/models/generated/mistral.yaml
+# This file is compiled to data/models/generated/v0.5.6/mistral.yaml
 
 vendor: mistralai
 

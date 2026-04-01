@@ -1,5 +1,5 @@
 # NVIDIA Nemotron Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/nemotron.yaml
+# This file is compiled to data/models/generated/v0.5.6/nemotron.yaml
 
 vendor: nvidia
 
