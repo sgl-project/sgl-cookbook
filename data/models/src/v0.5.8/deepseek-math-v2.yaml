@@ -1,5 +1,5 @@
 # DeepSeek-Math-V2 Model Configurations
-# This file is compiled to data/models/generated/deepseek-math-v2.yaml
+# This file is compiled to data/models/generated/v0.5.8/deepseek-math-v2.yaml
 #
 # GPU requirements:
 #   B200 (183GB): BF16 tp=8
@@ -9,8 +9,8 @@ vendor: deepseek-ai
 
 defaults:
   hardware:
-    B200: { tp: 8 }
-    B300: { tp: 8 }
+    B200: { tp: 8, ep: 8 }
+    B300: { tp: 8, ep: 8 }
   configurations:
     - name: default
       nodes: single

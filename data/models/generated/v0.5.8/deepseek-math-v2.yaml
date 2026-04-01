@@ -24,7 +24,7 @@ families:
             env_vars: {}
             tp: 8
             dp: null
-            ep: null
+            ep: 8
             enable_dp_attention: null
             extra_args: []
           prefill: null
@@ -39,7 +39,7 @@ families:
             env_vars: {}
             tp: 8
             dp: 8
-            ep: null
+            ep: 8
             enable_dp_attention: true
             extra_args: []
           prefill: null
@@ -56,7 +56,7 @@ families:
             env_vars: {}
             tp: 8
             dp: null
-            ep: null
+            ep: 8
             enable_dp_attention: null
             extra_args: []
           prefill: null
@@ -71,7 +71,7 @@ families:
             env_vars: {}
             tp: 8
             dp: 8
-            ep: null
+            ep: 8
             enable_dp_attention: true
             extra_args: []
           prefill: null
