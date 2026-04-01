@@ -277,7 +277,9 @@ const Qwen35ConfigGenerator = () => {
       // EAGLE speculative decoding requires radix cache disabled; also add chunked prefill for FP8+MTP
       if (speculative === 'enabled') {
         if (quantization === 'fp8') {
+          cmd += ` \\\n  --max-running-requests 128`;
           cmd += ` \\\n  --chunked-prefill-size 16384`;
+          cmd += ` \\\n  --tokenizer-worker-num 6`;
         }
         cmd += ` \\\n  --disable-radix-cache`;
       }
