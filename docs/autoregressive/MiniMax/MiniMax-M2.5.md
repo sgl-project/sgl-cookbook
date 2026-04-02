@@ -53,6 +53,8 @@ import MiniMaxM25ConfigGenerator from '@site/src/components/autoregressive/MiniM
 | `--mem-fraction-static`     | Static memory fraction for KV cache             | `0.85`                          |
 | `--tp`                      | Tensor parallelism size                         | `2` (2-GPU) or `4` (4-GPU) or `8` (8-GPU)      |
 | `--ep`                      | Expert parallelism size                         | `8` (NVIDIA 8-GPU) or EP=TP (AMD)              |
+| `--kv-cache-dtype`          | KV cache data type (AMD only)                   | `fp8_e4m3`                      |
+| `--attention-backend`       | Attention backend (AMD only)                    | `triton`                        |
 
 **Hardware Requirements: NVIDIA**
 
@@ -386,7 +388,7 @@ This section uses **industry-standard configurations** for comparable benchmark 
 **Test Environment**:
 
 - Hardware: NVIDIA B200 GPU (8x)
-- Model: Minimax-M2.5
+- Model: MiniMax-M2.5
 - Tensor Parallelism: 8
 - Expert Parallelism: 8
 - sglang version: 0.5.8
