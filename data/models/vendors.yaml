@@ -3,6 +3,10 @@
 # Model files should reference vendors by their ID using: vendor: <id>
 
 vendors:
+  google:
+    name: Google DeepMind
+    huggingface_org: google
+
   deepseek-ai:
     name: DeepSeek AI
     huggingface_org: deepseek-ai

@@ -24,6 +24,17 @@ const sidebars = {
       items: [
         {
           type: 'category',
+          label: 'Google',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/Google/Gemma4',
+              label: 'Gemma 4 [NEW]',
+            },
+          ],
+        },
+        {
+          type: 'category',
           label: 'Qwen',
           items: [
             {
@@ -47,6 +58,7 @@ const sidebars = {
             'autoregressive/DeepSeek/DeepSeek-V3_1',
             'autoregressive/DeepSeek/DeepSeek-V3',
             'autoregressive/DeepSeek/DeepSeek-R1',
+            'autoregressive/DeepSeek/DeepSeek-Math-V2',
             'autoregressive/DeepSeek/DeepSeek-OCR',
             'autoregressive/DeepSeek/DeepSeek-OCR-2',
           ],
@@ -55,7 +67,7 @@ const sidebars = {
           type: 'category',
           label: 'Llama',
           items: [
-            'autoregressive/Llama/Llama4-Scout',
+            'autoregressive/Llama/Llama4',
             'autoregressive/Llama/Llama3.3-70B',
             'autoregressive/Llama/Llama3.1',
           ],
@@ -126,7 +138,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/NVIDIA/Nemotron3-Super',
-              label: 'Nemotron3-Super [NEW]',
+              label: 'Nemotron3-Super',
             },
             'autoregressive/NVIDIA/Nemotron3-Nano',
           ],
@@ -165,7 +177,7 @@ const sidebars = {
           label: 'Mistral',
           items: [
             'autoregressive/Mistral/Mistral-Small-4',
-            'autoregressive/Mistral/Mistral-3',
+            'autoregressive/Mistral/Ministral-3',
             'autoregressive/Mistral/Devstral-2',
           ],
         },
