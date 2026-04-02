@@ -46,13 +46,12 @@ import Gemma4ConfigGenerator from '@site/src/components/autoregressive/Gemma4Con
 
 ### 3.2 Deployment Commands
 
-All Gemma 4 variants require `--attention-backend triton` for bidirectional image-token attention during prefill.
+SGLang automatically selects the appropriate attention backend for Gemma 4 models.
 
 **gemma-4-E2B-it** (1x H200):
 
 ```bash
 sglang serve --model-path google/gemma-4-E2B-it \
-  --attention-backend triton \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
@@ -62,7 +61,6 @@ sglang serve --model-path google/gemma-4-E2B-it \
 
 ```bash
 sglang serve --model-path google/gemma-4-E4B-it \
-  --attention-backend triton \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
@@ -72,7 +70,6 @@ sglang serve --model-path google/gemma-4-E4B-it \
 
 ```bash
 sglang serve --model-path google/gemma-4-31B-it \
-  --attention-backend triton \
   --tp 2 \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
@@ -83,7 +80,6 @@ sglang serve --model-path google/gemma-4-31B-it \
 
 ```bash
 sglang serve --model-path google/gemma-4-26B-A4B-it \
-  --attention-backend triton \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
@@ -91,7 +87,7 @@ sglang serve --model-path google/gemma-4-26B-A4B-it \
 
 ### 3.2 Configuration Tips
 
-- `--attention-backend triton` is **required** for all Gemma 4 models — the vision encoder uses bidirectional attention for image tokens during prefill, which only the Triton backend supports.
+- SGLang automatically selects the Triton attention backend for Gemma 4 models (required for bidirectional image-token attention during prefill).
 - For the 26B-A4B MoE model, consider `--tp 2` for high-throughput workloads.
 - Hardware requirements:
 
@@ -104,17 +100,16 @@ sglang serve --model-path google/gemma-4-26B-A4B-it \
 
 ### 3.3 AMD GPU Deployment (MI300X / MI325X)
 
-AMD GPUs require `--attention-backend triton`. All Gemma 4 models already use this flag, so the same commands work on AMD. Example for MI300X:
+SGLang automatically selects the correct attention backend on AMD GPUs. The same commands work on AMD. Example for MI300X:
 
 ```bash
 sglang serve --model-path google/gemma-4-E4B-it \
-  --attention-backend triton \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
 ```
 
-> **Status**: AMD MI300X benchmarks are available in [Section 5.1](#51-speed-benchmark). The test suite includes `is_hip()` detection to set `attention_backend="triton"` automatically.
+> **Status**: AMD MI300X benchmarks are available in [Section 5.1](#51-speed-benchmark).
 
 ## 4. Model Invocation
 
@@ -122,7 +117,6 @@ Deploy gemma-4-E4B-it with all features enabled:
 
 ```bash
 sglang serve --model-path google/gemma-4-E4B-it \
-  --attention-backend triton \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
@@ -330,7 +324,7 @@ print()
 
 Server Launch Command:
 ```bash
-sglang serve --model-path google/gemma-4-E2B-it --attention-backend triton
+sglang serve --model-path google/gemma-4-E2B-it
 ```
 
 **Latency Benchmark (Text)**
@@ -451,7 +445,7 @@ Median ITL (ms):                         5.68
 
 Server Launch Command:
 ```bash
-sglang serve --model-path google/gemma-4-E4B-it --attention-backend triton
+sglang serve --model-path google/gemma-4-E4B-it
 ```
 
 **Latency Benchmark (Text)**
@@ -544,7 +538,7 @@ Median ITL (ms):                         8.64
 
 Server Launch Command:
 ```bash
-sglang serve --model-path google/gemma-4-31B-it --attention-backend triton --tp 2
+sglang serve --model-path google/gemma-4-31B-it --tp 2
 ```
 
 **Latency Benchmark (Text)**
@@ -637,7 +631,7 @@ Median ITL (ms):                         26.81
 
 Server Launch Command:
 ```bash
-sglang serve --model-path google/gemma-4-26B-A4B-it --attention-backend triton
+sglang serve --model-path google/gemma-4-26B-A4B-it
 ```
 
 > **Tip**: Consider `--tp 2` for high-throughput workloads.
@@ -732,7 +726,7 @@ Median ITL (ms):                         19.08
 
 Server Launch Command:
 ```bash
-sglang serve --model-path google/gemma-4-31B-it --attention-backend triton
+sglang serve --model-path google/gemma-4-31B-it
 ```
 
 > **Note**: The 31B dense model fits on a single MI300X (192 GB VRAM) at TP=1, unlike H200 (141 GB) which requires TP=2.
@@ -795,7 +789,7 @@ Median ITL (ms):                         63.45
 
 Server Launch Command:
 ```bash
-sglang serve --model-path google/gemma-4-26B-A4B-it --attention-backend triton
+sglang serve --model-path google/gemma-4-26B-A4B-it
 ```
 
 **Latency Benchmark (Text)**
@@ -935,8 +929,7 @@ Median ITL (ms):                         29.31
 
 **gemma-4-E2B-it**
 ```
-$ python -m sglang.bench_one_batch --correct --model gg-hf-gg/gemma-4-E2B-it  --attention-backend triton
-....
+$ python -m sglang.bench_one_batch --correct --model gg-hf-gg/gemma-4-E2B-it ....
 prefill logits (final): tensor([[-25.3063,  -2.5718, -10.3674,  ..., -25.3779, -25.5181, -25.2337]],
        device='cuda:0') 
 ....
@@ -951,8 +944,7 @@ prefill logits (final) tensor([-25.3281,  -2.1367, -10.2266,  ..., -25.4375, -25
 **gemma-4-E4B-it**
 
 ```
-$ python -m sglang.bench_one_batch --correct --model gg-hf-gg/gemma-4-E4B-it  --attention-backend triton
-....
+$ python -m sglang.bench_one_batch --correct --model gg-hf-gg/gemma-4-E4B-it ....
 prefill logits (final): tensor([[-17.6478,   7.9901,  -5.6505,  ..., -17.5658, -17.6478, -17.7293]],
        device='cuda:0') 
 ....
@@ -966,8 +958,7 @@ prefill logits (final) tensor([-17.5625,   8.0469,  -5.5742,  ..., -17.4688, -17
 
 **gemma-4-31B-it**
 ```
-$ python -m sglang.bench_one_batch --correct --model gg-hf-gg/gemma-4-31B-it  --attention-backend triton
-....
+$ python -m sglang.bench_one_batch --correct --model gg-hf-gg/gemma-4-31B-it ....
 prefill logits (final): tensor([[-2.0748,  1.1245, -7.4356,  ..., -2.1059, -2.1525, -2.2303]],
        device='cuda:0') 
 ....

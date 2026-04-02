@@ -5,7 +5,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  * Gemma 4 Configuration Generator
  * Supports google/gemma-4-E2B-it, gemma-4-E4B-it, gemma-4-31B-it, gemma-4-26B-A4B-it
  *
- * All variants require --attention-backend triton (bidirectional image-token attention)
+ * SGLang auto-selects the Triton attention backend for all variants
  *
  * GPU requirements (BF16):
  *   E2B:       1x H200 (tp=1)
@@ -96,7 +96,6 @@ const Gemma4ConfigGenerator = () => {
       };
 
       let cmd = `sglang serve --model-path ${modelNames[modelSize]}`;
-      cmd += ` \\\n  --attention-backend triton`;
       if (tp > 1) {
         cmd += ` \\\n  --tp ${tp}`;
       }

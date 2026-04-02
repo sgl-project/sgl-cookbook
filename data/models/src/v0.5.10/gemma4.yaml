@@ -1,7 +1,7 @@
 # Gemma 4 Model Configurations (Simplified Format)
 # This file is compiled to data/models/generated/v0.5.10/gemma4.yaml
 #
-# All variants require --attention-backend triton (bidirectional image-token attention)
+# SGLang auto-selects the Triton attention backend for all variants
 #
 # GPU requirements (BF16):
 #   E2B (~5B with embeddings):   H200 tp=1, B200 tp=1
