@@ -72,10 +72,10 @@ sglang serve --model-path google/gemma-4-E4B-it \
 
 ## 4. Model Invocation
 
-Deploy gemma-4-E4B-it with all features enabled:
+Deploy gemma-4-26B-A4B-it (MoE) with all features enabled:
 
 ```bash
-sglang serve --model-path google/gemma-4-E4B-it \
+sglang serve --model-path google/gemma-4-26B-A4B-it \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
@@ -83,7 +83,7 @@ sglang serve --model-path google/gemma-4-E4B-it \
 
 ### 4.1 Basic Usage
 
-```python
+````python
 from openai import OpenAI
 
 client = OpenAI(
@@ -92,7 +92,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="google/gemma-4-E4B-it",
+    model="google/gemma-4-26B-A4B-it",
     messages=[
         {"role": "user", "content": "What are the key differences between TCP and UDP?"}
     ],
@@ -100,13 +100,50 @@ response = client.chat.completions.create(
 )
 
 print(response.choices[0].message.content)
+````
+
+<details>
+<summary>Example Output</summary>
+
 ```
+The fundamental difference between **TCP (Transmission Control Protocol)** and **UDP (User Datagram
+Protocol)** lies in how they prioritize data integrity versus speed.
+
+### 1. Connection Type
+*   **TCP (Connection-Oriented):** Before any data is sent, TCP performs a "three-way handshake."
+    The sender and receiver exchange signals to establish a formal connection.
+*   **UDP (Connectionless):** UDP does not establish a connection. It simply starts blasting packets
+    to the destination IP address without checking if the receiver is ready.
+
+### 2. Reliability and Error Checking
+*   **TCP (Reliable):** If a packet is lost or arrives corrupted, TCP detects the error and
+    retransmits the missing data.
+*   **UDP (Unreliable):** If a packet is lost or corrupted, it is simply discarded. There is no
+    mechanism to ask for a retransmission.
+
+### 3. Ordering of Data
+*   **TCP (Ordered):** Segments are assigned sequence numbers and reassembled in the correct order.
+*   **UDP (Unordered):** Packets may arrive in a different order than sent.
+
+### 4. Speed and Overhead
+*   **TCP (Slower):** Managing connections, tracking, and retransmissions adds significant overhead.
+*   **UDP (Faster):** No handshake, no tracking — extremely fast and ideal for real-time needs.
+
+| Feature | TCP | UDP |
+| :--- | :--- | :--- |
+| **Connection** | Connection-oriented | Connectionless |
+| **Reliability** | Guaranteed delivery | Best-effort |
+| **Ordering** | Maintains strict order | No guaranteed order |
+| **Speed** | Slower (High overhead) | Faster (Low overhead) |
+```
+
+</details>
 
 ### 4.2 Vision Input
 
-Gemma 4 multimodal variants (E4B, 31B, 26B-A4B) accept images alongside text:
+Gemma 4 multimodal variants accept images alongside text:
 
-```python
+````python
 from openai import OpenAI
 
 client = OpenAI(
@@ -115,7 +152,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="google/gemma-4-E4B-it",
+    model="google/gemma-4-26B-A4B-it",
     messages=[
         {
             "role": "user",
@@ -123,7 +160,7 @@ response = client.chat.completions.create(
                 {
                     "type": "image_url",
                     "image_url": {
-                        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg"
+                        "url": "https://farm4.staticflickr.com/3175/2653711032_804ff86d81_z.jpg"
                     }
                 },
                 {
@@ -133,26 +170,35 @@ response = client.chat.completions.create(
             ]
         }
     ],
-    max_tokens=1024,
-    stream=True
+    max_tokens=1024
 )
 
-for chunk in response:
-    if chunk.choices and len(chunk.choices) > 0:
-        delta = chunk.choices[0].delta
-        if delta.content:
-            print(delta.content, end="", flush=True)
+print(response.choices[0].message.content)
+````
 
-print()
+<details>
+<summary>Example Output</summary>
+
 ```
+A vertical, full shot shows a girl and a boy standing in front of a giant teddy bear. The boy, who
+is on the left, is of South Asian descent, has short dark hair, and is smiling at the camera. He is
+wearing a navy blue sweatshirt with a white collar, blue jeans, and white, black, and red sneakers.
+The girl, on the right, is also of South Asian descent and has long, dark hair. She is smiling at
+the camera and is wearing a pink t-shirt, a white long-sleeve shirt underneath, blue jeans, and pink
+sneakers. The giant teddy bear is light brown and is standing behind the two children. The bear has
+large, dark eyes and a black nose. In the background, on the left, there is a large wooden basket
+filled with small teddy bears. To the left of the basket, an American flag is hanging on the wall.
+On the right side of the image, there is a green leafy plant. The floor is a dark purple carpet. The
+lighting is bright and even.
+```
+
+</details>
 
 ### 4.3 Reasoning (Thinking Mode)
 
-Gemma 4 supports hybrid reasoning. Enable the reasoning parser during deployment to separate thinking and content. The thinking process is returned via `reasoning_content` in the streaming response.
+Gemma 4 supports hybrid reasoning. Thinking is **not enabled by default** — pass `chat_template_kwargs: {"enable_thinking": true}` via `extra_body` to activate it. The reasoning parser separates thinking and content, returning the thinking process via `reasoning_content` in the streaming response.
 
-**Example: Thinking Mode (Default)**
-
-```python
+````python
 from openai import OpenAI
 
 client = OpenAI(
@@ -161,12 +207,13 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="google/gemma-4-E4B-it",
+    model="google/gemma-4-26B-A4B-it",
     messages=[
         {"role": "user", "content": "Solve step by step: If a train travels at 60 km/h for 2.5 hours, how far does it go?"}
     ],
-    max_tokens=2048,
-    stream=True
+    max_tokens=4096,
+    stream=True,
+    extra_body={"chat_template_kwargs": {"enable_thinking": True}}
 )
 
 thinking_started = False
@@ -193,13 +240,50 @@ for chunk in response:
             print(delta.content, end="", flush=True)
 
 print()
+````
+
+<details>
+<summary>Example Output</summary>
+
 ```
+=============== Thinking =================
+*   Input: Speed = 60 km/h, Time = 2.5 hours.
+    *   Goal: Find the distance traveled.
+    *   Distance = Speed × Time.
+    *   Step 1: Identify given values. Speed = 60 km/h, Time = 2.5 hours
+    *   Step 2: Formula. Distance = Speed × Time
+    *   Step 3: Calculation. 60 × 2.5
+        Mental math: 60 × 2 = 120; 60 × 0.5 = 30; 120 + 30 = 150.
+    *   Step 4: Final Result. 150 km.
+
+=============== Content =================
+To find the distance traveled, you can follow these steps:
+
+### 1. Identify the given information:
+*   **Speed:** 60 km/h
+*   **Time:** 2.5 hours
+
+### 2. Use the distance formula:
+Distance = Speed × Time
+
+### 3. Substitute the values:
+Distance = 60 km/h × 2.5 hours
+
+### 4. Perform the calculation:
+*   60 × 2 = 120
+*   60 × 0.5 = 30
+*   120 + 30 = 150
+
+**Final Answer: The train travels 150 km.**
+```
+
+</details>
 
 ### 4.4 Tool Calling
 
 Gemma 4 supports function calling with the `gemma4` tool call parser. Enable it during deployment with `--tool-call-parser gemma4`.
 
-```python
+````python
 from openai import OpenAI
 
 client = OpenAI(
@@ -233,7 +317,7 @@ tools = [
 ]
 
 response = client.chat.completions.create(
-    model="google/gemma-4-E4B-it",
+    model="google/gemma-4-26B-A4B-it",
     messages=[
         {"role": "user", "content": "What's the weather in Tokyo?"}
     ],
@@ -268,7 +352,18 @@ for chunk in response:
             print(delta.content, end="", flush=True)
 
 print()
+````
+
+<details>
+<summary>Example Output</summary>
+
 ```
+=============== Tool Calls ================
+Tool Call: get_weather
+   Arguments: {"location": "Tokyo"}
+```
+
+</details>
 
 ## 5. Benchmark
 
