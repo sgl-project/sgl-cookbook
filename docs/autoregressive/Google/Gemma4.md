@@ -44,47 +44,6 @@ import Gemma4ConfigGenerator from '@site/src/components/autoregressive/Gemma4Con
 
 <Gemma4ConfigGenerator />
 
-### 3.2 Deployment Commands
-
-SGLang automatically selects the appropriate attention backend for Gemma 4 models.
-
-**gemma-4-E2B-it** (1x H200):
-
-```bash
-sglang serve --model-path google/gemma-4-E2B-it \
-  --reasoning-parser gemma4 \
-  --tool-call-parser gemma4 \
-  --host 0.0.0.0 --port 30000
-```
-
-**gemma-4-E4B-it** (1x H200):
-
-```bash
-sglang serve --model-path google/gemma-4-E4B-it \
-  --reasoning-parser gemma4 \
-  --tool-call-parser gemma4 \
-  --host 0.0.0.0 --port 30000
-```
-
-**gemma-4-31B-it** (2x H200, TP=2):
-
-```bash
-sglang serve --model-path google/gemma-4-31B-it \
-  --tp 2 \
-  --reasoning-parser gemma4 \
-  --tool-call-parser gemma4 \
-  --host 0.0.0.0 --port 30000
-```
-
-**gemma-4-26B-A4B-it** (MoE, 1x H200):
-
-```bash
-sglang serve --model-path google/gemma-4-26B-A4B-it \
-  --reasoning-parser gemma4 \
-  --tool-call-parser gemma4 \
-  --host 0.0.0.0 --port 30000
-```
-
 ### 3.2 Configuration Tips
 
 - SGLang automatically selects the Triton attention backend for Gemma 4 models (required for bidirectional image-token attention during prefill).
@@ -972,46 +931,3 @@ prefill logits (final) tensor([-2.1133,  1.2656, -7.4766,  ..., -2.1523, -2.2012
 
 </details>
 
-## Appendix: Integration Checklist
-
-### Model Implementation
-
-- [x] `python/sglang/srt/models/gemma4_causal.py` — exports `EntryClass = Gemma4ForCausalLM`
-- [x] `python/sglang/srt/models/gemma4_mm.py` — exports `EntryClass = Gemma4ForConditionalGeneration`
-- [x] `python/sglang/srt/models/gemma4_vision.py` — vision encoder
-- [x] `python/sglang/srt/models/gemma4_audio.py` — audio encoder (Conformer/USM)
-
-### Architecture Registration
-
-- [x] `Gemma4ForCausalLM` and `Gemma4ForConditionalGeneration` in `is_hybrid_swa`
-- [x] `Gemma4ForConditionalGeneration` in `multimodal_model_archs`
-- [x] Hybrid SWA layer_types logic: `sliding_attention` / `full_attention`
-
-### Multimodal Processor
-
-- [x] `Gemma4SGLangProcessor` registered with `Gemma4ForConditionalGeneration`
-- [x] Image tokens (BOI/EOI) and audio tokens (BOA/EOA) mapped
-- [x] Audio waveform padding alignment
-
-### Reasoning & Function Call
-
-- [x] `gemma4` reasoning parser — `<|channel>` / `<channel|>` tokens
-- [x] `gemma4` function call detector — `<|tool_call>` / `<tool_call|>` tokens with streaming
-
-### Fused Operations
-
-- [x] Triton fused RMSNorm + residual + scalar kernel
-
-### Tests
-
-- [x] `test/registered/models/test_generation_models.py` — `ModelCase("google/gemma-4-e4b-it")`
-- [x] `test/registered/models/test_vlm_models.py` — VLM case with `mmmu_accuracy=0.38`
-- [x] `test/registered/unit/function_call/test_function_call_parser.py` — `TestGemma4Detector`
-
-### Remaining Items
-
-- [ ] `python3 -m sglang.bench_one_batch --correct --model google/gemma-4-e4b-it`
-- [ ] Prefill logits match HuggingFace reference
-- [ ] `SeparatorStyle.GEMMA4` wired in `conversation.py` `get_prompt()`
-- [x] Accuracy benchmarks (MMMU / GSM8K / MMLU)
-- [ ] Internal release notes
