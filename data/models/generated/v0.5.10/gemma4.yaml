@@ -1,0 +1,211 @@
+vendor: google
+families:
+- name: Gemma-4
+  description: Gemma 4 multimodal models with reasoning, vision, audio, and tool calling
+  models:
+  - name: gemma-4-E2B-it
+    model_path: google/gemma-4-E2B-it
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gemma4
+        reasoning_parser: gemma4
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+  - name: gemma-4-E4B-it
+    model_path: google/gemma-4-E4B-it
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gemma4
+        reasoning_parser: gemma4
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+  - name: gemma-4-31B-it
+    model_path: google/gemma-4-31B-it
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gemma4
+        reasoning_parser: gemma4
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      MI300X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+  - name: gemma-4-26B-A4B-it
+    model_path: google/gemma-4-26B-A4B-it
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: gemma4
+        reasoning_parser: gemma4
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      MI300X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null

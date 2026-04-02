@@ -24,6 +24,17 @@ const sidebars = {
       items: [
         {
           type: 'category',
+          label: 'Google',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/Google/Gemma4',
+              label: 'Gemma 4 [NEW]',
+            },
+          ],
+        },
+        {
+          type: 'category',
           label: 'Qwen',
           items: [
             {
@@ -127,7 +138,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/NVIDIA/Nemotron3-Super',
-              label: 'Nemotron3-Super [NEW]',
+              label: 'Nemotron3-Super',
             },
             'autoregressive/NVIDIA/Nemotron3-Nano',
           ],

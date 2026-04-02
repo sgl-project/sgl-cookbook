@@ -26,6 +26,10 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 ### Autoregressive Models
 
+#### Google
+
+- [x] [Gemma 4](./autoregressive/Google/Gemma4.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+
 #### Qwen
 
 - [x] [Qwen3.5](./autoregressive/Qwen/Qwen3.5.md)
@@ -54,7 +58,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### GLM
 
-- [x] [GLM-5](./autoregressive/GLM/GLM-5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [GLM-5](./autoregressive/GLM/GLM-5.md)
 - [x] [GLM-OCR](./autoregressive/GLM/GLM-OCR.md)
 - [x] [GLM-Glyph](./autoregressive/GLM/Glyph.md)
 - [x] [GLM-4.5](./autoregressive/GLM/GLM-4.5.md)
@@ -71,18 +75,18 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Moonshotai
 
-- [x] [Kimi-K2.5](./autoregressive/Moonshotai/Kimi-K2.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Kimi-K2.5](./autoregressive/Moonshotai/Kimi-K2.5.md)
 - [x] [Kimi-K2](./autoregressive/Moonshotai/Kimi-K2.md)
 - [x] [Kimi-Linear](./autoregressive/Moonshotai/Kimi-Linear.md)
 
 #### MiniMax
 
-- [x] [MiniMax-M2.5](./autoregressive/MiniMax/MiniMax-M2.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [MiniMax-M2.5](./autoregressive/MiniMax/MiniMax-M2.5.md)
 - [ ] [MiniMax-M2](./autoregressive/MiniMax/MiniMax-M2.md)
 
 #### NVIDIA
 
-- [x] [Nemotron3-Super](./autoregressive/NVIDIA/Nemotron3-Super.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Nemotron3-Super](./autoregressive/NVIDIA/Nemotron3-Super.md)
 - [x] [Nemotron-Nano-3-30B-A3B](./autoregressive/NVIDIA/Nemotron3-Nano.md)
 
 #### Ernie
@@ -104,7 +108,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### Mistral
 
-- [x] [Mistral Small 4](./autoregressive/Mistral/Mistral-Small-4.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Mistral Small 4](./autoregressive/Mistral/Mistral-Small-4.md)
 - [ ] [Ministral-3](./autoregressive/Mistral/Ministral-3.md)
 - [x] [Devstral 2](./autoregressive/Mistral/Devstral-2.md)
 
@@ -114,18 +118,18 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### FlashLabs
 
-- [x] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Chroma 1.0](./autoregressive/FlashLabs/Chroma1.0.md)
 
 #### StepFun
 
-- [x] [Step3.5](./autoregressive/StepFun/Step3.5.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
-- [x] [Step3-VL-10B](./autoregressive/StepFun/Step3-VL-10B.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Step3.5](./autoregressive/StepFun/Step3.5.md)
+- [x] [Step3-VL-10B](./autoregressive/StepFun/Step3-VL-10B.md)
 
 #### InclusionAI
 
-- [x] [Ling-2.5-1T](./autoregressive/InclusionAI/Ling-2.5-1T.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
-- [x] [Ring-2.5-1T](./autoregressive/InclusionAI/Ring-2.5-1T.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
-- [x] [LLaDA 2.1](./autoregressive/LLaDA/LLaDA-2.1.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [Ling-2.5-1T](./autoregressive/InclusionAI/Ling-2.5-1T.md)
+- [x] [Ring-2.5-1T](./autoregressive/InclusionAI/Ring-2.5-1T.md)
+- [x] [LLaDA 2.1](./autoregressive/LLaDA/LLaDA-2.1.md)
 
 ### Diffusion Models
 
@@ -155,7 +159,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### FishAudio
 
-- [x] [S2 Pro (TTS)](./omni/S2-Pro/S2-Pro.md) <span style={{backgroundColor: '#10b981', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginLeft: '8px'}}>NEW</span>
+- [x] [S2 Pro (TTS)](./omni/S2-Pro/S2-Pro.md)
 
 ### Benchmarks
 
