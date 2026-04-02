@@ -25,10 +25,10 @@ Gemma 4 is Google's next-generation family of open models, building on the Gemma
 
 ## 2. SGLang Installation
 
-Install SGLang from the main branch and the required transformers commit:
+Gemma 4 support requires [sgl-project/sglang#21952](https://github.com/sgl-project/sglang/pull/21952) and a specific transformers commit:
 
 ```bash
-# Install SGLang from main branch
+# Install SGLang from main branch (after sglang#21952 is merged)
 pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=python'
 
 # Install transformers with Gemma 4 support
