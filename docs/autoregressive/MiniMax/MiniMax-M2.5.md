@@ -51,8 +51,8 @@ import MiniMaxM25ConfigGenerator from '@site/src/components/autoregressive/MiniM
 | `--reasoning-parser`        | Reasoning parser for thinking mode              | `minimax-append-think`          |
 | `--trust-remote-code`       | Required for MiniMax model loading              | Always enabled                   |
 | `--mem-fraction-static`     | Static memory fraction for KV cache             | `0.85`                          |
-| `--tp-size`                 | Tensor parallelism size                         | `2` (2-GPU)  or `4` (4-GPU) or `8` (8-GPU)     |
-| `--ep-size`                 | Expert parallelism size                         | `8` (for 8-GPU deployment)      |
+| `--tp`                      | Tensor parallelism size                         | `2` (2-GPU) or `4` (4-GPU) or `8` (8-GPU)      |
+| `--ep`                      | Expert parallelism size                         | `8` (NVIDIA 8-GPU) or EP=TP (AMD)              |
 
 **Hardware Requirements: NVIDIA**
 
@@ -61,11 +61,9 @@ import MiniMaxM25ConfigGenerator from '@site/src/components/autoregressive/MiniM
 
 **Hardware Requirements: AMD**
 
-- **2-GPU deployment**: Requires 2× high-memory GPUs (e.g., MI300X, MI325X, MI355X) with TP=2
-- **4-GPU deployment**: Requires 4× GPUs (e.g., MI300X, MI325X, MI355X) with TP=4
-- **8-GPU deployment**: Requires 8× GPUs (e.g., MI300X, MI325X, MI355X) with TP=8
-
-**Note on Expert Parallelism (EP):** For MoE models, EP can be set to 1 (all experts on each GPU) or EP=TP (experts distributed across GPUs).
+- **2-GPU deployment**: Requires 2× high-memory GPUs (e.g., MI300X, MI325X, MI355X) with TP=2, EP=2
+- **4-GPU deployment**: Requires 4× GPUs (e.g., MI300X, MI325X, MI355X) with TP=4, EP=4
+- **8-GPU deployment**: Requires 8× GPUs (e.g., MI300X, MI325X, MI355X) with TP=8, EP=8
 
 ## 4. Model Invocation
 
@@ -138,7 +136,7 @@ MiniMax-M2.5 supports Thinking mode. Enable the reasoning parser during deployme
 ```shell
 python -m sglang.launch_server \
   --model-path MiniMaxAI/MiniMax-M2.5 \
-  --tp-size 4 \
+  --tp 4 \
   --reasoning-parser minimax-append-think \
   --trust-remote-code \
   --mem-fraction-static 0.85
@@ -264,7 +262,7 @@ MiniMax-M2.5 supports tool calling capabilities. Enable the tool call parser:
 ```shell
 python -m sglang.launch_server \
   --model-path MiniMaxAI/MiniMax-M2.5 \
-  --tp-size 4 \
+  --tp 4 \
   --tool-call-parser minimax-m2 \
   --reasoning-parser minimax-append-think \
   --trust-remote-code \
