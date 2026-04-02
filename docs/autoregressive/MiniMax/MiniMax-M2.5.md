@@ -730,6 +730,182 @@ Max ITL (ms):                            4649.23
 ==================================================
 ```
 
+#### 5.1.3 H100 Benchmark
+
+**Test Environment**:
+
+- Hardware: NVIDIA H100 80GB HBM3 GPU (8x)
+- Model: MiniMax-M2.5
+- Tensor Parallelism: 8
+- Expert Parallelism: 8
+- sglang version: 0.5.9
+
+- Model Deployment Command:
+```
+python3 -m sglang.launch_server \
+    --model-path MiniMaxAI/MiniMax-M2.5 \
+    --tp 8 \
+    --ep 8 \
+    --trust-remote-code \
+    --mem-fraction-static 0.85
+```
+##### 5.1.3.1 Low Concurrency
+- Benchmark Command:
+```
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1
+```
+- Test Results:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  35.59
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4220
+Request throughput (req/s):              0.28
+Input token throughput (tok/s):          171.40
+Output token throughput (tok/s):         118.56
+Peak output token throughput (tok/s):    124.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          289.96
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   3558.04
+Median E2E Latency (ms):                 2796.86
+P90 E2E Latency (ms):                    6330.28
+P99 E2E Latency (ms):                    7796.31
+---------------Time to First Token----------------
+Mean TTFT (ms):                          154.13
+Median TTFT (ms):                        81.94
+P99 TTFT (ms):                           696.21
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          8.07
+Median TPOT (ms):                        8.10
+P99 TPOT (ms):                           8.11
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           8.09
+Median ITL (ms):                         8.10
+P95 ITL (ms):                            8.14
+P99 ITL (ms):                            8.18
+Max ITL (ms):                            11.18
+==================================================
+```
+##### 5.1.3.2 Medium Concurrency
+- Benchmark Command:
+```
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16
+```
+- Test Results:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  43.84
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40801
+Request throughput (req/s):              1.82
+Input token throughput (tok/s):          904.81
+Output token throughput (tok/s):         930.74
+Peak output token throughput (tok/s):    1184.00
+Peak concurrent requests:                21
+Total token throughput (tok/s):          1835.55
+Concurrency:                             13.84
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   7584.21
+Median E2E Latency (ms):                 8069.63
+P90 E2E Latency (ms):                    12601.80
+P99 E2E Latency (ms):                    14978.68
+---------------Time to First Token----------------
+Mean TTFT (ms):                          142.86
+Median TTFT (ms):                        82.80
+P99 TTFT (ms):                           367.32
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          14.85
+Median TPOT (ms):                        15.02
+P99 TPOT (ms):                           18.72
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           14.62
+Median ITL (ms):                         13.49
+P95 ITL (ms):                            14.19
+P99 ITL (ms):                            67.10
+Max ITL (ms):                            217.55
+==================================================
+```
+##### 5.1.3.3 High Concurrency
+- Benchmark Command:
+```
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100
+```
+- Test Results:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  80.90
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    252330
+Request throughput (req/s):              6.18
+Input token throughput (tok/s):          3088.29
+Output token throughput (tok/s):         3123.28
+Peak output token throughput (tok/s):    4784.00
+Peak concurrent requests:                110
+Total token throughput (tok/s):          6211.57
+Concurrency:                             90.61
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   14660.76
+Median E2E Latency (ms):                 14077.72
+P90 E2E Latency (ms):                    26560.72
+P99 E2E Latency (ms):                    30104.01
+---------------Time to First Token----------------
+Mean TTFT (ms):                          150.25
+Median TTFT (ms):                        94.80
+P99 TTFT (ms):                           379.27
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          29.07
+Median TPOT (ms):                        30.25
+P99 TPOT (ms):                           35.36
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           28.77
+Median ITL (ms):                         21.53
+P95 ITL (ms):                            67.00
+P99 ITL (ms):                            97.19
+Max ITL (ms):                            316.56
+==================================================
+```
+
 ### 5.2 Accuracy Benchmark
 #### 5.2.1 GSM8K Benchmark
 - Benchmark Command:
