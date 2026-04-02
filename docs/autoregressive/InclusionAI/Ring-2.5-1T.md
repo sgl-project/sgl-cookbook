@@ -29,6 +29,12 @@ docker pull lmsysorg/sglang:nightly-dev-20260213-a0ebaa64
 
 # For GB200/GB300
 docker pull lmsysorg/sglang:nightly-dev-cu13-20260213-a0ebaa64
+
+# For MI300X/325X
+docker pull lmsysorg/sglang:v0.5.9-rocm700-mi30x
+
+# For MI355X
+docker pull lmsysorg/sglang:v0.5.9-rocm700-mi35x
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
