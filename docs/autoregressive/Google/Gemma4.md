@@ -55,23 +55,25 @@ import Gemma4ConfigGenerator from '@site/src/components/autoregressive/Gemma4Con
 
 | Model | Hardware | TP |
 |-------|----------|-----|
-| gemma-4-E2B-it | 1x H200 | 1 |
-| gemma-4-E4B-it | 1x H200 | 1 |
-| gemma-4-31B-it | 2x H200 | 2 |
-| gemma-4-26B-A4B-it | 1x H200 | 1 |
+| gemma-4-E2B-it | 1x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 1 |
+| gemma-4-E4B-it | 1x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 1 |
+| gemma-4-31B-it | 2x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 2 (H200) / 1 (AMD) |
+| gemma-4-26B-A4B-it | 1x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 1 |
 
-### 3.3 AMD GPU Deployment (MI300X / MI325X)
+### 3.3 AMD GPU Deployment (MI300X / MI325X / MI355X)
 
-SGLang automatically selects the correct attention backend on AMD GPUs. The same commands work on AMD. Example for MI300X:
+SGLang automatically selects the correct attention backend on AMD GPUs. For the small E-models (`gemma-4-E2B-it`, `gemma-4-E4B-it`), disable AITER on AMD GPUs and use the same command line otherwise:
 
 ```bash
-sglang serve --model-path google/gemma-4-E4B-it \
+SGLANG_USE_AITER=0 sglang serve --model-path google/gemma-4-E4B-it \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
 ```
 
-> **Status**: AMD MI300X benchmarks are available in [Section 5.1](#51-speed-benchmark).
+For `gemma-4-31B-it` and `gemma-4-26B-A4B-it`, the same commands above work on MI300X, MI325X, and MI355X without additional command-line changes.
+
+> **Status**: AMD benchmarks are available in [Section 5.1](#51-speed-benchmark).
 
 ## 4. Model Invocation
 
