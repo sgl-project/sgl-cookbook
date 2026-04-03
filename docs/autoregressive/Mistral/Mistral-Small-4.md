@@ -44,14 +44,8 @@ SGLang offers multiple installation methods. You can choose the most suitable in
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
 :::info
-Mistral Small 4 support is available via [sgl-project/sglang#20708](https://github.com/sgl-project/sglang/pull/20708).
+Mistral Small 4 support landed in [sgl-project/sglang#20708](https://github.com/sgl-project/sglang/pull/20708) and has been merged into `main`. A model-specific Docker image is no longer required. Use the standard SGLang installation methods from the [official installation guide](https://docs.sglang.ai/get_started/install.html).
 :::
-
-### Docker
-
-```bash
-docker pull lmsysorg/sglang:mistral-small-4
-```
 
 ---
 
