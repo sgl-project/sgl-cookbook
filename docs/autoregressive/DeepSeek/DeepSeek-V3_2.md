@@ -4,13 +4,15 @@
 
 The DeepSeek-V3.2 series includes three model variants, each optimized for different use cases:
 
-**[DeepSeek-V3.2-Exp](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp)** is an upgraded version of DeepSeek-V3.1-Terminus, introducing the DeepSeek Sparse Attention (DSA) mechanism through continued training. DSA is a fine-grained sparse attention mechanism powered by a lightning indexer, enabling DeepSeek-V3.2-Exp to achieve significant efficiency improvements in long-context scenarios. As an intermediate step toward the next-generation architecture, V3.2-Exp builds upon V3.1-Terminus by introducing DeepSeek Sparse Attention—a sparse attention mechanism designed to explore and validate optimizations for training and inference efficiency in long-context scenarios. Recommended for general conversations, long-context processing, and efficient inference.
+**[DeepSeek-V3.2-Exp](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp)** is an upgraded version of DeepSeek-V3.1-Terminus, introducing the DeepSeek Sparse Attention (DSA) mechanism through continued training. DSA is a fine-grained sparse attention mechanism powered by a lightning indexer, enabling DeepSeek-V3.2-Exp to achieve significant efficiency improvements in long-context scenarios. Recommended for general conversations, long-context processing, and efficient inference.
 
 **[DeepSeek-V3.2](https://huggingface.co/deepseek-ai/DeepSeek-V3.2)** is the standard version suitable for general tasks and conversational scenarios. For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for standard conversations and general tasks.
 
-**[DeepSeek-V3.2-Speciale](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Speciale)** is a special variant designed exclusively for deep reasoning tasks. This model is specifically optimized for scenarios requiring complex logical reasoning and deep thinking. For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for deep reasoning tasks, complex logical problems, and mathematical reasoning.
+**[DeepSeek-V3.2-Speciale](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Speciale)** is a special variant designed exclusively for deep reasoning tasks. This model is specifically optimized for scenarios requiring complex logical reasoning and deep thinking. However this model does not support tool calls (see belows). For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for deep reasoning tasks, complex logical problems, and mathematical reasoning.
 
 **[DeepSeek-V3.2-NVFP4](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4)** is an NVIDIA-optimized NVFP4-quantized variant of DeepSeek-V3.2 for Blackwell devices. It uses ModelOpt FP4 quantization with a choice of MoE runner backends (`flashinfer_trtllm` (recommended), `flashinfer_cutlass`, or `flashinfer_cutedsl`), enabling efficient deployment with lower tensor parallelism (TP=4). It supports the same features as DeepSeek-V3.2 including tool calling, reasoning, and speculative decoding (MTP).
+
+**[DeepSeek-V3.2-MXFP4](https://huggingface.co/amd/DeepSeek-V3.2-mxfp4)** is an OCP-MXFP4 optimized variant for DeepSeek-V3.2 for both Hopper and Blackwell devices. It uses OCP MXFP4 quantization with a triton mxfp4 backends (the same backend for gptoss-120B), enalbing efficient deployment with lower tensor parallelism (TP=8) in a single node. It includes the same features as DeepSeek-V3.2 inlcuding tool calling, reasoning, fp8-kv, CP, TP and speculative decoding MTP.
 
 ## 2. SGLang Installation
 
@@ -123,11 +125,13 @@ The answer is 36. To find 15% of 240, we multiply 240 by 0.15, which equals 36.
 
 #### 4.2.2 Tool Calling
 
-DeepSeek-V3.2 and DeepSeek-V3.2-Exp support tool calling capabilities. Enable the tool call parser:
+DeepSeek-V3.2 and DeepSeek-V3.2-Exp support tool calling capabilities. But they uses different parameters. Enable the tool call parser:
 
 **Note:** DeepSeek-V3.2-Speciale does **NOT** support tool calling. It is designed exclusively for deep reasoning tasks.
 
 **Deployment Command:**
+
+For DeepSeek-V3.2-Exp :
 
 ```shell
 python -m sglang.launch_server \
@@ -140,7 +144,7 @@ python -m sglang.launch_server \
   --port 8000
 ```
 
-For DeepSeek-V3.2, use `--tool-call-parser deepseekv32` instead.
+For DeepSeek-V3.2, use `--tool-call-parser deepseekv32` and remove `--chat-template`.
 
 **Python Example (with Thinking Process):**
 
@@ -298,9 +302,123 @@ print(final_response.choices[0].message.content)
 # Output: "The weather in Beijing is currently 22°C and sunny."
 ```
 
+#### 4.2.3 Enabling PP, CP and TP with FP8 KV cache
+
+We suggested `DP2` + `MTP` for local deployment of agentic workflow with DeepSeek V3.2 on Hopper platform:
+
+```
+export SGLANG_DEEPEP_LL_COMBINE_SEND_NUM_SMS=32
+export SGLANG_SET_CPU_AFFINITY=1
+
+# Test workload ISL/OSL=1k/1k, raw tap : 4948.16 toks/sec, MAX ITL 5970
+#   dp 2 : 5019.54  toks/sec, MAX ITL 7233
+#   dp 4 : 4942.82  toks/sec, MAX ITL 35654
+#   dp 2 + mtp : 6842.51 toks/sec, MAX ITL 3081
+sglang_args=$(echo -m sglang.launch_server \
+  --model-path $MAPPED_MODEL_PATH \
+  --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 16 \
+  --dp 2 --enable-dp-attention --page-size 64 \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --log-requests \
+  --context-length 65536 --max-running-requests 128 \
+  --speculative-algorithm EAGLE \
+  --speculative-num-steps 2 --speculative-eagle-topk 1 --speculative-num-draft-tokens 3 \
+  --allow-auto-truncate --enable-metrics \
+  --tool-call-parser deepseekv32 --reasoning-parser deepseek-v3 \
+  --served-model-name DeepSeek-V3.2-Opt-dp2-mtp
+)
+
+sglang_args=($sglang_args)
+
+python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
+```
+
+**CP + PP + EP + DP**
+
+`CP` is currently enabled with `PP=2` on Hopper platform and we can reduce TP=16 to TP=8 from standlone deployment:
+
+```
+# verifed on Hopper platform
+sglang_args=$(echo -m sglang.launch_server \
+  --model-path $MAPPED_MODEL_PATH \
+  --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 8 --pp-size 2 --dp 1 --enable-dp-attention \
+  --moe-a2a-backend deepep --ep-size 16  \
+  --page-size 128 \
+  --chunked-prefill-size 16384 \
+  --attention-backend nsa \
+  --nsa-prefill-backend flashmla_sparse \
+  --nsa-decode-backend flashmla_sparse \
+  --enable-nsa-prefill-context-parallel \
+  --nsa-prefill-cp-mode round-robin-split \
+  --cuda-graph-max-bs 128 \
+  --max-running-requests 128 \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --log-requests --served-model-name DeepSeek-V3.2 \
+  --context-length 65536 \
+  --allow-auto-truncate --enable-metrics \
+  --tool-call-parser deepseekv32 --reasoning-parser deepseek-v3 \
+  --served-model-name DeepSeek-V3.2-nsa-pp-cp-ep-dp
+)
+
+sglang_args=($sglang_args)
+```
+
+**fp8 KV + CP + PP**
+
+With FP8 KV, we can have less memory footprint. This is can be combined with various parallel schemes:
+
+```
+# verifed in Hopper platform
+dp=1
+
+dp_config=" \
+  --dp 1 --enable-dp-attention \
+"
+
+cp_config=" \
+  --enable-nsa-prefill-context-parallel \
+"
+
+if [ "$dp" -eq 1 ]; then
+
+cp_config=" \
+  $cp_config \
+  --nsa-prefill-cp-mode round-robin-split \
+"
+
+else
+cp_config=" \
+  $cp_config \
+  --nsa-prefill-cp-mode in-seq-split \
+"
+fi
+
+# see discussion : https://github.com/sgl-project/sglang/pull/12065
+sglang_args=$(echo -m sglang.launch_server \
+  --model-path $MAPPED_MODEL_PATH \
+  --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 8 --pp-size 2 --pp-async-batch-depth 1 \
+  $dp_config \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --log-requests \
+  --context-length 65536 --max-running-requests 128 \
+  $cp_config \
+  --kv-cache-dtype fp8_e4m3 \
+  --allow-auto-truncate --enable-metrics \
+  --tool-call-parser deepseekv32 --reasoning-parser deepseek-v3 \
+  --served-model-name DeepSeek-V3.2-Opt-fp8kv-pp2-cp4
+)
+
+sglang_args=($sglang_args)
+
+python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
+```
+
+**fp8 KV + CP + PP**
+
+
 ## 5. Benchmark
 
-### 5.1 Speed Benchmark
+### 5.1 Speed Benchmark on Blackwell
 
 **Test Environment:**
 
@@ -500,3 +618,120 @@ python3 benchmark/mmlu/bench_sglang.py --nsub 10 --port 8000
     Total latency: 7.961
     Average accuracy: 0.879
     ```
+
+### 5.3 Speed Benchmark on Hopper
+
+**Test Environment:**
+
+- Hardware: NVIDIA H800 GPU (16x)
+- Model: DeepSeek-V3.2
+- Tensor Parallelism: 16
+- sglang version: 0.5.9
+
+#### 5.3.1 Latency-Sensitive Benchmark
+
+- Model Deployment Command:
+
+```shell
+export SGLANG_DEEPEP_LL_COMBINE_SEND_NUM_SMS=32
+export SGLANG_SET_CPU_AFFINITY=1
+
+# Test workload ISL/OSL=1k/1k, raw tap : 4948.16 toks/sec, MAX ITL 5970
+#   dp 2 : 5019.54  toks/sec, MAX ITL 7233
+#   dp 4 : 4942.82  toks/sec, MAX ITL 35654
+#   dp 2 + mtp : 6842.51 toks/sec, MAX ITL 3081
+sglang_args=$(echo -m sglang.launch_server \
+  --model-path $MAPPED_MODEL_PATH \
+  --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 16 \
+  --dp 2 --enable-dp-attention --page-size 64 \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --log-requests \
+  --context-length 65536 --max-running-requests 128 \
+  --speculative-algorithm EAGLE \
+  --speculative-num-steps 2 --speculative-eagle-topk 1 --speculative-num-draft-tokens 3 \
+  --allow-auto-truncate --enable-metrics \
+  --tool-call-parser deepseekv32 --reasoning-parser deepseek-v3 \
+  --served-model-name DeepSeek-V3.2-Opt-dp2-mtp
+)
+
+sglang_args=($sglang_args)
+
+python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
+```
+
+- Benchmark Command:
+
+```shell
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host $MASTER_ADDR \
+  --port 30000 \
+  --model deepseek-ai/DeepSeek-V3.2 \
+  --random-input-len 1024 \
+  --random-output-len 1024 \
+  --num-prompts 10 \
+  --max-concurrency 1
+```
+
+- **Test Results:**
+
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang    
+Traffic request rate:                    64.0      
+Max request concurrency:                 1         
+Successful requests:                     10        
+Benchmark duration (s):                  48.96     
+Total input tokens:                      6101      
+Total input text tokens:                 6101      
+Total generated tokens:                  4220      
+Total generated tokens (retokenized):    4217      
+Request throughput (req/s):              0.20      
+Input token throughput (tok/s):          124.62    
+Output token throughput (tok/s):         86.20     
+Peak output token throughput (tok/s):    113.00    
+Peak concurrent requests:                2         
+Total token throughput (tok/s):          210.81    
+Concurrency:                             1.00      
+Accept length:                           3.27      
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   4893.12   
+Median E2E Latency (ms):                 3742.47   
+P90 E2E Latency (ms):                    8877.37   
+P99 E2E Latency (ms):                    10769.85  
+---------------Time to First Token----------------
+Mean TTFT (ms):                          199.88    
+Median TTFT (ms):                        176.15    
+P99 TTFT (ms):                           272.49    
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          10.99     
+Median TPOT (ms):                        10.88     
+P99 TPOT (ms):                           13.93     
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           11.15     
+Median ITL (ms):                         8.86      
+P95 ITL (ms):                            17.29     
+P99 ITL (ms):                            33.71     
+Max ITL (ms):                            36.84     
+==================================================
+```
+
+#### 5.3.2 Throughput-Sensitive Benchmark
+
+We simply use the same deployment method and very the throughput by maximizing concrruencies :
+
+```
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --host $MASTER_ADDR \
+  --port 30000 \
+  --model deepseek-ai/DeepSeek-V3.2 \
+  --random-input-len 1024 \
+  --random-output-len 1024 \
+  --num-prompts 2048 \
+  --max-concurrency 1024 # see picture below why we use 1024 for concurrency, hence num prompts 2048
+```
+
+DeepSeek 3.2 can steadily support concurrency upto `1024` and when concrruency is greater than 128, the TTFT increase sharply:
+
+![DeepSeek V3.2 Conrrency ISL/OSL=1024/128](https://drive.google.com/file/d/1g0j_LDEa-3t4KiNJffBWpEFo1znn-B3L/view?usp=sharing)
