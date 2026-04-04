@@ -49,7 +49,7 @@ Only include platforms the user has actually tested.
 | A100     | NVIDIA | 80GB   | `lmsysorg/sglang:<ver>` |
 | H100     | NVIDIA | 80GB   | `lmsysorg/sglang:<ver>` |
 | H200     | NVIDIA | 141GB  | `lmsysorg/sglang:<ver>` |
-| B200     | NVIDIA | 183GB  | `lmsysorg/sglang:<ver>` |
+| B200     | NVIDIA | 180GB  | `lmsysorg/sglang:<ver>` |
 | B300     | NVIDIA | 275GB  | `lmsysorg/sglang:<ver>` |
 | MI300X   | AMD    | 192GB  | `lmsysorg/sglang:<ver>-rocm720-mi30x` |
 | MI325X   | AMD    | 256GB  | `lmsysorg/sglang:<ver>-rocm720-mi30x` |
@@ -133,6 +133,16 @@ In config tips, describe `--dp` matching `--tp` as a common pattern, not a requi
 
 **Multiple variants**: Add `modelSize` and/or `quantization` selectors. See `GLM5ConfigGenerator`, `Qwen3CoderConfigGenerator`, `Qwen3NextConfigGenerator` for patterns.
 
+**Platform-required flags**: If a platform requires certain flags to function at all (e.g., AMD MI355X needs `--attention-backend triton`), add them unconditionally for that platform — NOT gated behind optional checkboxes like "Performance Optimizations". Optional optimizations go inside checkbox guards; required-to-work flags go outside.
+
+**No dead code**: Don't define `commandRule` on options if `generateCommand` handles them directly (the rules will never be called). Don't use `getDynamicItems` if the items don't depend on other option values — use static `items` instead. Don't leave unused helper functions.
+
+**No silent ignores**: If a feature (e.g., DP attention) is unsupported on a platform, either disable the UI option or show an explicit message (like a "Work In Progress" note). Never silently drop user selections.
+
+**Scope discipline**: If adding support for one platform, don't accidentally add global flags. Always check conditionals: `if (quantization === 'fp8')` without a hardware guard affects ALL platforms. Be explicit: `if (hardware === 'h200' && quantization === 'fp8')`.
+
+**License accuracy**: Always verify the actual HuggingFace model license before writing the license section. Don't copy from other model docs — licenses vary (Apache 2.0, MIT, community licenses, etc.).
+
 ### Step 4: Add YAML config
 
 Create `data/models/src/<version>/<modelname>.yaml`:
@@ -190,19 +200,26 @@ Can be triggered with `/add-model review`. Also consider running `/review-pr` on
 
 Review the complete documentation for:
 - Nested code block formatting (use ```````` for outer blocks containing ` ``` `)
-- Consistent port numbers across all commands (use 30000, not 8000)
+- Consistent port numbers across all commands, curl examples, and client code (use 30000, not 8000)
+- Launch port matches client/curl `base_url` port on the same page
 - No duplicate deployment commands (reference the one at the top of Section 4)
 - All `TODO` placeholders replaced with actual results
 - ConfigGenerator defaults match the documented deployment command
 - ConfigGenerator `export default` matches the actual class name (common copy-paste bug)
-- All commands use `sglang serve` — no deprecated `python -m sglang.launch_server`
+- All commands use `sglang serve` — no deprecated `python -m sglang.launch_server` or `python3 -m sglang.launch_server`
 - Reasoning mode examples show both thinking-on and thinking-off patterns (for hybrid reasoning models)
 - `modelConfigs` include both `tp` and `mem` values per hardware/quantization
 - DP attention `--dp` value dynamically matches `--tp` in the generator
-- All commands use `sglang serve --model-path` (NOT `python -m sglang.launch_server`)
 - Homepage (`docs/intro.md`) includes the new model entry and matches sidebar order
 - NEW tag count on homepage is 3 or fewer
 - Raw API response objects (e.g., `ChatCompletionMessage(...)`) are formatted into readable structured output (Reasoning/Content/Tool Calls sections)
+- License section matches the actual HuggingFace model license (verify — don't copy from other models)
+- No dead code in ConfigGenerator (unused `commandRule`, unused helper functions, `getDynamicItems` returning static arrays)
+- Platform-required flags are unconditional (not behind optional checkboxes)
+- Unsupported features show explicit messages, not silent no-ops
+- No images hosted on Google Drive (sharing links don't render in markdown)
+- Shell environment blocks use proper placeholders (`export VAR=<your-value>`), not `export VAR=${VAR}` (which is a bash no-op)
+- Grammar and spelling checked in all added documentation text
 
 ## Git Workflow
 
