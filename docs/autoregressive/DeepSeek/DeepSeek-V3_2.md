@@ -12,7 +12,7 @@ The DeepSeek-V3.2 series includes three model variants, each optimized for diffe
 
 **[DeepSeek-V3.2-NVFP4](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4)** is an NVIDIA-optimized NVFP4-quantized variant of DeepSeek-V3.2 for Blackwell devices. It uses ModelOpt FP4 quantization with a choice of MoE runner backends (`flashinfer_trtllm` (recommended), `flashinfer_cutlass`, or `flashinfer_cutedsl`), enabling efficient deployment with lower tensor parallelism (TP=4). It supports the same features as DeepSeek-V3.2 including tool calling, reasoning, and speculative decoding (MTP).
 
-**[DeepSeek-V3.2-MXFP4](https://huggingface.co/amd/DeepSeek-V3.2-mxfp4)** is an OCP-MXFP4 optimized variant for DeepSeek-V3.2 for both Hopper and Blackwell devices. It uses OCP MXFP4 quantization with a triton mxfp4 backends (the same backend for gptoss-120B), enabling efficient deployment with lower tensor parallelism (TP=8) in a single node. It includes the same features as DeepSeek-V3.2 including tool calling, reasoning, fp8-kv, CP, TP and speculative decoding MTP.
+**[DeepSeek-V3.2-MXFP4](https://huggingface.co/amd/DeepSeek-V3.2-mxfp4)** is an OCP-MXFP4 optimized variant for DeepSeek-V3.2 for both Hopper and Blackwell devices. It uses OCP MXFP4 quantization with a triton mxfp4 backend (the same backend for gptoss-120B), enabling efficient deployment with lower tensor parallelism (TP=8) in a single node. It includes the same features as DeepSeek-V3.2 including tool calling, reasoning, fp8-kv, CP, TP and speculative decoding MTP.
 
 ## 2. SGLang Installation
 
@@ -131,7 +131,7 @@ DeepSeek-V3.2 and DeepSeek-V3.2-Exp support tool calling capabilities. But they 
 
 **Deployment Command:**
 
-For DeepSeek-V3.2-Exp :
+For DeepSeek-V3.2-Exp:
 
 ```shell
 sglang serve \
@@ -639,8 +639,6 @@ export SGLANG_SET_CPU_AFFINITY=1
 #   dp 2 : 5019.54  toks/sec, MAX ITL 7233
 #   dp 4 : 4942.82  toks/sec, MAX ITL 35654
 #   dp 2 + mtp : 6842.51 toks/sec, MAX ITL 3081
-# old launching method
-# sglang_args=$(echo -m sglang.launch_server \
 sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 16 \
@@ -721,9 +719,9 @@ Max ITL (ms):                            36.84
 
 #### 5.3.2 Throughput-Sensitive Benchmark
 
-We simply use the same deployment method and vary the throughput by maximizing concurrencies :
+We simply use the same deployment method and vary the throughput by maximizing concurrencies:
 
-```
+```shell
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host $MASTER_ADDR \
@@ -735,9 +733,9 @@ python3 -m sglang.bench_serving \
   --max-concurrency 1024 # see picture below why we use 1024 for concurrency, hence num prompts 2048
 ```
 
-DeepSeek 3.2 can steadily support concurrency upto `1024` and when concurrency is greater than `128`, the TTFT increase sharply:
+DeepSeek 3.2 can steadily support concurrency up to `1024` and when concurrency is greater than `128`, the TTFT increase sharply:
 
-![DeepSeek V3.2 Conrrency ISL/OSL=1024/128](https://github.com/user-attachments/assets/d5c9c9fb-44f3-4793-a0fd-f8fa954546f5)
+![DeepSeek V3.2 Concurrency ISL/OSL=1024/128](https://github.com/user-attachments/assets/d5c9c9fb-44f3-4793-a0fd-f8fa954546f5)
 
 
 Performance record:
@@ -783,7 +781,7 @@ Max ITL (ms):                            2666.37
 ==================================================
 ```
 
-By adding `--random-range-ratio 1`, we could get even higher statistical number:
+By adding `--random-range-ratio 1`, we could get even higher statistical numbers:
 
 ```
 ============ Serving Benchmark Result ============
