@@ -55,7 +55,7 @@ sglang serve \
   --reasoning-parser deepseek-v3 \
   --tp 8 \
   --host 0.0.0.0 \
-  --port 8000
+  --port 30000
 ```
 
 **Streaming with Thinking Process:**
@@ -125,7 +125,7 @@ The answer is 36. To find 15% of 240, we multiply 240 by 0.15, which equals 36.
 
 #### 4.2.2 Tool Calling
 
-DeepSeek-V3.2 and DeepSeek-V3.2-Exp support tool calling capabilities. But they uses different parameters. Enable the tool call parser:
+DeepSeek-V3.2 and DeepSeek-V3.2-Exp support tool calling capabilities. But they use different parameters. Enable the tool call parser:
 
 **Note:** DeepSeek-V3.2-Speciale does **NOT** support tool calling. It is designed exclusively for deep reasoning tasks.
 
@@ -141,7 +141,7 @@ sglang serve \
   --chat-template ./examples/chat_template/tool_chat_template_deepseekv32.jinja \
   --tp 8 \
   --host 0.0.0.0 \
-  --port 8000
+  --port 30000
 ```
 
 For DeepSeek-V3.2, use `--tool-call-parser deepseekv32` and remove `--chat-template`.
@@ -314,13 +314,11 @@ export SGLANG_SET_CPU_AFFINITY=1
 #   dp 2 : 5019.54  toks/sec, MAX ITL 7233
 #   dp 4 : 4942.82  toks/sec, MAX ITL 35654
 #   dp 2 + mtp : 6842.51 toks/sec, MAX ITL 3081
-# old launching method
-# sglang_args=$(echo -m sglang.launch_server \
 sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 16 \
   --dp 2 --enable-dp-attention --page-size 64 \
-  --trust-remote-code --host "0.0.0.0" --port 8000 \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
   --log-requests \
   --context-length 65536 --max-running-requests 128 \
   --speculative-algorithm EAGLE \
@@ -332,7 +330,7 @@ sglang_args=$(echo serve \
 
 sglang_args=($sglang_args)
 
-python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
+sglang "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 ```
 
 **CP + PP + EP + DP**
@@ -341,9 +339,6 @@ python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 
 ```shell
 # verified on Hopper platform
-
-# old launching method
-# sglang_args=$(echo -m sglang.launch_server \
 sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 8 --pp-size 2 --dp 1 --enable-dp-attention \
@@ -357,7 +352,7 @@ sglang_args=$(echo serve \
   --nsa-prefill-cp-mode round-robin-split \
   --cuda-graph-max-bs 128 \
   --max-running-requests 128 \
-  --trust-remote-code --host "0.0.0.0" --port 8000 \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
   --log-requests \
   --context-length 65536 \
   --allow-auto-truncate --enable-metrics \
@@ -366,6 +361,8 @@ sglang_args=$(echo serve \
 )
 
 sglang_args=($sglang_args)
+
+sglang "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 ```
 
 **fp8 KV + CP + PP**
@@ -399,13 +396,11 @@ cp_config=" \
 fi
 
 # see discussion : https://github.com/sgl-project/sglang/pull/12065
-# old launching method
-# sglang_args=$(echo -m sglang.launch_server \
 sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 8 --pp-size 2 --pp-async-batch-depth 1 \
   $dp_config \
-  --trust-remote-code --host "0.0.0.0" --port 8000 \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
   --log-requests \
   --context-length 65536 --max-running-requests 128 \
   $cp_config \
@@ -417,7 +412,6 @@ sglang_args=$(echo serve \
 
 sglang_args=($sglang_args)
 
-# python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 sglang "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 ```
 
@@ -447,7 +441,7 @@ sglang serve \
   --speculative-eagle-topk 1 \
   --speculative-num-draft-tokens 4 \
   --host 0.0.0.0 \
-  --port 8000
+  --port 30000
 ```
 
 - Benchmark Command:
@@ -456,7 +450,7 @@ sglang serve \
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host 127.0.0.1 \
-  --port 8000 \
+  --port 30000 \
   --model deepseek-ai/DeepSeek-V3.2-Exp \
   --random-input-len 1024 \
   --random-output-len 1024 \
@@ -520,7 +514,7 @@ sglang serve \
   --dp 8 \
   --enable-dp-attention \
   --host 0.0.0.0 \
-  --port 8000
+  --port 30000
 ```
 
 - Benchmark Command:
@@ -529,7 +523,7 @@ sglang serve \
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host 127.0.0.1 \
-  --port 8000 \
+  --port 30000 \
   --model deepseek-ai/DeepSeek-V3.2-Exp \
   --random-input-len 1024 \
   --random-output-len 1024 \
@@ -585,7 +579,7 @@ Max ITL (ms):                            975.03
 - **Benchmark Command:**
 
 ```shell
-python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 8000
+python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 30000
 ```
 
 - **Test Results**:
@@ -604,7 +598,7 @@ python3 -m sglang.test.few_shot_gsm8k --num-questions 200 --port 8000
 ```shell
 cd sglang
 bash benchmark/mmlu/download_data.sh
-python3 benchmark/mmlu/bench_sglang.py --nsub 10 --port 8000
+python3 benchmark/mmlu/bench_sglang.py --nsub 10 --port 30000
 ```
 
 - **Test Results**:
@@ -651,7 +645,7 @@ sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 16 \
   --dp 2 --enable-dp-attention --page-size 64 \
-  --trust-remote-code --host "0.0.0.0" --port 8000 \
+  --trust-remote-code --host "0.0.0.0" --port 30000 \
   --log-requests \
   --context-length 65536 --max-running-requests 128 \
   --speculative-algorithm EAGLE \
@@ -674,7 +668,7 @@ sglang "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host $MASTER_ADDR \
-  --port 8000 \
+  --port 30000 \
   --model deepseek-ai/DeepSeek-V3.2 \
   --random-input-len 1024 \
   --random-output-len 1024 \
@@ -727,13 +721,13 @@ Max ITL (ms):                            36.84
 
 #### 5.3.2 Throughput-Sensitive Benchmark
 
-We simply use the same deployment method and very the throughput by maximizing concrruencies :
+We simply use the same deployment method and vary the throughput by maximizing concurrencies :
 
 ```
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host $MASTER_ADDR \
-  --port 8000 \
+  --port 30000 \
   --model deepseek-ai/DeepSeek-V3.2 \
   --random-input-len 1024 \
   --random-output-len 1024 \
