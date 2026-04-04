@@ -55,14 +55,14 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 
 - **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.
 - For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
-- Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommend enabling this feature.
+- Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
 
 ## 4. Model Invocation
 
 Deploy GLM-5 with the following command (FP8 on H200, all features enabled):
 
 ```shell
-python -m sglang.launch_server \
+sglang serve  \
   --model zai-org/GLM-5-FP8 \
   --tp 8 \
   --tool-call-parser glm47 \
@@ -81,7 +81,7 @@ python -m sglang.launch_server \
 The following ROCm command is an additional option for AMD GPUs and does not replace the NVIDIA instructions above.
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model zai-org/GLM-5 \
   --tp 8 \
   --trust-remote-code \
