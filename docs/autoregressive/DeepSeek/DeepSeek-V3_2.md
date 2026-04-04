@@ -365,7 +365,7 @@ sglang_args=($sglang_args)
 
 **fp8 KV + CP + PP**
 
-With FP8 KV, we can have less memory footprint. This is can be combined with various parallel schemes:
+With FP8 KV, we can have less memory footprint. This can be combined with various parallel schemes:
 
 ```shell
 # verified in Hopper platform
