@@ -146,7 +146,7 @@ const Qwen35ConfigGenerator = () => {
     modelConfigs: {
       '397b': {
         h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
-        h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
+        h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
         b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.8 } },
         b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
         mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
@@ -239,12 +239,16 @@ const Qwen35ConfigGenerator = () => {
       }
 
       const tpValue = hwConfig.tp;
+      const epValue = hwConfig.ep;
       const memFraction = hwConfig.mem;
 
       // Initialize the base command
       let cmd = `sglang serve --model-path ${modelName}`;
       if (tpValue > 1) {
         cmd += ` \\\n  --tp ${tpValue}`;
+      }
+      if (epValue) {
+        cmd += ` \\\n  --expert-parallel-size ${epValue}`;
       }
 
       // Force Mamba V1 for AMD GPUs (V2 requires FLA backend)
@@ -264,6 +268,21 @@ const Qwen35ConfigGenerator = () => {
           }
         }
       });
+
+      // FP8 KV cache dtype
+      if (quantization === 'fp8') {
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
+      }
+
+      // EAGLE speculative decoding requires radix cache disabled; also add chunked prefill for FP8+MTP
+      if (speculative === 'enabled') {
+        if (quantization === 'fp8') {
+          cmd += ` \\\n  --max-running-requests 128`;
+          cmd += ` \\\n  --chunked-prefill-size 16384`;
+          cmd += ` \\\n  --tokenizer-worker-num 6`;
+        }
+        cmd += ` \\\n  --disable-radix-cache`;
+      }
 
       // Enable allreduce fusion for all Qwen3.5 configs.
       cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
