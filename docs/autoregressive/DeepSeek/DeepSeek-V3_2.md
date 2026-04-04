@@ -8,11 +8,11 @@ The DeepSeek-V3.2 series includes three model variants, each optimized for diffe
 
 **[DeepSeek-V3.2](https://huggingface.co/deepseek-ai/DeepSeek-V3.2)** is the standard version suitable for general tasks and conversational scenarios. For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for standard conversations and general tasks.
 
-**[DeepSeek-V3.2-Speciale](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Speciale)** is a special variant designed exclusively for deep reasoning tasks. This model is specifically optimized for scenarios requiring complex logical reasoning and deep thinking. However this model does not support tool calls (see belows). For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for deep reasoning tasks, complex logical problems, and mathematical reasoning.
+**[DeepSeek-V3.2-Speciale](https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Speciale)** is a special variant designed exclusively for deep reasoning tasks. This model is specifically optimized for scenarios requiring complex logical reasoning and deep thinking. However this model does not support tool calls (see below). For local deployment, we recommend setting the sampling parameters to temperature = 1.0, top_p = 0.95. Recommended for deep reasoning tasks, complex logical problems, and mathematical reasoning.
 
 **[DeepSeek-V3.2-NVFP4](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4)** is an NVIDIA-optimized NVFP4-quantized variant of DeepSeek-V3.2 for Blackwell devices. It uses ModelOpt FP4 quantization with a choice of MoE runner backends (`flashinfer_trtllm` (recommended), `flashinfer_cutlass`, or `flashinfer_cutedsl`), enabling efficient deployment with lower tensor parallelism (TP=4). It supports the same features as DeepSeek-V3.2 including tool calling, reasoning, and speculative decoding (MTP).
 
-**[DeepSeek-V3.2-MXFP4](https://huggingface.co/amd/DeepSeek-V3.2-mxfp4)** is an OCP-MXFP4 optimized variant for DeepSeek-V3.2 for both Hopper and Blackwell devices. It uses OCP MXFP4 quantization with a triton mxfp4 backends (the same backend for gptoss-120B), enalbing efficient deployment with lower tensor parallelism (TP=8) in a single node. It includes the same features as DeepSeek-V3.2 inlcuding tool calling, reasoning, fp8-kv, CP, TP and speculative decoding MTP.
+**[DeepSeek-V3.2-MXFP4](https://huggingface.co/amd/DeepSeek-V3.2-mxfp4)** is an OCP-MXFP4 optimized variant for DeepSeek-V3.2 for both Hopper and Blackwell devices. It uses OCP MXFP4 quantization with a triton mxfp4 backends (the same backend for gptoss-120B), enabling efficient deployment with lower tensor parallelism (TP=8) in a single node. It includes the same features as DeepSeek-V3.2 including tool calling, reasoning, fp8-kv, CP, TP and speculative decoding MTP.
 
 ## 2. SGLang Installation
 
@@ -306,7 +306,7 @@ print(final_response.choices[0].message.content)
 
 We suggested `DP2` + `MTP` for local deployment of agentic workflow with DeepSeek V3.2 on Hopper platform:
 
-```
+```shell
 export SGLANG_DEEPEP_LL_COMBINE_SEND_NUM_SMS=32
 export SGLANG_SET_CPU_AFFINITY=1
 
@@ -335,10 +335,10 @@ python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 
 **CP + PP + EP + DP**
 
-`CP` is currently enabled with `PP=2` on Hopper platform and we can reduce TP=16 to TP=8 from standlone deployment:
+`CP` is currently enabled with `PP=2` on Hopper platform and we can reduce TP=16 to TP=8 from standalone deployment:
 
-```
-# verifed on Hopper platform
+```shell
+# verified on Hopper platform
 sglang_args=$(echo -m sglang.launch_server \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 8 --pp-size 2 --dp 1 --enable-dp-attention \
@@ -353,7 +353,7 @@ sglang_args=$(echo -m sglang.launch_server \
   --cuda-graph-max-bs 128 \
   --max-running-requests 128 \
   --trust-remote-code --host "0.0.0.0" --port 30000 \
-  --log-requests --served-model-name DeepSeek-V3.2 \
+  --log-requests \
   --context-length 65536 \
   --allow-auto-truncate --enable-metrics \
   --tool-call-parser deepseekv32 --reasoning-parser deepseek-v3 \
@@ -367,8 +367,8 @@ sglang_args=($sglang_args)
 
 With FP8 KV, we can have less memory footprint. This is can be combined with various parallel schemes:
 
-```
-# verifed in Hopper platform
+```shell
+# verified in Hopper platform
 dp=1
 
 dp_config=" \
@@ -732,9 +732,9 @@ python3 -m sglang.bench_serving \
   --max-concurrency 1024 # see picture below why we use 1024 for concurrency, hence num prompts 2048
 ```
 
-DeepSeek 3.2 can steadily support concurrency upto `1024` and when concrruency is greater than 128, the TTFT increase sharply:
+DeepSeek 3.2 can steadily support concurrency upto `1024` and when concurrency is greater than `128`, the TTFT increase sharply:
 
-![DeepSeek V3.2 Conrrency ISL/OSL=1024/128](https://drive.google.com/file/d/1g0j_LDEa-3t4KiNJffBWpEFo1znn-B3L/view?usp=sharing)
+![DeepSeek V3.2 Conrrency ISL/OSL=1024/128](https://github.com/user-attachments/assets/d5c9c9fb-44f3-4793-a0fd-f8fa954546f5)
 
 
 Performance record:
