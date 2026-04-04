@@ -363,6 +363,8 @@ sglang_args=$(echo -m sglang.launch_server \
 sglang_args=($sglang_args)
 ```
 
+**fp8 KV + CP + PP**
+
 With FP8 KV, we can have less memory footprint. This is can be combined with various parallel schemes:
 
 ```shell
@@ -410,9 +412,6 @@ sglang_args=($sglang_args)
 
 python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 ```
-
-**fp8 KV + CP + PP**
-
 
 ## 5. Benchmark
 
