@@ -320,7 +320,7 @@ sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 16 \
   --dp 2 --enable-dp-attention --page-size 64 \
-  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --trust-remote-code --host "0.0.0.0" --port 8000 \
   --log-requests \
   --context-length 65536 --max-running-requests 128 \
   --speculative-algorithm EAGLE \
@@ -357,7 +357,7 @@ sglang_args=$(echo serve \
   --nsa-prefill-cp-mode round-robin-split \
   --cuda-graph-max-bs 128 \
   --max-running-requests 128 \
-  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --trust-remote-code --host "0.0.0.0" --port 8000 \
   --log-requests \
   --context-length 65536 \
   --allow-auto-truncate --enable-metrics \
@@ -405,7 +405,7 @@ sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 8 --pp-size 2 --pp-async-batch-depth 1 \
   $dp_config \
-  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --trust-remote-code --host "0.0.0.0" --port 8000 \
   --log-requests \
   --context-length 65536 --max-running-requests 128 \
   $cp_config \
@@ -651,7 +651,7 @@ sglang_args=$(echo serve \
   --model-path $MAPPED_MODEL_PATH \
   --nccl-init $MASTER_ADDR:$MASTER_PORT --nnodes 2 --node-rank $RANK --tp 16 \
   --dp 2 --enable-dp-attention --page-size 64 \
-  --trust-remote-code --host "0.0.0.0" --port 30000 \
+  --trust-remote-code --host "0.0.0.0" --port 8000 \
   --log-requests \
   --context-length 65536 --max-running-requests 128 \
   --speculative-algorithm EAGLE \
@@ -674,7 +674,7 @@ sglang "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host $MASTER_ADDR \
-  --port 30000 \
+  --port 8000 \
   --model deepseek-ai/DeepSeek-V3.2 \
   --random-input-len 1024 \
   --random-output-len 1024 \
@@ -733,7 +733,7 @@ We simply use the same deployment method and very the throughput by maximizing c
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host $MASTER_ADDR \
-  --port 30000 \
+  --port 8000 \
   --model deepseek-ai/DeepSeek-V3.2 \
   --random-input-len 1024 \
   --random-output-len 1024 \
