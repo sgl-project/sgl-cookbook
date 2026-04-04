@@ -363,8 +363,6 @@ sglang_args=$(echo -m sglang.launch_server \
 sglang_args=($sglang_args)
 ```
 
-**fp8 KV + CP + PP**
-
 With FP8 KV, we can have less memory footprint. This is can be combined with various parallel schemes:
 
 ```shell
