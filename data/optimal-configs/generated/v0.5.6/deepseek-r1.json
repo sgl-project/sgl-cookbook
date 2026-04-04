@@ -317,7 +317,8 @@
         "num_continuous_decode_steps": 4,
         "max_prefill_tokens": 196608,
         "cuda_graph_max_bs": 128,
-        "attention_backend": "aiter"
+        "attention_backend": "aiter",
+        "kv_cache_dtype": "fp8_e4m3"
       }
     },
     {
@@ -336,7 +337,8 @@
         "num_continuous_decode_steps": 4,
         "max_prefill_tokens": 196608,
         "cuda_graph_max_bs": 512,
-        "attention_backend": "aiter"
+        "attention_backend": "aiter",
+        "kv_cache_dtype": "fp8_e4m3"
       }
     },
     {
