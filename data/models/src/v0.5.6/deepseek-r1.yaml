@@ -1,5 +1,5 @@
 # DeepSeek-R1 Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/deepseek-r1.yaml
+# This file is compiled to data/models/generated/v0.5.6/deepseek-r1.yaml
 #
 # Note: B200 hardware includes --kv-cache-dtype fp8_e4m3 for improved performance
 # with fp8 attention kernels. H100/H200 use default kv-cache dtype.
