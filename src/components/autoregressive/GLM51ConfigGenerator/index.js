@@ -48,7 +48,7 @@ const GLM51ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: false },
           { id: 'enabled', label: 'Enabled', default: true }
         ],
-        commandRule: (value) => value === 'enabled' ? '--reasoning-parser glm45' : null
+        commandRule: (value) => (value === 'enabled' ? '--reasoning-parser glm45' : null)
       },
       toolcall: {
         name: 'toolcall',
@@ -57,7 +57,7 @@ const GLM51ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: false },
           { id: 'enabled', label: 'Enabled', default: true }
         ],
-        commandRule: (value) => value === 'enabled' ? '--tool-call-parser glm47' : null
+        commandRule: (value) => (value === 'enabled' ? '--tool-call-parser glm47' : null)
       },
       dpattention: {
         name: 'dpattention',
@@ -66,7 +66,6 @@ const GLM51ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', subtitle: 'Low Latency', default: true },
           { id: 'enabled', label: 'Enabled', subtitle: 'High Throughput', default: false }
         ],
-        // dp value is dynamic (matches tp), handled in generateCommand
         commandRule: null
       },
       speculative: {
@@ -77,40 +76,34 @@ const GLM51ConfigGenerator = () => {
           { id: 'disabled', label: 'Disabled', default: false },
           { id: 'enabled', label: 'Enabled', default: true }
         ],
-        commandRule: (value) => value === 'enabled' ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4' : null
+        commandRule: (value) => (value === 'enabled'
+          ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4'
+          : null)
       }
     },
 
-    // BF16 always needs 2x GPUs compared to FP8
     modelConfigs: {
       h100: { fp8: { tp: 16, mem: 0.85 }, bf16: { tp: 32, mem: 0.85 } },
       h200: { fp8: { tp: 8, mem: 0.85 }, bf16: { tp: 16, mem: 0.85 } },
       b200: { fp8: { tp: 8, mem: 0.9 }, bf16: { tp: 16, mem: 0.9 } },
-      mi300x: { bf16: { tp: 8, mem: 0.80 } },
-      mi355x: { bf16: { tp: 8, mem: 0.80 } }
+      mi300x: { bf16: { tp: 8, mem: 0.8 } },
+      mi355x: { bf16: { tp: 8, mem: 0.8 } }
     },
 
     generateCommand: function (values) {
       const { hardware, quantization } = values;
       const isAMD = hardware === 'mi300x' || hardware === 'mi355x';
-
-      // AMD only supports BF16; NVIDIA supports both
       const effectiveQuant = isAMD ? 'bf16' : quantization;
       const modelSuffix = effectiveQuant === 'fp8' ? '-FP8' : '';
-      const modelName = `${this.modelFamily}/GLM-5${modelSuffix}`;
-
-      // BF16 needs 2x GPUs compared to FP8
+      const modelName = `${this.modelFamily}/GLM-5.1${modelSuffix}`;
       const hwConfig = this.modelConfigs[hardware][effectiveQuant];
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
-      cmd += `  --model ${modelName}`;
-
-      // TP setting
+      let cmd = 'sglang serve \\\n';
+      cmd += `  --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
 
-      // AMD-specific: NSA tilelang backend and weight loading config
       if (isAMD) {
         cmd += ' \\\n  --trust-remote-code';
         cmd += ' \\\n  --nsa-prefill-backend tilelang';
@@ -119,12 +112,10 @@ const GLM51ConfigGenerator = () => {
         cmd += ' \\\n  --watchdog-timeout 1200';
       }
 
-      // DP Attention: --dp matches --tp
       if (values.dpattention === 'enabled') {
         cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
       }
 
-      // Apply commandRule from all options
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule) {
           const rule = option.commandRule(values[key]);
@@ -134,7 +125,6 @@ const GLM51ConfigGenerator = () => {
         }
       });
 
-      // Memory fraction based on hardware and quantization
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
       return cmd;
