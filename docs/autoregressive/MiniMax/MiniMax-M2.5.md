@@ -396,7 +396,7 @@ This section uses **industry-standard configurations** for comparable benchmark 
 #### 5.1.1 Standard Scenario Benchmark
 - Model Deployment Command:
 ```
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2.5 \
     --tp 8 \
     --ep 8 \
@@ -564,7 +564,7 @@ Max ITL (ms):                            1145.62
 #### 5.1.2 Summarization Scenario Benchmark
 - Model Deployment Command:
 ```
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2.5 \
     --tp 8 \
     --ep 8 \
@@ -742,7 +742,7 @@ Max ITL (ms):                            4649.23
 
 - Model Deployment Command:
 ```
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2.5 \
     --tp 8 \
     --ep 8 \
