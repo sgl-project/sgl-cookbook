@@ -58,6 +58,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### GLM
 
+- [x] [GLM-5.1](./autoregressive/GLM/GLM-5.1.md)
 - [x] [GLM-5](./autoregressive/GLM/GLM-5.md)
 - [x] [GLM-OCR](./autoregressive/GLM/GLM-OCR.md)
 - [x] [GLM-Glyph](./autoregressive/GLM/Glyph.md)
