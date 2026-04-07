@@ -80,7 +80,7 @@ const Ring25ConfigGenerator = () => {
         });
 
         const buildAmdNodeCmd = (nodeRank) => {
-          let cmd = 'python3 -m sglang.launch_server \\\n';
+          let cmd = 'sglang serve \\\n';
           cmd += `--model-path ${modelName} \\\n`;
           cmd += '--trust-remote-code \\\n';
           cmd += `--tp-size ${tpSize} \\\n`;
@@ -101,16 +101,10 @@ const Ring25ConfigGenerator = () => {
           return cmd;
         };
 
-        const commentOut = (text) =>
-          text
-            .split('\n')
-            .map((line) => (line.length > 0 ? `#${line}` : '#'))
-            .join('\n');
-
         const envBlock =
-          'export MASTER_IP=${MASTER_IP} # The IP of Node 0\n' +
-          'export PORT=${PORT}\n' +
-          'export DIST_PORT=${DIST_PORT}\n' +
+          'export MASTER_IP=<your-node0-ip> # Replace with the IP of Node 0\n' +
+          'export PORT=30000\n' +
+          'export DIST_PORT=20000\n' +
           '# Replace ${NIC_IFNAME} with your actual NIC\n' +
           'export GLOO_SOCKET_IFNAME=${NIC_IFNAME}\n' +
           'export TP_SOCKET_IFNAME=${NIC_IFNAME}\n';
@@ -129,7 +123,7 @@ const Ring25ConfigGenerator = () => {
       const hwConfig = this.modelConfigs[hardware].fp8;
       const tpValue = hwConfig.tp;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
       cmd += ' \\\n  --trust-remote-code';
