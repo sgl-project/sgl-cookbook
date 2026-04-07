@@ -50,7 +50,7 @@ import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51Confi
 Deploy GLM-5.1 with the following command (FP8 on H200, all features enabled):
 
 ```shell
-sglang serve \
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
   --model-path zai-org/GLM-5.1-FP8 \
   --tp 8 \
   --tool-call-parser glm47 \

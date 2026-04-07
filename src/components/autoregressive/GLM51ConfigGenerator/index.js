@@ -99,8 +99,13 @@ const GLM51ConfigGenerator = () => {
       const hwConfig = this.modelConfigs[hardware][effectiveQuant];
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
+      const enableSpec = values.speculative === 'enabled';
 
-      let cmd = 'sglang serve \\\n';
+      let cmd = '';
+      if (enableSpec) {
+        cmd += 'SGLANG_ENABLE_SPEC_V2=1 ';
+      }
+      cmd += 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
 
