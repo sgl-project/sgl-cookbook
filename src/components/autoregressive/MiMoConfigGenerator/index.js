@@ -65,7 +65,7 @@ const MiMoConfigGenerator = () => {
             : 'SGLANG_ENABLE_SPEC_V2=1';
         const tpSize = isMI355X ? 4 : 8;
 
-        let cmd = `${commandPrefix} python3 -m sglang.launch_server \\\n`;
+        let cmd = `${commandPrefix} sglang serve \\\n`;
         cmd += `  --model-path ${modelPath} \\\n`;
         cmd += `  --trust-remote-code \\\n`;
         cmd += `  --tp-size ${tpSize}`;

@@ -99,4 +99,4 @@ Occasionally DeepGEMM timeout errors occur during first launch. Simply rerun the
 
 **ROCm MI355X Attention Backend**
 
-If you see an error such as `AiterAttnBackend.forward_decode() got an unexpected keyword argument 'sinks'` on MI355X, use the `MI355X` command from the selector above, which switches to Triton attention and keeps `--disable-custom-all-reduce`.
+If you see an error such as `AiterAttnBackend.forward_decode() got an unexpected keyword argument 'sinks'` on MI355X, use the `MI355X` + `Performance Optimizations` command from the selector above, which switches to Triton attention and keeps `--disable-custom-all-reduce`.
