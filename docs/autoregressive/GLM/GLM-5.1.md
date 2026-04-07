@@ -193,7 +193,7 @@ print()
 Here is the step-by-step solution to find 15% of 240:
 
 **Step 1: Convert the percentage to a decimal.**
-To convert a percentage to a decimal, divide it by 100 (or simply move the decimal point two places to the left). 
+To convert a percentage to a decimal, divide it by 100 (or simply move the decimal point two places to the left).
 * 15% = 15 ÷ 100 = **0.15**
 
 **Step 2: Multiply the decimal by the number.**
@@ -246,7 +246,7 @@ print()
 **Output Example:**
 
 ```
-15% of 240 is 36. 
+15% of 240 is 36.
 
 Here is how to calculate it:
 1. Convert the percentage to a decimal: 15% = 0.15
@@ -345,7 +345,7 @@ print()
 The user wants to know the weather in Beijing. I'll call the get_weather function with "Beijing" as the location.
 =============== Content =================
 Tool Call: get_weather
-   Arguments: 
+   Arguments:
 Tool Call: None
    Arguments: {
 Tool Call: None
