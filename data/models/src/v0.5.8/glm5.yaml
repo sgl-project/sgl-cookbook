@@ -1,5 +1,5 @@
 # GLM-5 Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/glm5.yaml
+# This file is compiled to data/models/generated/v0.5.8/glm5.yaml
 #
 # GPU requirements (BF16 needs 2x GPUs compared to FP8):
 #   H100: FP8 tp=16, BF16 tp=32

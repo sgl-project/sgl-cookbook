@@ -1,5 +1,5 @@
 # Qwen3-Next Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/qwen3next.yaml
+# This file is compiled to data/models/generated/v0.5.6/qwen3next.yaml
 
 vendor: qwen
 
