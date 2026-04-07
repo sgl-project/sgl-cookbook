@@ -34,7 +34,7 @@ pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=python'
 # Install transformers with Gemma 4 support
 pip install 'git+https://github.com/huggingface/transformers.git@91b1ab1fdfa81a552644a92fbe3e8d88de40e167'
 
-# Or use Docker AMD64 
+# Or use Docker AMD64
 docker pull lmsysorg/sglang:gemma4 # CUDA 12.9
 docker pull lmsysorg/sglang:cu13-gemma4 # CUDA 13
 
