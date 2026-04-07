@@ -38,7 +38,7 @@ pip install 'git+https://github.com/huggingface/transformers.git@91b1ab1fdfa81a5
 docker pull lmsysorg/sglang:gemma4 # CUDA 12.9
 docker pull lmsysorg/sglang:cu13-gemma4 # CUDA 13
 
-# For ARM64
+# For ARM64 (GB200 / GB300)
 docker pull lmsysorg/sglang:dev-gemma4 # CUDA 12.9
 docker pull lmsysorg/sglang:dev-cu13-gemma4 # CUDA 13
 ```
