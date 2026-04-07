@@ -61,7 +61,7 @@ import Ring25ConfigGenerator from '@site/src/components/autoregressive/Ring25Con
 Deploy Ring-2.5-1T with the following command (on H200, all features enabled):
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp 8 \
   --trust-remote-code \
@@ -82,7 +82,7 @@ For basic API usage and request examples, please refer to:
 To enable reasoning output separation, add `--reasoning-parser deepseek-r1` when launching the server. The thinking process is returned via `reasoning_content` in the streaming response.
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp 8 \
   --trust-remote-code \
@@ -181,7 +181,7 @@ Alternatively, using the fraction:
 To enable tool calling, add `--tool-call-parser qwen` when launching the server.
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp 8 \
   --trust-remote-code \
@@ -241,7 +241,7 @@ print(response.choices[0].message.tool_calls)
 
 - Deployment Command
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp-size 8 \
   --trust-remote-code
