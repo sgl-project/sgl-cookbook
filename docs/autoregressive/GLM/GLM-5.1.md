@@ -4,8 +4,8 @@
 
 **Available Models:**
 
-- **BF16 (Full precision)**: [zai-org/GLM-5.1](https://huggingface.co/zai-org/GLM-5,1)
-- **FP8 (8-bit quantized)**: [zai-org/GLM-5,1-FP8](https://huggingface.co/zai-org/GLM-5.1-FP8)
+- **BF16 (Full precision)**: [zai-org/GLM-5.1](https://huggingface.co/zai-org/GLM-5.1)
+- **FP8 (8-bit quantized)**: [zai-org/GLM-5.1-FP8](https://huggingface.co/zai-org/GLM-5.1-FP8)
 
 **License:** MIT
 
@@ -21,9 +21,9 @@ This section provides deployment configurations optimized for different hardware
 
 **Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and capabilities. SGLang supports serving GLM-5.1 on NVIDIA H100, H200, B200, and AMD MI300X/MI325X/MI355X GPUs.
 
-import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigGenerator';
+import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51ConfigGenerator';
 
-<GLM5ConfigGenerator />
+<GLM51ConfigGenerator />
 
 ### 3.2 Configuration Tips
 
@@ -50,7 +50,7 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 Deploy GLM-5.1 with the following command (FP8 on H200, all features enabled):
 
 ```shell
-python -m sglang.launch_server \
+SGLANG_ENABLE_SPEC_V2=1 python -m sglang.launch_server \
   --model zai-org/GLM-5.1-FP8 \
   --tp 8 \
   --tool-call-parser glm47 \
@@ -69,7 +69,7 @@ python -m sglang.launch_server \
 The following ROCm command is an additional option for AMD GPUs and does not replace the NVIDIA instructions above.
 
 ```shell
-python -m sglang.launch_server \
+SGLANG_ENABLE_SPEC_V2=1 python -m sglang.launch_server \
   --model zai-org/GLM-5.1 \
   --tp 8 \
   --trust-remote-code \

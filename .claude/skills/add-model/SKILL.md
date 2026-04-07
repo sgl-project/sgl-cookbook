@@ -131,7 +131,7 @@ In config tips, describe `--dp` matching `--tp` as a common pattern, not a requi
 
 **Large models (>400B)**: BF16 needs ~2x GPUs vs FP8. Reflect this in `modelConfigs`. Omit combos that don't fit.
 
-**Multiple variants**: Add `modelSize` and/or `quantization` selectors. See `GLM5ConfigGenerator`, `Qwen3CoderConfigGenerator`, `Qwen3NextConfigGenerator` for patterns.
+**Multiple variants**: Add `modelSize` and/or `quantization` selectors. See `GLM51ConfigGenerator`, `GLM5ConfigGenerator`, `Qwen3CoderConfigGenerator`, `Qwen3NextConfigGenerator` for patterns.
 
 ### Step 4: Add YAML config
 
