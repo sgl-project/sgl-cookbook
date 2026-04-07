@@ -89,7 +89,7 @@ const Ring25ConfigGenerator = () => {
           cmd += `--node-rank ${nodeRank} \\\n`;
           if (nodeRank === 0) {
             cmd += '--host 0.0.0.0 \\\n';
-            cmd += '--port ${PORT} \\\n';
+            cmd += '--port 30000 \\\n';
           }
           cmd += '--dist-init-addr ${MASTER_IP}:${DIST_PORT} \\\n';
           cmd += '--attention-backend triton \\\n';
@@ -105,9 +105,9 @@ const Ring25ConfigGenerator = () => {
           'export MASTER_IP=<your-node0-ip> # Replace with the IP of Node 0\n' +
           'export PORT=30000\n' +
           'export DIST_PORT=20000\n' +
-          '# Replace ${NIC_IFNAME} with your actual NIC\n' +
-          'export GLOO_SOCKET_IFNAME=${NIC_IFNAME}\n' +
-          'export TP_SOCKET_IFNAME=${NIC_IFNAME}\n';
+          '# Replace <nic-ifname> with your actual NIC interface name\n' +
+          'export GLOO_SOCKET_IFNAME=<nic-ifname>\n' +
+          'export TP_SOCKET_IFNAME=<nic-ifname>\n';
 
         let out = envBlock + '\n';
 
