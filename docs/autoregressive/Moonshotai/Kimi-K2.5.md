@@ -9,6 +9,11 @@
 - **Native Multimodality**: Pre-trained on vision–language tokens, K2.5 excels in visual knowledge, cross-modal reasoning, and agentic tool use grounded in visual inputs.
 - **Coding with Vision**: K2.5 generates code from visual specifications (UI designs, video workflows) and autonomously orchestrates tools for visual data processing.
 - **Agent Swarm**: K2.5 transitions from single-agent scaling to a self-directed, coordinated swarm-like execution scheme. It decomposes complex tasks into parallel sub-tasks executed by dynamically instantiated, domain-specific agents.
+- **Speculative Decoding**: EAGLE-based speculative decoding support for lower latency.
+
+**Available Models**:
+- INT4 (Initial Released): [moonshotai/Kimi-K2.5](https://huggingface.co/moonshotai/Kimi-K2.5)
+- NVFP4 (4-bit quantized): [nvidia/Kimi-K2.5-NVFP4](https://huggingface.co/nvidia/Kimi-K2.5-NVFP4)
 
 For details, see [official documentation](https://huggingface.co/moonshotai/Kimi-K2.5) and [deployment guidance](https://huggingface.co/moonshotai/Kimi-K2.5/blob/main/docs/deploy_guidance.md).
 
@@ -36,6 +41,45 @@ import KimiK25ConfigGenerator from '@site/src/components/autoregressive/KimiK25C
 - **Tool Call Parser**: Add `--tool-call-parser kimi_k2` for structured tool calls.
 
 ## 4. Model Invocation
+
+**Nvidia**
+
+Deploy Kimi-K2.5 with the following command (H200/B200, all features enabled):
+
+```shell
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path nvidia/Kimi-K2.5 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+Deploy Kimi-K2.5-NVFP4 with the following command (B200, all features enabled):
+
+```shell
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path nvidia/Kimi-K2.5-NVFP4 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --speculative-algorithm=EAGLE3 \
+  --kv-cache-dtype fp8_e4m3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
+```
 
 ### 4.1 Basic Usage
 
@@ -499,18 +543,27 @@ Overall accuracy: 0.698
 - Hardware: NVIDIA H200 GPU (8x)
 - Model: Kimi-K2.5
 - Tensor Parallelism: 8
-- SGLang Version: 0.5.6.post2
+- SGLang Version: 0.5.10
 
 We use SGLang's built-in benchmarking tool with the `random` dataset for standardized performance evaluation.
 
 #### 5.2.1 Latency Benchmark
 
+**All benchmark results are pending update.**
+
 - **Model Deployment:**
 
 ```bash
-sglang serve \
-  --model-path moonshotai/Kimi-K2.5 \
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path nvidia/Kimi-K2.5 \
   --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
   --trust-remote-code \
   --host 0.0.0.0 \
   --port 30000
