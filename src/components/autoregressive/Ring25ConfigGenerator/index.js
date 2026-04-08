@@ -7,8 +7,8 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  * with FP8 quantization, reasoning parser, and tool calling
  *
  * GPU requirements:
- *   H200: tp=8
- *   B200: tp=8
+ *   H200 / B200 / GB200 / GB300 / MI355X: single-node (tp per platform; MI355X has enough memory)
+ *   MI300X / MI325X: two nodes, tp-size 8, pp-size 2 (see generated scripts)
  */
 const Ring25ConfigGenerator = () => {
   const config = {
@@ -22,7 +22,10 @@ const Ring25ConfigGenerator = () => {
           { id: 'h200', label: 'H200', default: true },
           { id: 'b200', label: 'B200', default: false },
           { id: 'gb200', label: 'GB200', default: false },
-          { id: 'gb300', label: 'GB300', default: false }
+          { id: 'gb300', label: 'GB300', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       reasoning: {
@@ -49,22 +52,82 @@ const Ring25ConfigGenerator = () => {
       h200: { fp8: { tp: 8 } },
       b200: { fp8: { tp: 8 } },
       gb200: { fp8: { tp: 4 } },
-      gb300: { fp8: { tp: 4 } }
+      gb300: { fp8: { tp: 4 } },
+      mi300x: { fp8: { tp: 8, pp: 2, nnodes: 2 } },
+      mi325x: { fp8: { tp: 8, pp: 2, nnodes: 2 } },
+      mi355x: { fp8: { tp: 8 } }
     },
 
     generateCommand: function (values) {
       const { hardware } = values;
 
       const modelName = `${this.modelFamily}/Ring-2.5-1T`;
+      const amdMultiNode = hardware === 'mi300x' || hardware === 'mi325x';
+
+      if (amdMultiNode) {
+        const hwConfig = this.modelConfigs[hardware].fp8;
+        const tpSize = hwConfig.tp;
+        const ppSize = hwConfig.pp;
+
+        const extraFlags = [];
+        Object.entries(this.options).forEach(([key, option]) => {
+          if (option.commandRule) {
+            const rule = option.commandRule(values[key]);
+            if (rule) {
+              extraFlags.push(rule);
+            }
+          }
+        });
+
+        const buildAmdNodeCmd = (nodeRank) => {
+          let cmd = 'sglang serve \\\n';
+          cmd += `--model-path ${modelName} \\\n`;
+          cmd += '--trust-remote-code \\\n';
+          cmd += `--tp-size ${tpSize} \\\n`;
+          cmd += `--pp-size ${ppSize} \\\n`;
+          cmd += `--nnodes ${hwConfig.nnodes} \\\n`;
+          cmd += `--node-rank ${nodeRank} \\\n`;
+          if (nodeRank === 0) {
+            cmd += '--host 0.0.0.0 \\\n';
+            cmd += '--port 30000 \\\n';
+          }
+          cmd += '--dist-init-addr ${MASTER_IP}:${DIST_PORT} \\\n';
+          cmd += '--attention-backend triton \\\n';
+          cmd += '--model-loader-extra-config \'{"enable_multithread_load": "true","num_threads": 64}\' \\\n';
+          cmd += '--mem-frac 0.95';
+          extraFlags.forEach((flag) => {
+            cmd += ` \\\n${flag}`;
+          });
+          return cmd;
+        };
+
+        const envBlock =
+          'export MASTER_IP=<your-node0-ip> # Replace with the IP of Node 0\n' +
+          'export PORT=30000\n' +
+          'export DIST_PORT=20000\n' +
+          '# Replace <nic-ifname> with your actual NIC interface name\n' +
+          'export GLOO_SOCKET_IFNAME=<nic-ifname>\n' +
+          'export TP_SOCKET_IFNAME=<nic-ifname>\n';
+
+        let out = envBlock + '\n';
+
+        out += '\n# Node 0:\n';
+        out += buildAmdNodeCmd(0);
+
+        out += '\n\n\n# Node 1:\n';
+        out += buildAmdNodeCmd(1);
+
+        return out;
+      }
+
       const hwConfig = this.modelConfigs[hardware].fp8;
       const tpValue = hwConfig.tp;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
       cmd += ' \\\n  --trust-remote-code';
 
-      // Apply commandRule from all options
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule) {
           const rule = option.commandRule(values[key]);
