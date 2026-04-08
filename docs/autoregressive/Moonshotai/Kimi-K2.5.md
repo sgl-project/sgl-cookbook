@@ -42,45 +42,6 @@ import KimiK25ConfigGenerator from '@site/src/components/autoregressive/KimiK25C
 
 ## 4. Model Invocation
 
-**Nvidia**
-
-Deploy Kimi-K2.5 with the following command (H200/B200, all features enabled):
-
-```shell
-SGLANG_ENABLE_SPEC_V2=1 sglang serve \
-  --model-path nvidia/Kimi-K2.5 \
-  --tp 8 \
-  --reasoning-parser kimi_k2 \
-  --tool-call-parser kimi_k2 \
-  --speculative-algorithm=EAGLE3 \
-  --speculative-num-steps 3 \
-  --speculative-eagle-topk 1 \
-  --speculative-num-draft-tokens 4 \
-  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
-  --trust-remote-code \
-  --host 0.0.0.0 \
-  --port 30000
-```
-
-Deploy Kimi-K2.5-NVFP4 with the following command (B200, all features enabled):
-
-```shell
-SGLANG_ENABLE_SPEC_V2=1 sglang serve \
-  --model-path nvidia/Kimi-K2.5-NVFP4 \
-  --tp 8 \
-  --reasoning-parser kimi_k2 \
-  --tool-call-parser kimi_k2 \
-  --speculative-algorithm=EAGLE3 \
-  --kv-cache-dtype fp8_e4m3 \
-  --speculative-num-steps 3 \
-  --speculative-eagle-topk 1 \
-  --speculative-num-draft-tokens 4 \
-  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
-  --trust-remote-code \
-  --host 0.0.0.0 \
-  --port 30000
-```
-
 ### 4.1 Basic Usage
 
 See [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html).
@@ -471,6 +432,47 @@ Let me search for this product and similar items:
   Arguments: {"query": "Auntie Anne's Cinnamon Sugar Pretzel"}
 ```
 
+#### 4.2.5 Speculative Decoding
+
+**Nvidia**
+
+Deploy Kimi-K2.5 with the following command (H200/B200, all features enabled):
+
+```shell
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path moonshotai/Kimi-K2.5 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+Deploy Kimi-K2.5-NVFP4 with the following command (B200, all features enabled):
+
+```shell
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path nvidia/Kimi-K2.5-NVFP4 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --kv-cache-dtype fp8_e4m3 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
 ## 5. Benchmark
 
 ### 5.1 Accuracy Benchmark
@@ -543,27 +545,18 @@ Overall accuracy: 0.698
 - Hardware: NVIDIA H200 GPU (8x)
 - Model: Kimi-K2.5
 - Tensor Parallelism: 8
-- SGLang Version: 0.5.10
+- SGLang Version: 0.5.6.post2
 
 We use SGLang's built-in benchmarking tool with the `random` dataset for standardized performance evaluation.
 
 #### 5.2.1 Latency Benchmark
 
-**All benchmark results are pending update.**
-
 - **Model Deployment:**
 
 ```bash
-SGLANG_ENABLE_SPEC_V2=1 sglang serve \
-  --model-path nvidia/Kimi-K2.5 \
+sglang serve \
+  --model-path moonshotai/Kimi-K2.5 \
   --tp 8 \
-  --reasoning-parser kimi_k2 \
-  --tool-call-parser kimi_k2 \
-  --speculative-algorithm=EAGLE3 \
-  --speculative-num-steps 3 \
-  --speculative-eagle-topk 1 \
-  --speculative-num-draft-tokens 4 \
-  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
   --trust-remote-code \
   --host 0.0.0.0 \
   --port 30000
@@ -1025,6 +1018,82 @@ P95 ITL (ms):                            1869.15
 P99 ITL (ms):                            2708.95
 Max ITL (ms):                            7778.47
 ==================================================
+```
+
+#### 5.2.2 Speculative Decoding Benchmark
+
+- **Model Deployment:**
+
+```bash
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path moonshotai/Kimi-K2.5 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+- **Benchmark Command:**
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --request-rate inf
+```
+
+- **Results:**
+
+```
+Pending update...
+```
+
+- Medium Concurrency (Balanced)
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
+```
+
+```
+Pending update...
+```
+
+- High Concurrency (Throughput-Optimized)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100 \
+  --request-rate inf
+```
+
+```
+Pending update...
 ```
 
 ### 5.3 Speed Benchmark (AMD MI350X)
