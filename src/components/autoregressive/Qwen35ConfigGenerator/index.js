@@ -281,7 +281,6 @@ const Qwen35ConfigGenerator = () => {
           cmd += ` \\\n  --chunked-prefill-size 16384`;
           cmd += ` \\\n  --tokenizer-worker-num 6`;
         }
-        cmd += ` \\\n  --disable-radix-cache`;
       }
 
       // Enable allreduce fusion for all Qwen3.5 configs.
