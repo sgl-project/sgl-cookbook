@@ -127,10 +127,9 @@ const MiniMaxM25ConfigGenerator = () => {
         cmd += ` \\\n  --attention-backend triton`;
       }
 
-      // Add B200-specific configurations (FP8 KV cache, disable radix cache)
+      // Add B200-specific configurations (FP8 KV cache)
       if (isB200) {
         cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
-        cmd += ` \\\n  --disable-radix-cache`;
       }
 
       return cmd;
