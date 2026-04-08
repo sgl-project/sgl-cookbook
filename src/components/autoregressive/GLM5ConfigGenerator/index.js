@@ -110,11 +110,6 @@ const GLM5ConfigGenerator = () => {
       // TP setting
       cmd += ` \\\n  --tp ${tpValue}`;
 
-      // B200 FP8: ep=1
-      if (hardware === 'b200' && effectiveQuant === 'fp8') {
-        cmd += ' \\\n  --ep 1';
-      }
-
       // AMD-specific: NSA tilelang backend and weight loading config
       if (isAMD) {
         cmd += ' \\\n  --trust-remote-code';
@@ -139,8 +134,9 @@ const GLM5ConfigGenerator = () => {
         }
       });
 
-      // B200 FP8: quantization and optimized backends
+      // B200 FP8: all optimized flags consolidated
       if (hardware === 'b200' && effectiveQuant === 'fp8') {
+        cmd += ' \\\n  --ep 1';
         cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
         cmd += ' \\\n  --quantization fp8';
         cmd += ' \\\n  --attention-backend nsa';
