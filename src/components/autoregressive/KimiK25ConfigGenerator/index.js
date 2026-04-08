@@ -153,8 +153,8 @@ const KimiK25ConfigGenerator = () => {
         }
       });
 
-      // FP8 KV cache: required for AMD (memory) and for NVFP4 model
-      if (isAMD || quantization === 'nvfp4') {
+      // FP8 KV cache: AMD (memory efficiency) and speculative decoding
+      if (isAMD || speculative === 'enabled') {
         cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
       }
 
