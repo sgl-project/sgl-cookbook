@@ -82,6 +82,10 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 | MI300X/MI325X | — | tp=8 |
 | MI355X   | — | tp=8 |
 
+:::caution FP8 Accuracy
+FP8 quantization (`--quantization fp8`, `--kv-cache-dtype fp8_e4m3`) reduces memory usage and improves throughput but may cause a slight accuracy drop compared to BF16. Evaluate on your target task before deploying in accuracy-sensitive applications.
+:::
+
 - **B200 (FP8)**: Use `--ep 1 --attention-backend nsa --nsa-decode-backend trtllm --nsa-prefill-backend trtllm --moe-runner-backend flashinfer_trtllm --enable-flashinfer-allreduce-fusion` for optimized NSA and MoE backends on Blackwell. Also add `--kv-cache-dtype fp8_e4m3 --quantization fp8` for FP8 KV cache and weight quantization.
 
 - **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.
@@ -91,7 +95,7 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 Deploy GLM-5 with the following command (FP8 on H200, all features enabled):
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model zai-org/GLM-5-FP8 \
   --tp 8 \
   --tool-call-parser glm47 \
@@ -110,7 +114,7 @@ python -m sglang.launch_server \
 The following ROCm command is an additional option for AMD GPUs and does not replace the NVIDIA instructions above.
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model zai-org/GLM-5 \
   --tp 8 \
   --trust-remote-code \
