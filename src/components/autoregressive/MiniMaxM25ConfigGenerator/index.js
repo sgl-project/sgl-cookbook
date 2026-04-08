@@ -28,14 +28,15 @@ const MiniMaxM25ConfigGenerator = () => {
         title: 'GPU Count',
         getDynamicItems: (values) => {
           const isAMD = values.hardware === 'mi300x' || values.hardware === 'mi325x' || values.hardware === 'mi355x';
+          const isB200 = values.hardware === 'b200';
 
-          // Show 2 GPU option for all hardware, but only enabled for AMD GPUs
+          // Show 2 GPU option for all hardware, but only enabled for AMD GPUs and B200
           return [
             {
               id: '2gpu',
               label: '2',
               default: isAMD,  // Default for all AMD GPUs
-              disabled: !isAMD  // Only enabled for AMD GPUs
+              disabled: !isAMD && !isB200  // Only enabled for AMD GPUs and B200
             },
             {
               id: '4gpu',
@@ -75,10 +76,12 @@ const MiniMaxM25ConfigGenerator = () => {
     generateCommand: function (values) {
       const { hardware, gpuCount, thinking, toolcall } = values;
 
-      // Validate 2-GPU configuration (only AMD supports 2 GPUs)
       const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x';
-      if (gpuCount === '2gpu' && !isAMD) {
-        return '# Please select compatible hardware\n# 2-GPU requires AMD MI300X/MI325X/MI355X';
+      const isB200 = hardware === 'b200';
+
+      // Validate 2-GPU configuration (only AMD and B200 support 2 GPUs)
+      if (gpuCount === '2gpu' && !isAMD && !isB200) {
+        return '# Please select compatible hardware\n# 2-GPU requires AMD MI300X/MI325X/MI355X or B200';
       }
 
       const modelName = `${this.modelFamily}/MiniMax-M2.5`;
@@ -88,21 +91,19 @@ const MiniMaxM25ConfigGenerator = () => {
       cmd += `  --model-path ${modelName}`;
 
       // TP and EP size based on GPU count
-      // NVIDIA: EP only for 8-GPU configuration
-      // AMD: EP=TP for all configurations
+      // NVIDIA (non-B200): EP only for 8-GPU configuration
+      // B200 and AMD: EP=TP for all configurations
       if (gpuCount === '8gpu') {
         cmd += ` \\\n  --tp 8`;
         cmd += ` \\\n  --ep 8`;
       } else if (gpuCount === '4gpu') {
         cmd += ` \\\n  --tp 4`;
-        // Only add EP for AMD GPUs
-        if (isAMD) {
+        if (isAMD || isB200) {
           cmd += ` \\\n  --ep 4`;
         }
       } else if (gpuCount === '2gpu') {
         cmd += ` \\\n  --tp 2`;
-        // Only add EP for AMD GPUs (MI355X only supports 2 GPU)
-        if (isAMD) {
+        if (isAMD || isB200) {
           cmd += ` \\\n  --ep 2`;
         }
       }
@@ -124,6 +125,12 @@ const MiniMaxM25ConfigGenerator = () => {
       if (isAMD) {
         cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
         cmd += ` \\\n  --attention-backend triton`;
+      }
+
+      // Add B200-specific configurations (FP8 KV cache, disable radix cache)
+      if (isB200) {
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
+        cmd += ` \\\n  --disable-radix-cache`;
       }
 
       return cmd;
