@@ -39,10 +39,10 @@ import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51Confi
 | H200     | tp=8  | tp=16 |
 | B200     | tp=8  | tp=16 |
 | GB300    | tp=4  | —     |
-| MI300X/MI325X | — | tp=8 |
-| MI355X   | — | tp=8 |
+| MI300X/MI325X | tp=8 | tp=8 |
+| MI355X   | tp=8 | tp=8 |
 
-- **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.1.
+- **AMD GPUs**: Both BF16 and FP8 checkpoints are supported on MI300X/MI325X/MI355X at tp=8. Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). FP8 uses approximately half the memory of BF16 (~89 GB/GPU vs ~175 GB/GPU). EAGLE speculative decoding is not currently supported on AMD for GLM-5.1.
 - **GB300**: Only the FP8 checkpoint is recommended on GB300, with `tp=4`. For high-throughput DP attention on GB300, use `--dp 4`.
 - For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5.1 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
 - Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5.1-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
@@ -68,7 +68,27 @@ SGLANG_ENABLE_SPEC_V2=1 sglang serve \
 
 ### 4.1 MI300X/MI325X/MI355X (ROCm) Server Command
 
-The following ROCm command is an additional option for AMD GPUs and does not replace the NVIDIA instructions above.
+The following ROCm commands are additional options for AMD GPUs and do not replace the NVIDIA instructions above.
+
+#### FP8 (Recommended)
+
+```shell
+sglang serve \
+  --model-path zai-org/GLM-5.1-FP8 \
+  --tp 8 \
+  --trust-remote-code \
+  --tool-call-parser glm47 \
+  --reasoning-parser glm45 \
+  --nsa-prefill-backend tilelang \
+  --nsa-decode-backend tilelang \
+  --chunked-prefill-size 131072 \
+  --mem-fraction-static 0.80 \
+  --watchdog-timeout 1200 \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+#### BF16
 
 ```shell
 sglang serve \
