@@ -19,6 +19,16 @@ SGLang offers multiple installation methods. You can choose the most suitable in
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
+**For AMD MI300X/MI325X/MI355X GPUs:**
+
+```bash
+# Docker (AMD MI300X/MI325X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
+
+# Docker (AMD MI355X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi35x
+```
+
 ## 3. Model Deployment
 
 This section provides deployment configurations optimized for different hardware platforms and use cases.
@@ -41,13 +51,21 @@ import MiniMaxM25ConfigGenerator from '@site/src/components/autoregressive/MiniM
 | `--reasoning-parser`        | Reasoning parser for thinking mode              | `minimax-append-think`          |
 | `--trust-remote-code`       | Required for MiniMax model loading              | Always enabled                   |
 | `--mem-fraction-static`     | Static memory fraction for KV cache             | `0.85`                          |
-| `--tp-size`                 | Tensor parallelism size                         | `4` (4-GPU) or `8` (8-GPU)     |
-| `--ep-size`                 | Expert parallelism size                         | `8` (for 8-GPU deployment)      |
+| `--tp`                      | Tensor parallelism size                         | `2` (2-GPU) or `4` (4-GPU) or `8` (8-GPU)      |
+| `--ep`                      | Expert parallelism size                         | `8` (NVIDIA 8-GPU) or EP=TP (AMD)              |
+| `--kv-cache-dtype`          | KV cache data type (AMD only)                   | `fp8_e4m3`                      |
+| `--attention-backend`       | Attention backend (AMD only)                    | `triton`                        |
 
-**Hardware Requirements:**
+**Hardware Requirements: NVIDIA**
 
 - **4-GPU deployment**: Requires 4× high-memory GPUs (e.g., H200, B200, A100, H100) with TP=4
 - **8-GPU deployment**: Requires 8× GPUs (e.g., H200, B200, A100, H100) with TP=8 and EP=8
+
+**Hardware Requirements: AMD**
+
+- **2-GPU deployment**: Requires 2× high-memory GPUs (e.g., MI300X, MI325X, MI355X) with TP=2, EP=2
+- **4-GPU deployment**: Requires 4× GPUs (e.g., MI300X, MI325X, MI355X) with TP=4, EP=4
+- **8-GPU deployment**: Requires 8× GPUs (e.g., MI300X, MI325X, MI355X) with TP=8, EP=8
 
 ## 4. Model Invocation
 
@@ -120,7 +138,7 @@ MiniMax-M2.5 supports Thinking mode. Enable the reasoning parser during deployme
 ```shell
 python -m sglang.launch_server \
   --model-path MiniMaxAI/MiniMax-M2.5 \
-  --tp-size 4 \
+  --tp 4 \
   --reasoning-parser minimax-append-think \
   --trust-remote-code \
   --mem-fraction-static 0.85
@@ -246,7 +264,7 @@ MiniMax-M2.5 supports tool calling capabilities. Enable the tool call parser:
 ```shell
 python -m sglang.launch_server \
   --model-path MiniMaxAI/MiniMax-M2.5 \
-  --tp-size 4 \
+  --tp 4 \
   --tool-call-parser minimax-m2 \
   --reasoning-parser minimax-append-think \
   --trust-remote-code \
@@ -370,7 +388,7 @@ This section uses **industry-standard configurations** for comparable benchmark 
 **Test Environment**:
 
 - Hardware: NVIDIA B200 GPU (8x)
-- Model: Minimax-M2.5
+- Model: MiniMax-M2.5
 - Tensor Parallelism: 8
 - Expert Parallelism: 8
 - sglang version: 0.5.8
@@ -378,7 +396,7 @@ This section uses **industry-standard configurations** for comparable benchmark 
 #### 5.1.1 Standard Scenario Benchmark
 - Model Deployment Command:
 ```
-python3 -m sglang.bench_serving \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2.5 \
     --tp 8 \
     --ep 8 \
@@ -546,7 +564,7 @@ Max ITL (ms):                            1145.62
 #### 5.1.2 Summarization Scenario Benchmark
 - Model Deployment Command:
 ```
-python3 -m sglang.bench_serving \
+sglang serve \
     --model-path MiniMaxAI/MiniMax-M2.5 \
     --tp 8 \
     --ep 8 \
@@ -709,6 +727,184 @@ Median ITL (ms):                         21.59
 P95 ITL (ms):                            101.35
 P99 ITL (ms):                            136.74
 Max ITL (ms):                            4649.23
+==================================================
+```
+
+#### 5.1.3 H100 Benchmark
+
+**Test Environment**:
+
+- Hardware: NVIDIA H100 80GB HBM3 GPU (8x)
+- Model: MiniMax-M2.5
+- Tensor Parallelism: 8
+- Expert Parallelism: 8
+- sglang version: 0.5.9
+
+- Model Deployment Command:
+```
+sglang serve \
+    --model-path MiniMaxAI/MiniMax-M2.5 \
+    --tp 8 \
+    --ep 8 \
+    --reasoning-parser minimax-append-think \
+    --trust-remote-code \
+    --mem-fraction-static 0.85 \
+    --tool-call-parser minimax-m2
+```
+##### 5.1.3.1 Low Concurrency
+- Benchmark Command:
+```
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1
+```
+- Test Results:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  35.44
+Total input tokens:                      6101
+Total input text tokens:                 6101
+Total generated tokens:                  4220
+Total generated tokens (retokenized):    4220
+Request throughput (req/s):              0.28
+Input token throughput (tok/s):          172.16
+Output token throughput (tok/s):         119.08
+Peak output token throughput (tok/s):    127.00
+Peak concurrent requests:                2
+Total token throughput (tok/s):          291.24
+Concurrency:                             1.00
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   3542.38
+Median E2E Latency (ms):                 2791.92
+P90 E2E Latency (ms):                    6317.77
+P99 E2E Latency (ms):                    7780.15
+---------------Time to First Token----------------
+Mean TTFT (ms):                          145.20
+Median TTFT (ms):                        80.38
+P99 TTFT (ms):                           633.08
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          8.05
+Median TPOT (ms):                        8.08
+P99 TPOT (ms):                           8.09
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           8.07
+Median ITL (ms):                         8.08
+P95 ITL (ms):                            8.12
+P99 ITL (ms):                            8.16
+Max ITL (ms):                            10.10
+==================================================
+```
+##### 5.1.3.2 Medium Concurrency
+- Benchmark Command:
+```
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16
+```
+- Test Results:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 16
+Successful requests:                     80
+Benchmark duration (s):                  43.68
+Total input tokens:                      39668
+Total input text tokens:                 39668
+Total generated tokens:                  40805
+Total generated tokens (retokenized):    40805
+Request throughput (req/s):              1.83
+Input token throughput (tok/s):          908.19
+Output token throughput (tok/s):         934.22
+Peak output token throughput (tok/s):    1184.00
+Peak concurrent requests:                20
+Total token throughput (tok/s):          1842.42
+Concurrency:                             13.83
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   7551.91
+Median E2E Latency (ms):                 8094.28
+P90 E2E Latency (ms):                    12606.99
+P99 E2E Latency (ms):                    14977.84
+---------------Time to First Token----------------
+Mean TTFT (ms):                          116.86
+Median TTFT (ms):                        82.33
+P99 TTFT (ms):                           240.59
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          14.81
+Median TPOT (ms):                        14.98
+P99 TPOT (ms):                           17.98
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           14.61
+Median ITL (ms):                         13.50
+P95 ITL (ms):                            14.15
+P99 ITL (ms):                            66.52
+Max ITL (ms):                            107.39
+==================================================
+```
+##### 5.1.3.3 High Concurrency
+- Benchmark Command:
+```
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model MiniMaxAI/MiniMax-M2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100
+```
+- Test Results:
+```
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  80.63
+Total input tokens:                      249831
+Total input text tokens:                 249831
+Total generated tokens:                  252662
+Total generated tokens (retokenized):    252331
+Request throughput (req/s):              6.20
+Input token throughput (tok/s):          3098.45
+Output token throughput (tok/s):         3133.56
+Peak output token throughput (tok/s):    4800.00
+Peak concurrent requests:                113
+Total token throughput (tok/s):          6232.01
+Concurrency:                             90.56
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   14604.59
+Median E2E Latency (ms):                 14044.04
+P90 E2E Latency (ms):                    26456.53
+P99 E2E Latency (ms):                    30136.68
+---------------Time to First Token----------------
+Mean TTFT (ms):                          149.32
+Median TTFT (ms):                        95.16
+P99 TTFT (ms):                           374.62
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          28.92
+Median TPOT (ms):                        30.09
+P99 TPOT (ms):                           34.31
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           28.66
+Median ITL (ms):                         21.52
+P95 ITL (ms):                            66.90
+P99 ITL (ms):                            96.76
+Max ITL (ms):                            376.34
 ==================================================
 ```
 

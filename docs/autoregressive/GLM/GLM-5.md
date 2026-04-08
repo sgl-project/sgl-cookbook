@@ -23,36 +23,7 @@ With advances in both pre-training (28.5T tokens) and post-training via [slime](
 
 ## 2. SGLang Installation
 
-SGLang offers multiple installation methods. You can choose the most suitable installation method based on your hardware platform and requirements.
-
-GLM-5 requires a specific SGLang Docker image or install from source:
-
-```bash
-# For Hopper GPUs (H100/H200)
-docker pull lmsysorg/sglang:glm5-hopper
-
-# For Blackwell GPUs (B200)
-docker pull lmsysorg/sglang:glm5-blackwell
-
-# For AMD MI300X/MI308/MI325X GPUs (gfx942)
-docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi30x-20260219 # this version or newer
-
-# For AMD MI350/MI355 GPUs (gfx950)
-docker pull rocm/sgl-dev:v0.5.8.post1-rocm720-mi35x-20260219 # this version or newer
-```
-
-For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
-
-:::note Blackwell (B200) Source Build
-If you build SGLang from source on Blackwell GPUs, you need to manually compile `sgl-kernel` due to existing kernel issues (Hopper GPUs are unaffected). See [sglang#18595](https://github.com/sgl-project/sglang/issues/18595) for details.
-:::
-
-:::note AMD GPU Transformers Dependency
-GLM-5 requires the latest transformers for the `glm_moe_dsa` architecture. Install from source:
-```bash
-pip install git+https://github.com/huggingface/transformers.git
-```
-:::
+Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
 ## 3. Model Deployment
 
@@ -89,6 +60,8 @@ FP8 quantization (`--quantization fp8`, `--kv-cache-dtype fp8_e4m3`) reduces mem
 - **B200 (FP8)**: Use `--ep 1 --attention-backend nsa --nsa-decode-backend trtllm --nsa-prefill-backend trtllm --moe-runner-backend flashinfer_trtllm --enable-flashinfer-allreduce-fusion` for optimized NSA and MoE backends on Blackwell. Also add `--kv-cache-dtype fp8_e4m3 --quantization fp8` for FP8 KV cache and weight quantization.
 
 - **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.
+- For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
+- Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
 
 ## 4. Model Invocation
 

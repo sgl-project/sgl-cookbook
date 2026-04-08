@@ -1,0 +1,38 @@
+# Kimi-K2.5 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/kimi-k25.yaml
+
+vendor: moonshotai
+
+defaults:
+  hardware:
+    H200: { tp: 8 }
+    B300: { tp: 8 }
+    MI300X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
+    MI325X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
+    MI350X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
+    MI355X: { tp: 4, extra_args: ["--kv-cache-dtype", "fp8_e4m3"] }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+      extra_args:
+        - --trust-remote-code
+    - name: high-throughput-dp
+      nodes: single
+      optimization: high-throughput
+      dp: 8
+      enable_dp_attention: true
+      extra_args:
+        - --trust-remote-code
+
+families:
+  - name: Kimi-K2.5
+    description: Kimi-K2.5 native multimodal agentic model with thinking and instant modes
+    llm:
+      tool_parser: kimi_k2
+      reasoning_parser: kimi_k2
+
+    models:
+      - name: Kimi-K2.5
+        llm:
+          thinking_capability: hybrid

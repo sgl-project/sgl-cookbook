@@ -1,0 +1,204 @@
+vendor: stepfun-ai
+families:
+- name: Step-3.5-Flash
+  description: StepFun Step-3.5-Flash production-grade reasoning engine with hybrid SWA/GA attention and 288-expert MoE (196B
+    total, 11B active)
+  models:
+  - name: Step-3.5-Flash
+    model_path: stepfun-ai/Step-3.5-Flash
+    attributes:
+      llm:
+        thinking_capability: thinking
+        tool_parser: step3p5
+        reasoning_parser: step3p5
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI300X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI325X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI350X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI355X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+  - name: Step-3.5-Flash-FP8
+    model_path: stepfun-ai/Step-3.5-Flash-FP8
+    attributes:
+      llm:
+        thinking_capability: thinking
+        tool_parser: step3p5
+        reasoning_parser: step3p5
+        chat_template: null
+    hardware:
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI300X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI325X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI350X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
+      MI355X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: 4
+            enable_dp_attention: null
+            extra_args:
+            - --trust-remote-code
+          prefill: null
+          decode: null
