@@ -1,0 +1,275 @@
+vendor: mistralai
+families:
+- name: Mistral-Small-4
+  description: Mistral Small 4 119B MoE (128 experts, 4 active) with hybrid reasoning, vision, and tool calling
+  models:
+  - name: Mistral-Small-4-119B-2603
+    model_path: mistralai/Mistral-Small-4-119B-2603
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: mistral
+        reasoning_parser: mistral
+        chat_template: null
+    hardware:
+      H100:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-draft-model-path
+            - mistralai/Mistral-Small-4-119B-2603-eagle
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      H200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-draft-model-path
+            - mistralai/Mistral-Small-4-119B-2603-eagle
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-draft-model-path
+            - mistralai/Mistral-Small-4-119B-2603-eagle
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      B300:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-draft-model-path
+            - mistralai/Mistral-Small-4-119B-2603-eagle
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+  - name: Mistral-Small-4-119B-2603-NVFP4
+    model_path: mistralai/Mistral-Small-4-119B-2603-NVFP4
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: mistral
+        reasoning_parser: mistral
+        chat_template: null
+    hardware:
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-draft-model-path
+            - mistralai/Mistral-Small-4-119B-2603-eagle
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
+      B300:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-eagle
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 1
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-draft-model-path
+            - mistralai/Mistral-Small-4-119B-2603-eagle
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null

@@ -17,9 +17,16 @@ Qwen3.5 features a Gated Delta Networks combined with sparse Mixture-of-Experts 
 
 **Available Models:**
 
-- **BF16 (Full precision)**: [Qwen/Qwen3.5-397B-A17B](https://huggingface.co/Qwen/Qwen3.5-397B-A17B)
-- **FP8 (8-bit Quantized)**: [Qwen/Qwen3.5-397B-A17B-FP8](https://huggingface.co/Qwen/Qwen3.5-397B-A17B-FP8)
-- **FP4 (4-bit Quantized)**: [nvidia/Qwen3.5-397B-A17B-NVFP4](https://huggingface.co/nvidia/Qwen3.5-397B-A17B-NVFP4)
+| Model | BF16 (Full precision) | FP8 (8-bit Quantized) | FP4 (4-bit Quantized) |
+|-------|------|-----|-----|
+| Qwen3.5-397B-A17B | [Qwen/Qwen3.5-397B-A17B](https://huggingface.co/Qwen/Qwen3.5-397B-A17B) | [Qwen/Qwen3.5-397B-A17B-FP8](https://huggingface.co/Qwen/Qwen3.5-397B-A17B-FP8) | [nvidia/Qwen3.5-397B-A17B-NVFP4](https://huggingface.co/nvidia/Qwen3.5-397B-A17B-NVFP4) |
+| Qwen3.5-122B-A10B | [Qwen/Qwen3.5-122B-A10B](https://huggingface.co/Qwen/Qwen3.5-122B-A10B) | [Qwen/Qwen3.5-122B-A10B-FP8](https://huggingface.co/Qwen/Qwen3.5-122B-A10B-FP8) | - |
+| Qwen3.5-35B-A3B | [Qwen/Qwen3.5-35B-A3B](https://huggingface.co/Qwen/Qwen3.5-35B-A3B) | [Qwen/Qwen3.5-35B-A3B-FP8](https://huggingface.co/Qwen/Qwen3.5-35B-A3B-FP8) | - |
+| Qwen3.5-27B | [Qwen/Qwen3.5-27B](https://huggingface.co/Qwen/Qwen3.5-27B) | [Qwen/Qwen3.5-27B-FP8](https://huggingface.co/Qwen/Qwen3.5-27B-FP8) | - |
+| Qwen3.5-9B | [Qwen/Qwen3.5-9B](https://huggingface.co/Qwen/Qwen3.5-9B) | - | - |
+| Qwen3.5-4B | [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) | - | - |
+| Qwen3.5-2B | [Qwen/Qwen3.5-2B](https://huggingface.co/Qwen/Qwen3.5-2B) | - | - |
+| Qwen3.5-0.8B | [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B) | - | - |
 
 **License:** Apache 2.0
 
@@ -31,8 +38,14 @@ SGLang from the main branch is required for Qwen3.5. You can install from source
 # Install from source
 uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=python'
 
-# Or use Docker
+# Or use Docker (NVIDIA GPUs)
 docker pull lmsysorg/sglang:nightly-dev-20260216-d3bae71e
+
+# Or use Docker (AMD MI300X/MI325X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
+
+# Or use Docker (AMD MI355X)
+docker pull lmsysorg/sglang:v0.5.9-rocm720-mi35x
 ```
 
 For the full Docker setup and other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -53,13 +66,14 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 
 - Speculative decoding (MTP) can significantly reduce latency for interactive use cases.
 - **Mamba Radix Cache**: Qwen3.5's hybrid Gated Delta Networks architecture supports two mamba scheduling strategies via `--mamba-scheduler-strategy`:
-  - **V1 (`no_buffer`)**: Default. No overlap scheduler, lower memory usage.
-  - **V2 (`extra_buffer`)**: Enables overlap scheduling and branching point caching with `--mamba-scheduler-strategy extra_buffer --page-size 64`. Requires FLA kernel backend. Trades higher mamba state memory for better throughput. Strictly superior in non-KV-cache-bound scenarios; in KV-cache-bound cases, weigh the overlap scheduling benefit against reduced max concurrency. `--page-size` must satisfy `FLA_CHUNK_SIZE % page_size == 0` or `page_size % FLA_CHUNK_SIZE == 0` (`FLA_CHUNK_SIZE` is currently 64).
+  - **V1 (`no_buffer`)**: Default. No overlap scheduler, lower memory usage. Required for AMD MI GPUs.
+  - **V2 (`extra_buffer`)**: Enables overlap scheduling and branching point caching with `--mamba-scheduler-strategy extra_buffer --page-size 64`. Requires FLA kernel backend (NVIDIA GPUs only). Trades higher mamba state memory for better throughput. Strictly superior in non-KV-cache-bound scenarios; in KV-cache-bound cases, weigh the overlap scheduling benefit against reduced max concurrency. `--page-size` must satisfy `FLA_CHUNK_SIZE % page_size == 0` or `page_size % FLA_CHUNK_SIZE == 0` (`FLA_CHUNK_SIZE` is currently 64).
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
 - Context length defaults to 262,144 tokens. If you encounter OOM errors, consider reducing it, but maintain at least 128K to preserve thinking capabilities.
 - To speed up weight loading for this large model, add `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'` to the launch command.
 - **CUDA IPC Transport**: Add `SGLANG_USE_CUDA_IPC_TRANSPORT=1` as an environment variable to use CUDA IPC for transferring multimodal features, significantly improving TTFT (Time To First Token). Note: this consumes additional memory proportional to image size, so you may need to lower `--mem-fraction-static` or `--max-running-requests`.
 - **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200/B300.
+- **B200 (FP8)**: Add `--enable-flashinfer-allreduce-fusion` for optimized throughput on Blackwell.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
 - Hardware requirements:
     - **BF16**: ~397B parameters require ~800GB of GPU memory for weights.
@@ -67,11 +81,17 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **H200 (141GB)** runs with tp=8.
         - **B200 (183GB)** runs with tp=8.
         - **B300 (275GB)** runs with tp=4.
+        - **MI300X (192GB)** runs with tp=8.
+        - **MI325X (256GB)** runs with tp=4.
+        - **MI355X (288GB)** runs with tp=4.
     - **FP8**: The FP8 quantized model requires ~400GB for weights, cutting memory in half.
         - **H100 (80GB)** runs with tp=8.
         - **H200 (141GB)** runs with tp=4.
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
+        - **MI300X (192GB)** runs with tp=4.
+        - **MI325X (256GB)** runs with tp=2.
+        - **MI355X (288GB)** runs with tp=2.
     - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
@@ -82,14 +102,19 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 | H200     | 141GB  | 8       | 4      | N/A             |
 | B200     | 183GB  | 8       | 4      | 4               |
 | B300     | 275GB  | 4       | 2      | 2               |
+| MI300X   | 192GB  | 8       | 4      | N/A             |
+| MI325X   | 256GB  | 4       | 2      | N/A             |
+| MI355X   | 288GB  | 4       | 2      | N/A             |
 
 ## 4. Model Invocation
+
+**NVIDIA:**
 
 Deploy Qwen3.5-397B-A17B with the following command (H200, all features enabled):
 
 ```shell
-python -m sglang.launch_server \
-  --model Qwen/Qwen3.5-397B-A17B \
+sglang serve \
+  --model-path Qwen/Qwen3.5-397B-A17B \
   --tp 8 \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3_coder \
@@ -101,6 +126,23 @@ python -m sglang.launch_server \
   --host 0.0.0.0 \
   --port 30000
 ```
+
+**AMD:**
+
+Deploy Qwen3.5-397B-A17B with the following command (MI300X/MI325X/MI355X):
+
+```shell
+sglang serve \
+  --model-path Qwen/Qwen3.5-397B-A17B \
+  --tp 8 \
+  --reasoning-parser qwen3 \
+  --tool-call-parser qwen3_coder \
+  --mem-fraction-static 0.8 \
+  --attention-backend triton \
+  --host 0.0.0.0 \
+  --port 30000
+```
+> **Note:** TP8 works on all MI GPUs. For MI325X/MI355X, you can use --tp 4 as the minimum requirement.
 
 ### 4.1 Basic Usage
 

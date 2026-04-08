@@ -1,5 +1,5 @@
 # Intern-S1 Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/intern-s1.yaml
+# This file is compiled to data/models/generated/v0.5.6/intern-s1.yaml
 
 vendor: internlm
 

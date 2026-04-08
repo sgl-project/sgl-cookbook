@@ -1,0 +1,34 @@
+# DeepSeek-Math-V2 Model Configurations
+# This file is compiled to data/models/generated/deepseek-math-v2.yaml
+#
+# GPU requirements:
+#   B200 (183GB): BF16 tp=8
+#   B300 (275GB): BF16 tp=8
+
+vendor: deepseek-ai
+
+defaults:
+  hardware:
+    B200: { tp: 8 }
+    B300: { tp: 8 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+    - name: high-throughput-dp
+      nodes: single
+      optimization: high-throughput
+      dp: 8
+      enable_dp_attention: true
+
+families:
+  - name: DeepSeek-Math-V2
+    description: DeepSeek-Math-V2 mathematical reasoning model with strong theorem-proving capabilities
+    llm:
+      thinking_capability: thinking
+      reasoning_parser: deepseek-r1
+
+    models:
+      # DeepSeek-Math-V2 BF16 - requires B200 (183GB) or B300 (275GB)
+      - name: DeepSeek-Math-V2
+        quantization: bf16

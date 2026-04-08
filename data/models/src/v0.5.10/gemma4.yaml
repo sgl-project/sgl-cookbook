@@ -1,0 +1,53 @@
+# Gemma 4 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/v0.5.10/gemma4.yaml
+#
+# SGLang auto-selects the Triton attention backend for all variants
+#
+# GPU requirements (BF16):
+#   E2B (~5B with embeddings):   H200 tp=1, B200 tp=1
+#   E4B (~8B with embeddings):   H200 tp=1, B200 tp=1
+#   31B Dense:                   H200 tp=2, B200 tp=1, MI300X tp=1
+#   26B-A4B MoE (25.2B total):  H200 tp=1, B200 tp=1, MI300X tp=1
+
+vendor: google
+
+defaults:
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: Gemma-4
+    description: Gemma 4 multimodal models with reasoning, vision, audio, and tool calling
+    llm:
+      thinking_capability: hybrid
+      tool_parser: gemma4
+      reasoning_parser: gemma4
+
+    models:
+      - name: gemma-4-E2B-it
+        quantization: bf16
+        hardware:
+          H200: { tp: 1 }
+          B200: { tp: 1 }
+
+      - name: gemma-4-E4B-it
+        quantization: bf16
+        hardware:
+          H200: { tp: 1 }
+          B200: { tp: 1 }
+
+      - name: gemma-4-31B-it
+        quantization: bf16
+        hardware:
+          H200: { tp: 2 }
+          B200: { tp: 1 }
+          MI300X: { tp: 1 }
+
+      - name: gemma-4-26B-A4B-it
+        quantization: bf16
+        hardware:
+          H200: { tp: 1 }
+          B200: { tp: 1 }
+          MI300X: { tp: 1 }

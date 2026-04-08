@@ -8,6 +8,7 @@
 
 - **[Kimi-K2-Instruct](https://huggingface.co/moonshotai/Kimi-K2-Instruct)**: Post-trained model optimized for general-purpose chat and agentic tasks. Compatible with vLLM, SGLang, KTransformers, and TensorRT-LLM.
 - **[Kimi-K2-Thinking](https://huggingface.co/moonshotai/Kimi-K2-Thinking)**: Advanced thinking model with step-by-step reasoning and tool calling. Native INT4 quantization with 256k context window. Ideal for complex reasoning and multi-step tool use.
+- **ROCm Support**: Compatible with AMD MI300X GPUs via SGLang (verified).
 
 For details, see [official documentation](https://github.com/MoonshotAI/Kimi-K2) and [technical report](https://www.arxiv.org/abs/2507.20534).
 
@@ -35,6 +36,7 @@ import KimiK2ConfigGenerator from '@site/src/components/autoregressive/KimiK2Con
 - **KV Cache**: Use `--kv-cache-dtype fp8_e4m3` to reduce memory by 50% (CUDA 11.8+).
 - **Reasoning Parser**: Add `--reasoning-parser kimi_k2` for Kimi-K2-Thinking to separate thinking and content.
 - **Tool Call Parser**: Add `--tool-call-parser kimi_k2` for structured tool calls.
+- **AMD GPU**: Set `SGLANG_ROCM_FUSED_DECODE_MLA=0` before launching AMD GPU.
 
 ## 4. Model Invocation
 

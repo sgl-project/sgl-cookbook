@@ -1,5 +1,5 @@
 # Qwen3-Coder-Next Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/qwen3codernext.yaml
+# This file is compiled to data/models/generated/v0.5.8/qwen3codernext.yaml
 
 vendor: qwen
 

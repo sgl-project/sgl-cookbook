@@ -24,6 +24,17 @@ const sidebars = {
       items: [
         {
           type: 'category',
+          label: 'Google',
+          items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/Google/Gemma4',
+              label: 'Gemma 4 [NEW]',
+            },
+          ],
+        },
+        {
+          type: 'category',
           label: 'Qwen',
           items: [
             {
@@ -47,6 +58,7 @@ const sidebars = {
             'autoregressive/DeepSeek/DeepSeek-V3_1',
             'autoregressive/DeepSeek/DeepSeek-V3',
             'autoregressive/DeepSeek/DeepSeek-R1',
+            'autoregressive/DeepSeek/DeepSeek-Math-V2',
             'autoregressive/DeepSeek/DeepSeek-OCR',
             'autoregressive/DeepSeek/DeepSeek-OCR-2',
           ],
@@ -55,7 +67,7 @@ const sidebars = {
           type: 'category',
           label: 'Llama',
           items: [
-            'autoregressive/Llama/Llama4-Scout',
+            'autoregressive/Llama/Llama4',
             'autoregressive/Llama/Llama3.3-70B',
             'autoregressive/Llama/Llama3.1',
           ],
@@ -66,8 +78,13 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/GLM/GLM-5.1',
+              label: 'GLM-5.1',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/GLM/GLM-5',
-              label: 'GLM-5 [NEW]',
+              label: 'GLM-5',
             },
             {
               type: 'doc',
@@ -101,7 +118,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/Moonshotai/Kimi-K2.5',
-              label: 'Kimi-K2.5 [NEW]',
+              label: 'Kimi-K2.5',
             },
             'autoregressive/Moonshotai/Kimi-K2',
             'autoregressive/Moonshotai/Kimi-Linear',
@@ -114,7 +131,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/MiniMax/MiniMax-M2.5',
-              label: 'MiniMax-M2.5 [NEW]',
+              label: 'MiniMax-M2.5',
             },
             'autoregressive/MiniMax/MiniMax-M2',
           ],
@@ -123,6 +140,11 @@ const sidebars = {
           type: 'category',
           label: 'NVIDIA',
           items: [
+            {
+              type: 'doc',
+              id: 'autoregressive/NVIDIA/Nemotron3-Super',
+              label: 'Nemotron3-Super',
+            },
             'autoregressive/NVIDIA/Nemotron3-Nano',
           ],
         },
@@ -159,7 +181,8 @@ const sidebars = {
           type: 'category',
           label: 'Mistral',
           items: [
-            'autoregressive/Mistral/Mistral-3',
+            'autoregressive/Mistral/Mistral-Small-4',
+            'autoregressive/Mistral/Ministral-3',
             'autoregressive/Mistral/Devstral-2',
           ],
         },
@@ -177,7 +200,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/FlashLabs/Chroma1.0',
-              label: 'Chroma 1.0 [NEW]',
+              label: 'Chroma 1.0',
             },
           ],
         },
@@ -188,12 +211,12 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/StepFun/Step3.5',
-              label: 'Step3.5 [NEW]',
+              label: 'Step3.5',
             },
             {
               type: 'doc',
               id: 'autoregressive/StepFun/Step3-VL-10B',
-              label: 'Step3-VL-10B [NEW]',
+              label: 'Step3-VL-10B',
             },
           ],
         },
@@ -204,17 +227,17 @@ const sidebars = {
             {
               type: 'doc',
               id: 'autoregressive/InclusionAI/Ling-2.5-1T',
-              label: 'Ling-2.5-1T [NEW]',
+              label: 'Ling-2.5-1T',
             },
             {
               type: 'doc',
               id: 'autoregressive/InclusionAI/Ring-2.5-1T',
-              label: 'Ring-2.5-1T [NEW]',
+              label: 'Ring-2.5-1T',
             },
             {
               type: 'doc',
               id: 'autoregressive/LLaDA/LLaDA-2.1',
-              label: 'LLaDA 2.1 [NEW]',
+              label: 'LLaDA 2.1',
             },
           ],
         }
@@ -260,6 +283,23 @@ const sidebars = {
           label: 'MOVA',
           items: [
             'diffusion/MOVA/MOVA',
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'SGLang Omni',
+      items: [
+        {
+          type: 'category',
+          label: 'FishAudio',
+          items: [
+            {
+              type: 'doc',
+              id: 'omni/S2-Pro/S2-Pro',
+              label: 'S2 Pro (TTS) [NEW]',
+            },
           ],
         },
       ],
