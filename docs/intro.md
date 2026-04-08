@@ -193,7 +193,7 @@ We believe the best documentation comes from practitioners. Whether you've optim
 **Ways to contribute:**
 
 - Add a new recipe for a model not yet covered
-- Add AMD MI300X/MI325X/MI355X GPU support to existing models
+- Add NVIDIA H100/H200/B200/B300/GB200/GB300 GPU and/or AMD MI300X/MI325X/MI355X GPU support to existing models
 - Improve existing recipes with benchmarks, tips, or configurations
 - Report issues or suggest enhancements
 
