@@ -75,9 +75,8 @@ const MiniMaxM25ConfigGenerator = () => {
     generateCommand: function (values) {
       const { hardware, gpuCount, thinking, toolcall } = values;
 
-      const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x';
-
       // Validate 2-GPU configuration (only AMD supports 2 GPUs)
+      const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x';
       if (gpuCount === '2gpu' && !isAMD) {
         return '# Please select compatible hardware\n# 2-GPU requires AMD MI300X/MI325X/MI355X';
       }
