@@ -655,8 +655,6 @@ sglang_args=$(echo serve \
 
 sglang_args=($sglang_args)
 
-# old launching method
-# python3 "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 sglang "${sglang_args[@]}" 2>&1 | tee $LOG_DIR/$RANK.log
 ```
 
