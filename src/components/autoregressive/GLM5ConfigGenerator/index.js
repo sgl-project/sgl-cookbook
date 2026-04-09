@@ -116,7 +116,7 @@ const GLM5ConfigGenerator = () => {
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
 
