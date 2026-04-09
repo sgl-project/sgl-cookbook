@@ -8,7 +8,7 @@
 #
 # GPU requirements (FP8):
 #   H100: tp=8 (model ~400GB in FP8, each rank needs ~50GB < 80GB)
-#   H200: tp=8
+#   H200: tp=8, ep=8
 #   B200: tp=8
 #
 # GPU requirements (FP4):
@@ -57,7 +57,7 @@ families:
         quantization: fp8
         hardware:
           H100: { tp: 8 }
-          H200: { tp: 4 }
+          H200: { tp: 8, ep: 8 }
           B200: { tp: 4 }
           B300: { tp: 2 }
           MI300X: { tp: 4 }
