@@ -1,5 +1,5 @@
 # GLM-4.6 Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/glm46.yaml
+# This file is compiled to data/models/generated/v0.5.6/glm46.yaml
 
 vendor: zai-org
 

@@ -214,9 +214,12 @@ def build_hardware_config(
     Returns:
         Hardware configuration dict with list of named configurations
     """
-    # Version is now a top-level folder, so we directly return configurations
+    # Allow a hardware entry to override the named configurations list for cases
+    # like GB300 where dp/throughput recommendations differ from the file-level defaults.
+    config_templates = hw_config.get("configurations", defaults.get("configurations", []))
+
     configurations = []
-    for config_template in defaults.get("configurations", []):
+    for config_template in config_templates:
         configurations.append(
             build_named_configuration(
                 config_template, hw_config, quant, quant_overrides, speculative_draft_model

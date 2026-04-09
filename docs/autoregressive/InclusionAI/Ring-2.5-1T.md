@@ -29,6 +29,12 @@ docker pull lmsysorg/sglang:nightly-dev-20260213-a0ebaa64
 
 # For GB200/GB300
 docker pull lmsysorg/sglang:nightly-dev-cu13-20260213-a0ebaa64
+
+# For MI300X/325X
+docker pull lmsysorg/sglang:v0.5.9-rocm700-mi30x
+
+# For MI355X
+docker pull lmsysorg/sglang:v0.5.9-rocm700-mi35x
 ```
 
 For other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -55,7 +61,7 @@ import Ring25ConfigGenerator from '@site/src/components/autoregressive/Ring25Con
 Deploy Ring-2.5-1T with the following command (on H200, all features enabled):
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp 8 \
   --trust-remote-code \
@@ -76,7 +82,7 @@ For basic API usage and request examples, please refer to:
 To enable reasoning output separation, add `--reasoning-parser deepseek-r1` when launching the server. The thinking process is returned via `reasoning_content` in the streaming response.
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp 8 \
   --trust-remote-code \
@@ -175,7 +181,7 @@ Alternatively, using the fraction:
 To enable tool calling, add `--tool-call-parser qwen` when launching the server.
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp 8 \
   --trust-remote-code \
@@ -235,7 +241,7 @@ print(response.choices[0].message.tool_calls)
 
 - Deployment Command
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path inclusionAI/Ring-2.5-1T \
   --tp-size 8 \
   --trust-remote-code

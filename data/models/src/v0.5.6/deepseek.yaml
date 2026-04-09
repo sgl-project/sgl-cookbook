@@ -1,5 +1,5 @@
 # DeepSeek Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/deepseek.yaml
+# This file is compiled to data/models/generated/v0.5.6/deepseek.yaml
 
 vendor: deepseek-ai
 

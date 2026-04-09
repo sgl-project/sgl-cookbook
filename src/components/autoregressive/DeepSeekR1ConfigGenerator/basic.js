@@ -101,7 +101,7 @@ const DeepSeekR1BasicConfigGenerator = () => {
 
       cmd += ` \\\n  --enable-symm-mem # Optional: improves performance, but may be unstable`;
 
-      if (hardware === 'b200') {
+      if (hardware === 'b200' || (hardware === 'mi355x' && quantization === 'fp8')) {
         cmd += ` \\\n  --kv-cache-dtype fp8_e4m3 # Optional: enables fp8 kv cache and fp8 attention kernels to improve performance`;
       }
 

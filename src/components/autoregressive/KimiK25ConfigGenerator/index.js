@@ -3,7 +3,8 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
  * Kimi-K2.5 Configuration Generator
- * Supports Kimi-K2.5 multimodal agentic model with reasoning and tool calling
+ * Supports Kimi-K2.5 multimodal agentic model with reasoning, tool calling,
+ * quantization (INT4 / NVFP4), and speculative decoding (EAGLE3)
  *
  * GPU requirements:
  *   H200: tp=8
@@ -12,6 +13,9 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   MI325X: tp=4 (same constraint as MI300X)
  *   MI350X: tp=4 (same constraint as MI300X)
  *   MI355X: tp=4 (same constraint as MI300X)
+ *
+ * NVFP4 quantization is only supported on NVIDIA Blackwell (B300).
+ * Speculative decoding is only supported on H200 and B300.
  */
 const KimiK25ConfigGenerator = () => {
   const config = {
@@ -28,6 +32,14 @@ const KimiK25ConfigGenerator = () => {
           { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi350x', label: 'MI350X', default: false },
           { id: 'mi355x', label: 'MI355X', default: false }
+        ]
+      },
+      quantization: {
+        name: 'quantization',
+        title: 'Quantization',
+        items: [
+          { id: 'int4', label: 'INT4', subtitle: 'initial model', default: true },
+          { id: 'nvfp4', label: 'NVFP4', subtitle: 'Blackwell only', default: false }
         ]
       },
       reasoning: {
@@ -56,6 +68,20 @@ const KimiK25ConfigGenerator = () => {
           { id: 'enabled', label: 'Enabled', subtitle: 'High Throughput', default: false }
         ],
         commandRule: null
+      },
+      speculative: {
+        name: 'speculative',
+        title: 'Speculative Decoding',
+        items: [
+          { id: 'disabled', label: 'Disabled', default: true },
+          { id: 'enabled', label: 'Enabled', default: false }
+        ],
+        commandRule: (value, allValues) => {
+          if (value !== 'enabled') return null;
+          if (allValues.hardware !== 'h200' && allValues.hardware !== 'b300') return null;
+
+          return '--speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4 \\\n  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3';
+        }
       }
     },
 
@@ -69,10 +95,24 @@ const KimiK25ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware } = values;
+      const { hardware, quantization, speculative } = values;
       const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi350x' || hardware === 'mi355x';
 
-      const modelName = `${this.modelFamily}/Kimi-K2.5`;
+      // NVFP4 is only supported on NVIDIA Blackwell (B300)
+      if (quantization === 'nvfp4' && hardware !== 'b300') {
+        return '# NVFP4 quantization is only supported on NVIDIA Blackwell GPUs (B300)';
+      }
+
+      // Speculative decoding only supported on H200 and B300
+      if (speculative === 'enabled' && hardware !== 'h200' && hardware !== 'b300') {
+        return '# Speculative Decoding for Kimi-K2.5 is only supported on H200 and B300';
+      }
+
+      // Model path depends on quantization
+      const modelName = quantization === 'nvfp4'
+        ? 'nvidia/Kimi-K2.5-NVFP4'
+        : `${this.modelFamily}/Kimi-K2.5`;
+
       const hwConfig = this.modelConfigs[hardware];
       const tpValue = hwConfig.tp;
 
@@ -80,7 +120,17 @@ const KimiK25ConfigGenerator = () => {
 
       // AMD ROCm environment variables
       if (isAMD) {
-        cmd += 'SGLANG_USE_AITER=1 SGLANG_ROCM_FUSED_DECODE_MLA=0 \\\n';
+        cmd += 'SGLANG_USE_AITER=1 SGLANG_ROCM_FUSED_DECODE_MLA=0 ';
+      }
+
+      // Speculative decoding env var
+      if (speculative === 'enabled') {
+        cmd += 'SGLANG_ENABLE_SPEC_V2=1 ';
+      }
+
+      // If we added any env vars above, break to a new line for readability
+      if (isAMD || speculative === 'enabled') {
+        cmd += '\\\n';
       }
 
       cmd += 'sglang serve \\\n';

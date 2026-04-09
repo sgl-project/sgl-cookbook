@@ -177,6 +177,70 @@ families:
             - '4'
           prefill: null
           decode: null
+  - name: GLM-5-NVFP4
+    model_path: nvidia/GLM-5-NVFP4
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: glm47
+        reasoning_parser: glm45
+        chat_template: null
+    hardware:
+      B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: nvfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: nvfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args: []
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: nvfp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
   - name: GLM-5-FP8
     model_path: zai-org/GLM-5-FP8
     attributes:

@@ -56,6 +56,8 @@ import MiMoConfigGenerator from '@site/src/components/autoregressive/MiMoConfigG
 
 <MiMoConfigGenerator />
 
+MI355X (ROCm) is validated in the selector above with `--tp-size 4`, Triton attention, and `--disable-custom-all-reduce`. `--tp-size 8` hit a QKV sharding error during validation. EAGLE speculative decoding is still WIP on MI355X.
+
 ## Testing the deployment
 
 Once the server is running, test it with a chat completion request in another terminal:
@@ -94,3 +96,7 @@ curl http://localhost:30000/v1/chat/completions \
 **DeepGEMM Timeout Error**
 
 Occasionally DeepGEMM timeout errors occur during first launch. Simply rerun the server command in the same container - the compiled kernels are cached and subsequent launches will be fast.
+
+**ROCm MI355X Attention Backend**
+
+If you see an error such as `AiterAttnBackend.forward_decode() got an unexpected keyword argument 'sinks'` on MI355X, use the `MI355X` + `Performance Optimizations` command from the selector above, which switches to Triton attention and keeps `--disable-custom-all-reduce`.

@@ -17,7 +17,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   27B/9B/4B/2B/0.8B: tp=1 on all hardware (including MI300X, MI325X, MI355X)
  *
  * GPU requirements (FP8, where available):
- *   397B-A17B: H100 tp=8, H200 tp=4, B200 tp=4, B300 tp=2, MI300X tp=4, MI325X tp=2, MI355X tp=2
+ *   397B-A17B: H100 tp=8, H200 tp=8 ep=8, B200 tp=4, B300 tp=2, MI300X tp=4, MI325X tp=2, MI355X tp=2
  *   122B-A10B: H100 tp=2, H200 tp=1, B200 tp=1, B300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
  *   35B-A3B:   H100 tp=1, H200 tp=1, B200 tp=1, B300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
  *   27B:       tp=1 on all hardware (including MI300X, MI325X, MI355X)
@@ -146,7 +146,7 @@ const Qwen35ConfigGenerator = () => {
     modelConfigs: {
       '397b': {
         h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
-        h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
+        h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
         b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.85 } },
         b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
         mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
@@ -239,12 +239,16 @@ const Qwen35ConfigGenerator = () => {
       }
 
       const tpValue = hwConfig.tp;
+      const epValue = hwConfig.ep;
       const memFraction = hwConfig.mem;
 
       // Initialize the base command
       let cmd = `sglang serve --model-path ${modelName}`;
       if (tpValue > 1) {
         cmd += ` \\\n  --tp ${tpValue}`;
+      }
+      if (epValue) {
+        cmd += ` \\\n  --expert-parallel-size ${epValue}`;
       }
 
       // Force Mamba V1 for AMD GPUs (V2 requires FLA backend)
@@ -270,6 +274,15 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
       }
 
+      // H200 FP8-specific optimizations
+      if (hardware === 'h200' && quantization === 'fp8') {
+        cmd += ` \\\n  --attention-backend flashinfer`;
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
+        if (MOE_MODELS.has(model)) {
+          cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+        }
+      }
+
       // Append backend configurations
       if (hardware === 'b200' || hardware === 'b300') {
         cmd += ` \\\n  --attention-backend trtllm_mha`;
@@ -280,8 +293,8 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --attention-backend triton`;
       }
 
-      // Append B200/B300-specific backend configurations
-      if (hardware === 'b200' || hardware === 'b300') {
+      // Tokenizer workers for H200 and B200/B300
+      if (hardware === 'h200' || hardware === 'b200' || hardware === 'b300') {
         if (speculative === 'disabled') {
           cmd += ` \\\n  --tokenizer-worker-num 6`;
         }

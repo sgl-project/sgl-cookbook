@@ -1,10 +1,10 @@
 # GLM-5 Model Configurations (Simplified Format)
-# This file is compiled to data/models/generated/glm5.yaml
+# This file is compiled to data/models/generated/v0.5.8/glm5.yaml
 #
 # GPU requirements (BF16 needs 2x GPUs compared to FP8):
 #   H100: FP8 tp=16, BF16 tp=32
 #   H200: FP8 tp=8, BF16 tp=16
-#   B200: FP8 tp=8, BF16 tp=16
+#   B200: NVFP4 tp=4, FP8 tp=8, BF16 tp=16
 
 vendor: zai-org
 
@@ -51,6 +51,13 @@ families:
           H100: { tp: 32 }
           H200: { tp: 16 }
           B200: { tp: 16 }
+
+      # GLM-5 NVFP4 (Blackwell only)
+      - name: GLM-5-NVFP4
+        vendor: nvidia
+        hardware:
+          B200: { tp: 4 }
+        quantization: nvfp4
 
       # GLM-5 FP8
       - name: GLM-5-FP8
