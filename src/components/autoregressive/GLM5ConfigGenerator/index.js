@@ -104,7 +104,7 @@ const GLM5ConfigGenerator = () => {
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
 
-      let cmd = 'python -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model ${modelName}`;
 
       // TP setting
@@ -133,6 +133,18 @@ const GLM5ConfigGenerator = () => {
           }
         }
       });
+
+      // B200 FP8: all optimized flags consolidated
+      if (hardware === 'b200' && effectiveQuant === 'fp8') {
+        cmd += ' \\\n  --ep 1';
+        cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
+        cmd += ' \\\n  --quantization fp8';
+        cmd += ' \\\n  --attention-backend nsa';
+        cmd += ' \\\n  --nsa-decode-backend trtllm';
+        cmd += ' \\\n  --nsa-prefill-backend trtllm';
+        cmd += ' \\\n  --moe-runner-backend flashinfer_trtllm';
+        cmd += ' \\\n  --enable-flashinfer-allreduce-fusion';
+      }
 
       // Memory fraction based on hardware and quantization
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
