@@ -25,11 +25,22 @@ Gemma 4 is Google's next-generation family of open models, building on the Gemma
 
 ## 2. SGLang Installation
 
-SGLang from the `gemma4` branch is required for day-0 support:
+Gemma 4 support requires [sgl-project/sglang#21952](https://github.com/sgl-project/sglang/pull/21952) and a specific transformers commit:
 
 ```bash
-# Install from source (gemma4 branch)
-pip install 'git+https://github.com/sgl-project/sglang.git@gemma4#subdirectory=python'
+# Install SGLang from main branch (after sglang#21952 is merged)
+pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=python'
+
+# Install transformers with Gemma 4 support
+pip install 'git+https://github.com/huggingface/transformers.git@91b1ab1fdfa81a552644a92fbe3e8d88de40e167'
+
+# Or use Docker AMD64
+docker pull lmsysorg/sglang:gemma4 # CUDA 12.9
+docker pull lmsysorg/sglang:cu13-gemma4 # CUDA 13
+
+# For ARM64 (GB200 / GB300)
+docker pull lmsysorg/sglang:dev-gemma4 # CUDA 12.9
+docker pull lmsysorg/sglang:dev-cu13-gemma4 # CUDA 13
 ```
 
 For the full Docker setup and other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -52,23 +63,25 @@ import Gemma4ConfigGenerator from '@site/src/components/autoregressive/Gemma4Con
 
 | Model | Hardware | TP |
 |-------|----------|-----|
-| gemma-4-E2B-it | 1x H200 | 1 |
-| gemma-4-E4B-it | 1x H200 | 1 |
-| gemma-4-31B-it | 2x H200 | 2 |
-| gemma-4-26B-A4B-it | 1x H200 | 1 |
+| gemma-4-E2B-it | 1x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 1 |
+| gemma-4-E4B-it | 1x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 1 |
+| gemma-4-31B-it | 2x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 2 (H200) / 1 (AMD) |
+| gemma-4-26B-A4B-it | 1x H200 / 1x MI300X / 1x MI325X / 1x MI355X | 1 |
 
-### 3.3 AMD GPU Deployment (MI300X / MI325X)
+### 3.3 AMD GPU Deployment (MI300X / MI325X / MI355X)
 
-SGLang automatically selects the correct attention backend on AMD GPUs. The same commands work on AMD. Example for MI300X:
+SGLang automatically selects the correct attention backend on AMD GPUs. For the small E-models (`gemma-4-E2B-it`, `gemma-4-E4B-it`), disable AITER on AMD GPUs and use the same command line otherwise:
 
 ```bash
-sglang serve --model-path google/gemma-4-E4B-it \
+SGLANG_USE_AITER=0 sglang serve --model-path google/gemma-4-E4B-it \
   --reasoning-parser gemma4 \
   --tool-call-parser gemma4 \
   --host 0.0.0.0 --port 30000
 ```
 
-> **Status**: AMD MI300X benchmarks are available in [Section 5.1](#51-speed-benchmark).
+For `gemma-4-31B-it` and `gemma-4-26B-A4B-it`, the same commands above work on MI300X, MI325X, and MI355X without additional command-line changes.
+
+> **Status**: AMD benchmarks are available in [Section 5.1](#51-speed-benchmark).
 
 ## 4. Model Invocation
 

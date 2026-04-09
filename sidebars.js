@@ -78,6 +78,11 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/GLM/GLM-5.1',
+              label: 'GLM-5.1',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/GLM/GLM-5',
               label: 'GLM-5',
             },

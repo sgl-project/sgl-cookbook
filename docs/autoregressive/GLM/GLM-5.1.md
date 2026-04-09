@@ -1,23 +1,11 @@
-# GLM-5
+# GLM-5.1
 
 ## 1. Model Introduction
 
-[GLM-5](https://huggingface.co/zai-org/GLM-5) is the most powerful language model in the GLM series developed by Zhipu AI, targeting complex systems engineering and long-horizon agentic tasks. Scaling from GLM-4.5's 355B parameters (32B active) to 744B parameters (40B active), GLM-5 integrates DeepSeek Sparse Attention (DSA) to largely reduce deployment cost while preserving long-context capacity.
-
-With advances in both pre-training (28.5T tokens) and post-training via [slime](https://github.com/THUDM/slime) (a novel asynchronous RL infrastructure), GLM-5 delivers significant improvements over GLM-4.7 and achieves best-in-class performance among open-source models on reasoning, coding, and agentic tasks.
-
-**Key Features:**
-
-- **Systems Engineering & Agentic Tasks**: Purpose-built for complex systems engineering and long-horizon agentic tasks
-- **State-of-the-Art Performance**: Best-in-class among open-source models on reasoning (HLE, AIME, GPQA), coding (SWE-bench, Terminal-Bench), and agentic tasks (BrowseComp, Vending Bench 2)
-- **DeepSeek Sparse Attention (DSA)**: Reduces deployment cost while preserving long-context capacity
-- **Multiple Quantizations**: BF16 and FP8 variants for different performance/memory trade-offs
-- **Speculative Decoding**: EAGLE-based speculative decoding support for lower latency
-
 **Available Models:**
 
-- **BF16 (Full precision)**: [zai-org/GLM-5](https://huggingface.co/zai-org/GLM-5)
-- **FP8 (8-bit quantized)**: [zai-org/GLM-5-FP8](https://huggingface.co/zai-org/GLM-5-FP8)
+- **BF16 (Full precision)**: [zai-org/GLM-5.1](https://huggingface.co/zai-org/GLM-5.1)
+- **FP8 (8-bit quantized)**: [zai-org/GLM-5.1-FP8](https://huggingface.co/zai-org/GLM-5.1-FP8)
 
 **License:** MIT
 
@@ -31,11 +19,11 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and capabilities. SGLang supports serving GLM-5 on NVIDIA H100, H200, B200, and AMD MI300X/MI325X/MI355X GPUs.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and capabilities. SGLang supports serving GLM-5.1 on NVIDIA H100, H200, B200, GB300, and AMD MI300X/MI325X/MI355X GPUs.
 
-import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigGenerator';
+import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51ConfigGenerator';
 
-<GLM5ConfigGenerator />
+<GLM51ConfigGenerator />
 
 ### 3.2 Configuration Tips
 
@@ -50,26 +38,22 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 | H100     | tp=16 | tp=32 |
 | H200     | tp=8  | tp=16 |
 | B200     | tp=8  | tp=16 |
-| MI300X/MI325X | — | tp=8 |
-| MI355X   | — | tp=8 |
+| GB300    | tp=4  | —     |
+| MI300X/MI325X | tp=8 | tp=8 |
+| MI355X   | tp=8 | tp=8 |
 
-:::caution FP8 Accuracy
-FP8 quantization (`--quantization fp8`, `--kv-cache-dtype fp8_e4m3`) reduces memory usage and improves throughput but may cause a slight accuracy drop compared to BF16. Evaluate on your target task before deploying in accuracy-sensitive applications.
-:::
-
-- **B200 (FP8)**: Use `--ep 1 --attention-backend nsa --nsa-decode-backend trtllm --nsa-prefill-backend trtllm --moe-runner-backend flashinfer_trtllm --enable-flashinfer-allreduce-fusion` for optimized NSA and MoE backends on Blackwell. Also add `--kv-cache-dtype fp8_e4m3 --quantization fp8` for FP8 KV cache and weight quantization.
-
-- **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.
-- For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
-- Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
+- **AMD GPUs**: Both BF16 and FP8 checkpoints are supported on MI300X/MI325X/MI355X at tp=8. Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). FP8 uses approximately half the memory of BF16 (~89 GB/GPU vs ~175 GB/GPU). EAGLE speculative decoding is not currently supported on AMD for GLM-5.1.
+- **GB300**: Only the FP8 checkpoint is recommended on GB300, with `tp=4`. For high-throughput DP attention on GB300, use `--dp 4`.
+- For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5.1 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
+- Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5.1-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
 
 ## 4. Model Invocation
 
-Deploy GLM-5 with the following command (FP8 on H200, all features enabled):
+Deploy GLM-5.1 with the following command (FP8 on H200, all features enabled):
 
 ```shell
-sglang serve \
-  --model zai-org/GLM-5-FP8 \
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path zai-org/GLM-5.1-FP8 \
   --tp 8 \
   --tool-call-parser glm47 \
   --reasoning-parser glm45 \
@@ -84,11 +68,31 @@ sglang serve \
 
 ### 4.1 MI300X/MI325X/MI355X (ROCm) Server Command
 
-The following ROCm command is an additional option for AMD GPUs and does not replace the NVIDIA instructions above.
+The following ROCm commands are additional options for AMD GPUs and do not replace the NVIDIA instructions above.
+
+#### FP8 (Recommended)
 
 ```shell
 sglang serve \
-  --model zai-org/GLM-5 \
+  --model-path zai-org/GLM-5.1-FP8 \
+  --tp 8 \
+  --trust-remote-code \
+  --tool-call-parser glm47 \
+  --reasoning-parser glm45 \
+  --nsa-prefill-backend tilelang \
+  --nsa-decode-backend tilelang \
+  --chunked-prefill-size 131072 \
+  --mem-fraction-static 0.80 \
+  --watchdog-timeout 1200 \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+#### BF16
+
+```shell
+sglang serve \
+  --model-path zai-org/GLM-5.1 \
   --tp 8 \
   --trust-remote-code \
   --nsa-prefill-backend tilelang \
@@ -110,7 +114,7 @@ For basic API usage and request examples, please refer to:
 
 #### 4.3.1 Reasoning Parser
 
-GLM-5 supports Thinking mode **by default**. Enable the reasoning parser during deployment to separate the thinking and content sections. The thinking process is returned via `reasoning_content` in the streaming response.
+GLM-5.1 supports Thinking mode **by default**. Enable the reasoning parser during deployment to separate the thinking and content sections. The thinking process is returned via `reasoning_content` in the streaming response.
 
 To disable thinking and use Instruct mode, pass `chat_template_kwargs` at request time:
 
@@ -131,7 +135,7 @@ client = OpenAI(
 
 # Thinking mode is enabled by default, no extra parameters needed
 response = client.chat.completions.create(
-    model="zai-org/GLM-5-FP8",
+    model="zai-org/GLM-5.1-FP8",
     messages=[
         {"role": "user", "content": "Solve this problem step by step: What is 15% of 240?"}
     ],
@@ -171,65 +175,58 @@ print()
 
 ```
 =============== Thinking =================
-The user wants me to solve a math problem: "What is 15% of 240?".
+1.  **Understand the Goal:** The user wants to find 15% of 240, and they want the solution explained step-by-step.
 
-Step 1: Understand the problem. I need to calculate a percentage of a number.
-Formula: Percentage × Number = Result.
+2.  **Identify the Core Mathematical Concept:** "Percent" means "per hundred" or "out of 100". Finding "X% of Y" translates to the mathematical operation: $(X / 100) \times Y$.
 
-Step 2: Convert the percentage to a decimal or fraction.
-15% = 15/100 or 0.15.
+3.  **Step-by-Step Breakdown:**
+    *   *Step 1: Convert the percentage to a decimal (or fraction).* 15% means 15 out of 100, which is $15/100$ or $0.15$.
+    *   *Step 2: Multiply the decimal by the given number.* Multiply $0.15$ by $240$.
+    *   *Step 3: Perform the calculation.*
+        *   $0.15 \times 240$
+        *   I can break this down further to make it easy to follow:
+            *   $0.10 \times 240 = 24$ (which is 10%)
+            *   $0.05 \times 240 = 12$ (which is 5%, half of 10%)
+            *   $24 + 12 = 36$
+        *   Alternatively, standard multiplication:
+            *   $240 \times 15 = 3600$
+            *   Move decimal two places left -> $36$
+    *   *Step 4: State the final answer clearly.*
 
-Step 3: Perform the multiplication.
-Method A: Decimal multiplication.
-0.15 × 240.
-Break it down:
-10% of 240 = 24.
-5% is half of 10%, so 12.
-15% = 10% + 5% = 24 + 12 = 36.
+4.  **Draft the Response (incorporating the steps clearly):**
+    *   *Introduction:* State the problem clearly.
+    *   *Step 1:* Explain how to convert 15% to a decimal.
+    *   *Step 2:* Explain the multiplication step.
+    *   *Step 3:* Show the actual math (I'll provide the standard multiplication and the "mental math" trick as it adds value).
+    *   *Conclusion:* Give the final answer.
 
-Method B: Fraction multiplication.
-15/100 × 240.
-Simplify 240/100 = 2.4.
-15 × 2.4.
-10 × 2.4 = 24.
-5 × 2.4 = 12.
-24 + 12 = 36.
+5.  **Refine the Output (Self-Correction/Polishing during drafting):**
+    *   *Drafting Step 1:* To find 15% of 240, first convert 15% into a decimal. Since percent means "per hundred," you divide 15 by 100. 15 ÷ 100 = 0.15.
+    *   *Drafting Step 2:* Next, multiply this decimal by the number you are finding the percentage of (which is 240). So, calculate 0.15 × 240.
+    *   *Drafting Step 3 (Standard way):* 0.15 × 240 = 36.
+    *   *Adding the alternative mental math way:* It's often helpful to break it down into 10% and 5%.
+        *   10% of 240 = 24 (move the decimal point one place to the left)
+        *   5% is half of 10%, so half of 24 = 12
+        *   Add them together: 24 + 12 = 36.
+    *   *Final Answer:* 15% of 240 is 36.
 
-Method C: Direct multiplication.
-240 × 0.15.
-240 × 0.10 = 24.
-240 × 0.05 = 12.
-24 + 12 = 36.
-
-Step 4: Final Verification.
-Is 36 reasonable?
-10% is 24. 20% is 48.
-15% is halfway between 10% and 20%.
-Halfway between 24 and 48 is 36.
-The result is correct.
-
-Step 5: Structure the final response. I will present the calculation clearly, perhaps showing the fractional or decimal method, or the mental math shortcut (10% + 5%).
+6.  **Final Review against User Prompt:** Does it solve the problem? Yes. Is it step-by-step? Yes. Is it clear? Yes. (Proceed to generate output).
 =============== Content =================
-Here is the step-by-step solution:
+Here is the step-by-step solution to find 15% of 240:
 
 **Step 1: Convert the percentage to a decimal.**
-To convert 15% to a decimal, divide by 100.
-$$15\% = \frac{15}{100} = 0.15$$
+To convert a percentage to a decimal, divide it by 100 (or simply move the decimal point two places to the left).
+* 15% = 15 ÷ 100 = **0.15**
 
 **Step 2: Multiply the decimal by the number.**
-Now, multiply 0.15 by 240.
-$$0.15 \times 240$$
+Now, multiply the decimal (0.15) by the number you are finding the percentage of (240).
+* 0.15 × 240 = **36**
 
-**Step 3: Perform the calculation.**
-You can break this down to make it easier:
-$$0.15 = 0.10 + 0.05$$
-
-*   First, find 10% of 240:
-    $$0.10 \times 240 = 24$$
-*   Next, find 5% (which is half of 10%):
-    $$\frac{24}{2} = 12$$
-*   Add the two results together:
-    $$24 + 12 = 36$$
+*(Alternative mental math method for Step 2)*:
+If you don't want to multiply by 0.15 directly, you can break 15% down into 10% and 5%:
+* **10% of 240** = 24 (just move the decimal point one place to the left)
+* **5% of 240** = 12 (5% is half of 10%, so just divide 24 by 2)
+* **Add them together**: 24 + 12 = **36**
 
 **Answer:**
 15% of 240 is **36**.
@@ -249,7 +246,7 @@ client = OpenAI(
 
 # Disable thinking mode via chat_template_kwargs
 response = client.chat.completions.create(
-    model="zai-org/GLM-5-FP8",
+    model="zai-org/GLM-5.1-FP8",
     messages=[
         {"role": "user", "content": "What is 15% of 240?"}
     ],
@@ -271,38 +268,16 @@ print()
 **Output Example:**
 
 ```
-To find **15% of 240**, follow these steps:
+15% of 240 is 36.
 
-### Step 1: Convert the Percentage to a Decimal
-First, convert the percentage to a decimal by dividing by 100.
-
-\[
-15\% = \frac{15}{100} = 0.15
-\]
-
-### Step 2: Multiply by the Number
-Next, multiply the decimal by the number you want to find the percentage of.
-
-\[
-0.15 \times 240
-\]
-
-### Step 3: Perform the Multiplication
-Calculate the multiplication:
-
-\[
-0.15 \times 240 = 36
-\]
-
-### Final Answer
-\[
-\boxed{36}
-\]
+Here is how to calculate it:
+1. Convert the percentage to a decimal: 15% = 0.15
+2. Multiply the decimal by the number: 0.15 × 240 = 36
 ```
 
 #### 4.3.2 Tool Calling
 
-GLM-5 supports tool calling capabilities. Enable the tool call parser during deployment. Thinking mode is on by default; to disable it for tool calling requests, pass `extra_body={"chat_template_kwargs": {"enable_thinking": False}}`.
+GLM-5.1 supports tool calling capabilities. Enable the tool call parser during deployment. Thinking mode is on by default; to disable it for tool calling requests, pass `extra_body={"chat_template_kwargs": {"enable_thinking": False}}`.
 
 **Python Example (with Thinking Process):**
 
@@ -342,7 +317,7 @@ tools = [
 
 # Make request with streaming to see thinking process
 response = client.chat.completions.create(
-    model="zai-org/GLM-5-FP8",
+    model="zai-org/GLM-5.1-FP8",
     messages=[
         {"role": "user", "content": "What's the weather in Beijing?"}
     ],
@@ -389,12 +364,7 @@ print()
 
 ```
 =============== Thinking =================
-The user is asking for the weather in Beijing. I have access to a get_weather function that can provide current weather information. Let me check what parameters are required:
-
-- location: required, should be "Beijing"
-- unit: optional (not in required array), can be "celsius" or "fahrenheit"
-
-Since the user didn't specify a unit preference and it's optional, I should not ask about it or make up a value. I'll just call the function with the required location parameter.I'll get the current weather in Beijing for you.
+The user wants to know the weather in Beijing. I'll call the get_weather function with "Beijing" as the location.
 =============== Content =================
 Tool Call: get_weather
    Arguments:
@@ -415,7 +385,7 @@ Tool Call: None
 **Test Environment:**
 
 - Hardware: H200 (8x)
-- Model: GLM-5-FP8
+- Model: GLM-5.1-FP8
 - Tensor Parallelism: 8
 - SGLang Version: commit 947927bdb
 
@@ -424,7 +394,7 @@ Tool Call: None
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-5-FP8 \
+  --model zai-org/GLM-5.1-FP8 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -479,7 +449,7 @@ Max ITL (ms):                            29.50
 ```bash
 python3 -m sglang.bench_serving \
   --backend sglang \
-  --model zai-org/GLM-5-FP8 \
+  --model zai-org/GLM-5.1-FP8 \
   --dataset-name random \
   --random-input-len 1000 \
   --random-output-len 1000 \
@@ -620,7 +590,7 @@ Average accuracy: 0.877
 
 #### 5.3.1 GSM8K Benchmark (MI325/MI35x)
 
-- MI325/MI35x Test (GLM-5 BF16, `tp=8`, TileLang NSA backends)
+- MI325/MI35x Test (GLM-5.1 BF16, `tp=8`, TileLang NSA backends)
 
 ```bash
 python3 benchmark/gsm8k/bench_sglang.py --num-questions 200

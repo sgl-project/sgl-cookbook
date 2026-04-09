@@ -311,9 +311,9 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 4
+            tp: 8
             dp: null
-            ep: null
+            ep: 8
             enable_dp_attention: null
             extra_args: []
           prefill: null
@@ -326,9 +326,9 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 4
+            tp: 8
             dp: null
-            ep: null
+            ep: 8
             enable_dp_attention: null
             extra_args:
             - --speculative-algo

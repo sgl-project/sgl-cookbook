@@ -6,6 +6,7 @@
 #   B200: tp=8
 #   GB200: tp=4
 #   GB300: tp=4
+#   MI355X: tp=8
 
 vendor: inclusionAI
 
@@ -15,6 +16,7 @@ defaults:
     B200: { tp: 8 }
     GB200: { tp: 4 }
     GB300: { tp: 4 }
+    MI355X: { tp: 8 }
   configurations:
     - name: default
       nodes: single
@@ -42,3 +44,5 @@ families:
             tp: 4
           GB300:
             tp: 4
+          MI355X:
+            tp: 8
