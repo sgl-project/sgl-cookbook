@@ -272,26 +272,23 @@ const Qwen35ConfigGenerator = () => {
       // Enable allreduce fusion for all Qwen3.5 configs.
       cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
 
-      // Mamba SSM dtype for hybrid MoE architecture
-      if (MOE_MODELS.has(model)) {
-        cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+      // H200 FP8-specific optimizations
+      if (hardware === 'h200' && quantization === 'fp8') {
+        cmd += ` \\\n  --attention-backend flashinfer`;
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
+        if (MOE_MODELS.has(model)) {
+          cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+        }
       }
 
       // Append backend configurations
-      if (hardware === 'h200' && quantization === 'fp8') {
-        cmd += ` \\\n  --attention-backend flashinfer`;
-      } else if (hardware === 'b200' || hardware === 'b300') {
+      if (hardware === 'b200' || hardware === 'b300') {
         cmd += ` \\\n  --attention-backend trtllm_mha`;
       }
 
       // Append AMD GPU-specific backend configurations
       if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
         cmd += ` \\\n  --attention-backend triton`;
-      }
-
-      // FP8 KV cache for FP8 quantized models
-      if (quantization === 'fp8') {
-        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
       }
 
       // Tokenizer workers for H200 and B200/B300
