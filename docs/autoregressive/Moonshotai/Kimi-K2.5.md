@@ -9,6 +9,11 @@
 - **Native Multimodality**: Pre-trained on vision–language tokens, K2.5 excels in visual knowledge, cross-modal reasoning, and agentic tool use grounded in visual inputs.
 - **Coding with Vision**: K2.5 generates code from visual specifications (UI designs, video workflows) and autonomously orchestrates tools for visual data processing.
 - **Agent Swarm**: K2.5 transitions from single-agent scaling to a self-directed, coordinated swarm-like execution scheme. It decomposes complex tasks into parallel sub-tasks executed by dynamically instantiated, domain-specific agents.
+- **Speculative Decoding**: EAGLE-based speculative decoding support for lower latency.
+
+**Available Models**:
+- INT4 (Initial Released): [moonshotai/Kimi-K2.5](https://huggingface.co/moonshotai/Kimi-K2.5)
+- NVFP4 (4-bit quantized): [nvidia/Kimi-K2.5-NVFP4](https://huggingface.co/nvidia/Kimi-K2.5-NVFP4)
 
 For details, see [official documentation](https://huggingface.co/moonshotai/Kimi-K2.5) and [deployment guidance](https://huggingface.co/moonshotai/Kimi-K2.5/blob/main/docs/deploy_guidance.md).
 
@@ -425,6 +430,47 @@ Let me search for this product and similar items:
 === Tool Calls ===
   Function: search_product
   Arguments: {"query": "Auntie Anne's Cinnamon Sugar Pretzel"}
+```
+
+#### 4.2.5 Speculative Decoding
+
+**Nvidia**
+
+Deploy Kimi-K2.5 with the following command (H200/B200, all features enabled):
+
+```shell
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path moonshotai/Kimi-K2.5 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+Deploy Kimi-K2.5-NVFP4 with the following command (B200, all features enabled):
+
+```shell
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path nvidia/Kimi-K2.5-NVFP4 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --kv-cache-dtype fp8_e4m3 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
 ```
 
 ## 5. Benchmark
@@ -972,6 +1018,82 @@ P95 ITL (ms):                            1869.15
 P99 ITL (ms):                            2708.95
 Max ITL (ms):                            7778.47
 ==================================================
+```
+
+#### 5.2.2 Speculative Decoding Benchmark
+
+- **Model Deployment:**
+
+```bash
+SGLANG_ENABLE_SPEC_V2=1 sglang serve \
+  --model-path moonshotai/Kimi-K2.5 \
+  --tp 8 \
+  --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --speculative-algorithm=EAGLE3 \
+  --speculative-num-steps 3 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 4 \
+  --speculative-draft-model-path lightseekorg/kimi-k2.5-eagle3 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 30000
+```
+
+- **Benchmark Command:**
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 10 \
+  --max-concurrency 1 \
+  --request-rate inf
+```
+
+- **Results:**
+
+```
+Pending update...
+```
+
+- Medium Concurrency (Balanced)
+
+```bash
+python -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 80 \
+  --max-concurrency 16 \
+  --request-rate inf
+```
+
+```
+Pending update...
+```
+
+- High Concurrency (Throughput-Optimized)
+
+```bash
+python3 -m sglang.bench_serving \
+  --backend sglang \
+  --model moonshotai/Kimi-K2.5 \
+  --dataset-name random \
+  --random-input-len 1000 \
+  --random-output-len 1000 \
+  --num-prompts 500 \
+  --max-concurrency 100 \
+  --request-rate inf
+```
+
+```
+Pending update...
 ```
 
 ### 5.3 Speed Benchmark (AMD MI350X)
