@@ -154,7 +154,7 @@ const KimiK25ConfigGenerator = () => {
       });
 
       // FP8 KV cache: AMD (memory efficiency) and speculative decoding
-      if (isAMD || speculative === 'enabled') {
+      if (isAMD) {
         cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
       }
 
