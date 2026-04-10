@@ -269,18 +269,16 @@ const Qwen35ConfigGenerator = () => {
         }
       });
 
-      // FP8 KV cache dtype
-      if (quantization === 'fp8') {
+      // FP8 KV cache dtype (NVIDIA only)
+      if (quantization === 'fp8' && !amdGpus.includes(hardware)) {
         cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
       }
 
-      // EAGLE speculative decoding requires radix cache disabled; also add chunked prefill for FP8+MTP
-      if (speculative === 'enabled') {
-        if (quantization === 'fp8') {
-          cmd += ` \\\n  --max-running-requests 128`;
-          cmd += ` \\\n  --chunked-prefill-size 16384`;
-          cmd += ` \\\n  --tokenizer-worker-num 6`;
-        }
+      // Chunked prefill tuning for H200 FP8 + MTP (validated on H200 only)
+      if (hardware === 'h200' && quantization === 'fp8' && speculative === 'enabled') {
+        cmd += ` \\\n  --max-running-requests 128`;
+        cmd += ` \\\n  --chunked-prefill-size 16384`;
+        cmd += ` \\\n  --tokenizer-worker-num 6`;
       }
 
       // Enable allreduce fusion for all Qwen3.5 configs.
