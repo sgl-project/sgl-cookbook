@@ -281,8 +281,10 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --tokenizer-worker-num 6`;
       }
 
-      // Enable allreduce fusion for all Qwen3.5 configs.
-      cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+      // Enable allreduce fusion for all Qwen3.5 configs (skip for FP4: benchmark only enables this for TP≥8).
+      if (quantization !== 'fp4') {
+        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+      }
 
       // H200 FP8-specific optimizations
       if (hardware === 'h200' && quantization === 'fp8') {
