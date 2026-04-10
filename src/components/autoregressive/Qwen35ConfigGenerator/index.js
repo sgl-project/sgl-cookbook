@@ -147,7 +147,7 @@ const Qwen35ConfigGenerator = () => {
       '397b': {
         h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
         h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
-        b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.8 } },
+        b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.85 } },
         b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
         mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
         mi325x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } },
@@ -281,8 +281,10 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --tokenizer-worker-num 6`;
       }
 
-      // Enable allreduce fusion for all Qwen3.5 configs.
-      cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+      // Enable allreduce fusion for all Qwen3.5 configs (skip for FP4: benchmark only enables this for TP≥8).
+      if (quantization !== 'fp4') {
+        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+      }
 
       // H200 FP8-specific optimizations
       if (hardware === 'h200' && quantization === 'fp8') {
@@ -312,7 +314,15 @@ const Qwen35ConfigGenerator = () => {
 
       // FP4-specific backend settings
       if (quantization === 'fp4') {
-        cmd += ' \\\n  --moe-runner-backend flashinfer_trtllm \\\n  --fp4-gemm-backend flashinfer_cutlass \\\n  --kv-cache-dtype fp8_e4m3';
+        cmd += ' \\\n  --quantization modelopt_fp4';
+        cmd += ' \\\n  --fp4-gemm-backend flashinfer_cutlass';
+        cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
+        cmd += ' \\\n  --moe-runner-backend flashinfer_trtllm';
+        cmd += ' \\\n  --chunked-prefill-size 32768';
+        cmd += ' \\\n  --max-prefill-tokens 32768';
+        cmd += ' \\\n  --max-running-requests 128';
+        cmd += ' \\\n  --stream-interval 30';
+        cmd += ' \\\n  --disable-radix-cache';
       }
 
       // Add memory fraction last
