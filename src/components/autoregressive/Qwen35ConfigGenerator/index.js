@@ -269,10 +269,20 @@ const Qwen35ConfigGenerator = () => {
         }
       });
 
-      // Enable allreduce fusion for all Qwen3.5 configs (FP4 uses TP=4, not needed per benchmark).
-      if (quantization !== 'fp4') {
-        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+      // FP8 KV cache dtype (NVIDIA only)
+      if (quantization === 'fp8' && !amdGpus.includes(hardware)) {
+        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
       }
+
+      // Chunked prefill tuning for H200 FP8 + MTP (validated on H200 only)
+      if (hardware === 'h200' && quantization === 'fp8' && speculative === 'enabled') {
+        cmd += ` \\\n  --max-running-requests 128`;
+        cmd += ` \\\n  --chunked-prefill-size 16384`;
+        cmd += ` \\\n  --tokenizer-worker-num 6`;
+      }
+
+      // Enable allreduce fusion for all Qwen3.5 configs.
+      cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
 
       // H200 FP8-specific optimizations
       if (hardware === 'h200' && quantization === 'fp8') {
