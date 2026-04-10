@@ -76,22 +76,25 @@ const DeepSeekV3ConfigGenerator = () => {
         modelPath = 'nvidia/DeepSeek-V3-0324-NVFP4';
       }
 
+      // H100 requires 16 GPUs (2 nodes) due to model size; other platforms use 8 GPUs
+      const gpuCount = hardware === 'h100' ? 16 : 8;
+
       let cmd = 'python3 -m sglang.launch_server \\\n';
       cmd += `  --model-path ${modelPath}`;
 
       // TP strategy
       if (strategyArray.includes('tp')) {
-        cmd += ` \\\n  --tp 8`;
+        cmd += ` \\\n  --tp ${gpuCount}`;
       }
 
       // DP strategy
       if (strategyArray.includes('dp')) {
-        cmd += ` \\\n  --dp 8 \\\n  --enable-dp-attention`;
+        cmd += ` \\\n  --dp ${gpuCount} \\\n  --enable-dp-attention`;
       }
 
       // EP strategy
       if (strategyArray.includes('ep')) {
-        cmd += ` \\\n  --ep 8`;
+        cmd += ` \\\n  --ep ${gpuCount}`;
       }
 
       // MTP strategy
