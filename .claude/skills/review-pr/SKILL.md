@@ -15,7 +15,7 @@ Fetch the diff, run the checklist, report what you find.
 
 ## Steps
 
-1. `gh pr view <N> --json title,body,files,author,baseRefName,headRefName`
+1. `gh pr view <N> --json title,body,files,author,baseRefName,headRefName,commits,reviews`
 2. `gh pr diff <N>`
 3. `gh pr list --state open --search "<model name>"` (duplicate check)
 4. Run every checklist item against the diff
@@ -127,9 +127,9 @@ npm run build
 - Flag each error with the exact wrong text and correction
 
 ### 14. Reviewer feedback
-- Check existing review comments — have prior reviewer requests been addressed?
+- Check existing review comments from `gh api repos/$(gh repo view --json nameWithOwner -q .nameWithOwner)/pulls/<N>/comments` — have prior reviewer requests been addressed?
 - Unresolved requested changes from collaborators should be flagged
-- If a reviewer requested something specific (e.g., accuracy warning), verify it was added
+- If a reviewer requested something specific (e.g., accuracy warning), verify it was added in the latest diff
 
 ## Output
 
