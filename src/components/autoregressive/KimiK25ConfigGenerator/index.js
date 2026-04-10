@@ -146,7 +146,7 @@ const KimiK25ConfigGenerator = () => {
       // Apply commandRule from all options
       Object.entries(this.options).forEach(([key, option]) => {
         if (option.commandRule) {
-          const rule = option.commandRule(values[key]);
+          const rule = option.commandRule(values[key], values);
           if (rule) {
             cmd += ` \\\n  ${rule}`;
           }
