@@ -21,15 +21,14 @@ SGLang offers multiple installation methods. You can choose the most suitable in
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
 
-**For AMD MI300X/MI325X/MI355X GPUs:**
+**Docker Images by Hardware Platform:**
 
-```bash
-# Docker (AMD MI300X/MI325X)
-docker pull lmsysorg/sglang:v0.5.10.post1-rocm720-mi30x
-
-# Docker (AMD MI355X)
-docker pull lmsysorg/sglang:v0.5.10.post1-rocm720-mi35x
-```
+| Hardware Platform | Docker Image |
+| --- | --- |
+| NVIDIA A100 / H100 / H200 / B200 | `lmsysorg/sglang:v0.5.10.post1` |
+| NVIDIA B300 / GB300 | `lmsysorg/sglang:v0.5.10.post1-cu130` |
+| AMD MI300X / MI325X | `lmsysorg/sglang:v0.5.10.post1-rocm720-mi30x` |
+| AMD MI355X | `lmsysorg/sglang:v0.5.10.post1-rocm720-mi35x` |
 
 ## 3. Model Deployment
 
@@ -396,21 +395,39 @@ final_response = client.chat.completions.create(
 print(final_response.choices[0].message.content)
 ```
 
+**Output Example:**
+```
+The weather in Beijing is currently 22°C and sunny.
+```
+
 ## 5. Benchmark
 
 This section uses **industry-standard configurations** for comparable benchmark results.
 
-### 5.1 Speed Benchmark
-
 **Test Environment**:
 
-- Hardware: TODO
-- Model: MiniMax-M2.7
-- Tensor Parallelism: TODO
-- Expert Parallelism: TODO
-- sglang version: 0.5.10.post1
+- Hardware: 2× NVIDIA GB300 (275GB per die)
+- Docker Image: `lmsysorg/sglang:v0.5.10.post1-cu130`
+- Model: MiniMax-M2.7 (FP8)
+- Tensor Parallelism: 2
+- SGLang version: 0.5.10.post1
 
-#### 5.1.1 Low Concurrency
+### 5.1 Accuracy Benchmark
+
+#### 5.1.1 GSM8K Benchmark
+- Benchmark Method: 8-shot Chain-of-Thought, evaluated via OpenAI-compatible API
+- Test Results:
+```
+GSM8K Results (8-shot CoT)
+Model: MiniMaxAI/MiniMax-M2.7
+Total: 1319
+Correct: 1218
+Accuracy: 92.34%
+```
+
+### 5.2 Speed Benchmark
+
+#### 5.2.1 Low Concurrency
 
 - Benchmark Command:
 ```
@@ -425,10 +442,34 @@ python3 -m sglang.bench_serving \
 ```
 - Test Results:
 ```
-TODO
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 1
+Successful requests:                     10
+Benchmark duration (s):                  34.33
+Total input tokens:                      6101
+Total generated tokens:                  4220
+Request throughput (req/s):              0.29
+Input token throughput (tok/s):          177.71
+Output token throughput (tok/s):         122.92
+Total token throughput (tok/s):          300.63
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   3431.21
+Median E2E Latency (ms):                 2742.57
+---------------Time to First Token----------------
+Mean TTFT (ms):                          50.28
+Median TTFT (ms):                        53.85
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          8.02
+Median TPOT (ms):                        8.01
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           8.03
+Median ITL (ms):                         8.02
+==================================================
 ```
 
-#### 5.1.2 High Concurrency
+#### 5.2.2 High Concurrency
 
 - Benchmark Command:
 ```
@@ -443,29 +484,30 @@ python3 -m sglang.bench_serving \
 ```
 - Test Results:
 ```
-TODO
-```
-
-### 5.2 Accuracy Benchmark
-
-#### 5.2.1 GSM8K Benchmark
-- Benchmark Command:
-```
-python3 benchmark/gsm8k/bench_sglang.py --port 30000
-```
-- Test Results:
-```
-TODO
-```
-
-#### 5.2.2 MMLU Benchmark
-- Benchmark Command:
-```
-cd benchmark/mmlu
-bash download_data.sh
-python3 bench_sglang.py --port 30000
-```
-- Test Results:
-```
-TODO
+============ Serving Benchmark Result ============
+Backend:                                 sglang
+Traffic request rate:                    inf
+Max request concurrency:                 100
+Successful requests:                     500
+Benchmark duration (s):                  100.20
+Total input tokens:                      249831
+Total generated tokens:                  252662
+Request throughput (req/s):              4.99
+Input token throughput (tok/s):          2493.41
+Output token throughput (tok/s):         2521.66
+Total token throughput (tok/s):          5015.07
+Concurrency:                             90.19
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   18072.69
+Median E2E Latency (ms):                 17761.84
+---------------Time to First Token----------------
+Mean TTFT (ms):                          247.94
+Median TTFT (ms):                        92.05
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          35.75
+Median TPOT (ms):                        36.67
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           35.34
+Median ITL (ms):                         30.55
+==================================================
 ```
