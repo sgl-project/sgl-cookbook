@@ -134,7 +134,20 @@ print(response.choices[0].message.content)
 
 **Example Output**:
 ```
-TODO
+<think>The user asks: "Who won the World Series in 2020?" That's a simple factual question. The answer: the Los Angeles Dodgers won the 2020 MLB World Series, defeating the Tampa Bay Rays. So answer accordingly.
+
+We must be mindful of policy: it's a factual question about sports. It's allowed. Provide answer with brief context.
+
+We should answer concisely.
+
+Hence final answer: The Los Angeles Dodgers won the 2020 World Series, defeating the Tampa Bay Rays in six games (best-of-seven series). Possibly mention it was played at a neutral site due to COVID-19, at Globe Life Field in Arlington, Texas.
+
+We must avoid disallowed content, no issue.
+
+Thus final.
+</think>
+
+The **Los Angeles Dodgers** won the 2020 World Series. They defeated the **Tampa Bay Rays** in six games (4‑2) in a best‑of‑seven series that was played at Globe Life Field in Arlington, Texas, under the MLB bubble‑like arrangements for the COVID‑19 pandemic.
 ```
 
 ### 4.2 Advanced Usage
@@ -228,7 +241,43 @@ print()
 **Output Example:**
 
 ```text
-TODO
+=============== Thinking =================
+The user asks: "Solve this problem step by step: What is 15% of 240?" Straightforward. Provide solution: 15% = 15/100 = 0.15. Multiply 240 * 0.15 = 36. Show steps. So answer: 36. Provide explanation.
+
+But also ensure we follow any policy? No issues. Just straightforward.
+
+I'll provide a step-by-step solution.
+
+Also could show fraction: 15% = 15/100 = 3/20, multiply 240 * 3/20 = (240/20)*3 = 12*3 = 36.
+
+Yes. Provide final answer. Also show verification: 10% of 240 is 24, 5% is 12, total 36.
+
+All good.
+
+=============== Content =================
+
+**Step‑by‑step solution**
+
+1. **Convert the percent to a decimal (or a fraction).**
+
+   15% = 15/100 = 0.15 = 3/20
+
+2. **Multiply the original number (240) by this decimal/fraction.**
+
+   Using the decimal:
+   240 × 0.15 = 36
+
+   Or using the fraction:
+   240 × 3/20 = (240/20) × 3 = 12 × 3 = 36
+
+3. **Result:**
+
+   15% of 240 = **36**
+
+*Check:*
+- 10% of 240 = 24
+- 5% of 240 = 12
+- Adding them: 24 + 12 = 36, which matches the calculation.
 ```
 
 **Note:** The `minimax-append-think` reasoning parser embeds the thinking process in `<think>...</think>` tags within the `content` field. The code above parses these tags in real-time to display thinking and content separately.
@@ -305,7 +354,8 @@ else:
 
 **Output Example**:
 ```
-TODO
+Tool Call: get_weather
+   Arguments: {"location": "Beijing"}
 ```
 
 **Handling Tool Call Results:**
