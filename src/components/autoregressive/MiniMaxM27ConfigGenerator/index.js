@@ -70,16 +70,16 @@ const MiniMaxM27ConfigGenerator = () => {
         name: 'thinking',
         title: 'Thinking Capabilities',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
         ]
       },
       toolcall: {
         name: 'toolcall',
         title: 'Tool Call Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
         ]
       }
     },
