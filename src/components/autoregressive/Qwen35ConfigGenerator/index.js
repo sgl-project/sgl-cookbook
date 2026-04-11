@@ -269,11 +269,6 @@ const Qwen35ConfigGenerator = () => {
         }
       });
 
-      // FP8 KV cache dtype (NVIDIA only)
-      if (quantization === 'fp8' && !amdGpus.includes(hardware)) {
-        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
-      }
-
       // Chunked prefill tuning for H200 FP8 + MTP (validated on H200 only)
       if (hardware === 'h200' && quantization === 'fp8' && speculative === 'enabled') {
         cmd += ` \\\n  --max-running-requests 128`;
@@ -289,7 +284,6 @@ const Qwen35ConfigGenerator = () => {
       // H200 FP8-specific optimizations
       if (hardware === 'h200' && quantization === 'fp8') {
         cmd += ` \\\n  --attention-backend flashinfer`;
-        cmd += ` \\\n  --kv-cache-dtype fp8_e4m3`;
         if (MOE_MODELS.has(model)) {
           cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
         }

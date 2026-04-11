@@ -166,7 +166,6 @@ const GLM5ConfigGenerator = () => {
       // B200 FP8: all optimized flags consolidated
       if (hardware === 'b200' && effectiveQuant === 'fp8') {
         cmd += ' \\\n  --ep 1';
-        cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
         cmd += ' \\\n  --quantization fp8';
         cmd += ' \\\n  --attention-backend nsa';
         cmd += ' \\\n  --nsa-decode-backend trtllm';

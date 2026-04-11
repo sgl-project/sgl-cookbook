@@ -106,6 +106,10 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 | MI325X   | 256GB  | 4       | 2      | N/A             |
 | MI355X   | 288GB  | 4       | 2      | N/A             |
 
+:::caution FP8 KV Cache
+`--kv-cache-dtype fp8_e4m3` quantizes the KV cache to FP8 at runtime. Since these FP8 model checkpoints do not include pre-calibrated KV cache scaling factors, SGLang defaults to a scale of 1.0, which may cause noticeable accuracy degradation on reasoning-heavy tasks. It is not included in the generated commands above; add it manually only if memory constraints require the trade-off.
+:::
+
 ## 4. Model Invocation
 
 **NVIDIA:**

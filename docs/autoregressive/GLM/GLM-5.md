@@ -53,15 +53,15 @@ import GLM5ConfigGenerator from '@site/src/components/autoregressive/GLM5ConfigG
 | MI300X/MI325X | — | tp=8 |
 | MI355X   | — | tp=8 |
 
-:::caution FP8 Accuracy
-FP8 quantization (`--quantization fp8`, `--kv-cache-dtype fp8_e4m3`) reduces memory usage and improves throughput but may cause a slight accuracy drop compared to BF16. Evaluate on your target task before deploying in accuracy-sensitive applications.
-:::
-
-- **B200 (FP8)**: Use `--ep 1 --attention-backend nsa --nsa-decode-backend trtllm --nsa-prefill-backend trtllm --moe-runner-backend flashinfer_trtllm --enable-flashinfer-allreduce-fusion` for optimized NSA and MoE backends on Blackwell. Also add `--kv-cache-dtype fp8_e4m3 --quantization fp8` for FP8 KV cache and weight quantization.
+- **B200 (FP8)**: Use `--ep 1 --attention-backend nsa --nsa-decode-backend trtllm --nsa-prefill-backend trtllm --moe-runner-backend flashinfer_trtllm --enable-flashinfer-allreduce-fusion` for optimized NSA and MoE backends on Blackwell. Also add `--quantization fp8` for FP8 weight quantization.
 
 - **AMD GPUs**: Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). EAGLE speculative decoding is not currently supported on AMD for GLM-5.
 - For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
 - Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
+
+:::caution FP8 KV Cache
+`--kv-cache-dtype fp8_e4m3` quantizes the KV cache to FP8 at runtime. Since these FP8 model checkpoints do not include pre-calibrated KV cache scaling factors, SGLang defaults to a scale of 1.0, which may cause noticeable accuracy degradation on reasoning-heavy tasks. It is not included in the generated commands above; add it manually only if memory constraints require the trade-off.
+:::
 
 ## 4. Model Invocation
 
