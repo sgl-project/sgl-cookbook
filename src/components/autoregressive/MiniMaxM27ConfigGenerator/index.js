@@ -61,7 +61,7 @@ const MiniMaxM27ConfigGenerator = () => {
               id: '8gpu',
               label: '8',
               default: false,
-              disabled: false
+              disabled: isGB300
             }
           ];
         }

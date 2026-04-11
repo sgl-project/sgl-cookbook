@@ -65,7 +65,7 @@ import MiniMaxM27ConfigGenerator from '@site/src/components/autoregressive/MiniM
 **Hardware Requirements: NVIDIA GB300**
 
 - **2-GPU deployment**: GB300 (275GB per die) can host the model with TP=2
-- **4-GPU / 8-GPU deployment**: Also supported for higher throughput
+- **4-GPU deployment**: Maximum single-node TP for GB300, recommended for higher throughput
 
 **Hardware Requirements: AMD**
 
