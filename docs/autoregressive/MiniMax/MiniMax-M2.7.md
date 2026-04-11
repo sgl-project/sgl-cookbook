@@ -495,7 +495,13 @@ ns eval \
     ++inference.temperature=0.0 \
     ++parse_reasoning=True
 ```
-- Test Results: *(pending — evaluation in progress)*
+- Test Results:
+
+| Evaluation Mode | Accuracy | No Answer |
+|-----------------|----------|-----------|
+| pass@1 (greedy) | 69.41% | 18.75% |
+
+> **Note**: The high no-answer rate is due to the 32K token limit being insufficient for M2.7's extended thinking on some questions. A rerun with 120K tokens is expected to improve accuracy significantly.
 
 #### 5.1.4 GSM8K Benchmark
 - Benchmark Method: 8-shot Chain-of-Thought, evaluated via OpenAI-compatible API
