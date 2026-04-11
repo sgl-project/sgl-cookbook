@@ -130,6 +130,11 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/MiniMax/MiniMax-M2.7',
+              label: 'MiniMax-M2.7',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/MiniMax/MiniMax-M2.5',
               label: 'MiniMax-M2.5',
             },

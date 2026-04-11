@@ -82,6 +82,7 @@ Each recipe provides step-by-step instructions to help you quickly implement SGL
 
 #### MiniMax
 
+- [x] [MiniMax-M2.7](./autoregressive/MiniMax/MiniMax-M2.7.md)
 - [x] [MiniMax-M2.5](./autoregressive/MiniMax/MiniMax-M2.5.md)
 - [ ] [MiniMax-M2](./autoregressive/MiniMax/MiniMax-M2.md)
 

@@ -1,0 +1,39 @@
+# MiniMax-M2.7 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/minimax-m27.yaml
+#
+# Model: ~220GB FP8 weights, MoE (256 experts, 8 active)
+# GPU requirements (FP8 only):
+#   A100 (80GB): tp=4
+#   H100 (80GB): tp=4
+#   H200 (141GB): tp=4
+#   B200 (180GB): tp=4
+#   GB300 (275GB): tp=2
+#   MI300X (192GB): tp=2
+#   MI325X (256GB): tp=2
+#   MI355X (288GB): tp=2
+
+vendor: minimax
+
+defaults:
+  hardware:
+    A100: { tp: 4 }
+    H100: { tp: 4 }
+    H200: { tp: 4 }
+    B200: { tp: 4 }
+    GB300: { tp: 2 }
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+
+families:
+  - name: MiniMax-M2.7
+    description: MiniMax-M2.7 MoE model (256 experts, 8 active) with self-evolution, agentic, coding, and reasoning capabilities
+    llm:
+      thinking_capability: hybrid
+      tool_parser: minimax-m2
+      reasoning_parser: minimax-append-think
+
+    models:
+      - name: MiniMax-M2.7
+        quantization: fp8
