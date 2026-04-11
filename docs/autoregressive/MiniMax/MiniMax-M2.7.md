@@ -414,7 +414,90 @@ This section uses **industry-standard configurations** for comparable benchmark 
 
 ### 5.1 Accuracy Benchmark
 
-#### 5.1.1 GSM8K Benchmark
+**Evaluation Tool**: [NVIDIA NeMo-Skills](https://github.com/NVIDIA-NeMo/Skills)
+
+**Evaluation Settings**: temperature=0.6, top_p=0.95, 8 seeds, max_tokens=120,000, `parse_reasoning=True`
+
+#### 5.1.1 GPQA Diamond
+
+- Dataset: [GPQA Diamond](https://huggingface.co/datasets/Idavidrein/gpqa) (198 questions)
+- Prompt: `eval/aai/mcq-4choices` (4-choice multiple choice, matching [Artificial Analysis methodology](https://artificialanalysis.ai/methodology/intelligence-benchmarking))
+- Evaluation command:
+```bash
+ns prepare_data gpqa
+
+ns eval \
+    --cluster=local \
+    --server_type=openai \
+    --model=MiniMaxAI/MiniMax-M2.7 \
+    --server_address=http://localhost:30000/v1 \
+    --output_dir=./m2.7-eval/ \
+    --benchmarks=gpqa:8 \
+    ++prompt_config=eval/aai/mcq-4choices \
+    ++inference.tokens_to_generate=120000 \
+    ++inference.temperature=0.6 \
+    ++inference.top_p=0.95 \
+    ++parse_reasoning=True
+```
+- Test Results:
+
+| Evaluation Mode | Accuracy | No Answer |
+|-----------------|----------|-----------|
+| pass@1 (avg-of-8) | 84.91% | 3.54% |
+| **majority@8** | **88.89%** | 0.00% |
+| pass@8 | 96.46% | 0.00% |
+
+#### 5.1.2 AIME 2025
+
+- Dataset: AIME 2025 (30 problems)
+- Prompt: `generic/math` (boxed answer format)
+- Evaluation command:
+```bash
+ns prepare_data aime25
+
+ns eval \
+    --cluster=local \
+    --server_type=openai \
+    --model=MiniMaxAI/MiniMax-M2.7 \
+    --server_address=http://localhost:30000/v1 \
+    --output_dir=./m2.7-eval/ \
+    --benchmarks=aime25:8 \
+    ++inference.tokens_to_generate=120000 \
+    ++inference.temperature=0.6 \
+    ++inference.top_p=0.95 \
+    ++parse_reasoning=True
+```
+- Test Results:
+
+| Evaluation Mode | Accuracy | No Answer |
+|-----------------|----------|-----------|
+| pass@1 (avg-of-8) | 92.50% ± 5.56% | 2.92% |
+| **majority@8** | **97.08%** | 0.00% |
+| pass@8 | 100.00% | 0.00% |
+
+#### 5.1.3 MMLU-Pro
+
+- Dataset: [MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro) (12,032 questions, 10-choice)
+- Prompt: `eval/aai/mcq-10choices` (10-choice multiple choice)
+- Evaluation command:
+```bash
+ns prepare_data mmlu-pro
+
+ns eval \
+    --cluster=local \
+    --server_type=openai \
+    --model=MiniMaxAI/MiniMax-M2.7 \
+    --server_address=http://localhost:30000/v1 \
+    --output_dir=./m2.7-eval/ \
+    --benchmarks=mmlu-pro \
+    ++prompt_config=eval/aai/mcq-10choices \
+    ++inference.tokens_to_generate=32768 \
+    ++inference.temperature=0.0 \
+    ++parse_reasoning=True
+```
+- Test Results: *(pending — evaluation in progress)*
+
+#### 5.1.4 GSM8K Benchmark
 - Benchmark Method: 8-shot Chain-of-Thought, evaluated via OpenAI-compatible API
 - Test Results:
 ```
