@@ -63,3 +63,7 @@ vendors:
   stepfun-ai:
     name: StepFun
     huggingface_org: stepfun-ai
+
+  minimax:
+    name: MiniMax
+    huggingface_org: MiniMaxAI
