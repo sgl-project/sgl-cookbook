@@ -42,10 +42,10 @@ uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=pytho
 docker pull lmsysorg/sglang:nightly-dev-20260216-d3bae71e
 
 # Or use Docker (AMD MI300X/MI325X)
-docker pull lmsysorg/sglang:v0.5.9-rocm720-mi30x
+docker pull lmsysorg/sglang:v0.5.10-rocm720-mi30x
 
 # Or use Docker (AMD MI355X)
-docker pull lmsysorg/sglang:v0.5.9-rocm720-mi35x
+docker pull lmsysorg/sglang:v0.5.10-rocm720-mi35x
 ```
 
 For the full Docker setup and other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
