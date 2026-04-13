@@ -220,6 +220,7 @@ const Qwen35ConfigGenerator = () => {
 
     generateCommand: function (values) {
       const { model, hardware, quantization, speculative, mambaCache } = values;
+      const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
 
       const hwConfig = this.modelConfigs[model]?.[hardware]?.[quantization];
       if (!hwConfig) {
@@ -232,7 +233,6 @@ const Qwen35ConfigGenerator = () => {
       let modelName;
       if (quantization === 'fp4') {
         // AMD GPUs use MXFP4 variant, NVIDIA uses NVFP4 variant
-        const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
         if (amdGpus.includes(hardware)) {
           modelName = 'amd/Qwen3.5-397B-A17B-MXFP4';
         } else {
@@ -258,7 +258,6 @@ const Qwen35ConfigGenerator = () => {
       }
 
       // Force Mamba V1 for AMD GPUs (V2 requires FLA backend)
-      const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
       const actualMambaCache = amdGpus.includes(hardware) ? 'v1' : mambaCache;
       const adjustedValues = { ...values, mambaCache: actualMambaCache };
 
@@ -282,8 +281,8 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --tokenizer-worker-num 6`;
       }
 
-      // Enable allreduce fusion for all Qwen3.5 configs (skip for FP4: benchmark only enables this for TP≥8).
-      if (quantization !== 'fp4') {
+      // Enable allreduce fusion for NVIDIA GPUs only (skip for FP4: benchmark only enables this for TP≥8, skip for AMD: not supported).
+      if (quantization !== 'fp4' && !amdGpus.includes(hardware)) {
         cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
       }
 
