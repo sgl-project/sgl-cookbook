@@ -224,7 +224,7 @@ const Qwen35ConfigGenerator = () => {
       const hwConfig = this.modelConfigs[model]?.[hardware]?.[quantization];
       if (!hwConfig) {
         if (quantization === 'fp4') {
-          return '# FP4 requires B200/B300 (Blackwell) and is only available for Qwen3.5-397B-A17B';
+          return '# FP4 requires B200/B300 (Blackwell) or MI355X (AMD) and is only available for Qwen3.5-397B-A17B';
         }
         return '# Please select a valid hardware and quantization combination';
       }
@@ -316,8 +316,8 @@ const Qwen35ConfigGenerator = () => {
         }
       }
 
-      // FP4-specific backend settings
-      if (quantization === 'fp4') {
+      // FP4-specific backend settings (NVIDIA only)
+      if (quantization === 'fp4' && (hardware === 'b200' || hardware === 'b300')) {
         cmd += ' \\\n  --quantization modelopt_fp4';
         cmd += ' \\\n  --fp4-gemm-backend flashinfer_cutlass';
         cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
