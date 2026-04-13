@@ -19,7 +19,7 @@ Qwen3.5 features a Gated Delta Networks combined with sparse Mixture-of-Experts 
 
 | Model | BF16 (Full precision) | FP8 (8-bit Quantized) | FP4 (4-bit Quantized) |
 |-------|------|-----|-----|
-| Qwen3.5-397B-A17B | [Qwen/Qwen3.5-397B-A17B](https://huggingface.co/Qwen/Qwen3.5-397B-A17B) | [Qwen/Qwen3.5-397B-A17B-FP8](https://huggingface.co/Qwen/Qwen3.5-397B-A17B-FP8) | [nvidia/Qwen3.5-397B-A17B-NVFP4](https://huggingface.co/nvidia/Qwen3.5-397B-A17B-NVFP4) |
+| Qwen3.5-397B-A17B | [Qwen/Qwen3.5-397B-A17B](https://huggingface.co/Qwen/Qwen3.5-397B-A17B) | [Qwen/Qwen3.5-397B-A17B-FP8](https://huggingface.co/Qwen/Qwen3.5-397B-A17B-FP8) | [nvidia/Qwen3.5-397B-A17B-NVFP4](https://huggingface.co/nvidia/Qwen3.5-397B-A17B-NVFP4) (NVIDIA)<br/>[amd/Qwen3.5-397B-A17B-MXFP4](https://huggingface.co/amd/Qwen3.5-397B-A17B-MXFP4) (AMD) |
 | Qwen3.5-122B-A10B | [Qwen/Qwen3.5-122B-A10B](https://huggingface.co/Qwen/Qwen3.5-122B-A10B) | [Qwen/Qwen3.5-122B-A10B-FP8](https://huggingface.co/Qwen/Qwen3.5-122B-A10B-FP8) | - |
 | Qwen3.5-35B-A3B | [Qwen/Qwen3.5-35B-A3B](https://huggingface.co/Qwen/Qwen3.5-35B-A3B) | [Qwen/Qwen3.5-35B-A3B-FP8](https://huggingface.co/Qwen/Qwen3.5-35B-A3B-FP8) | - |
 | Qwen3.5-27B | [Qwen/Qwen3.5-27B](https://huggingface.co/Qwen/Qwen3.5-27B) | [Qwen/Qwen3.5-27B-FP8](https://huggingface.co/Qwen/Qwen3.5-27B-FP8) | - |
@@ -92,9 +92,10 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **MI300X (192GB)** runs with tp=4.
         - **MI325X (256GB)** runs with tp=2.
         - **MI355X (288GB)** runs with tp=2.
-    - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
+    - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Compatible with B200/B300 (Blackwell architecture) and AMD MI355X.
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
+        - **MI355X (288GB)** runs with tp=2.
 
 | Hardware | Memory | BF16 TP | FP8 TP | FP4 TP |
 | -------- | ------ | ------- | ------ | --------------- |
@@ -104,7 +105,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 | B300     | 275GB  | 4       | 2      | 2               |
 | MI300X   | 192GB  | 8       | 4      | N/A             |
 | MI325X   | 256GB  | 4       | 2      | N/A             |
-| MI355X   | 288GB  | 4       | 2      | N/A             |
+| MI355X   | 288GB  | 4       | 2      | 2               |
 
 :::caution FP8 KV Cache
 `--kv-cache-dtype fp8_e4m3` quantizes the KV cache to FP8 at runtime. Since these FP8 model checkpoints do not include pre-calibrated KV cache scaling factors, SGLang defaults to a scale of 1.0, which may cause noticeable accuracy degradation on reasoning-heavy tasks. It is not included in the generated commands above; add it manually only if memory constraints require the trade-off.
@@ -141,12 +142,16 @@ sglang serve \
   --tp 8 \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3_coder \
+  --trust-remote-code \
+  --attention-backend aiter \
   --mem-fraction-static 0.8 \
-  --attention-backend triton \
+  --model-loader-extra-config '{"enable_multithread_load": true}' \
+  --watchdog-timeout 1200 \
+  --disable-radix-cache \
   --host 0.0.0.0 \
   --port 30000
 ```
-> **Note:** TP8 works on all MI GPUs. For MI325X/MI355X, you can use --tp 4 as the minimum requirement.
+> **Note:** TP8 works on all MI GPUs. For MI325X/MI355X, you can use --tp 4 as the minimum requirement. MI355X also supports FP4 quantization with tp=2 using the model `amd/Qwen3.5-397B-A17B-MXFP4`.
 
 ### 4.1 Basic Usage
 
