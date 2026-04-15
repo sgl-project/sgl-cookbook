@@ -73,7 +73,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - To speed up weight loading for this large model, add `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'` to the launch command.
 - **CUDA IPC Transport**: Add `SGLANG_USE_CUDA_IPC_TRANSPORT=1` as an environment variable to use CUDA IPC for transferring multimodal features, significantly improving TTFT (Time To First Token). Note: this consumes additional memory proportional to image size, so you may need to lower `--mem-fraction-static` or `--max-running-requests`.
 - **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200/B300.
-- **AMD + Qwen3.5-397B-A17B-FP8**: Prefer `--attention-backend aiter` on MI300X/MI325X/MI355X.
+- **AMD + Qwen3.5-397B-A17B-FP8**: Prefer `--attention-backend aiter` on MI300X/MI325X.
 - **B200 (FP8)**: Add `--enable-flashinfer-allreduce-fusion` for optimized throughput on Blackwell.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
 - Hardware requirements:
@@ -134,7 +134,7 @@ sglang serve \
 
 **AMD (BF16):**
 
-Deploy Qwen3.5-397B-A17B with the following command (MI300X/MI325X/MI355X):
+Deploy Qwen3.5-397B-A17B with the following command (MI300X/MI325X):
 
 ```shell
 sglang serve \
@@ -147,11 +147,11 @@ sglang serve \
   --host 0.0.0.0 \
   --port 30000
 ```
-> **Note:** TP8 works on all MI GPUs. For MI325X/MI355X, you can use --tp 4 as the minimum requirement.
+> **Note:** TP8 works on all MI GPUs. For MI325X, you can use --tp 4 as the minimum requirement.
 
 **AMD (FP8):**
 
-For the FP8 checkpoint on MI300X/MI325X/MI355X, use the AITER unified attention backend (requires an SGLang ROCm build with the [AITER](https://github.com/ROCm/aiter) dependency available, as in the official ROCm Docker images):
+For the FP8 checkpoint on MI300X/MI325X, use the AITER unified attention backend (requires an SGLang ROCm build with the [AITER](https://github.com/ROCm/aiter) dependency available, as in the official ROCm Docker images):
 
 ```shell
 sglang serve \
@@ -166,7 +166,7 @@ sglang serve \
   --port 30000
 ```
 
-> **Note:** On MI325X/MI355X you can use `--tp 2` per the memory table above. Enable `SGLANG_USE_AITER=1` in the environment if you rely on AITER kernels for MoE or GEMM as well.
+> **Note:** On MI325X you can use `--tp 2` per the memory table above. Enable `SGLANG_USE_AITER=1` in the environment if you rely on AITER kernels for MoE or GEMM as well.
 
 ### 4.1 Basic Usage
 
