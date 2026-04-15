@@ -296,7 +296,9 @@ const Qwen35ConfigGenerator = () => {
 
       // Append AMD GPU-specific backend configurations
       if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
-        cmd += ` \\\n  --attention-backend triton`;
+        const amdAttnBackend =
+          model === '397b' && quantization === 'fp8' ? 'aiter' : 'triton';
+        cmd += ` \\\n  --attention-backend ${amdAttnBackend}`;
       }
 
       // Tokenizer workers for H200 and B200/B300
