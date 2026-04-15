@@ -123,13 +123,13 @@ const GLM5ConfigGenerator = () => {
       // NVFP4 B200: trtllm NSA backends, flashinfer fusion, FP8 KV cache
       if (isNVFP4) {
         cmd += ' \\\n  --trust-remote-code';
+        cmd += ' \\\n  --ep 1';
         cmd += ' \\\n  --quantization modelopt_fp4';
         cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
         cmd += ' \\\n  --nsa-decode-backend trtllm';
         cmd += ' \\\n  --nsa-prefill-backend trtllm';
         cmd += ' \\\n  --moe-runner-backend flashinfer_trtllm';
         cmd += ' \\\n  --enable-flashinfer-allreduce-fusion';
-        cmd += ' \\\n  --enable-dp-lm-head';
         cmd += ' \\\n  --disable-radix-cache';
         cmd += ' \\\n  --max-prefill-tokens 32768';
         cmd += ' \\\n  --chunked-prefill-size 32768';
