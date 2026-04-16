@@ -151,7 +151,7 @@ sglang serve \
   --host 0.0.0.0 \
   --port 30000
 ```
-> **Note:** TP8 works on all MI GPUs. Minimum TP for MI325X/MI355X: BF16 uses --tp 4, FP8 uses --tp 2. MI355X also supports FP4 with --tp 2 using `amd/Qwen3.5-397B-A17B-MXFP4`.
+> **Note:** TP8 works on all MI GPUs. For MI325X/MI355X, you can use --tp 4 as the minimum requirement.
 
 ### 4.1 Basic Usage
 
