@@ -124,6 +124,15 @@ const Qwen35ConfigGenerator = () => {
         getDynamicItems: (currentValues) => {
           const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
           const isAmdGpu = amdGpus.includes(currentValues.hardware);
+          const mtpEnabled = currentValues.speculative === 'enabled';
+
+          // MTP requires V2 mamba radix cache
+          if (mtpEnabled && !isAmdGpu) {
+            return [
+              { id: 'v1', label: 'V1', default: false, disabled: true },
+              { id: 'v2', label: 'V2', default: true }
+            ];
+          }
 
           // Show V2 as disabled for AMD GPUs (V2 requires FLA backend, NVIDIA only)
           if (isAmdGpu) {
@@ -139,7 +148,7 @@ const Qwen35ConfigGenerator = () => {
             { id: 'v2', label: 'V2', default: false }
           ];
         },
-        commandRule: (value) => value === 'v2' ? '--mamba-scheduler-strategy extra_buffer \\\n  --page-size 64' : null
+        commandRule: (value) => value === 'v2' ? '--mamba-scheduler-strategy extra_buffer' : null
       }
     },
 
@@ -252,8 +261,9 @@ const Qwen35ConfigGenerator = () => {
       }
 
       // Force Mamba V1 for AMD GPUs (V2 requires FLA backend)
+      // Force Mamba V2 when MTP is enabled
       const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
-      const actualMambaCache = amdGpus.includes(hardware) ? 'v1' : mambaCache;
+      const actualMambaCache = amdGpus.includes(hardware) ? 'v1' : (speculative === 'enabled' ? 'v2' : mambaCache);
       const adjustedValues = { ...values, mambaCache: actualMambaCache };
 
       // Apply commandRule from all options except quantization (handled via model name)
