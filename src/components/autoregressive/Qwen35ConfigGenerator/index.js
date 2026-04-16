@@ -148,7 +148,7 @@ const Qwen35ConfigGenerator = () => {
         h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
         h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
         b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.85 } },
-        b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
+        b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
         mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
         mi325x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } },
         mi355x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } }
@@ -242,8 +242,13 @@ const Qwen35ConfigGenerator = () => {
       const epValue = hwConfig.ep;
       const memFraction = hwConfig.mem;
 
+      // Prepend SGLANG_ENABLE_SPEC_V2=1 for FP8 MTP on H200/B300 (validated InferenceX#1017, #1035)
+      const envPrefix = ((hardware === 'h200' || hardware === 'b300') && quantization === 'fp8' && speculative === 'enabled')
+        ? 'SGLANG_ENABLE_SPEC_V2=1 '
+        : '';
+
       // Initialize the base command
-      let cmd = `sglang serve --model-path ${modelName}`;
+      let cmd = `${envPrefix}sglang serve --model-path ${modelName}`;
       if (tpValue > 1) {
         cmd += ` \\\n  --tp ${tpValue}`;
       }
@@ -273,6 +278,20 @@ const Qwen35ConfigGenerator = () => {
       if (hardware === 'h200' && quantization === 'fp8' && speculative === 'enabled') {
         cmd += ` \\\n  --max-running-requests 128`;
         cmd += ` \\\n  --chunked-prefill-size 16384`;
+        cmd += ` \\\n  --tokenizer-worker-num 6`;
+      }
+
+      // B300 FP8 MTP-specific optimizations (validated in InferenceX#1035)
+      if (hardware === 'b300' && quantization === 'fp8' && speculative === 'enabled') {
+        cmd += ` \\\n  --enable-symm-mem`;
+        if (MOE_MODELS.has(model)) {
+          cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+        }
+        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        cmd += ` \\\n  --chunked-prefill-size 16384`;
+        cmd += ` \\\n  --max-prefill-tokens 16384`;
+        cmd += ` \\\n  --stream-interval 50`;
+        cmd += ` \\\n  --scheduler-recv-interval 10`;
         cmd += ` \\\n  --tokenizer-worker-num 6`;
       }
 
