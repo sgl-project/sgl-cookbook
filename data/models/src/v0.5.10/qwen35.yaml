@@ -1,0 +1,172 @@
+# Qwen3.5 Model Configurations (Simplified Format)
+# This file is compiled to data/models/generated/v0.5.10/qwen35.yaml
+#
+# GPU requirements (BF16):
+#   H100: tp=16 (model ~800GB in BF16, each rank needs ~100GB > 80GB)
+#   H200: tp=8
+#   B200: tp=8
+#   MI300X: tp=8
+#   MI325X: tp=4
+#   MI355X: tp=4
+#
+# GPU requirements (FP8):
+#   H100: tp=8 (model ~400GB in FP8, each rank needs ~50GB < 80GB)
+#   H200: tp=8, ep=8
+#   B200: tp=4
+#   B300: tp=2
+#   MI300X: tp=4
+#   MI325X: tp=2
+#   MI355X: tp=2
+#
+# GPU requirements (FP4):
+#   B200 (183GB) tp=4, B300 (275GB) tp=2 - FP4 requires Blackwell architecture
+#   MI355X (288GB) tp=2 - AMD FP4 support
+
+vendor: qwen
+
+defaults:
+  hardware:
+    H100: { tp: 16 }
+    H200: { tp: 8 }
+    B200: { tp: 8 }
+    MI300X:
+      tp: 8
+      extra_args:
+        - --trust-remote-code
+        - --attention-backend
+        - aiter
+        - --model-loader-extra-config
+        - '{"enable_multithread_load": true}'
+        - --watchdog-timeout
+        - "1200"
+        - --disable-radix-cache
+    MI325X:
+      tp: 4
+      extra_args:
+        - --trust-remote-code
+        - --attention-backend
+        - aiter
+        - --model-loader-extra-config
+        - '{"enable_multithread_load": true}'
+        - --watchdog-timeout
+        - "1200"
+        - --disable-radix-cache
+    MI355X:
+      tp: 4
+      extra_args:
+        - --trust-remote-code
+        - --attention-backend
+        - aiter
+        - --model-loader-extra-config
+        - '{"enable_multithread_load": true}'
+        - --watchdog-timeout
+        - "1200"
+        - --disable-radix-cache
+  configurations:
+    - name: default
+      nodes: single
+      optimization: balanced
+    - name: speculative-mtp
+      nodes: single
+      optimization: low-latency
+      extra_args:
+        - --speculative-algo
+        - NEXTN
+        - --speculative-num-steps
+        - "3"
+        - --speculative-eagle-topk
+        - "1"
+        - --speculative-num-draft-tokens
+        - "4"
+
+families:
+  - name: Qwen3.5
+    description: Qwen3.5 397B (17B active) MoE VLM with hybrid reasoning, tool calling, and multimodal capabilities
+    llm:
+      thinking_capability: hybrid
+      tool_parser: qwen3_coder
+      reasoning_parser: qwen3
+
+    models:
+      - name: Qwen3.5-397B-A17B
+        quantization: bf16
+
+      - name: Qwen3.5-397B-A17B-FP8
+        quantization: fp8
+        hardware:
+          H100: { tp: 8 }
+          H200: { tp: 8, ep: 8 }
+          B200: { tp: 4 }
+          B300: { tp: 2 }
+          MI300X:
+            tp: 4
+            extra_args:
+              - --trust-remote-code
+              - --attention-backend
+              - aiter
+              - --model-loader-extra-config
+              - '{"enable_multithread_load": true}'
+              - --watchdog-timeout
+              - "1200"
+              - --disable-radix-cache
+          MI325X:
+            tp: 2
+            extra_args:
+              - --trust-remote-code
+              - --attention-backend
+              - aiter
+              - --model-loader-extra-config
+              - '{"enable_multithread_load": true}'
+              - --watchdog-timeout
+              - "1200"
+              - --disable-radix-cache
+          MI355X:
+            tp: 2
+            extra_args:
+              - --trust-remote-code
+              - --attention-backend
+              - aiter
+              - --model-loader-extra-config
+              - '{"enable_multithread_load": true}'
+              - --watchdog-timeout
+              - "1200"
+              - --disable-radix-cache
+
+      - name: Qwen3.5-397B-A17B-NVFP4
+        quantization: fp4
+        model_path: nvidia/Qwen3.5-397B-A17B-NVFP4
+        hardware:
+          B200:
+            tp: 4
+            extra_args:
+              - --attention-backend
+              - trtllm_mha
+              - --moe-runner-backend
+              - flashinfer_trtllm
+              - --fp4-gemm-backend
+              - flashinfer_cutlass
+          B300:
+            tp: 2
+            extra_args:
+              - --attention-backend
+              - trtllm_mha
+              - --moe-runner-backend
+              - flashinfer_trtllm
+              - --fp4-gemm-backend
+              - flashinfer_cutlass
+
+      - name: Qwen3.5-397B-A17B-MXFP4
+        quantization: fp4
+        model_path: amd/Qwen3.5-397B-A17B-MXFP4
+        hardware:
+          MI355X:
+            tp: 2
+            extra_args:
+              - --trust-remote-code
+              - --attention-backend
+              - aiter
+              - --model-loader-extra-config
+              - '{"enable_multithread_load": true}'
+              - --watchdog-timeout
+              - "1200"
+              - --disable-radix-cache
