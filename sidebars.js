@@ -39,9 +39,10 @@ const sidebars = {
           items: [
             {
               type: 'doc',
-              id: 'autoregressive/Qwen/Qwen3.5',
-              label: 'Qwen3.5 [NEW]',
+              id: 'autoregressive/Qwen/Qwen3.6',
+              label: 'Qwen3.6 [NEW]',
             },
+            'autoregressive/Qwen/Qwen3.5',
             'autoregressive/Qwen/Qwen3',
             'autoregressive/Qwen/Qwen3-Next',
             'autoregressive/Qwen/Qwen3-VL',
