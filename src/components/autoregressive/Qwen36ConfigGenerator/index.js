@@ -30,7 +30,10 @@ const Qwen36ConfigGenerator = () => {
         items: [
           { id: 'h100', label: 'H100', default: true },
           { id: 'h200', label: 'H200', default: false },
-          { id: 'b200', label: 'B200', default: false }
+          { id: 'b200', label: 'B200', default: false },
+          { id: 'mi300x', label: 'MI300X', default: true },
+          { id: 'mi325x', label: 'MI325X', default: false },
+          { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
       quantization: {
@@ -91,12 +94,16 @@ const Qwen36ConfigGenerator = () => {
     modelConfigs: {
       h100: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
       h200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-      b200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } }
+      b200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+      mi300x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
+      mi325x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
+      mi355x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } }
     },
 
     generateCommand: function (values) {
       const { hardware, quantization, speculative } = values;
-
+      const isNvidia = hardware === 'h100' || hardware === 'h200' || hardware === 'b200';
+      
       const hwConfig = this.modelConfigs[hardware]?.[quantization];
       if (!hwConfig) {
         return '# Please select a valid hardware and quantization combination';
@@ -110,10 +117,17 @@ const Qwen36ConfigGenerator = () => {
 
       // Prepend env var if MTP is enabled
       let cmd = '';
-      if (speculative === 'enabled') {
+      if (speculative === 'enabled' && isNvidia ) {
         cmd += 'SGLANG_ENABLE_SPEC_V2=1 ';
       }
-
+      // AMD MTP configs
+      if (speculative === 'enabled' && !isNvidia ) {
+        cmd += ` \\\n  --speculative-algorithm EAGLE`;
+        cmd += ` \\\n  --speculative-num-steps 3`;
+        cmd += ` \\\n  --speculative-eagle-topk 1`;
+        cmd += ` \\\n  --speculative-num-draft-tokens 4`;       
+      }
+      
       cmd += `sglang serve --model-path ${modelName}`;
       if (tpValue > 1) {
         cmd += ` \\\n  --tp ${tpValue}`;
@@ -142,6 +156,14 @@ const Qwen36ConfigGenerator = () => {
       // Add memory fraction last
       cmd += ` \\\n  --mem-fraction-static ${memFraction}`;
 
+      // AMD-specific flags
+      if (!isNvidia) {
+        cmd += ` \\\n  --attention-backend triton`;
+        cmd += ` \\\n  --ep-size 1`;
+        cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
+        cmd += ` \\\n  --disable-radix-cache`;
+        cmd += ` \\\n  --trust-remote-code`;    
+      }      
       return cmd;
     }
   };
