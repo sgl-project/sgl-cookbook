@@ -38,8 +38,10 @@ uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=pytho
 
 # Or use Docker (NVIDIA GPUs)
 docker pull lmsysorg/sglang:latest
-```
 
+# Use docker (AMD GPU) 
+docker pull lmsysorg/sglang-rocm:v0.5.10rc0-rocm720-mi35x-20260414
+```
 For the full Docker setup and other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
 
 ## 3. Model Deployment
@@ -94,6 +96,40 @@ SGLANG_ENABLE_SPEC_V2=1 sglang serve \
   --port 30000
 ```
 
+Deploy Qwen3.6-35B-A3B with the following command(AMD GPU):
+```shell
+sglang serve \
+    --attention-backend triton \
+    --model-path Qwen/Qwen3.6-35B-A3B \
+    --host=0.0.0.0 \
+    --port 8888 \
+    --tensor-parallel-size 4 \
+    --ep-size 1 \
+    --trust-remote-code \
+    --tokenizer-worker-num 6 \
+    --enable-aiter-allreduce-fusion \
+    --cuda-graph-max-bs 64 \
+    --disable-radix-cache \
+    --scheduler-recv-interval 30 \
+    --mem-fraction-static 0.8 
+```
+MTP enablement(AMD GPU): 
+```shell
+sglang serve \
+    --model-path Qwen/Qwen3.6-35B-A3B \
+    --tensor-parallel-size 4 \
+    --ep-size 1 \
+    --trust-remote-code \
+    --speculative-algorithm EAGLE \
+    --speculative-num-steps 3 \
+    --speculative-eagle-topk 1 \
+    --speculative-num-draft-tokens 4 \
+    --enable-aiter-allreduce-fusion \
+    --attention-backend triton \
+    --disable-radix-cache \
+    --mem-fraction-static 0.8
+```
+    
 ### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
