@@ -118,6 +118,11 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/Moonshotai/Kimi-K2.6',
+              label: 'Kimi-K2.6 [NEW]',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/Moonshotai/Kimi-K2.5',
               label: 'Kimi-K2.5',
             },
@@ -304,7 +309,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'omni/S2-Pro/S2-Pro',
-              label: 'S2 Pro (TTS) [NEW]',
+              label: 'S2 Pro (TTS)',
             },
           ],
         },
