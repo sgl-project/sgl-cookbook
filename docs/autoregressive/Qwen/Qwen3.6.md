@@ -39,7 +39,7 @@ uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=pytho
 # Or use Docker (NVIDIA GPUs)
 docker pull lmsysorg/sglang:latest
 
-# Use docker (AMD GPU) 
+# Use docker (AMD GPU)
 docker pull lmsysorg/sglang-rocm:v0.5.10rc0-rocm720-mi35x-20260414
 ```
 For the full Docker setup and other installation methods, please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
@@ -111,9 +111,9 @@ sglang serve \
     --cuda-graph-max-bs 64 \
     --disable-radix-cache \
     --scheduler-recv-interval 30 \
-    --mem-fraction-static 0.8 
+    --mem-fraction-static 0.8
 ```
-MTP enablement(AMD GPU): 
+MTP enablement(AMD GPU):
 ```shell
 sglang serve \
     --model-path Qwen/Qwen3.6-35B-A3B \
@@ -129,7 +129,7 @@ sglang serve \
     --disable-radix-cache \
     --mem-fraction-static 0.8
 ```
-    
+
 ### 4.1 Basic Usage
 
 For basic API usage and request examples, please refer to:
