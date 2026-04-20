@@ -339,29 +339,6 @@ if msg.tool_calls:
         print(f"  Arguments: {tc.function.arguments}")
 ```
 
-#### 4.2.5 Speculative Decoding
-
-Kimi-K2.6 shares the same architecture as K2.5 and supports EAGLE3-based speculative decoding. The draft model path will be updated once officially released.
-
-```shell
-SGLANG_ENABLE_SPEC_V2=1 sglang serve \
-  --model-path moonshotai/Kimi-K2.6 \
-  --tp 8 \
-  --reasoning-parser kimi_k2 \
-  --tool-call-parser kimi_k2 \
-  --speculative-algorithm=EAGLE3 \
-  --speculative-num-steps 3 \
-  --speculative-eagle-topk 1 \
-  --speculative-num-draft-tokens 4 \
-  --speculative-draft-model-path <DRAFT_MODEL_PATH> \
-  --trust-remote-code \
-  --host 0.0.0.0 \
-  --port 30000
-```
-
-:::info
-The EAGLE3 draft model for Kimi-K2.6 has not been officially released yet. In the meantime, you may try `lightseekorg/kimi-k2.5-eagle3` as K2.6 shares the same architecture as K2.5. Check [HuggingFace](https://huggingface.co/moonshotai) for updates.
-:::
 
 ## 5. Benchmark
 

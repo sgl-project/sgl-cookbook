@@ -3,8 +3,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 
 /**
  * Kimi-K2.6 Configuration Generator
- * Supports Kimi-K2.6 native multimodal agentic model with reasoning, tool calling,
- * quantization (INT4), and speculative decoding (EAGLE3)
+ * Supports Kimi-K2.6 native multimodal agentic model with reasoning and tool calling.
  *
  * GPU requirements:
  *   H200: tp=8
@@ -13,8 +12,6 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   MI325X: tp=4 (same constraint as MI300X)
  *   MI350X: tp=4 (same constraint as MI300X)
  *   MI355X: tp=4 (same constraint as MI300X)
- *
- * Speculative decoding is only supported on H200 and B300.
  */
 const KimiK26ConfigGenerator = () => {
   const config = {
@@ -60,20 +57,6 @@ const KimiK26ConfigGenerator = () => {
         ],
         commandRule: null
       },
-      speculative: {
-        name: 'speculative',
-        title: 'Speculative Decoding',
-        items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
-        ],
-        commandRule: (value, allValues) => {
-          if (value !== 'enabled') return null;
-          if (allValues.hardware !== 'h200' && allValues.hardware !== 'b300') return null;
-
-          return '--speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4 \\\n  --speculative-draft-model-path <DRAFT_MODEL_PATH>';
-        }
-      }
     },
 
     modelConfigs: {
@@ -86,13 +69,8 @@ const KimiK26ConfigGenerator = () => {
     },
 
     generateCommand: function (values) {
-      const { hardware, speculative } = values;
+      const { hardware } = values;
       const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi350x' || hardware === 'mi355x';
-
-      // Speculative decoding only supported on H200 and B300
-      if (speculative === 'enabled' && hardware !== 'h200' && hardware !== 'b300') {
-        return '# Speculative Decoding for Kimi-K2.6 is only supported on H200 and B300';
-      }
 
       const modelName = `${this.modelFamily}/Kimi-K2.6`;
       const hwConfig = this.modelConfigs[hardware];
@@ -102,17 +80,7 @@ const KimiK26ConfigGenerator = () => {
 
       // AMD ROCm environment variables
       if (isAMD) {
-        cmd += 'SGLANG_USE_AITER=1 SGLANG_ROCM_FUSED_DECODE_MLA=0 ';
-      }
-
-      // Speculative decoding env var
-      if (speculative === 'enabled') {
-        cmd += 'SGLANG_ENABLE_SPEC_V2=1 ';
-      }
-
-      // If we added any env vars above, break to a new line for readability
-      if (isAMD || speculative === 'enabled') {
-        cmd += '\\\n';
+        cmd += 'SGLANG_USE_AITER=1 SGLANG_ROCM_FUSED_DECODE_MLA=0 \\\n';
       }
 
       cmd += 'sglang serve \\\n';
