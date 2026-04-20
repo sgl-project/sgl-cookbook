@@ -71,7 +71,7 @@ const KimiK26ConfigGenerator = () => {
           if (value !== 'enabled') return null;
           if (allValues.hardware !== 'h200' && allValues.hardware !== 'b300') return null;
 
-          return '--speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4 \\\n  --speculative-draft-model-path lightseekorg/kimi-k2.6-eagle3';
+          return '--speculative-algorithm EAGLE3 \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4 \\\n  --speculative-draft-model-path <DRAFT_MODEL_PATH>';
         }
       }
     },

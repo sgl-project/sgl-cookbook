@@ -42,6 +42,12 @@
 **Available Models**:
 - INT4 (Initial Released): [moonshotai/Kimi-K2.6](https://huggingface.co/moonshotai/Kimi-K2.6)
 
+**Recommended Generation Parameters:**
+- Thinking Mode: `temperature=1.0`, `top_p=0.95`
+- Instant Mode: `temperature=0.6`, `top_p=0.95`
+
+**License:** Modified MIT
+
 For details, see [official documentation](https://huggingface.co/moonshotai/Kimi-K2.6) and [tech blog](https://kimi.com/blog/kimi-k2-6).
 
 ## 2. SGLang Installation
@@ -335,9 +341,7 @@ if msg.tool_calls:
 
 #### 4.2.5 Speculative Decoding
 
-**Nvidia**
-
-Deploy Kimi-K2.6 with the following command (H200/B200, all features enabled):
+Kimi-K2.6 shares the same architecture as K2.5 and supports EAGLE3-based speculative decoding. The draft model path will be updated once officially released.
 
 ```shell
 SGLANG_ENABLE_SPEC_V2=1 sglang serve \
@@ -349,11 +353,15 @@ SGLANG_ENABLE_SPEC_V2=1 sglang serve \
   --speculative-num-steps 3 \
   --speculative-eagle-topk 1 \
   --speculative-num-draft-tokens 4 \
-  --speculative-draft-model-path lightseekorg/kimi-k2.6-eagle3 \
+  --speculative-draft-model-path <DRAFT_MODEL_PATH> \
   --trust-remote-code \
   --host 0.0.0.0 \
   --port 30000
 ```
+
+:::info
+The EAGLE3 draft model for Kimi-K2.6 has not been officially released yet. In the meantime, you may try `lightseekorg/kimi-k2.5-eagle3` as K2.6 shares the same architecture as K2.5. Check [HuggingFace](https://huggingface.co/moonshotai) for updates.
+:::
 
 ## 5. Benchmark
 
