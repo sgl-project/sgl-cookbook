@@ -309,7 +309,7 @@ const sidebars = {
             {
               type: 'doc',
               id: 'omni/S2-Pro/S2-Pro',
-              label: 'S2 Pro (TTS) [NEW]',
+              label: 'S2 Pro (TTS)',
             },
           ],
         },

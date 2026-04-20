@@ -86,6 +86,9 @@ const KimiK26ConfigGenerator = () => {
       cmd += 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
       cmd += ` \\\n  --tp ${tpValue}`;
+      if (isAMD) {
+        cmd += ' \\\n  --mem-fraction-static 0.8';
+      }
       cmd += ' \\\n  --trust-remote-code';
 
       // DP Attention: --dp matches --tp

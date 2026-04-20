@@ -13,34 +13,17 @@
 - **Native Multimodality**: Pre-trained on vision–language tokens with MoonViT (400M parameters) for visual understanding, cross-modal reasoning, and agentic tool use grounded in visual inputs.
 
 **Benchmarks (Open-Source SOTA):**
-- HLE w/ tools: 54.0
-- SWE-Bench Pro: 58.6
-- SWE-bench Multilingual: 76.7
-- BrowseComp: 83.2
-- Toolathlon: 50.0
-- AIME 2026: 96.4
-- GPQA-Diamond: 90.5
-- LiveCodeBench: 89.6
 
-**Architecture:**
-
-| Component | Specification |
-|-----------|---------------|
-| Total Parameters | 1 Trillion |
-| Activated Parameters | 32 Billion |
-| Architecture | Mixture-of-Experts (MoE) |
-| Number of Layers | 61 (including 1 dense layer) |
-| Attention Mechanism | MLA |
-| Attention Heads | 64 |
-| Number of Experts | 384 |
-| Experts per Token | 8 + 1 shared |
-| Context Length | 256K tokens |
-| Vocabulary Size | 160K |
-| Vision Encoder | MoonViT (400M) |
-| Activation Function | SwiGLU |
-
-**Available Models**:
-- INT4 (Initial Released): [moonshotai/Kimi-K2.6](https://huggingface.co/moonshotai/Kimi-K2.6)
+| Benchmark | Score |
+|-----------|-------|
+| HLE w/ tools | 54.0 |
+| SWE-Bench Pro | 58.6 |
+| SWE-bench Multilingual | 76.7 |
+| BrowseComp | 83.2 |
+| Toolathlon | 50.0 |
+| AIME 2026 | 96.4 |
+| GPQA-Diamond | 90.5 |
+| LiveCodeBench | 89.6 |
 
 **Recommended Generation Parameters:**
 - Thinking Mode: `temperature=1.0`, `top_p=0.95`
@@ -72,6 +55,7 @@ import KimiK26ConfigGenerator from '@site/src/components/autoregressive/KimiK26C
 - **DP Attention**: Enable with `--dp <N> --enable-dp-attention` for production throughput. A common choice is to set `--dp` equal to `--tp`, but this is not required.
 - **Reasoning Parser**: Add `--reasoning-parser kimi_k2` to separate thinking and content in model outputs.
 - **Tool Call Parser**: Add `--tool-call-parser kimi_k2` for structured tool calls.
+- **AMD FP8 KV Cache**: On AMD platforms the generator adds `--kv-cache-dtype fp8_e4m3` by default and sets `--mem-fraction-static 0.8` to fit the INT4 weights plus KV cache. FP8 KV cache trades a small amount of accuracy for memory; omit the flag if you observe accuracy regressions on your workload.
 
 ## 4. Model Invocation
 
@@ -117,6 +101,35 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+**Output Example:**
+
+```text
+This image shows a **paper receipt from Auntie Anne's**, the pretzel chain restaurant. Here's a detailed breakdown:
+
+## Header
+- At the top left is the Auntie Anne's logo (a pretzel with a halo)
+- The store name "**Auntie Anne's**" is printed prominently at the top
+- Some text below the store name appears blurred/redacted (likely store location, address, or transaction details)
+
+## Purchase Details
+- **Item**: CINNAMON SUGAR
+- **Quantity & Price**: 1 × 17,000
+- **Item Total**: 17,000
+
+## Financial Summary
+- **SUB TOTAL**: 17,000
+- **GRAND TOTAL**: 17,000
+- **CASH IDR**: 20,000 (customer paid 20,000 Indonesian Rupiah)
+- **CHANGE DUE**: 3,000
+
+## Physical Description
+- The receipt is printed on white thermal paper
+- Some information in the middle section and toward the bottom is intentionally blurred/obscured
+- The paper appears slightly curved/wrinkled and is placed on a dark brown surface (likely a table or counter)
+
+The transaction is in **Indonesian Rupiah (IDR)**, indicating this purchase was made at an Auntie Anne's location in Indonesia. The customer bought one Cinnamon Sugar pretzel for 17,000 IDR and received 3,000 IDR in change after paying with 20,000 IDR cash.
+```
+
 #### 4.2.2 Reasoning Output
 
 Kimi-K2.6 supports both thinking mode (default) and instant mode.
@@ -157,6 +170,55 @@ response = client.chat.completions.create(
 
 print("====== Response (Instant Mode) ======")
 print(response.choices[0].message.content)
+```
+
+**Output Example:**
+
+```text
+====== Reasoning Content (Thinking Mode) ======
+The user is asking which number is bigger: 9.11 or 9.9. This seems straightforward, but there's a viral internet debate about this due to decimal confusion.
+
+Let me think carefully:
+- 9.11 means 9 + 11/100 = 9.11
+- 9.9 means 9 + 9/10 = 9.90
+
+So 9.9 = 9.90, and 9.90 > 9.11 because 0.90 > 0.11.
+
+The confusion often comes from people thinking of software versioning (where 9.11 comes after 9.9) or comparing the numbers after the decimal as whole numbers (11 vs 9, thinking 11 > 9).
+
+So mathematically, 9.9 is clearly bigger. 9.9 - 9.11 = 0.79.
+
+I should explain this clearly and address the common misconception.
+====== Response (Thinking Mode) ======
+Mathematically, **9.9 is bigger**.
+
+Here's why:
+
+**9.9 = 9.90**
+
+When comparing decimals, you need to look at the same place values:
+- 9.11 = 9 ones, 1 tenth, and 1 hundredth
+- 9.9 = 9 ones, 9 tenths, and 0 hundredths (9.90)
+
+Since **0.90 > 0.11**, it follows that **9.9 > 9.11**.
+
+The difference is:
+9.9 - 9.11 = 0.79
+
+**Why people get confused:** Many mistakenly treat the decimals like whole numbers (thinking "11 is bigger than 9") or confuse this with software version numbering (where version 9.11 comes after version 9.9). But in standard mathematics, 9.9 is definitively larger.
+====== Response (Instant Mode) ======
+I need to compare 9.11 and 9.9.
+
+Let me think carefully by aligning the decimal places:
+
+- 9.11 = 9 and 11/100 = 9.11
+- 9.9 = 9 and 9/10 = 9.90
+
+Since 0.90 > 0.11
+
+**9.9 is bigger.**
+
+This is a common trick question because people sometimes mistakenly compare 11 and 9 as whole numbers after the decimal point, forgetting that 9.9 = 9.90, which is greater than 9.11.
 ```
 
 #### 4.2.3 Tool Calling
@@ -232,6 +294,13 @@ for index, tool_call in sorted(tool_calls_accumulator.items()):
     print(f"  Arguments: {tool_call['arguments']}")
 ```
 
+**Output Example:**
+
+```text
+Tool Call: get_weather
+  Arguments: {"location": "Beijing"}
+```
+
 **Handling Tool Call Results:**
 
 ```python
@@ -263,6 +332,14 @@ final_response = client.chat.completions.create(
 )
 
 print(final_response.choices[0].message.content)
+```
+
+**Output Example:**
+
+```text
+The weather in Beijing is currently **22°C and sunny**. ☀️
+
+It's a nice, warm day there—great for being outdoors!
 ```
 
 #### 4.2.4 Multimodal + Tool Calling (Agentic Vision)
@@ -339,25 +416,166 @@ if msg.tool_calls:
         print(f"  Arguments: {tc.function.arguments}")
 ```
 
+**Output Example:**
+
+```text
+=== Reasoning ===
+The user wants me to identify the product from the receipt and search for similar items. Looking at the receipt, it's from Auntie Anne's and the item purchased is "CINNAMON SUGAR" for 17,000 IDR. This is likely a Cinnamon Sugar Pretzel from Auntie Anne's, which is a popular pretzel chain.
+
+I should search for this product using the search_product function. The query should be something like "Auntie Anne's Cinnamon Sugar Pretzel" or just "Cinnamon Sugar Pretzel" to find similar items.
+=== Content ===
+Based on the receipt, the product is a **Cinnamon Sugar Pretzel** from **Auntie Anne's** (a popular pretzel bakery chain). The receipt shows it was purchased for 17,000 Indonesian Rupiah (IDR).
+
+Let me search for this product and similar items for you.
+=== Tool Calls ===
+  Function: search_product
+  Arguments: {"query":"Auntie Anne's Cinnamon Sugar Pretzel"}
+```
+
 
 ## 5. Benchmark
 
 ### 5.1 Accuracy Benchmark
 
-#### 5.1.1 MMMU Benchmark
+**Test Environment:**
 
-You can evaluate the model's accuracy using the MMMU benchmark, which tests multimodal understanding and reasoning across various subjects:
+- Hardware: 8× NVIDIA H200
+- Model: moonshotai/Kimi-K2.6 (INT4)
+- Tensor Parallelism: 8
+- SGLang version: 0.5.9
+- Reasoning Parser: `kimi_k2`
+- Tool Call Parser: `kimi_k2`
 
-- **Benchmark Command:**
+#### 5.1.1 K2-Vendor-Verifier (Tool Calling)
 
-```shell
-python3 benchmark/mmmu/bench_sglang.py \
-    --response-answer-regex "(?i)(?:answer|ans)[:\s]*(?:\*\*)?[\(\[]?([A-Za-z])[\)\]]?(?:\*\*)?" \
-    --port 30000 \
-    --concurrency 64
+- Dataset: [K2-Vendor-Verifier](https://github.com/MoonshotAI/K2-Vendor-Verifier) tool-calls dataset (2,000 requests)
+- Evaluation Tool: K2-Vendor-Verifier `tool_calls_eval.py`
+- Settings: temperature=1.0, max_tokens=64,000, concurrency=256
+
+**Evaluation Command:**
+
+```bash
+cd K2-Vendor-Verifier
+
+python tool_calls_eval.py tool-calls/samples.jsonl \
+  --model "moonshotai/Kimi-K2.6" \
+  --base-url "http://localhost:30000/v1" \
+  --api-key "placeholder" \
+  --concurrency 256 \
+  --temperature 1.0 \
+  --max-tokens 64000 \
+  --output kimi-k26-results.jsonl
 ```
 
-- **Result:**
+**Results:**
+
+| Metric | Value |
+|--------|-------|
+| Success Rate | 99.95% (1999/2000) |
+| Tool Call Triggered | 970 |
+| Tool Call Valid | 89.6% (869/970) |
+| Tool Call Invalid (schema error) | 10.4% (101/970) |
+
+#### 5.1.2 AIME 2025
+
+- Dataset: [AIME 2025](https://huggingface.co/datasets/nvidia/aime25) (30 problems)
+- Evaluation Tool: [NVIDIA NeMo-Skills](https://github.com/NVIDIA/NeMo-Skills)
+- Prompt: `eval/matharena/aime` (MathArena format with `\boxed{}` answers)
+- Settings: temperature=1.0, top_p=0.95, max_tokens=131,072, 32 seeds
+
+**Evaluation Command:**
+
+```bash
+# Prepare dataset
+python3 nemo_skills/dataset/aime25/prepare.py
+
+# Run 32 seeds in parallel
+for RS in $(seq 0 31); do
+  python3 nemo_skills/inference/generate.py \
+    input_file=nemo_skills/dataset/aime25/test.jsonl \
+    output_file=results/kimi-k26/aime25/output-rs${RS}.jsonl \
+    prompt_config=eval/matharena/aime \
+    prompt_format=openai \
+    +server.server_type=openai \
+    +server.model=moonshotai/Kimi-K2.6 \
+    +server.base_url=http://localhost:30000/v1 \
+    ++inference.temperature=1.0 \
+    ++inference.top_p=0.95 \
+    ++inference.tokens_to_generate=131072 \
+    ++inference.random_seed=${RS} \
+    max_concurrent_requests=512 &
+done
+```
+
+**Results:**
+
+| Evaluation Mode | Accuracy |
+|-----------------|----------|
+| pass@1 (avg-of-32) | 98.9% (29.7/30) |
+| **majority@32** | **100.0%** (30/30) |
+| pass@32 | 100.0% |
+
+> 22 out of 32 seeds achieved a perfect score of 30/30. The remaining 10 seeds each missed exactly 1 problem (29/30).
+
+#### 5.1.3 GPQA Diamond
+
+- Dataset: [GPQA Diamond](https://huggingface.co/datasets/Idavidrein/gpqa) (198 questions, 4-choice multiple choice)
+- Evaluation Tool: [Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai) with `inspect_evals/gpqa_diamond`
+- Settings: temperature=1.0, top_p=0.95, max_tokens=131,072, 4 epochs, cot=True
+
+**Evaluation Command:**
+
+```bash
+OPENAI_BASE_URL=http://localhost:30000/v1 OPENAI_API_KEY=placeholder \
+inspect eval inspect_evals/gpqa_diamond \
+  --model openai/moonshotai/Kimi-K2.6 \
+  --max-tokens 131072 \
+  --temperature 1.0 \
+  --top-p 0.95 \
+  --max-connections 128 \
+  -T cot=True
+```
+
+**Results (partial — 553/792 samples across 4 epochs):**
+
+| Evaluation Mode | Accuracy |
+|-----------------|----------|
+| pass@1 (avg across epochs) | **96.9%** |
+
+| Epoch | Accuracy |
+|-------|----------|
+| 1 | 96.4% (160/166) |
+| 2 | 96.9% (156/161) |
+| 3 | 96.9% (155/160) |
+| 4 | 98.5% (65/66) |
+
+#### 5.1.4 OCRBench
+
+- Dataset: [OCRBench](https://huggingface.co/datasets/echo840/OCRBench) (1,000 questions with images)
+- Evaluation Tool: [Kimi-Vendor-Verifier](https://github.com/MoonshotAI/Kimi-Vendor-Verifier) (inspect-ai based)
+- Settings: max_tokens=4,096, thinking mode enabled (opensource)
+
+**Evaluation Command:**
+
+```bash
+cd Kimi-Vendor-Verifier
+
+OPENAI_BASE_URL=http://localhost:30000/v1 OPENAI_API_KEY=placeholder \
+python3 eval.py ocrbench \
+  --model openai/moonshotai/Kimi-K2.6 \
+  --max-tokens 4096 \
+  --think-mode opensource \
+  --thinking \
+  --max-connections 256
+```
+
+**Results:**
+
+| Evaluation Mode | Accuracy |
+|-----------------|----------|
+| pass@1 | **90.8%** |
+
+#### 5.1.5 MMMU Pro Vision
 
 ```text
 Pending update...
@@ -450,7 +668,7 @@ Max ITL (ms):                            29.38
 - Medium Concurrency (Balanced)
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.6 \
   --dataset-name random \
@@ -560,7 +778,7 @@ Max ITL (ms):                            3118.59
 - Low Concurrency
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.6 \
   --dataset-name random \
@@ -614,7 +832,7 @@ Max ITL (ms):                            45.22
 - Medium Concurrency
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.6 \
   --dataset-name random \
@@ -670,7 +888,7 @@ Max ITL (ms):                            272.05
 - Low Concurrency
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.6 \
   --dataset-name random \
@@ -724,7 +942,7 @@ Max ITL (ms):                            62.70
 - Medium Concurrency
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.6 \
   --dataset-name random \
@@ -778,7 +996,7 @@ Max ITL (ms):                            6540.24
 - High Concurrency
 
 ```bash
-python -m sglang.bench_serving \
+python3 -m sglang.bench_serving \
   --backend sglang \
   --model moonshotai/Kimi-K2.6 \
   --dataset-name random \
@@ -834,7 +1052,7 @@ Max ITL (ms):                            7778.47
 **Test Environment:**
 
 - Hardware: AMD Instinct MI350X GPU (4x)
-- Model: Kimi-K2.6 (BF16)
+- Model: Kimi-K2.6 (INT4)
 - Tensor Parallelism: 4
 - SGLang Version: 0.5.9
 - Docker Image: `lmsysorg/sglang:v0.5.9-rocm700-mi35x`
@@ -858,6 +1076,8 @@ sglang serve \
   --mem-fraction-static 0.8 \
   --trust-remote-code \
   --reasoning-parser kimi_k2 \
+  --tool-call-parser kimi_k2 \
+  --kv-cache-dtype fp8_e4m3 \
   --host 0.0.0.0 \
   --port 30000
 ```
