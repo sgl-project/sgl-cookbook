@@ -118,6 +118,11 @@ const sidebars = {
           items: [
             {
               type: 'doc',
+              id: 'autoregressive/Moonshotai/Kimi-K2.6',
+              label: 'Kimi-K2.6 [NEW]',
+            },
+            {
+              type: 'doc',
               id: 'autoregressive/Moonshotai/Kimi-K2.5',
               label: 'Kimi-K2.5',
             },
