@@ -59,13 +59,13 @@ import MiniMaxM27ConfigGenerator from '@site/src/components/autoregressive/MiniM
 
 **Hardware Requirements: NVIDIA**
 
-- **4-GPU deployment**: Requires 4× high-memory GPUs (e.g., H200, B200, B300, A100, H100) with TP=4
-- **8-GPU deployment**: Requires 8× GPUs (e.g., H200, B200, B300, A100, H100) with TP=8 and EP=8
+- **8-GPU deployment**: H200, B200, B300 — recommended configuration with TP=8 and EP=8
+- **4-GPU deployment**: A100, H100 — minimum viable configuration with TP=4
 
 **Hardware Requirements: NVIDIA GB200/GB300**
 
-- **2-GPU deployment**: GB200/GB300 (275GB per die) can host the model with TP=2
-- **4-GPU deployment**: Maximum single-node TP for GB200/GB300, recommended for higher throughput
+- **4-GPU deployment**: GB200/GB300 (275GB per die) — recommended configuration with TP=4
+- **2-GPU deployment**: Minimum viable configuration with TP=2
 
 **Hardware Requirements: AMD**
 

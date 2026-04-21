@@ -9,11 +9,11 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  * GPU requirements:
  *   A100  (80GB):  TP=4 min
  *   H100  (80GB):  TP=4 min
- *   H200  (141GB): TP=2 min, TP=4/8 recommended
- *   B200  (180GB): TP=2 min, TP=4/8 recommended
- *   B300  (192GB): TP=2 min, TP=4/8 recommended
- *   GB200 (275GB): TP=2 min
- *   GB300 (275GB): TP=2 min
+ *   H200  (141GB): TP=8
+ *   B200  (180GB): TP=8
+ *   B300  (192GB): TP=8
+ *   GB200 (275GB): TP=4
+ *   GB300 (275GB): TP=4
  *   MI300X (192GB): TP=2 min
  *   MI325X (256GB): TP=2 min
  *   MI355X (288GB): TP=2 min
@@ -46,25 +46,26 @@ const MiniMaxM27ConfigGenerator = () => {
           const hw = values.hardware;
           const isAMD = hw === 'mi300x' || hw === 'mi325x' || hw === 'mi355x';
           const isGraceBW = hw === 'gb200' || hw === 'gb300';
+          const isHighMemNVIDIA = hw === 'h200' || hw === 'b200' || hw === 'b300';
           const canUse2GPU = isAMD || isGraceBW;
 
           return [
             {
               id: '2gpu',
               label: '2',
-              default: canUse2GPU,
+              default: isAMD,
               disabled: !canUse2GPU
             },
             {
               id: '4gpu',
               label: '4',
-              default: !canUse2GPU,
+              default: isGraceBW || (!isAMD && !isHighMemNVIDIA),
               disabled: false
             },
             {
               id: '8gpu',
               label: '8',
-              default: false,
+              default: isHighMemNVIDIA,
               disabled: isGraceBW
             }
           ];
