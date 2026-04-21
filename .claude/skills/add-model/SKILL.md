@@ -16,7 +16,7 @@ Ask the user for:
 2. **Model Variants** — Multiple sizes (e.g., 480B/30B) or quantizations (BF16/FP8)? Which to include? This affects ConfigGenerator options, YAML entries, and doc examples. See `Qwen3CoderConfigGenerator` and `Qwen3NextConfigGenerator` for multi-variant patterns.
 3. **Deployment Command** — Full `sglang serve --model-path` command with all flags (tp, dp, ep, etc.). Not `python -m sglang.launch_server` (deprecated, issue #33). If the model card provides one, use it as starting point but verify format.
 4. **SGLang Version** — Version being tested (e.g., `v0.5.10`). Used in benchmark metadata and Docker image tags. Note: the YAML directory is the **latest existing** `data/models/src/<version>/` directory — which may lag the tested SGLang version by a minor release. Don't create a new `v<X.Y.Z>/` dir for a point release that doesn't exist yet; reuse the latest dir (`ls data/models/src/` to check).
-5. **Hardware Platforms** — Which platforms are tested? Show the full list (A100, H100, H200, B200, B300, GB300, MI300X, MI325X, MI350X, MI355X) and let the user pick. Only include tested platforms — don't assume anything. For each, confirm TP degree and any platform-specific flags. GB300 single-node maxes out at TP=4.
+5. **Hardware Platforms** — Which platforms are tested? Show the full list (A100, H100, H200, B200, B300, GB300, MI300X, MI325X, MI350X, MI355X) and let the user pick. Only include tested platforms — don't assume anything. For each, confirm TP degree and any platform-specific flags. GB300 on a typical single-node host ships with 4 GPUs, so TP=4 is the practical ceiling there — confirm the actual node topology with the user rather than assuming.
 
 ## Phase 2: Create Scaffolding
 
@@ -51,7 +51,7 @@ Only include platforms the user has actually tested.
 | H200     | NVIDIA | 141GB  | `lmsysorg/sglang:<ver>` |
 | B200     | NVIDIA | 180GB  | `lmsysorg/sglang:<ver>` |
 | B300     | NVIDIA | 275GB  | `lmsysorg/sglang:<ver>` (or `-cu130` for CUDA 13) |
-| GB300    | NVIDIA | 275GB  | `lmsysorg/sglang:<ver>-cu130` (Grace-Blackwell, CUDA 13 required; single-node max TP=4) |
+| GB300    | NVIDIA | 275GB  | `lmsysorg/sglang:<ver>-cu130` (Grace-Blackwell, CUDA 13 required; typical single-node host = 4 GPUs → TP=4) |
 | MI300X   | AMD    | 192GB  | `lmsysorg/sglang:<ver>-rocm720-mi30x` |
 | MI325X   | AMD    | 256GB  | `lmsysorg/sglang:<ver>-rocm720-mi30x` |
 | MI350X   | AMD    | 288GB  | `lmsysorg/sglang:<ver>-rocm720-mi35x` |
@@ -79,7 +79,7 @@ Only include platforms the user has actually tested.
   name: <Human-readable name>
   huggingface_org: <HF org slug>
 ```
-Missing vendor entry = schema validation failure.
+Without an entry, `compile_models.py` falls back to using the raw `vendor` id as `huggingface_org` (line ~630), so model paths may render wrong and the UI loses the human-readable vendor name. The TS schema (`data/schema/types.ts`) only checks that `vendor` is a non-empty string — it does NOT cross-check against `vendors.yaml` — so the failure is silent/cosmetic, not a hard CI break. Still, always add the entry.
 
 ### Step 1: Create documentation
 
@@ -213,7 +213,7 @@ source .venv/bin/activate && python data/scripts/compile_models.py
 cd data/schema && npm install && npm test
 ```
 
-**Commit both `src/` AND `generated/`**: the compiler writes to `data/models/generated/<version>/<model>.yaml` and CI runs `python3 data/scripts/compile_models.py --check`, which fails if the generated file is missing or out-of-date. Stage both paths:
+**Commit both `src/` AND `generated/`**: the `compile-model-configs` pre-commit hook auto-runs `compile_models.py` whenever `data/models/src/*.yaml` changes and writes the output to `data/models/generated/<version>/<model>.yaml` — but the hook does NOT auto-stage those files; you still have to `git add` them yourself. CI runs `python3 data/scripts/compile_models.py --check`, which fails if the generated file is missing or out-of-date. Stage both paths:
 ```bash
 git add data/models/src/<version>/<model>.yaml data/models/generated/<version>/<model>.yaml
 ```
