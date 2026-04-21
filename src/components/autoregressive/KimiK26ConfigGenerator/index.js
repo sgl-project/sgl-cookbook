@@ -6,8 +6,11 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  * Supports Kimi-K2.6 native multimodal agentic model with reasoning and tool calling.
  *
  * GPU requirements:
- *   H200: tp=8
- *   B300: tp=8
+ *   H200:  tp=8
+ *   B200:  tp=8
+ *   B300:  tp=8
+ *   GB200: tp=4, dp=4
+ *   GB300: tp=4, dp=4
  *   MI300X: tp=4 (64 heads / 4 = 16 heads per GPU, AITER MLA requires heads_per_gpu % 16 == 0)
  *   MI325X: tp=4 (same constraint as MI300X)
  *   MI350X: tp=4 (same constraint as MI300X)
@@ -23,7 +26,10 @@ const KimiK26ConfigGenerator = () => {
         title: 'Hardware Platform',
         items: [
           { id: 'h200', label: 'H200', default: true },
+          { id: 'b200', label: 'B200', default: false },
           { id: 'b300', label: 'B300', default: false },
+          { id: 'gb200', label: 'GB200', default: false },
+          { id: 'gb300', label: 'GB300', default: false },
           { id: 'mi300x', label: 'MI300X', default: false },
           { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi350x', label: 'MI350X', default: false },
@@ -60,8 +66,11 @@ const KimiK26ConfigGenerator = () => {
     },
 
     modelConfigs: {
-      h200: { tp: 8 },
-      b300: { tp: 8 },
+      h200:  { tp: 8 },
+      b200:  { tp: 8 },
+      b300:  { tp: 8 },
+      gb200: { tp: 4, dp: 4 },
+      gb300: { tp: 4, dp: 4 },
       mi300x: { tp: 4 },
       mi325x: { tp: 4 },
       mi350x: { tp: 4 },
@@ -75,6 +84,7 @@ const KimiK26ConfigGenerator = () => {
       const modelName = `${this.modelFamily}/Kimi-K2.6`;
       const hwConfig = this.modelConfigs[hardware];
       const tpValue = hwConfig.tp;
+      const dpValue = hwConfig.dp ?? tpValue;
 
       let cmd = '';
 
@@ -91,9 +101,9 @@ const KimiK26ConfigGenerator = () => {
       }
       cmd += ' \\\n  --trust-remote-code';
 
-      // DP Attention: --dp matches --tp
+      // DP Attention: GB200/GB300 use fixed dp=4; others use --dp matching --tp
       if (values.dpattention === 'enabled') {
-        cmd += ` \\\n  --dp ${tpValue} \\\n  --enable-dp-attention`;
+        cmd += ` \\\n  --dp ${dpValue} \\\n  --enable-dp-attention`;
       }
 
       // Apply commandRule from all options
