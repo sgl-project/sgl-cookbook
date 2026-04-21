@@ -15,7 +15,7 @@ Ask the user for:
 1. **Model Card** — HuggingFace model name or URL (e.g., `Qwen/Qwen3-Coder-Next`). Fetch the page to extract description, capabilities, etc. If the model isn't public yet, ask the user to paste what they know (name, param count, architecture, capabilities, context length).
 2. **Model Variants** — Multiple sizes (e.g., 480B/30B) or quantizations (BF16/FP8)? Which to include? This affects ConfigGenerator options, YAML entries, and doc examples. See `Qwen3CoderConfigGenerator` and `Qwen3NextConfigGenerator` for multi-variant patterns.
 3. **Deployment Command** — Full `sglang serve --model-path` command with all flags (tp, dp, ep, etc.). Not `python -m sglang.launch_server` (deprecated, issue #33). If the model card provides one, use it as starting point but verify format.
-4. **SGLang Version** — Version being tested (e.g., `v0.5.8`). Determines YAML directory: `data/models/src/<version>/`.
+4. **SGLang Version** — Version being tested (e.g., `v0.5.10`). Used in benchmark metadata and Docker image tags. Note: the YAML directory is the **latest existing** `data/models/src/<version>/` directory — which may lag the tested SGLang version by a minor release. Don't create a new `v<X.Y.Z>/` dir for a point release that doesn't exist yet; reuse the latest dir (`ls data/models/src/` to check).
 5. **Hardware Platforms** — Which platforms are tested? Show the full list (A100, H100, H200, B200, B300, MI300X, MI325X, MI350X, MI355X) and let the user pick. Only include tested platforms — don't assume anything. For each, confirm TP degree and any platform-specific flags.
 
 ## Phase 2: Create Scaffolding
@@ -26,7 +26,7 @@ Read ALL reference templates first, then create files.
 
 - **Doc**: Find a similar model under `docs/autoregressive/` (e.g., `Qwen3-Coder.md`, `DeepSeek-V3_2.md`)
 - **ConfigGenerator**: Similar generator under `src/components/autoregressive/` (e.g., `Qwen3NextConfigGenerator/index.js`)
-- **YAML**: `data/models/src/<version>/<similar-model>.yaml`. List `data/models/src/` for available versions.
+- **YAML**: `data/models/src/<version>/<similar-model>.yaml`. Run `ls data/models/src/` and pick the latest dir (e.g., `v0.5.10`). This is a versioned corpus, not a "this-version-only" bucket — older models stay in their original dir.
 - **Sidebar**: `sidebars.js`
 - **Vendors**: `data/models/vendors.yaml`
 
@@ -70,16 +70,16 @@ Only include platforms the user has actually tested.
 ### Step 1: Create documentation
 
 Create `docs/autoregressive/<Vendor>/<ModelName>.md`:
-- Section 1: Model introduction (from model card)
+- Section 1: Model introduction — lean. Key Features (bullets), Benchmarks as a **table** (not bullets), Recommended Generation Parameters, License, HF/blog links. Don't duplicate an "Architecture" table from the HF card unless it adds info. If "Available Models" has only one entry, skip the list — inline the single HF link in the intro paragraph.
 - Section 2: SGLang installation
-- Section 3: Deployment (embed ConfigGenerator component)
-- Section 4: Invocation — deployment command at top, then test scripts (code gen, streaming, tool calling) with `TODO` output placeholders
-- Section 5: Benchmarks with `TODO` result placeholders
+- Section 3: Deployment (embed ConfigGenerator component) + Configuration Tips
+- Section 4: Invocation — one documented deployment command at top, then test scripts (multimodal, reasoning, tool calling, mm+tool) each followed by an `**Output Example:**` + ```text block. Use `Pending update...` placeholders if the model isn't yet deployed.
+- Section 5: Benchmarks. `Pending update...` placeholders are acceptable for unfinished runs. Benchmark test-environment metadata (Hardware, Model quantization, TP, SGLang version, Docker image) must match a quantization actually listed in Section 1 — `(BF16)` on a model that only released INT4 is a factual bug.
 
-Benchmark commands:
+Benchmark commands — each benchmark has two pieces. The **deploy** (server launch at the top of the section) uses `sglang serve`. The **bench workload** uses `python3 -m sglang.bench_serving` (never bare `python -m`).
 - GSM8K: `python3 benchmark/gsm8k/bench_sglang.py --port <port>`
 - MMLU: `python3 benchmark/mmlu/bench_sglang.py --port <port>`
-- MMMU: `python3 benchmark/mmmu/bench_sglang.py --port <port>` — uses a universal answer regex that works across models. Don't use model-specific parsing (e.g., `<|begin_of_box|>`) as it breaks with standard answer formats.
+- MMMU: `python3 benchmark/mmmu/bench_sglang.py --port <port>` — uses a universal answer regex that works across models. Don't use model-specific parsing (e.g., `<|begin_of_box|>`) as it breaks with standard answer formats. Note: this is plain MMMU, not MMMU-Pro or MMMU-Pro-Vision — those are separate benchmarks.
 - Latency: `python3 -m sglang.bench_serving --backend sglang --num-prompts 10 --max-concurrency 1 ...`
 - Throughput: `python3 -m sglang.bench_serving --backend sglang --num-prompts 1000 --max-concurrency 100 ...`
 
@@ -87,10 +87,12 @@ Keep benchmarks concise. Order: accuracy first, then speed. Don't add multiple s
 
 Notes:
 - Nested code blocks: use four backticks ```````` for the outer block
-- Don't hardcode sampling params (`temperature`, `top_p`) — SGLang uses `generation_config.json` defaults
+- Don't hardcode sampling params (`temperature`, `top_p`) in sample code — SGLang uses `generation_config.json` defaults. (It's fine to list "Recommended Generation Parameters" informationally in Section 1.)
 - Hybrid reasoning models: show both thinking-on (default) and thinking-off (`enable_thinking: False`) examples
 - Separate Instruct/Thinking variants (e.g., Qwen3-Next): model name changes, handled by ConfigGenerator
 - Format raw API response objects (e.g., `ChatCompletionMessage(...)`) into readable structured output
+- Tool-call follow-up on thinking-mode models: the final assistant response may put text in `reasoning_content` instead of (or in addition to) `content`. When writing the example, print both so the output isn't misleadingly `None`.
+- Invocation section output format: immediately after each code block, add `**Output Example:**` followed by a ```text fenced block with the real run output. Keep the text verbatim from the server — don't paraphrase.
 
 ### Step 2: Update sidebar and homepage
 
@@ -99,7 +101,7 @@ Edit `sidebars.js` — add the new entry under the right vendor.
 Update `docs/intro.md` (homepage):
 - Add model under the correct vendor section
 - `- [x]` if doc has real content, `- [ ]` if stub/placeholder
-- Keep `NEW` tags to 3 or fewer total — if adding one, remove the oldest first (check git history)
+- Keep `NEW` tags to **3 or fewer total in each of `intro.md` AND `sidebars.js`** — they're tracked independently. If adding a new NEW tag pushes either file over 3, remove the oldest NEW tag in that file first (`git log --oneline -- sidebars.js` / `docs/intro.md` to find when each tag was added).
 - Entry order in `intro.md` should match `sidebars.js`
 
 ### Step 3: Create ConfigGenerator
@@ -135,6 +137,8 @@ In config tips, describe `--dp` matching `--tp` as a common pattern, not a requi
 
 **Platform-required flags**: If a platform requires certain flags to function at all (e.g., AMD MI355X needs `--attention-backend triton`), add them unconditionally for that platform — NOT gated behind optional checkboxes like "Performance Optimizations". Optional optimizations go inside checkbox guards; required-to-work flags go outside.
 
+**Doc ↔ generator parity**: The documented per-hardware launch command (e.g., the `sglang serve` block in the AMD benchmark section) must be byte-for-byte identical to what the generator emits when that hardware is selected. If you add `--kv-cache-dtype fp8_e4m3` or `--mem-fraction-static 0.8` for AMD in the generator, the documented AMD command needs it too — and vice versa. Drift here is the single most common review finding. If a flag is platform-required (not user-toggleable), the generator owns it and the doc should mirror it.
+
 **No dead code**: Don't define `commandRule` on options if `generateCommand` handles them directly (the rules will never be called). Don't use `getDynamicItems` if the items don't depend on other option values — use static `items` instead. Don't leave unused helper functions.
 
 **No silent ignores**: If a feature (e.g., DP attention) is unsupported on a platform, either disable the UI option or show an explicit message (like a "Work In Progress" note). Never silently drop user selections.
@@ -165,6 +169,12 @@ Compile and validate:
 source .venv/bin/activate && python data/scripts/compile_models.py
 cd data/schema && npm install && npm test
 ```
+
+**Commit both `src/` AND `generated/`**: the compiler writes to `data/models/generated/<version>/<model>.yaml` and CI runs `python3 data/scripts/compile_models.py --check`, which fails if the generated file is missing or out-of-date. Stage both paths:
+```bash
+git add data/models/src/<version>/<model>.yaml data/models/generated/<version>/<model>.yaml
+```
+If `git status` shows other `data/models/generated/*.yaml` files appearing after compile (e.g., a previous PR forgot to commit its generated output), those are a pre-existing gap unrelated to your change — but if leaving them uncommitted will break CI for your PR, include them in a separate commit with a note ("Add missing generated X.yaml from #NNN to unblock CI").
 
 Full build (catches import errors, broken links, component issues — more reliable than dev server):
 ```bash
@@ -203,17 +213,26 @@ Review the complete documentation for:
 - Consistent port numbers across all commands, curl examples, and client code (use 30000, not 8000)
 - Launch port matches client/curl `base_url` port on the same page
 - No duplicate deployment commands (reference the one at the top of Section 4)
-- All `TODO` placeholders replaced with actual results
+- All `Pending update...` / `TODO` placeholders replaced with actual results — OR explicitly left pending with the user's acknowledgement
+- **Benchmark metadata quantization matches a variant listed in Section 1** — e.g., if only INT4 is released, a benchmark "Test Environment" saying `Model: X (BF16)` is a factual bug
+- **Doc ↔ ConfigGenerator parity**: for each hardware, the launch command shown in the doc (benchmark section, tips, etc.) must equal the generator's output for that hardware — same flags, same order of magnitude. Drift here is the #1 review finding.
 - ConfigGenerator defaults match the documented deployment command
 - ConfigGenerator `export default` matches the actual class name (common copy-paste bug)
-- All commands use `sglang serve` — no deprecated `python -m sglang.launch_server` or `python3 -m sglang.launch_server`
+- Benchmark sections contain **two** commands, each with its own rule:
+  - **Deploy** (the server launch): always `sglang serve ...` — never `python -m sglang.launch_server` or `python3 -m sglang.launch_server` (deprecated)
+  - **Bench** (the workload): always `python3 -m sglang.bench_serving ...` — never bare `python -m sglang.bench_serving`
+  - Ports must match between the two commands on the same page
 - Reasoning mode examples show both thinking-on and thinking-off patterns (for hybrid reasoning models)
+- Tool-call follow-up on thinking-mode models prints both `reasoning_content` and `content` (the latter can be `None` when the response is reasoning-only)
+- Each invocation code block is followed by an `**Output Example:**` + ```text block with real server output
 - `modelConfigs` include both `tp` and `mem` values per hardware/quantization
 - DP attention `--dp` value dynamically matches `--tp` in the generator
 - Homepage (`docs/intro.md`) includes the new model entry and matches sidebar order
-- NEW tag count on homepage is 3 or fewer
+- NEW tag count ≤3 in BOTH `sidebars.js` AND `docs/intro.md` (counted independently)
+- Section 1 is lean: no duplicated "Architecture" table when the HF card already has it, Benchmarks rendered as a table (not bullets), single-entry "Available Models" lists inlined
 - Raw API response objects (e.g., `ChatCompletionMessage(...)`) are formatted into readable structured output (Reasoning/Content/Tool Calls sections)
 - License section matches the actual HuggingFace model license (verify — don't copy from other models)
+- YAML: both `data/models/src/<ver>/<model>.yaml` AND `data/models/generated/<ver>/<model>.yaml` are committed — CI's `--check` mode fails on missing generated files
 - No dead code in ConfigGenerator (unused `commandRule`, unused helper functions, `getDynamicItems` returning static arrays)
 - Platform-required flags are unconditional (not behind optional checkboxes)
 - Unsupported features show explicit messages, not silent no-ops
