@@ -72,8 +72,44 @@ const KimiK2ConfigGenerator = () => {
       };
 
       const modelName = `${this.modelFamily}/${modelMap[modelname]}`;
+      const strategyArray = Array.isArray(strategy) ? strategy : [];
 
-      let cmd = 'python3 -m sglang.launch_server \\\n';
+      // H200 + DP attention: 2-node deployment
+      if (hardware === 'h200' && strategyArray.includes('dp')) {
+        const buildNodeCmd = (nodeRank, isLeader) => {
+          const args = [
+            `--model-path ${modelName}`,
+            `--tp 16`,
+            `--dp-size 2`,
+            `--enable-dp-attention`,
+            `--dist-init-addr $MASTER_IP:50000`,
+            `--nnodes 2`,
+            `--node-rank ${nodeRank}`,
+            `--trust-remote-code`,
+          ];
+          if (strategyArray.includes('ep')) {
+            args.push(
+              `--ep 16`,
+              `--enable-dp-lm-head`,
+              `--moe-a2a-backend deepep`,
+              `--moe-runner-backend deep_gemm`,
+              `--moe-dense-tp-size 1`,
+              `--deepep-mode auto`,
+            );
+          }
+          if (toolcall === 'enabled') args.push(`--tool-call-parser kimi_k2`);
+          if (reasoning === 'enabled') args.push(`--reasoning-parser kimi_k2`);
+          if (isLeader) {
+            args.push(`--host 0.0.0.0`);
+            args.push(`--port 30000`);
+          }
+          return `sglang serve \\\n  ` + args.join(` \\\n  `);
+        };
+        return `# Node 0\n${buildNodeCmd(0, true)}\n\n# Node 1\n${buildNodeCmd(1, false)}`;
+      }
+
+      // Single-node deployment
+      let cmd = 'sglang serve \\\n';
 
       if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
         cmd = 'SGLANG_ROCM_FUSED_DECODE_MLA=0 ' + cmd;
@@ -81,8 +117,6 @@ const KimiK2ConfigGenerator = () => {
 
       cmd += `  --model-path ${modelName}`;
 
-      // Strategy configurations
-      const strategyArray = Array.isArray(strategy) ? strategy : [];
       // TP is mandatory
       cmd += ` \\\n  --tp 8`;
       if (strategyArray.includes('dp')) {
