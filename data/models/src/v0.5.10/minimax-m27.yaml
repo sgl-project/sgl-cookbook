@@ -3,10 +3,12 @@
 #
 # Model: ~220GB FP8 weights, MoE (256 experts, 8 active)
 # GPU requirements (FP8 only):
-#   A100 (80GB): tp=4
-#   H100 (80GB): tp=4
-#   H200 (141GB): tp=4
-#   B200 (180GB): tp=4
+#   A100  (80GB):  tp=4
+#   H100  (80GB):  tp=4
+#   H200  (141GB): tp=4
+#   B200  (180GB): tp=4
+#   B300  (192GB): tp=4
+#   GB200 (275GB): tp=2
 #   GB300 (275GB): tp=2
 #   MI300X (192GB): tp=2
 #   MI325X (256GB): tp=2
@@ -16,10 +18,12 @@ vendor: minimax
 
 defaults:
   hardware:
-    A100: { tp: 4 }
-    H100: { tp: 4 }
-    H200: { tp: 4 }
-    B200: { tp: 4 }
+    A100:  { tp: 4 }
+    H100:  { tp: 4 }
+    H200:  { tp: 4 }
+    B200:  { tp: 4 }
+    B300:  { tp: 4 }
+    GB200: { tp: 2 }
     GB300: { tp: 2 }
   configurations:
     - name: default
