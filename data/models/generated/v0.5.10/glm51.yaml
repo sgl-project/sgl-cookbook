@@ -202,6 +202,60 @@ families:
             - '1200'
           prefill: null
           decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       MI325X:
         configurations:
         - name: default
@@ -227,6 +281,60 @@ families:
             - '1200'
           prefill: null
           decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       MI355X:
         configurations:
         - name: default
@@ -250,6 +358,60 @@ families:
             - '131072'
             - --watchdog-timeout
             - '1200'
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
   - name: GLM-5.1-FP8
@@ -341,6 +503,60 @@ families:
             - '1200'
           prefill: null
           decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       MI325X:
         configurations:
         - name: default
@@ -366,6 +582,60 @@ families:
             - '1200'
           prefill: null
           decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
+          prefill: null
+          decode: null
       MI355X:
         configurations:
         - name: default
@@ -389,6 +659,60 @@ families:
             - '131072'
             - --watchdog-timeout
             - '1200'
+          prefill: null
+          decode: null
+        - name: high-throughput-dp
+          attributes:
+            nodes: single
+            optimization: high-throughput
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: 8
+            ep: null
+            enable_dp_attention: true
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+        - name: speculative-mtp
+          attributes:
+            nodes: single
+            optimization: low-latency
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+            - --speculative-algorithm
+            - EAGLE
+            - --speculative-num-steps
+            - '3'
+            - --speculative-eagle-topk
+            - '1'
+            - --speculative-num-draft-tokens
+            - '4'
           prefill: null
           decode: null
   - name: GLM-5.1-MXFP4
@@ -419,6 +743,10 @@ families:
             - tilelang
             - --nsa-decode-backend
             - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
             - --kv-cache-dtype
             - fp8_e4m3
             - --model-loader-extra-config
