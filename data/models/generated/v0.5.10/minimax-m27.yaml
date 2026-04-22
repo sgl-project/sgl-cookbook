@@ -56,7 +56,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 4
+            tp: 8
             dp: null
             ep: null
             enable_dp_attention: null
@@ -64,6 +64,40 @@ families:
           prefill: null
           decode: null
       B200:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      B300:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args: []
+          prefill: null
+          decode: null
+      GB200:
         configurations:
         - name: default
           attributes:
@@ -90,7 +124,7 @@ families:
           quantized_model_path: null
           engine:
             env_vars: {}
-            tp: 2
+            tp: 4
             dp: null
             ep: null
             enable_dp_attention: null

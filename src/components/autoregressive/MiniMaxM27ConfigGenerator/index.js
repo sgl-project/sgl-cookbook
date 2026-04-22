@@ -7,11 +7,13 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *
  * Model: ~220GB FP8 weights, MoE (256 experts, 8 active)
  * GPU requirements:
- *   A100 (80GB): TP=4 min
- *   H100 (80GB): TP=4 min
- *   H200 (141GB): TP=2 min, TP=4/8 recommended
- *   B200 (180GB): TP=2 min, TP=4/8 recommended
- *   GB300 (275GB): TP=2 min
+ *   A100  (80GB):  TP=4 min
+ *   H100  (80GB):  TP=4 min
+ *   H200  (141GB): TP=8
+ *   B200  (180GB): TP=8
+ *   B300  (275GB): TP=8
+ *   GB200 (180GB per die): TP=4
+ *   GB300 (275GB per die): TP=4
  *   MI300X (192GB): TP=2 min
  *   MI325X (256GB): TP=2 min
  *   MI355X (288GB): TP=2 min
@@ -27,6 +29,8 @@ const MiniMaxM27ConfigGenerator = () => {
         items: [
           { id: 'h200', label: 'H200', default: true },
           { id: 'b200', label: 'B200', default: false },
+          { id: 'b300', label: 'B300', default: false },
+          { id: 'gb200', label: 'GB200', default: false },
           { id: 'gb300', label: 'GB300', default: false },
           { id: 'a100', label: 'A100', default: false },
           { id: 'h100', label: 'H100', default: false },
@@ -41,27 +45,28 @@ const MiniMaxM27ConfigGenerator = () => {
         getDynamicItems: (values) => {
           const hw = values.hardware;
           const isAMD = hw === 'mi300x' || hw === 'mi325x' || hw === 'mi355x';
-          const isGB300 = hw === 'gb300';
-          const canUse2GPU = isAMD || isGB300;
+          const isGraceBW = hw === 'gb200' || hw === 'gb300';
+          const isHighMemNVIDIA = hw === 'h200' || hw === 'b200' || hw === 'b300';
+          const canUse2GPU = isAMD || isGraceBW;
 
           return [
             {
               id: '2gpu',
               label: '2',
-              default: canUse2GPU,
+              default: isAMD,
               disabled: !canUse2GPU
             },
             {
               id: '4gpu',
               label: '4',
-              default: !canUse2GPU,
+              default: isGraceBW || (!isAMD && !isHighMemNVIDIA),
               disabled: false
             },
             {
               id: '8gpu',
               label: '8',
-              default: false,
-              disabled: isGB300
+              default: isHighMemNVIDIA,
+              disabled: isGraceBW
             }
           ];
         }
@@ -88,11 +93,11 @@ const MiniMaxM27ConfigGenerator = () => {
       const { hardware, gpuCount, thinking, toolcall } = values;
 
       const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x';
-      const isGB300 = hardware === 'gb300';
-      const canUse2GPU = isAMD || isGB300;
+      const isGraceBW = hardware === 'gb200' || hardware === 'gb300';
+      const canUse2GPU = isAMD || isGraceBW;
 
       if (gpuCount === '2gpu' && !canUse2GPU) {
-        return '# Please select compatible hardware\n# 2-GPU requires AMD MI300X/MI325X/MI355X or GB300';
+        return '# Please select compatible hardware\n# 2-GPU requires AMD MI300X/MI325X/MI355X or GB200/GB300';
       }
 
       const modelName = `${this.modelFamily}/MiniMax-M2.7`;

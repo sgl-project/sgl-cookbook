@@ -26,7 +26,7 @@ Please refer to the [official SGLang installation guide](https://docs.sglang.ai/
 | Hardware Platform | Docker Image |
 | --- | --- |
 | NVIDIA A100 / H100 / H200 / B200 | `lmsysorg/sglang:v0.5.10.post1` |
-| NVIDIA B300 / GB300 | `lmsysorg/sglang:v0.5.10.post1-cu130` |
+| NVIDIA B300 / GB200 / GB300 | `lmsysorg/sglang:v0.5.10.post1-cu130` |
 | AMD MI300X / MI325X | `lmsysorg/sglang:v0.5.10.post1-rocm720-mi30x` |
 | AMD MI355X | `lmsysorg/sglang:v0.5.10.post1-rocm720-mi35x` |
 
@@ -59,13 +59,13 @@ import MiniMaxM27ConfigGenerator from '@site/src/components/autoregressive/MiniM
 
 **Hardware Requirements: NVIDIA**
 
-- **4-GPU deployment**: Requires 4× high-memory GPUs (e.g., H200, B200, A100, H100) with TP=4
-- **8-GPU deployment**: Requires 8× GPUs (e.g., H200, B200, A100, H100) with TP=8 and EP=8
+- **8-GPU deployment**: H200, B200, B300 — recommended configuration with TP=8 and EP=8
+- **4-GPU deployment**: A100, H100 — minimum viable configuration with TP=4
 
-**Hardware Requirements: NVIDIA GB300**
+**Hardware Requirements: NVIDIA GB200/GB300**
 
-- **2-GPU deployment**: GB300 (275GB per die) can host the model with TP=2
-- **4-GPU deployment**: Maximum single-node TP for GB300, recommended for higher throughput
+- **4-GPU deployment**: GB200 (180GB per die) / GB300 (275GB per die) — recommended configuration with TP=4
+- **2-GPU deployment**: Minimum viable configuration with TP=2
 
 **Hardware Requirements: AMD**
 
