@@ -64,7 +64,7 @@ import MiniMaxM27ConfigGenerator from '@site/src/components/autoregressive/MiniM
 
 **Hardware Requirements: NVIDIA GB200/GB300**
 
-- **4-GPU deployment**: GB200/GB300 (275GB per die) — recommended configuration with TP=4
+- **4-GPU deployment**: GB200 (180GB per die) / GB300 (275GB per die) — recommended configuration with TP=4
 - **2-GPU deployment**: Minimum viable configuration with TP=2
 
 **Hardware Requirements: AMD**

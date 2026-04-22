@@ -11,9 +11,9 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   H100  (80GB):  TP=4 min
  *   H200  (141GB): TP=8
  *   B200  (180GB): TP=8
- *   B300  (192GB): TP=8
- *   GB200 (275GB): TP=4
- *   GB300 (275GB): TP=4
+ *   B300  (275GB): TP=8
+ *   GB200 (180GB per die): TP=4
+ *   GB300 (275GB per die): TP=4
  *   MI300X (192GB): TP=2 min
  *   MI325X (256GB): TP=2 min
  *   MI355X (288GB): TP=2 min
