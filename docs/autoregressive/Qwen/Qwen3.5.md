@@ -72,8 +72,8 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - Context length defaults to 262,144 tokens. If you encounter OOM errors, consider reducing it, but maintain at least 128K to preserve thinking capabilities.
 - To speed up weight loading for this large model, add `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'` to the launch command.
 - **CUDA IPC Transport**: Add `SGLANG_USE_CUDA_IPC_TRANSPORT=1` as an environment variable to use CUDA IPC for transferring multimodal features, significantly improving TTFT (Time To First Token). Note: this consumes additional memory proportional to image size, so you may need to lower `--mem-fraction-static` or `--max-running-requests`.
-- **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200/B300.
-- **B200 (FP8)**: Add `--enable-flashinfer-allreduce-fusion` for optimized throughput on Blackwell.
+- **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200/B300/GB200/GB300.
+- **B200/GB200/GB300 (FP8)**: Add `--enable-flashinfer-allreduce-fusion` for optimized throughput on Blackwell.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
 - Hardware requirements:
     - **BF16**: ~397B parameters require ~800GB of GPU memory for weights.
@@ -81,6 +81,8 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **H200 (141GB)** runs with tp=8.
         - **B200 (183GB)** runs with tp=8.
         - **B300 (275GB)** runs with tp=4.
+        - **GB200 (192GB)** runs with tp=4.
+        - **GB300 (288GB)** runs with tp=4.
         - **MI300X (192GB)** runs with tp=8.
         - **MI325X (256GB)** runs with tp=4.
         - **MI355X (288GB)** runs with tp=4.
@@ -89,12 +91,16 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **H200 (141GB)** runs with tp=4.
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
+        - **GB200 (192GB)** runs with tp=4.
+        - **GB300 (288GB)** runs with tp=4.
         - **MI300X (192GB)** runs with tp=4.
         - **MI325X (256GB)** runs with tp=2.
         - **MI355X (288GB)** runs with tp=2.
-    - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
+    - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300/GB200/GB300 (Blackwell architecture).
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
+        - **GB200 (192GB)** runs with tp=4.
+        - **GB300 (288GB)** runs with tp=4.
 
 | Hardware | Memory | BF16 TP | FP8 TP | FP4 TP |
 | -------- | ------ | ------- | ------ | --------------- |
@@ -102,6 +108,8 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 | H200     | 141GB  | 8       | 4      | N/A             |
 | B200     | 183GB  | 8       | 4      | 4               |
 | B300     | 275GB  | 4       | 2      | 2               |
+| GB200    | 192GB  | 4       | 4      | 4               |
+| GB300    | 288GB  | 4       | 4      | 4               |
 | MI300X   | 192GB  | 8       | 4      | N/A             |
 | MI325X   | 256GB  | 4       | 2      | N/A             |
 | MI355X   | 288GB  | 4       | 2      | N/A             |
