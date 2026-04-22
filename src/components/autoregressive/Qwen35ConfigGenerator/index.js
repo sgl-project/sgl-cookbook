@@ -22,7 +22,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   35B-A3B:   H100 tp=1, H200 tp=1, B200 tp=1, B300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
  *   27B:       tp=1 on all hardware (including MI300X, MI325X, MI355X)
  *
- * FP4 (397B only): B200 tp=4, B300 tp=2, MI355X tp=2
+ * FP4 (397B only): B200 tp=4, B300 tp=2 (Blackwell/NVIDIA), MI355X tp=2 (AMD)
  */
 
 const MOE_MODELS = new Set(['397b', '122b', '35b']);
@@ -124,6 +124,15 @@ const Qwen35ConfigGenerator = () => {
         getDynamicItems: (currentValues) => {
           const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
           const isAmdGpu = amdGpus.includes(currentValues.hardware);
+          const mtpEnabled = currentValues.speculative === 'enabled';
+
+          // MTP requires V2 mamba radix cache
+          if (mtpEnabled && !isAmdGpu) {
+            return [
+              { id: 'v1', label: 'V1', default: false, disabled: true },
+              { id: 'v2', label: 'V2', default: true }
+            ];
+          }
 
           // Show V2 as disabled for AMD GPUs (V2 requires FLA backend, NVIDIA only)
           if (isAmdGpu) {
@@ -139,7 +148,7 @@ const Qwen35ConfigGenerator = () => {
             { id: 'v2', label: 'V2', default: false }
           ];
         },
-        commandRule: (value) => value === 'v2' ? '--mamba-scheduler-strategy extra_buffer \\\n  --page-size 64' : null
+        commandRule: (value) => value === 'v2' ? '--mamba-scheduler-strategy extra_buffer' : null
       }
     },
 
@@ -220,7 +229,6 @@ const Qwen35ConfigGenerator = () => {
 
     generateCommand: function (values) {
       const { model, hardware, quantization, speculative, mambaCache } = values;
-      const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
 
       const hwConfig = this.modelConfigs[model]?.[hardware]?.[quantization];
       if (!hwConfig) {
@@ -230,10 +238,13 @@ const Qwen35ConfigGenerator = () => {
         return '# Please select a valid hardware and quantization combination';
       }
 
+      const amdGpus = ['mi300x', 'mi325x', 'mi355x'];
+      const isAmdGpu = amdGpus.includes(hardware);
+
       let modelName;
       if (quantization === 'fp4') {
         // AMD GPUs use MXFP4 variant, NVIDIA uses NVFP4 variant
-        if (amdGpus.includes(hardware)) {
+        if (isAmdGpu) {
           modelName = 'amd/Qwen3.5-397B-A17B-MXFP4';
         } else {
           modelName = 'nvidia/Qwen3.5-397B-A17B-NVFP4';
@@ -258,7 +269,8 @@ const Qwen35ConfigGenerator = () => {
       }
 
       // Force Mamba V1 for AMD GPUs (V2 requires FLA backend)
-      const actualMambaCache = amdGpus.includes(hardware) ? 'v1' : mambaCache;
+      // Force Mamba V2 when MTP is enabled
+      const actualMambaCache = isAmdGpu ? 'v1' : (speculative === 'enabled' ? 'v2' : mambaCache);
       const adjustedValues = { ...values, mambaCache: actualMambaCache };
 
       // Apply commandRule from all options except quantization (handled via model name)
@@ -282,7 +294,7 @@ const Qwen35ConfigGenerator = () => {
       }
 
       // Enable allreduce fusion for NVIDIA GPUs only (skip for FP4: benchmark only enables this for TP≥8, skip for AMD: not supported).
-      if (quantization !== 'fp4' && !amdGpus.includes(hardware)) {
+      if (quantization !== 'fp4' && !isAmdGpu) {
         cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
       }
 
@@ -300,7 +312,7 @@ const Qwen35ConfigGenerator = () => {
       }
 
       // Append AMD GPU-specific backend configurations
-      if (hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x') {
+      if (isAmdGpu) {
         cmd += ` \\\n  --trust-remote-code`;
         cmd += ` \\\n  --attention-backend aiter`;
         cmd += ` \\\n  --model-loader-extra-config '{"enable_multithread_load": true}'`;
