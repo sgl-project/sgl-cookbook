@@ -177,6 +177,81 @@ families:
             - '4'
           prefill: null
           decode: null
+      MI300X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+      MI325X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+      MI355X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: bf16
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
   - name: GLM-5.1-FP8
     model_path: zai-org/GLM-5.1-FP8
     attributes:
@@ -239,5 +314,117 @@ families:
             - '1'
             - --speculative-num-draft-tokens
             - '4'
+          prefill: null
+          decode: null
+      MI300X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 8
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+      MI325X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+      MI355X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp8
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 4
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --chunked-prefill-size
+            - '131072'
+            - --watchdog-timeout
+            - '1200'
+          prefill: null
+          decode: null
+  - name: GLM-5.1-MXFP4
+    model_path: amd/GLM-5.1-MXFP4
+    attributes:
+      llm:
+        thinking_capability: hybrid
+        tool_parser: glm47
+        reasoning_parser: glm45
+        chat_template: null
+    hardware:
+      MI355X:
+        configurations:
+        - name: default
+          attributes:
+            nodes: single
+            optimization: balanced
+            quantization: fp4
+          quantized_model_path: null
+          engine:
+            env_vars: {}
+            tp: 2
+            dp: null
+            ep: null
+            enable_dp_attention: null
+            extra_args:
+            - --nsa-prefill-backend
+            - tilelang
+            - --nsa-decode-backend
+            - tilelang
+            - --kv-cache-dtype
+            - fp8_e4m3
+            - --model-loader-extra-config
+            - '{"enable_multithread_load": true, "num_threads": 8}'
+            - --tokenizer-worker-num
+            - '4'
+            - --disable-radix-cache
           prefill: null
           decode: null

@@ -6,6 +6,9 @@
 #   H200: FP8 tp=8, BF16 tp=16
 #   B200: FP8 tp=8, BF16 tp=16
 #   GB300: FP8 tp=4
+#   MI300X: BF16 tp=8, FP8 tp=8
+#   MI325X: BF16 tp=8, FP8 tp=4
+#   MI355X: BF16 tp=8, FP8 tp=4, MXFP4 tp=2
 
 vendor: zai-org
 
@@ -15,6 +18,39 @@ defaults:
     H200: { tp: 8 }
     B200: { tp: 8 }
     GB300: { tp: 4 }
+    MI300X:
+      tp: 8
+      extra_args:
+        - --nsa-prefill-backend
+        - tilelang
+        - --nsa-decode-backend
+        - tilelang
+        - --chunked-prefill-size
+        - "131072"
+        - --watchdog-timeout
+        - "1200"
+    MI325X:
+      tp: 8
+      extra_args:
+        - --nsa-prefill-backend
+        - tilelang
+        - --nsa-decode-backend
+        - tilelang
+        - --chunked-prefill-size
+        - "131072"
+        - --watchdog-timeout
+        - "1200"
+    MI355X:
+      tp: 8
+      extra_args:
+        - --nsa-prefill-backend
+        - tilelang
+        - --nsa-decode-backend
+        - tilelang
+        - --chunked-prefill-size
+        - "131072"
+        - --watchdog-timeout
+        - "1200"
   configurations:
     - name: default
       nodes: single
@@ -53,6 +89,9 @@ families:
           H100: { tp: 32 }
           H200: { tp: 16 }
           B200: { tp: 16 }
+          MI300X: {}  # Uses defaults: tp=8 with TileLang backends
+          MI325X: {}  # Uses defaults: tp=8 with TileLang backends
+          MI355X: {}  # Uses defaults: tp=8 with TileLang backends
 
       # GLM-5.1 FP8
       - name: GLM-5.1-FP8
@@ -81,3 +120,30 @@ families:
                   - "1"
                   - --speculative-num-draft-tokens
                   - "4"
+          MI300X: {}  # Uses defaults: tp=8 with TileLang backends
+          MI325X: { tp: 4 }  # Override: tp=4 (uses default extra_args)
+          MI355X: { tp: 4 }  # Override: tp=4 (uses default extra_args)
+
+      # GLM-5.1 MXFP4 - AMD MI355X only
+      - name: GLM-5.1-MXFP4
+        model_path: amd/GLM-5.1-MXFP4
+        quantization: fp4
+        hardware:
+          MI355X:
+            tp: 2
+            configurations:
+              - name: default
+                nodes: single
+                optimization: balanced
+                extra_args:
+                  - --nsa-prefill-backend
+                  - tilelang
+                  - --nsa-decode-backend
+                  - tilelang
+                  - --kv-cache-dtype
+                  - fp8_e4m3
+                  - --model-loader-extra-config
+                  - '{"enable_multithread_load": true, "num_threads": 8}'
+                  - --tokenizer-worker-num
+                  - "4"
+                  - --disable-radix-cache

@@ -6,12 +6,23 @@
 
 - **BF16 (Full precision)**: [zai-org/GLM-5.1](https://huggingface.co/zai-org/GLM-5.1)
 - **FP8 (8-bit quantized)**: [zai-org/GLM-5.1-FP8](https://huggingface.co/zai-org/GLM-5.1-FP8)
+- **FP4 (4-bit quantized)**: [amd/GLM-5.1-MXFP4](https://huggingface.co/amd/GLM-5.1-MXFP4) **(AMD Only)**
 
 **License:** MIT
 
 ## 2. SGLang Installation
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+
+### AMD Docker Images
+
+```bash
+# Use Docker (AMD MI300X/MI325X)
+docker pull lmsysorg/sglang-rocm:v0.5.10rc0-rocm720-mi30x-20260415
+
+# Use Docker (AMD MI355X)
+docker pull lmsysorg/sglang-rocm:v0.5.10rc0-rocm720-mi35x-20260415
+```
 
 ## 3. Model Deployment
 
@@ -33,14 +44,15 @@ import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51Confi
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
 - BF16 model always requires **2x GPUs** compared to FP8 on NVIDIA hardware.
 
-| Hardware | FP8 | BF16 |
-| -------- | --- | ---- |
-| H100     | tp=16 | tp=32 |
-| H200     | tp=8  | tp=16 |
-| B200     | tp=8  | tp=16 |
-| GB300    | tp=4  | —     |
-| MI300X/MI325X | tp=8 | tp=8 |
-| MI355X   | tp=8 | tp=8 |
+| Hardware | BF16 TP | FP8 TP | FP4 TP |
+| -------- | ------- | ------ | ------ |
+| H100     | 32      | 16     | N/A    |
+| H200     | 16      | 8      | N/A    |
+| B200     | 16      | 8      | N/A    |
+| GB300    | N/A     | 4      | N/A    |
+| MI300X   | 8       | 8      | N/A    |
+| MI325X   | 8       | 4      | N/A    |
+| MI355X   | 8       | 4      | 2      |
 
 - **AMD GPUs**: Both BF16 and FP8 checkpoints are supported on MI300X/MI325X/MI355X at tp=8. Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). FP8 uses approximately half the memory of BF16 (~89 GB/GPU vs ~175 GB/GPU). EAGLE speculative decoding is not currently supported on AMD for GLM-5.1.
 - **GB300**: Only the FP8 checkpoint is recommended on GB300, with `tp=4`. For high-throughput DP attention on GB300, use `--dp 4`.
