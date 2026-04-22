@@ -81,7 +81,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **H200 (141GB)** runs with tp=8.
         - **B200 (183GB)** runs with tp=8.
         - **B300 (275GB)** runs with tp=4.
-        - **GB200 (192GB)** runs with tp=8.
+        - **GB200 (192GB)** runs with tp=4.
         - **GB300 (288GB)** runs with tp=4.
         - **MI300X (192GB)** runs with tp=8.
         - **MI325X (256GB)** runs with tp=4.
@@ -92,7 +92,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
         - **GB200 (192GB)** runs with tp=4.
-        - **GB300 (288GB)** runs with tp=2.
+        - **GB300 (288GB)** runs with tp=4.
         - **MI300X (192GB)** runs with tp=4.
         - **MI325X (256GB)** runs with tp=2.
         - **MI355X (288GB)** runs with tp=2.
@@ -100,7 +100,7 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **B200 (183GB)** runs with tp=4.
         - **B300 (275GB)** runs with tp=2.
         - **GB200 (192GB)** runs with tp=4.
-        - **GB300 (288GB)** runs with tp=2.
+        - **GB300 (288GB)** runs with tp=4.
 
 | Hardware | Memory | BF16 TP | FP8 TP | FP4 TP |
 | -------- | ------ | ------- | ------ | --------------- |
@@ -108,8 +108,8 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 | H200     | 141GB  | 8       | 4      | N/A             |
 | B200     | 183GB  | 8       | 4      | 4               |
 | B300     | 275GB  | 4       | 2      | 2               |
-| GB200    | 192GB  | 8       | 4      | 4               |
-| GB300    | 288GB  | 4       | 2      | 2               |
+| GB200    | 192GB  | 4       | 4      | 4               |
+| GB300    | 288GB  | 4       | 4      | 4               |
 | MI300X   | 192GB  | 8       | 4      | N/A             |
 | MI325X   | 256GB  | 4       | 2      | N/A             |
 | MI355X   | 288GB  | 4       | 2      | N/A             |
