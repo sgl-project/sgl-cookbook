@@ -5,8 +5,11 @@ vendor: moonshotai
 
 defaults:
   hardware:
-    H200: { tp: 8 }
-    B300: { tp: 8 }
+    H200:  { tp: 8 }
+    B200:  { tp: 8 }
+    B300:  { tp: 8 }
+    GB200: { tp: 4, dp: 4 }
+    GB300: { tp: 4, dp: 4 }
     MI300X: { tp: 4, extra_args: ["--mem-fraction-static", "0.8", "--kv-cache-dtype", "fp8_e4m3"] }
     MI325X: { tp: 4, extra_args: ["--mem-fraction-static", "0.8", "--kv-cache-dtype", "fp8_e4m3"] }
     MI350X: { tp: 4, extra_args: ["--mem-fraction-static", "0.8", "--kv-cache-dtype", "fp8_e4m3"] }
