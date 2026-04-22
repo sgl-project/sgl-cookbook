@@ -251,8 +251,13 @@ const Qwen35ConfigGenerator = () => {
       const epValue = hwConfig.ep;
       const memFraction = hwConfig.mem;
 
+      // Prepend SGLANG_ENABLE_SPEC_V2=1 for H200 FP8 MTP (spec v2 engine, validated in InferenceX#1017)
+      const envPrefix = (hardware === 'h200' && quantization === 'fp8' && speculative === 'enabled')
+        ? 'SGLANG_ENABLE_SPEC_V2=1 '
+        : '';
+
       // Initialize the base command
-      let cmd = `sglang serve --model-path ${modelName}`;
+      let cmd = `${envPrefix}sglang serve --model-path ${modelName}`;
       if (tpValue > 1) {
         cmd += ` \\\n  --tp ${tpValue}`;
       }
