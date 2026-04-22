@@ -125,7 +125,7 @@ families:
           engine:
             env_vars: {}
             tp: 4
-            dp: null
+            dp: 4
             ep: null
             enable_dp_attention: null
             extra_args:
@@ -159,7 +159,7 @@ families:
           engine:
             env_vars: {}
             tp: 4
-            dp: null
+            dp: 4
             ep: null
             enable_dp_attention: null
             extra_args:
