@@ -24,11 +24,11 @@ const GLM51ConfigGenerator = () => {
         name: 'hardware',
         title: 'Hardware Platform',
         items: [
-          { id: 'h200', label: 'H200', default: false },
+          { id: 'h200', label: 'H200', default: true },
           { id: 'b200', label: 'B200', default: false },
           { id: 'gb300', label: 'GB300', default: false },
           { id: 'h100', label: 'H100', default: false },
-          { id: 'mi300x', label: 'MI300X', default: true },
+          { id: 'mi300x', label: 'MI300X', default: false },
           { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi355x', label: 'MI355X', default: false }
         ]
@@ -67,8 +67,8 @@ const GLM51ConfigGenerator = () => {
         name: 'reasoning',
         title: 'Reasoning Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
         ],
         commandRule: (value) => (value === 'enabled' ? '--reasoning-parser glm45' : null)
       },
@@ -76,8 +76,8 @@ const GLM51ConfigGenerator = () => {
         name: 'toolcall',
         title: 'Tool Call Parser',
         items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
+          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'enabled', label: 'Enabled', default: true }
         ],
         commandRule: (value) => (value === 'enabled' ? '--tool-call-parser glm47' : null)
       },
@@ -93,10 +93,24 @@ const GLM51ConfigGenerator = () => {
       speculative: {
         name: 'speculative',
         title: 'Speculative Decoding (MTP)',
-        items: [
-          { id: 'disabled', label: 'Disabled', default: true },
-          { id: 'enabled', label: 'Enabled', default: false }
-        ],
+        getDynamicItems: (values) => {
+          const hw = values.hardware;
+          const isAMD = hw === 'mi300x' || hw === 'mi325x' || hw === 'mi355x';
+
+          return [
+            {
+              id: 'disabled',
+              label: 'Disabled',
+              default: isAMD ? true : false
+            },
+            {
+              id: 'enabled',
+              label: 'Enabled',
+              default: isAMD ? false : true,
+              disabled: isAMD
+            }
+          ];
+        },
         commandRule: (value) => (value === 'enabled'
           ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4'
           : null)
@@ -137,6 +151,11 @@ const GLM51ConfigGenerator = () => {
       }
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
+
+      // Force speculative to be disabled for AMD (not supported)
+      if (isAMD && values.speculative === 'enabled') {
+        values = { ...values, speculative: 'disabled' };
+      }
       const enableSpec = values.speculative === 'enabled';
 
       let cmd = '';
@@ -147,23 +166,19 @@ const GLM51ConfigGenerator = () => {
       cmd += `  --model-path ${modelName}`;
       cmd += ` \\\n  --tensor-parallel-size ${tpValue}`;
 
-      cmd += ' \\\n  --trust-remote-code';
-
       if (isAMD) {
+        cmd += ' \\\n  --trust-remote-code';
+        cmd += ' \\\n  --model-loader-extra-config \'{"enable_multithread_load": true, "num_threads": 8}\'';
+        cmd += ' \\\n  --chunked-prefill-size 131072';
+        cmd += ' \\\n  --watchdog-timeout 1200';
+        cmd += ` \\\n  --tokenizer-worker-num ${2 * tpValue}`;
+
         if (isMXFP4) {
           // MXFP4-specific flags
           cmd += ' \\\n  --nsa-prefill-backend tilelang';
           cmd += ' \\\n  --nsa-decode-backend tilelang';
-          cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
-          cmd += ' \\\n  --model-loader-extra-config \'{"enable_multithread_load": true, "num_threads": 8}\'';
-          cmd += ' \\\n  --tokenizer-worker-num 4';
           cmd += ' \\\n  --disable-radix-cache';
-        } else {
-          // BF16-specific flags
-          cmd += ' \\\n  --nsa-prefill-backend tilelang';
-          cmd += ' \\\n  --nsa-decode-backend tilelang';
-          cmd += ' \\\n  --chunked-prefill-size 131072';
-          cmd += ' \\\n  --watchdog-timeout 1200';
+          cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
         }
       }
 
