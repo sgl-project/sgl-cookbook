@@ -4,15 +4,16 @@ import ConfigGenerator from '../../base/ConfigGenerator';
 /**
  * GLM-5.1 Configuration Generator
  * Supports GLM-5.1 744B (40B active) MoE model deployment configuration
- * with BF16/FP8 quantization, reasoning parser, DP attention, and speculative decoding
+ * with BF16/FP8/MXFP4 quantization, reasoning parser, DP attention, and speculative decoding
  *
  * GPU requirements (BF16 needs 2x GPUs compared to FP8):
  *   H100: FP8 tp=16, BF16 tp=32
  *   H200: FP8 tp=8, BF16 tp=16
  *   B200: FP8 tp=8, BF16 tp=16
  *   GB300: FP8 tp=4
- *   MI300X/MI325X: BF16 tp=8
- *   MI355X: BF16 tp=8
+ *   MI300X: BF16 tp=8, FP8 tp=8
+ *   MI325X: BF16 tp=8, FP8 tp=4
+ *   MI355X: BF16 tp=8, FP8 tp=4, MXFP4 tp=2
  */
 const GLM51ConfigGenerator = () => {
   const config = {
@@ -27,7 +28,8 @@ const GLM51ConfigGenerator = () => {
           { id: 'b200', label: 'B200', default: false },
           { id: 'gb300', label: 'GB300', default: false },
           { id: 'h100', label: 'H100', default: false },
-          { id: 'mi300x', label: 'MI300X/MI325X', default: false },
+          { id: 'mi300x', label: 'MI300X', default: false },
+          { id: 'mi325x', label: 'MI325X', default: false },
           { id: 'mi355x', label: 'MI355X', default: false }
         ]
       },
@@ -36,8 +38,10 @@ const GLM51ConfigGenerator = () => {
         title: 'Quantization',
         getDynamicItems: (values) => {
           const hw = values.hardware;
-          const isAMD = hw === 'mi300x' || hw === 'mi355x';
+          const isAMD = hw === 'mi300x' || hw === 'mi325x' || hw === 'mi355x';
+          const isMI355X = hw === 'mi355x';
           const isGB300 = hw === 'gb300';
+
           return [
             {
               id: 'bf16',
@@ -47,7 +51,15 @@ const GLM51ConfigGenerator = () => {
               disabled: isGB300,
               disabledReason: isGB300 ? 'BF16 is not recommended on GB300 for GLM-5.1' : ''
             },
-            { id: 'fp8', label: 'FP8', subtitle: 'High Throughput', default: !isAMD, disabled: isAMD, disabledReason: isAMD ? 'FP8 not verified on AMD' : '' }
+            { id: 'fp8', label: 'FP8', subtitle: 'High Throughput', default: !isAMD },
+            {
+              id: 'mxfp4',
+              label: 'FP4',
+              subtitle: 'Ultra Low Memory',
+              default: false,
+              disabled: !isMI355X,
+              disabledReason: !isMI355X ? 'FP4 is only supported on AMD MI355X GPU' : ''
+            }
           ];
         }
       },
@@ -80,12 +92,25 @@ const GLM51ConfigGenerator = () => {
       },
       speculative: {
         name: 'speculative',
-        title: 'Speculative Decoding',
-        condition: (values) => values.hardware !== 'mi300x' && values.hardware !== 'mi355x',
-        items: [
-          { id: 'disabled', label: 'Disabled', default: false },
-          { id: 'enabled', label: 'Enabled', default: true }
-        ],
+        title: 'Speculative Decoding (MTP)',
+        getDynamicItems: (values) => {
+          const hw = values.hardware;
+          const isAMD = hw === 'mi300x' || hw === 'mi325x' || hw === 'mi355x';
+
+          return [
+            {
+              id: 'disabled',
+              label: 'Disabled',
+              default: isAMD ? true : false
+            },
+            {
+              id: 'enabled',
+              label: 'Enabled',
+              default: isAMD ? false : true,
+              disabled: isAMD
+            }
+          ];
+        },
         commandRule: (value) => (value === 'enabled'
           ? '--speculative-algorithm EAGLE \\\n  --speculative-num-steps 3 \\\n  --speculative-eagle-topk 1 \\\n  --speculative-num-draft-tokens 4'
           : null)
@@ -97,23 +122,40 @@ const GLM51ConfigGenerator = () => {
       h200: { fp8: { tp: 8, mem: 0.85 }, bf16: { tp: 16, mem: 0.85 } },
       b200: { fp8: { tp: 8, mem: 0.9 }, bf16: { tp: 16, mem: 0.9 } },
       gb300: { fp8: { tp: 4, mem: 0.9 } },
-      mi300x: { bf16: { tp: 8, mem: 0.8 } },
-      mi355x: { bf16: { tp: 8, mem: 0.8 } }
+      mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 8, mem: 0.85 } },
+      mi325x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.85 } },
+      mi355x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.85 }, mxfp4: { tp: 2, mem: 0.85 } }
     },
 
     generateCommand: function (values) {
       const { hardware, quantization } = values;
-      const isAMD = hardware === 'mi300x' || hardware === 'mi355x';
+      const isAMD = hardware === 'mi300x' || hardware === 'mi325x' || hardware === 'mi355x';
       const isGB300 = hardware === 'gb300';
-      const effectiveQuant = isAMD ? 'bf16' : (isGB300 && quantization === 'bf16' ? 'fp8' : quantization);
-      const modelSuffix = effectiveQuant === 'fp8' ? '-FP8' : '';
-      const modelName = `${this.modelFamily}/GLM-5.1${modelSuffix}`;
+      const isMXFP4 = quantization === 'mxfp4';
+
+      // Determine effective quantization
+      const effectiveQuant = isGB300 && quantization === 'bf16' ? 'fp8' : quantization;
+
+      // Determine model name and path
+      let modelName;
+      if (isMXFP4) {
+        modelName = 'amd/GLM-5.1-MXFP4';
+      } else {
+        const modelSuffix = effectiveQuant === 'fp8' ? '-FP8' : '';
+        modelName = `${this.modelFamily}/GLM-5.1${modelSuffix}`;
+      }
+
       const hwConfig = this.modelConfigs[hardware][effectiveQuant];
       if (!hwConfig) {
         return '# Configuration not available for the selected hardware and quantization.';
       }
       const tpValue = hwConfig.tp;
       const memFraction = hwConfig.mem;
+
+      // Force speculative to be disabled for AMD (not supported)
+      if (isAMD && values.speculative === 'enabled') {
+        values = { ...values, speculative: 'disabled' };
+      }
       const enableSpec = values.speculative === 'enabled';
 
       let cmd = '';
@@ -122,14 +164,22 @@ const GLM51ConfigGenerator = () => {
       }
       cmd += 'sglang serve \\\n';
       cmd += `  --model-path ${modelName}`;
-      cmd += ` \\\n  --tp ${tpValue}`;
+      cmd += ` \\\n  --tensor-parallel-size ${tpValue}`;
 
       if (isAMD) {
         cmd += ' \\\n  --trust-remote-code';
-        cmd += ' \\\n  --nsa-prefill-backend tilelang';
-        cmd += ' \\\n  --nsa-decode-backend tilelang';
+        cmd += ' \\\n  --model-loader-extra-config \'{"enable_multithread_load": true, "num_threads": 8}\'';
         cmd += ' \\\n  --chunked-prefill-size 131072';
         cmd += ' \\\n  --watchdog-timeout 1200';
+        cmd += ` \\\n  --tokenizer-worker-num ${2 * tpValue}`;
+
+        if (isMXFP4) {
+          // MXFP4-specific flags
+          cmd += ' \\\n  --nsa-prefill-backend tilelang';
+          cmd += ' \\\n  --nsa-decode-backend tilelang';
+          cmd += ' \\\n  --disable-radix-cache';
+          cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
+        }
       }
 
       if (values.dpattention === 'enabled') {
