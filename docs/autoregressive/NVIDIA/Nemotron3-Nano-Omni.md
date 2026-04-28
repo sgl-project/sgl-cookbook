@@ -12,7 +12,7 @@ Architecture and key features:
 - **Unified vision and audio encoders:** One model replaces fragmented multimodal stacks; vision and audio perception happen in the same forward pass.
 - **3D Convolution (Conv3D):** Efficient temporal-spatial processing for video inputs.
 - **Efficient Video Sampling (EVS):** Enables longer video processing at the same compute budget via temporal-aware perception and adaptive frame sampling.
-- **FP8 and NVFP4 quantization:** Flexible deployment from workstation (RTX 6000, DGX Spark) to cloud (H100, H200, B200, A100, L40S).
+- **FP8 and NVFP4 quantization:** FP8 supports deployment from workstation (RTX 6000, DGX Spark) to cloud (H100, H200, B200, A100, L40S); NVFP4 requires Blackwell hardware.
 - **9x higher throughput** than other open omni models at the same interactivity level.
 - **~20% higher multimodal intelligence** compared to the best open alternative.
 - **Post-trained with multi-environment reinforcement learning** via NVIDIA NeMo RL and NeMo Gym across text, image, audio, and video environments, improving instruction following and convergence to correct multimodal answers.
