@@ -47,7 +47,7 @@ uv pip install 'git+https://github.com/sgl-project/sglang.git#subdirectory=pytho
 docker pull lmsysorg/sglang:nightly
 ```
 
-For the full Docker setup and other installation methods, refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html).
+For the full Docker setup and other installation methods, refer to the [official SGLang installation guide](https://docs.sglang.io/get_started/install.html).
 
 ## 3. Model Deployment
 
@@ -86,13 +86,13 @@ import NemotronNanoOmniConfigGenerator from '@site/src/components/autoregressive
 
 ## 4. Model Invocation
 
-The command below launches the server for a 4×H100 setup with reasoning and tool calling enabled. See [Section 4.7](#47-fp8-and-nvfp4-deployment) for FP8 and NVFP4 variants.
+The command below launches the server for a 4×H100 setup with reasoning and tool calling enabled. See [Section 4.8](#48-fp8-and-nvfp4-deployment) for FP8 and NVFP4 variants.
 
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning \
   --host 0.0.0.0 \
-  --port 5000 \
+  --port 30000 \
   --tp 4 \
   --trust-remote-code \
   --tool-call-parser qwen3_coder \
@@ -107,7 +107,7 @@ SGLang provides an OpenAI-compatible endpoint. Example with the OpenAI Python cl
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 resp = client.chat.completions.create(
     model=SERVED_MODEL_NAME,
@@ -137,7 +137,7 @@ Streaming chat completion:
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 stream = client.chat.completions.create(
     model=SERVED_MODEL_NAME,
@@ -163,7 +163,7 @@ Pass image inputs using the OpenAI vision format. Supports both URLs and base64-
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 # From URL
 resp = client.chat.completions.create(
@@ -194,7 +194,7 @@ import base64
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 with open("screenshot.png", "rb") as f:
     image_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -228,7 +228,7 @@ import base64
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 with open("video.mp4", "rb") as f:
     video_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -263,7 +263,7 @@ import base64
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 with open("audio.wav", "rb") as f:
     audio_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -297,7 +297,7 @@ import base64
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 with open("chart.png", "rb") as f:
     image_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -331,7 +331,7 @@ The model supports two modes — Reasoning ON (default) vs OFF. Toggle per-reque
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 # Reasoning ON (default)
 print("Reasoning on")
@@ -384,7 +384,7 @@ Call functions using the OpenAI Tools schema. The server must be launched with `
 from openai import OpenAI
 
 SERVED_MODEL_NAME = "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning"
-client = OpenAI(base_url="http://localhost:5000/v1", api_key="EMPTY")
+client = OpenAI(base_url="http://localhost:30000/v1", api_key="EMPTY")
 
 TOOLS = [
     {
@@ -438,10 +438,10 @@ The user is asking about weather in Santa Clara, CA. I have a get_weather functi
 **FP8 variant** (recommended for throughput-critical serving on H100/H200/B200):
 
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path nvidia/Nemotron-3-Nano-Omni-30B-A3B-FP8 \
   --host 0.0.0.0 \
-  --port 5000 \
+  --port 30000 \
   --tp 4 \
   --trust-remote-code \
   --tool-call-parser qwen3_coder \
@@ -451,10 +451,10 @@ python3 -m sglang.launch_server \
 **NVFP4 variant** (maximum efficiency on Blackwell B200):
 
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path nvidia/Nemotron-3-Nano-Omni-30B-A3B-NVFP4 \
   --host 0.0.0.0 \
-  --port 5000 \
+  --port 30000 \
   --tp 2 \
   --trust-remote-code \
   --tool-call-parser qwen3_coder \
@@ -480,13 +480,13 @@ Nemotron 3 Nano Omni achieves **9x higher throughput** than other open omni mode
 Model Deployment Command:
 
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning \
   --trust-remote-code \
   --tp 4 \
   --max-running-requests 1024 \
   --host 0.0.0.0 \
-  --port 5000
+  --port 30000
 ```
 
 Benchmark Command:
@@ -495,7 +495,7 @@ Benchmark Command:
 python3 -m sglang.bench_serving \
   --backend sglang \
   --host 127.0.0.1 \
-  --port 5000 \
+  --port 30000 \
   --model nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning \
   --dataset-name random \
   --random-input-len 1024 \
@@ -516,7 +516,7 @@ python3 -m sglang.bench_serving \
 
 **Launch Model**
 ```bash
-python3 -m sglang.launch_server \
+sglang serve \
   --model-path nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning \
   --trust-remote-code \
   --tp 4 \
@@ -525,12 +525,12 @@ python3 -m sglang.launch_server \
 
 **Run Benchmark**
 ```bash
-python3 benchmark/gsm8k/bench_sglang.py --port 5000
+python3 benchmark/gsm8k/bench_sglang.py --port 30000
 ```
 
 #### 5.3.2 MMLU Benchmark
 
 **Run Benchmark**
 ```bash
-python3 benchmark/mmlu/bench_sglang.py --port 5000
+python3 benchmark/mmlu/bench_sglang.py --port 30000
 ```

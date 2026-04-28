@@ -80,10 +80,10 @@ const NemotronNanoOmniConfigGenerator = () => {
 
       const modelPath = MODEL_PATHS[model] || MODEL_PATHS['reasoning'];
 
-      let cmd = 'python3 -m sglang.launch_server \\\n';
+      let cmd = 'sglang serve \\\n';
       cmd += `  --model-path ${modelPath} \\\n`;
       cmd += `  --host 0.0.0.0 \\\n`;
-      cmd += `  --port 5000 \\\n`;
+      cmd += `  --port 30000 \\\n`;
       cmd += `  --trust-remote-code \\\n`;
       cmd += `  --tp ${tp} \\\n`;
 
