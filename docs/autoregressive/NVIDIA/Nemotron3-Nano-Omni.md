@@ -509,7 +509,7 @@ python3 -m sglang.bench_serving \
 #### 5.3.1 GSM8K Benchmark
 
 **Environment**
-- Hardware: H100 (4×)
+- Hardware: B200 (8×)
 - Model: nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning
 - Tensor Parallelism: 4
 - SGLang Version: main branch
@@ -520,6 +520,7 @@ sglang serve \
   --model-path nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning \
   --trust-remote-code \
   --tp 4 \
+  --attention-backend flashinfer \
   --reasoning-parser deepseek-r1
 ```
 
