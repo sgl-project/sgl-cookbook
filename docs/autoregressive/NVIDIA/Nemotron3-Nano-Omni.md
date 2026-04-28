@@ -74,7 +74,7 @@ import NemotronNanoOmniConfigGenerator from '@site/src/components/autoregressive
 
 - **FP8 KV cache:**
 
-    To enable FP8 KV cache, append `--kv-cache-dtype fp8_e4m3`.
+    To enable FP8 KV cache, append `--kv-cache-dtype fp8_e4m3`. FP8 KV cache trades a small amount of accuracy for memory; omit the flag if you observe accuracy regressions on your workload.
 
 - **Reasoning parser:**
 
