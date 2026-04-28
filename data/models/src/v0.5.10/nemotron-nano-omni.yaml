@@ -74,7 +74,7 @@ families:
         model_path: nvidia/Nemotron-3-Nano-Omni-30B-A3B-FP8
         quantization: fp8
 
-      # NVFP4 variant (Blackwell B200 only)
+      # NVFP4 variant — Blackwell-only (B200)
       - name: Nemotron-3-Nano-Omni-30B-A3B-NVFP4
         model_path: nvidia/Nemotron-3-Nano-Omni-30B-A3B-NVFP4
         quantization: nvfp4
