@@ -82,6 +82,10 @@ const NemotronNanoOmniConfigGenerator = () => {
         return '# NVFP4 requires Blackwell hardware. Please select B200.';
       }
 
+      if (hardware === 'l40s' && tp === '1') {
+        return '# TP=1 is not supported on L40S for this model. Please use TP=2 or higher.';
+      }
+
       const modelPath = MODEL_PATHS[model] || MODEL_PATHS['reasoning'];
 
       let cmd = 'sglang serve \\\n';
