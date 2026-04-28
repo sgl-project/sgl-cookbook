@@ -59,24 +59,28 @@ const NemotronNanoOmniConfigGenerator = () => {
         name: 'thinking',
         title: 'Reasoning Parser',
         items: [
-          { id: 'enabled',  label: 'Enabled',  default: true  },
-          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'thinking_on',  label: 'Enabled',  default: true  },
+          { id: 'thinking_off', label: 'Disabled', default: false },
         ],
-        commandRule: (value) => value === 'enabled' ? '--reasoning-parser deepseek-r1' : null
+        commandRule: (value) => value === 'thinking_on' ? '--reasoning-parser deepseek-r1' : null
       },
       toolcall: {
         name: 'toolcall',
         title: 'Tool Call Parser',
         items: [
-          { id: 'enabled',  label: 'Enabled',  default: true  },
-          { id: 'disabled', label: 'Disabled', default: false },
+          { id: 'toolcall_on',  label: 'Enabled',  default: true  },
+          { id: 'toolcall_off', label: 'Disabled', default: false },
         ],
-        commandRule: (value) => value === 'enabled' ? '--tool-call-parser qwen3_coder' : null
+        commandRule: (value) => value === 'toolcall_on' ? '--tool-call-parser qwen3_coder' : null
       },
     },
 
     generateCommand: function(values) {
-      const { tp, kvcache, model } = values;
+      const { tp, kvcache, model, hardware } = values;
+
+      if (model === 'nvfp4' && hardware !== 'b200') {
+        return '# NVFP4 requires Blackwell hardware. Please select B200.';
+      }
 
       const modelPath = MODEL_PATHS[model] || MODEL_PATHS['reasoning'];
 
