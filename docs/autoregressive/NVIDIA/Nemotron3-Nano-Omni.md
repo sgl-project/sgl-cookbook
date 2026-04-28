@@ -472,7 +472,7 @@ Nemotron 3 Nano Omni achieves **9x higher throughput** than other open omni mode
 ### 5.2 Speed Benchmark
 
 **Test Environment:**
-- Hardware: H100 (4×)
+- Hardware: B200 (8×)
 - Model: nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning
 - Tensor Parallelism: 4
 - SGLang Version: main branch
@@ -486,6 +486,7 @@ sglang serve \
   --tp 4 \
   --max-running-requests 1024 \
   --host 0.0.0.0 \
+  --attention-backend flashinfer \
   --port 30000
 ```
 
