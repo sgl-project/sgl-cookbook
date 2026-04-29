@@ -572,9 +572,80 @@ sglang serve \
 python3 benchmark/gsm8k/bench_sglang.py --port 30000
 ```
 
+**Test Result**
+```bash
+Accuracy: 0.830
+Invalid: 0.000
+Latency: 13.970 s
+Output throughput: 1611.623 token/s
+```
+
 #### 5.3.2 MMLU Benchmark
 
 **Run Benchmark**
 ```bash
 python3 benchmark/mmlu/bench_sglang.py --port 30000
+```
+
+**Test Results:**
+```bash
+subject: abstract_algebra, #q:100, acc: 0.510
+subject: anatomy, #q:135, acc: 0.711
+subject: astronomy, #q:152, acc: 0.829
+subject: business_ethics, #q:100, acc: 0.760
+subject: clinical_knowledge, #q:265, acc: 0.781
+subject: college_biology, #q:144, acc: 0.854
+subject: college_chemistry, #q:100, acc: 0.560
+subject: college_computer_science, #q:100, acc: 0.700
+subject: college_mathematics, #q:100, acc: 0.590
+subject: college_medicine, #q:173, acc: 0.775
+subject: college_physics, #q:102, acc: 0.559
+subject: computer_security, #q:100, acc: 0.750
+subject: conceptual_physics, #q:235, acc: 0.821
+subject: econometrics, #q:114, acc: 0.605
+subject: electrical_engineering, #q:145, acc: 0.759
+subject: elementary_mathematics, #q:378, acc: 0.638
+subject: formal_logic, #q:126, acc: 0.524
+subject: global_facts, #q:100, acc: 0.400
+subject: high_school_biology, #q:310, acc: 0.906
+subject: high_school_chemistry, #q:203, acc: 0.759
+subject: high_school_computer_science, #q:100, acc: 0.860
+subject: high_school_european_history, #q:165, acc: 0.812
+subject: high_school_geography, #q:198, acc: 0.889
+subject: high_school_government_and_politics, #q:193, acc: 0.933
+subject: high_school_macroeconomics, #q:390, acc: 0.785
+subject: high_school_mathematics, #q:270, acc: 0.496
+subject: high_school_microeconomics, #q:238, acc: 0.887
+subject: high_school_physics, #q:151, acc: 0.675
+subject: high_school_psychology, #q:545, acc: 0.895
+subject: high_school_statistics, #q:216, acc: 0.731
+subject: high_school_us_history, #q:204, acc: 0.858
+subject: high_school_world_history, #q:237, acc: 0.873
+subject: human_aging, #q:223, acc: 0.740
+subject: human_sexuality, #q:131, acc: 0.855
+subject: international_law, #q:121, acc: 0.851
+subject: jurisprudence, #q:108, acc: 0.815
+subject: logical_fallacies, #q:163, acc: 0.847
+subject: machine_learning, #q:112, acc: 0.598
+subject: management, #q:103, acc: 0.864
+subject: marketing, #q:234, acc: 0.910
+subject: medical_genetics, #q:100, acc: 0.880
+subject: miscellaneous, #q:783, acc: 0.881
+subject: moral_disputes, #q:346, acc: 0.780
+subject: moral_scenarios, #q:895, acc: 0.543
+subject: nutrition, #q:306, acc: 0.814
+subject: philosophy, #q:311, acc: 0.733
+subject: prehistory, #q:324, acc: 0.852
+subject: professional_accounting, #q:282, acc: 0.553
+subject: professional_law, #q:1534, acc: 0.565
+subject: professional_medicine, #q:272, acc: 0.779
+subject: professional_psychology, #q:612, acc: 0.760
+subject: public_relations, #q:110, acc: 0.709
+subject: security_studies, #q:245, acc: 0.759
+subject: sociology, #q:201, acc: 0.831
+subject: us_foreign_policy, #q:100, acc: 0.910
+subject: virology, #q:166, acc: 0.560
+subject: world_religions, #q:171, acc: 0.807
+Total latency: 67.512
+Average accuracy: 0.737
 ```
