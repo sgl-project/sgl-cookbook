@@ -73,7 +73,6 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
 - To speed up weight loading for this large model, add `--model-loader-extra-config='{"enable_multithread_load": "true","num_threads": 64}'` to the launch command.
 - **CUDA IPC Transport**: Add `SGLANG_USE_CUDA_IPC_TRANSPORT=1` as an environment variable to use CUDA IPC for transferring multimodal features, significantly improving TTFT (Time To First Token). Note: this consumes additional memory proportional to image size, so you may need to lower `--mem-fraction-static` or `--max-running-requests`.
 - **Multimodal Attention Backend**: Use `--mm-attention-backend fa3` on H100/H200 for better vision performance, or `--mm-attention-backend fa4` on B200/B300.
-- **B200 (FP8)**: Add `--enable-flashinfer-allreduce-fusion` for optimized throughput on Blackwell.
 - For processing large images or videos, you may need to lower `--mem-fraction-static` to leave room for image feature tensors.
 - Hardware requirements:
     - **BF16**: ~397B parameters require ~800GB of GPU memory for weights.

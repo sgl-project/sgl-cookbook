@@ -286,8 +286,8 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --tokenizer-worker-num 6`;
       }
 
-      // Enable allreduce fusion for all Qwen3.5 configs (skip for FP4: benchmark only enables this for TP≥8).
-      if (quantization !== 'fp4') {
+      // Enable allreduce fusion for all Qwen3.5 configs (skip for FP4 and B200 FP8: benchmark does not enable it).
+      if (quantization !== 'fp4' && !(hardware === 'b200' && quantization === 'fp8')) {
         cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
       }
 
@@ -297,6 +297,19 @@ const Qwen35ConfigGenerator = () => {
         if (MOE_MODELS.has(model)) {
           cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
         }
+      }
+
+      // B200 FP8-specific optimizations (validated in InferenceX#1027)
+      if (hardware === 'b200' && quantization === 'fp8') {
+        cmd += ` \\\n  --enable-symm-mem`;
+        cmd += ` \\\n  --disable-radix-cache`;
+        if (MOE_MODELS.has(model)) {
+          cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+        }
+        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        cmd += ` \\\n  --chunked-prefill-size 16384`;
+        cmd += ` \\\n  --max-prefill-tokens 16384`;
+        cmd += ` \\\n  --stream-interval 50`;
       }
 
       // Append backend configurations
