@@ -92,14 +92,14 @@ import Qwen35ConfigGenerator from '@site/src/components/autoregressive/Qwen35Con
         - **MI325X (256GB)** runs with tp=2.
         - **MI355X (288GB)** runs with tp=2.
     - **FP4**: The FP4 quantized model requires ~250GB for weights, cutting memory by almost 4x. Only compatible with B200/B300 (Blackwell architecture).
-        - **B200 (183GB)** runs with tp=4.
+        - **B200 (183GB)** runs with tp=2.
         - **B300 (275GB)** runs with tp=2.
 
 | Hardware | Memory | BF16 TP | FP8 TP | FP4 TP |
 | -------- | ------ | ------- | ------ | --------------- |
 | H100     | 80GB   | 16      | 8      | N/A             |
 | H200     | 141GB  | 8       | 4      | N/A             |
-| B200     | 183GB  | 8       | 4      | 4               |
+| B200     | 183GB  | 8       | 4      | 2               |
 | B300     | 275GB  | 4       | 2      | 2               |
 | MI300X   | 192GB  | 8       | 4      | N/A             |
 | MI325X   | 256GB  | 4       | 2      | N/A             |
