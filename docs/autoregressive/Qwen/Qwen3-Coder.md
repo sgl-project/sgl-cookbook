@@ -769,6 +769,9 @@ For deployment commands, see [Section 3.1](#31-configuration).
   - Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8
     ```
     Accuracy: 0.965
+    Invalid: 0.000
+    Latency: 14.870 s
+    Output throughput: 1777.726 token/s
     ```
 
   - nvidia/Qwen3-Coder-480B-A35B-Instruct-NVFP (NVFP4)
