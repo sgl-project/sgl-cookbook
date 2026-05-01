@@ -22,7 +22,7 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   35B-A3B:   H100 tp=1, H200 tp=1, B200 tp=1, B300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
  *   27B:       tp=1 on all hardware (including MI300X, MI325X, MI355X)
  *
- * FP4 (397B only, Blackwell required): B200 tp=4, B300 tp=2
+ * FP4 (397B only, Blackwell required): B200 tp=2, B300 tp=2
  */
 
 const MOE_MODELS = new Set(['397b', '122b', '35b']);
@@ -156,7 +156,7 @@ const Qwen35ConfigGenerator = () => {
       '397b': {
         h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
         h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
-        b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.85 } },
+        b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
         b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
         mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
         mi325x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } },
@@ -316,17 +316,22 @@ const Qwen35ConfigGenerator = () => {
         }
       }
 
-      // FP4-specific backend settings
+      // FP4-specific backend settings (B200 validated in InferenceX#1018)
       if (quantization === 'fp4') {
+        cmd += ' \\\n  --enable-symm-mem';
         cmd += ' \\\n  --quantization modelopt_fp4';
-        cmd += ' \\\n  --fp4-gemm-backend flashinfer_cutlass';
         cmd += ' \\\n  --kv-cache-dtype fp8_e4m3';
+        if (MOE_MODELS.has(model)) {
+          cmd += ' \\\n  --mamba-ssm-dtype bfloat16';
+        }
         cmd += ' \\\n  --moe-runner-backend flashinfer_trtllm';
-        cmd += ' \\\n  --chunked-prefill-size 32768';
-        cmd += ' \\\n  --max-prefill-tokens 32768';
-        cmd += ' \\\n  --max-running-requests 128';
-        cmd += ' \\\n  --stream-interval 30';
+        cmd += ' \\\n  --chunked-prefill-size 16384';
+        cmd += ' \\\n  --max-prefill-tokens 16384';
+        cmd += ' \\\n  --stream-interval 50';
         cmd += ' \\\n  --disable-radix-cache';
+        if (speculative === 'enabled') {
+          cmd += ' \\\n  --tokenizer-worker-num 6';
+        }
       }
 
       // Add memory fraction last
