@@ -19,7 +19,7 @@ This section provides deployment configurations optimized for different hardware
 
 ### 3.1 Basic Configuration
 
-**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and capabilities. SGLang supports serving GLM-5.1 on NVIDIA H100, H200, B200, GB300, and AMD MI300X/MI325X/MI355X GPUs.
+**Interactive Command Generator**: Use the configuration selector below to automatically generate the appropriate deployment command for your hardware platform, quantization method, and capabilities. SGLang supports serving GLM-5.1 on NVIDIA H100, H200, B200, B300, GB200, GB300, and AMD MI300X/MI325X/MI355X GPUs.
 
 import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51ConfigGenerator';
 
@@ -38,12 +38,14 @@ import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51Confi
 | H100     | tp=16 | tp=32 |
 | H200     | tp=8  | tp=16 |
 | B200     | tp=8  | tp=16 |
+| B300     | tp=8  | tp=16 |
+| GB200    | tp=4  | —     |
 | GB300    | tp=4  | —     |
 | MI300X/MI325X | tp=8 | tp=8 |
 | MI355X   | tp=8 | tp=8 |
 
 - **AMD GPUs**: Both BF16 and FP8 checkpoints are supported on MI300X/MI325X/MI355X at tp=8. Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). FP8 uses approximately half the memory of BF16 (~89 GB/GPU vs ~175 GB/GPU). EAGLE speculative decoding is not currently supported on AMD for GLM-5.1.
-- **GB300**: Only the FP8 checkpoint is recommended on GB300, with `tp=4`. For high-throughput DP attention on GB300, use `--dp 4`.
+- **GB200/GB300**: Only the FP8 checkpoint is recommended on GB200/GB300, with `tp=4`. For high-throughput DP attention on GB200/GB300, use `--dp 4`.
 - For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5.1 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
 - Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5.1-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
 
