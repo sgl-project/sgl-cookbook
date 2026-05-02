@@ -51,7 +51,7 @@ See [Basic API Usage](https://docs.sglang.ai/basic_usage/send_request.html).
 Enable reasoning parser for Kimi-K2-Thinking:
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model moonshotai/Kimi-K2-Thinking \
   --reasoning-parser kimi_k2 \
   --tp 8 \
@@ -172,7 +172,7 @@ Kimi-K2-Instruct and Kimi-K2-Thinking support tool calling capabilities. Enable 
 **Deployment Command:**
 
 ```shell
-python -m sglang.launch_server \
+sglang serve \
   --model moonshotai/Kimi-K2-Instruct \
   --tool-call-parser kimi_k2 \
   --tp 8 \
@@ -352,7 +352,7 @@ We use SGLang's built-in benchmarking tool to conduct performance evaluation on 
 - Model Deployment Command:
 
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path moonshotai/Kimi-K2-Instruct \
     --tp 8 \
     --dp 4 \
@@ -420,7 +420,7 @@ Max ITL (ms):                            19.94
 - Model Deployment Command:
 
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path moonshotai/Kimi-K2-Instruct \
     --tp 8 \
     --dp 4 \
@@ -491,7 +491,7 @@ Max ITL (ms):                            1703.21
 - Server Command
 
 ```shell
-python3 -m sglang.launch_server \
+sglang serve \
     --model-path moonshotai/Kimi-K2-Instruct \
     --tp 8 \
     --dp 4 \
