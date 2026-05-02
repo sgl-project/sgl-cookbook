@@ -11,18 +11,18 @@ import ConfigGenerator from '../../base/ConfigGenerator';
  *   27B, 9B, 4B, 2B, 0.8B
  *
  * GPU requirements (BF16):
- *   397B-A17B: H100 tp=16, H200 tp=8, B200 tp=8, B300 tp=4, MI300X tp=8, MI325X tp=4, MI355X tp=4
- *   122B-A10B: H100 tp=4,  H200 tp=2, B200 tp=2, B300 tp=1, MI300X tp=2, MI325X tp=1, MI355X tp=1
- *   35B-A3B:   H100 tp=1,  H200 tp=1, B200 tp=1, B300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
+ *   397B-A17B: H100 tp=16, H200 tp=8, B200 tp=8, B300 tp=4, GB200 tp=4, GB300 tp=4, MI300X tp=8, MI325X tp=4, MI355X tp=4
+ *   122B-A10B: H100 tp=4,  H200 tp=2, B200 tp=2, B300 tp=1, GB200 tp=1, GB300 tp=1, MI300X tp=2, MI325X tp=1, MI355X tp=1
+ *   35B-A3B:   H100 tp=1,  H200 tp=1, B200 tp=1, B300 tp=1, GB200 tp=1, GB300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
  *   27B/9B/4B/2B/0.8B: tp=1 on all hardware (including MI300X, MI325X, MI355X)
  *
  * GPU requirements (FP8, where available):
- *   397B-A17B: H100 tp=8, H200 tp=8 ep=8, B200 tp=4, B300 tp=2, MI300X tp=4, MI325X tp=2, MI355X tp=2
- *   122B-A10B: H100 tp=2, H200 tp=1, B200 tp=1, B300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
- *   35B-A3B:   H100 tp=1, H200 tp=1, B200 tp=1, B300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
+ *   397B-A17B: H100 tp=8, H200 tp=8 ep=8, B200 tp=4, B300 tp=2, GB200 tp=4, GB300 tp=4, MI300X tp=4, MI325X tp=2, MI355X tp=2
+ *   122B-A10B: H100 tp=2, H200 tp=1, B200 tp=1, B300 tp=1, GB200 tp=1, GB300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
+ *   35B-A3B:   H100 tp=1, H200 tp=1, B200 tp=1, B300 tp=1, GB200 tp=1, GB300 tp=1, MI300X tp=1, MI325X tp=1, MI355X tp=1
  *   27B:       tp=1 on all hardware (including MI300X, MI325X, MI355X)
  *
- * FP4 (397B only, Blackwell required): B200 tp=4, B300 tp=2
+ * FP4 (397B only, Blackwell required): B200 tp=4, B300 tp=2, GB200 tp=4, GB300 tp=4
  */
 
 const MOE_MODELS = new Set(['397b', '122b', '35b']);
@@ -65,10 +65,12 @@ const Qwen35ConfigGenerator = () => {
         getDynamicItems: (values) => {
           const isNvfp4 = values.quantization === 'fp4';
           return [
-            { id: 'h100', label: 'H100', default: !isNvfp4, disabled: isNvfp4 },
-            { id: 'h200', label: 'H200', default: false, disabled: isNvfp4 },
-            { id: 'b200', label: 'B200', default: false, disabled: false },
-            { id: 'b300', label: 'B300', default: isNvfp4, disabled: false },
+            { id: 'h100',   label: 'H100',   default: !isNvfp4, disabled: isNvfp4 },
+            { id: 'h200',   label: 'H200',   default: false, disabled: isNvfp4 },
+            { id: 'b200',   label: 'B200',   default: false, disabled: false },
+            { id: 'b300',   label: 'B300',   default: isNvfp4, disabled: false },
+            { id: 'gb200',  label: 'GB200',  default: false, disabled: false },
+            { id: 'gb300',  label: 'GB300',  default: false, disabled: false },
             { id: 'mi300x', label: 'MI300X', default: false, disabled: isNvfp4 },
             { id: 'mi325x', label: 'MI325X', default: false, disabled: isNvfp4 },
             { id: 'mi355x', label: 'MI355X', default: false, disabled: isNvfp4 }
@@ -154,73 +156,89 @@ const Qwen35ConfigGenerator = () => {
 
     modelConfigs: {
       '397b': {
-        h100: { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
-        h200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
-        b200: { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.85 } },
-        b300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
+        h100:  { bf16: { tp: 16, mem: 0.8 }, fp8: { tp: 8, mem: 0.8 } },
+        h200:  { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 8, ep: 8, mem: 0.8 } },
+        b200:  { bf16: { tp: 8,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.85 } },
+        b300:  { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 2, mem: 0.8 }, fp4: { tp: 2, mem: 0.8 } },
+        gb200: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.85 } },
+        gb300: { bf16: { tp: 4,  mem: 0.8 }, fp8: { tp: 4, mem: 0.8 }, fp4: { tp: 4, mem: 0.8 } },
         mi300x: { bf16: { tp: 8, mem: 0.8 }, fp8: { tp: 4, mem: 0.8 } },
         mi325x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } },
         mi355x: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } }
       },
       '122b': {
-        h100: { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } },
-        h200: { bf16: { tp: 2, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        b200: { bf16: { tp: 2, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        b300: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        h100:  { bf16: { tp: 4, mem: 0.8 }, fp8: { tp: 2, mem: 0.8 } },
+        h200:  { bf16: { tp: 2, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        b200:  { bf16: { tp: 2, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        b300:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        gb200: { bf16: { tp: 2, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        gb300: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi300x: { bf16: { tp: 2, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi325x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi355x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } }
       },
       '35b': {
-        h100: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        h200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        b200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        b300: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        h100:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        h200:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        b200:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        b300:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        gb200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        gb300: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi300x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi325x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi355x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } }
       },
       '27b': {
-        h100: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        h200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        b200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
-        b300: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        h100:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        h200:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        b200:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        b300:  { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        gb200: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
+        gb300: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi300x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi325x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } },
         mi355x: { bf16: { tp: 1, mem: 0.8 }, fp8: { tp: 1, mem: 0.8 } }
       },
       '9b': {
-        h100: { bf16: { tp: 1, mem: 0.8 } },
-        h200: { bf16: { tp: 1, mem: 0.8 } },
-        b200: { bf16: { tp: 1, mem: 0.8 } },
-        b300: { bf16: { tp: 1, mem: 0.8 } },
+        h100:  { bf16: { tp: 1, mem: 0.8 } },
+        h200:  { bf16: { tp: 1, mem: 0.8 } },
+        b200:  { bf16: { tp: 1, mem: 0.8 } },
+        b300:  { bf16: { tp: 1, mem: 0.8 } },
+        gb200: { bf16: { tp: 1, mem: 0.8 } },
+        gb300: { bf16: { tp: 1, mem: 0.8 } },
         mi300x: { bf16: { tp: 1, mem: 0.8 } },
         mi325x: { bf16: { tp: 1, mem: 0.8 } },
         mi355x: { bf16: { tp: 1, mem: 0.8 } }
       },
       '4b': {
-        h100: { bf16: { tp: 1, mem: 0.8 } },
-        h200: { bf16: { tp: 1, mem: 0.8 } },
-        b200: { bf16: { tp: 1, mem: 0.8 } },
-        b300: { bf16: { tp: 1, mem: 0.8 } },
+        h100:  { bf16: { tp: 1, mem: 0.8 } },
+        h200:  { bf16: { tp: 1, mem: 0.8 } },
+        b200:  { bf16: { tp: 1, mem: 0.8 } },
+        b300:  { bf16: { tp: 1, mem: 0.8 } },
+        gb200: { bf16: { tp: 1, mem: 0.8 } },
+        gb300: { bf16: { tp: 1, mem: 0.8 } },
         mi300x: { bf16: { tp: 1, mem: 0.8 } },
         mi325x: { bf16: { tp: 1, mem: 0.8 } },
         mi355x: { bf16: { tp: 1, mem: 0.8 } }
       },
       '2b': {
-        h100: { bf16: { tp: 1, mem: 0.8 } },
-        h200: { bf16: { tp: 1, mem: 0.8 } },
-        b200: { bf16: { tp: 1, mem: 0.8 } },
-        b300: { bf16: { tp: 1, mem: 0.8 } },
+        h100:  { bf16: { tp: 1, mem: 0.8 } },
+        h200:  { bf16: { tp: 1, mem: 0.8 } },
+        b200:  { bf16: { tp: 1, mem: 0.8 } },
+        b300:  { bf16: { tp: 1, mem: 0.8 } },
+        gb200: { bf16: { tp: 1, mem: 0.8 } },
+        gb300: { bf16: { tp: 1, mem: 0.8 } },
         mi300x: { bf16: { tp: 1, mem: 0.8 } },
         mi325x: { bf16: { tp: 1, mem: 0.8 } },
         mi355x: { bf16: { tp: 1, mem: 0.8 } }
       },
       '0.8b': {
-        h100: { bf16: { tp: 1, mem: 0.8 } },
-        h200: { bf16: { tp: 1, mem: 0.8 } },
-        b200: { bf16: { tp: 1, mem: 0.8 } },
-        b300: { bf16: { tp: 1, mem: 0.8 } },
+        h100:  { bf16: { tp: 1, mem: 0.8 } },
+        h200:  { bf16: { tp: 1, mem: 0.8 } },
+        b200:  { bf16: { tp: 1, mem: 0.8 } },
+        b300:  { bf16: { tp: 1, mem: 0.8 } },
+        gb200: { bf16: { tp: 1, mem: 0.8 } },
+        gb300: { bf16: { tp: 1, mem: 0.8 } },
         mi300x: { bf16: { tp: 1, mem: 0.8 } },
         mi325x: { bf16: { tp: 1, mem: 0.8 } },
         mi355x: { bf16: { tp: 1, mem: 0.8 } }
@@ -233,7 +251,7 @@ const Qwen35ConfigGenerator = () => {
       const hwConfig = this.modelConfigs[model]?.[hardware]?.[quantization];
       if (!hwConfig) {
         if (quantization === 'fp4') {
-          return '# FP4 requires B200/B300 (Blackwell) and is only available for Qwen3.5-397B-A17B';
+          return '# FP4 requires B200/B300/GB200/GB300 (Blackwell) and is only available for Qwen3.5-397B-A17B';
         }
         return '# Please select a valid hardware and quantization combination';
       }
@@ -300,7 +318,7 @@ const Qwen35ConfigGenerator = () => {
       }
 
       // Append backend configurations
-      if (hardware === 'b200' || hardware === 'b300') {
+      if (hardware === 'b200' || hardware === 'b300' || hardware === 'gb200' || hardware === 'gb300') {
         cmd += ` \\\n  --attention-backend trtllm_mha`;
       }
 
@@ -309,8 +327,8 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --attention-backend triton`;
       }
 
-      // Tokenizer workers for H200 and B200/B300
-      if (hardware === 'h200' || hardware === 'b200' || hardware === 'b300') {
+      // Tokenizer workers for H200, B200/B300, and GB200/GB300
+      if (hardware === 'h200' || hardware === 'b200' || hardware === 'b300' || hardware === 'gb200' || hardware === 'gb300') {
         if (speculative === 'disabled') {
           cmd += ` \\\n  --tokenizer-worker-num 6`;
         }
