@@ -6,12 +6,23 @@
 
 - **BF16 (Full precision)**: [zai-org/GLM-5.1](https://huggingface.co/zai-org/GLM-5.1)
 - **FP8 (8-bit quantized)**: [zai-org/GLM-5.1-FP8](https://huggingface.co/zai-org/GLM-5.1-FP8)
+- **FP4 (4-bit quantized)**: [amd/GLM-5.1-MXFP4](https://huggingface.co/amd/GLM-5.1-MXFP4) **(AMD Only)**
 
 **License:** MIT
 
 ## 2. SGLang Installation
 
 Please refer to the [official SGLang installation guide](https://docs.sglang.ai/get_started/install.html) for installation instructions.
+
+### AMD Docker Images
+
+```bash
+# Use Docker (AMD MI300X/MI325X)
+docker pull lmsysorg/sglang-rocm:v0.5.10rc0-rocm720-mi30x-20260415
+
+# Use Docker (AMD MI355X)
+docker pull lmsysorg/sglang-rocm:v0.5.10rc0-rocm720-mi35x-20260415
+```
 
 ## 3. Model Deployment
 
@@ -33,16 +44,17 @@ import GLM51ConfigGenerator from '@site/src/components/autoregressive/GLM51Confi
 - The `--mem-fraction-static` flag is recommended for optimal memory utilization, adjust it based on your hardware and workload.
 - BF16 model always requires **2x GPUs** compared to FP8 on NVIDIA hardware.
 
-| Hardware | FP8 | BF16 |
-| -------- | --- | ---- |
-| H100     | tp=16 | tp=32 |
-| H200     | tp=8  | tp=16 |
-| B200     | tp=8  | tp=16 |
-| GB300    | tp=4  | —     |
-| MI300X/MI325X | tp=8 | tp=8 |
-| MI355X   | tp=8 | tp=8 |
+| Hardware | BF16 TP | FP8 TP | FP4 TP |
+| -------- | ------- | ------ | ------ |
+| H100     | 32      | 16     | N/A    |
+| H200     | 16      | 8      | N/A    |
+| B200     | 16      | 8      | N/A    |
+| GB300    | N/A     | 4      | N/A    |
+| MI300X   | 8       | 8      | N/A    |
+| MI325X   | 8       | 4      | N/A    |
+| MI355X   | 8       | 4      | 2      |
 
-- **AMD GPUs**: Both BF16 and FP8 checkpoints are supported on MI300X/MI325X/MI355X at tp=8. Use `--nsa-prefill-backend tilelang --nsa-decode-backend tilelang` for the NSA attention backend. Add `--chunked-prefill-size 131072` and `--watchdog-timeout 1200` (20 minutes for weight loading). FP8 uses approximately half the memory of BF16 (~89 GB/GPU vs ~175 GB/GPU). EAGLE speculative decoding is not currently supported on AMD for GLM-5.1.
+- **AMD GPUs**: Both BF16 and FP8 checkpoints are supported on MI300X/MI325X/MI355X. FP8 uses approximately half the memory of BF16 (~89 GB/GPU vs ~175 GB/GPU). Required flags: `--trust-remote-code`, `--model-loader-extra-config '{"enable_multithread_load": true, "num_threads": 8}'`, `--chunked-prefill-size 131072`, `--watchdog-timeout 1200` (20 minutes for weight loading), and `--tokenizer-worker-num` (set to 2× the TP value). MXFP4 additionally requires `--nsa-prefill-backend tilelang`, `--nsa-decode-backend tilelang`, `--disable-radix-cache`, and `--kv-cache-dtype fp8_e4m3`. EAGLE speculative decoding is not currently supported on AMD for GLM-5.1.
 - **GB300**: Only the FP8 checkpoint is recommended on GB300, with `tp=4`. For high-throughput DP attention on GB300, use `--dp 4`.
 - For other configuration tips, please refer to [DeepSeek V3.2 documentation](https://docs.sglang.io/basic_usage/deepseek_v32.html). GLM-5.1 and DeepSeek V3.2 share the same model structure, so the optimization techniques between these two models are also common (MTP, DSA kernel, Context Parallel...).
 - Use `--json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'` for GLM-5.1-FP8 if you want to enable the [IndexCache](https://github.com/THUDM/IndexCache) method. This feature is supported through [this PR](https://github.com/sgl-project/sglang/pull/21405) and introduces only a small accuracy loss. However, if you are running rigorous accuracy evaluations, it is not recommended to enable this feature.
@@ -70,7 +82,7 @@ SGLANG_ENABLE_SPEC_V2=1 sglang serve \
 
 The following ROCm commands are additional options for AMD GPUs and do not replace the NVIDIA instructions above.
 
-#### FP8 (Recommended)
+#### FP8
 
 ```shell
 sglang serve \
@@ -79,11 +91,11 @@ sglang serve \
   --trust-remote-code \
   --tool-call-parser glm47 \
   --reasoning-parser glm45 \
-  --nsa-prefill-backend tilelang \
-  --nsa-decode-backend tilelang \
+  --model-loader-extra-config '{"enable_multithread_load": true, "num_threads": 8}' \
   --chunked-prefill-size 131072 \
-  --mem-fraction-static 0.80 \
   --watchdog-timeout 1200 \
+  --tokenizer-worker-num 16 \
+  --mem-fraction-static 0.85 \
   --host 0.0.0.0 \
   --port 30000
 ```
@@ -95,11 +107,11 @@ sglang serve \
   --model-path zai-org/GLM-5.1 \
   --tp 8 \
   --trust-remote-code \
-  --nsa-prefill-backend tilelang \
-  --nsa-decode-backend tilelang \
+  --model-loader-extra-config '{"enable_multithread_load": true, "num_threads": 8}' \
   --chunked-prefill-size 131072 \
-  --mem-fraction-static 0.80 \
   --watchdog-timeout 1200 \
+  --tokenizer-worker-num 16 \
+  --mem-fraction-static 0.80 \
   --host 0.0.0.0 \
   --port 30000
 ```
