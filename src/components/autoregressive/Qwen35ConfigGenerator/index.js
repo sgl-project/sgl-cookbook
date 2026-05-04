@@ -251,8 +251,13 @@ const Qwen35ConfigGenerator = () => {
       const epValue = hwConfig.ep;
       const memFraction = hwConfig.mem;
 
+      // Prepend SGLANG_ENABLE_SPEC_V2=1 for B200 FP8 + MTP (validated InferenceX#1065)
+      const envPrefix = (hardware === 'b200' && quantization === 'fp8' && speculative === 'enabled')
+        ? 'SGLANG_ENABLE_SPEC_V2=1 '
+        : '';
+
       // Initialize the base command
-      let cmd = `sglang serve --model-path ${modelName}`;
+      let cmd = `${envPrefix}sglang serve --model-path ${modelName}`;
       if (tpValue > 1) {
         cmd += ` \\\n  --tp ${tpValue}`;
       }
@@ -286,8 +291,8 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --tokenizer-worker-num 6`;
       }
 
-      // Enable allreduce fusion for all Qwen3.5 configs (skip for FP4: benchmark only enables this for TP≥8).
-      if (quantization !== 'fp4') {
+      // Enable allreduce fusion for all Qwen3.5 configs (skip for FP4 and B200 FP8: benchmark does not enable it).
+      if (quantization !== 'fp4' && !(hardware === 'b200' && quantization === 'fp8')) {
         cmd += ` \\\n  --enable-flashinfer-allreduce-fusion`;
       }
 
@@ -296,6 +301,22 @@ const Qwen35ConfigGenerator = () => {
         cmd += ` \\\n  --attention-backend flashinfer`;
         if (MOE_MODELS.has(model)) {
           cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+        }
+      }
+
+      // B200 FP8-specific optimizations (validated in InferenceX#1027 and #1065 for MTP)
+      if (hardware === 'b200' && quantization === 'fp8') {
+        cmd += ` \\\n  --enable-symm-mem`;
+        cmd += ` \\\n  --disable-radix-cache`;
+        if (MOE_MODELS.has(model)) {
+          cmd += ` \\\n  --mamba-ssm-dtype bfloat16`;
+        }
+        cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
+        cmd += ` \\\n  --chunked-prefill-size 16384`;
+        cmd += ` \\\n  --max-prefill-tokens 16384`;
+        cmd += ` \\\n  --stream-interval 50`;
+        if (speculative === 'enabled') {
+          cmd += ` \\\n  --tokenizer-worker-num 6`;
         }
       }
 
