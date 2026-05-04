@@ -47,7 +47,6 @@ import Qwen3CoderConfigGenerator from '@site/src/components/autoregressive/Qwen3
 * **Environment Variable**: If you encounter aiter-related issues, try setting `SGLANG_USE_AITER=0`.
 
 **NVIDIA (B200/GB200):**
-* **MOE Runner Backend**: Use `--moe-runner-backend flashinfer_trtllm` for both FP8 and NVFP4. It is the recommended backend for best performance on B200/GB200.
 * **GB200 Parallelism**: Use `--tp 4 --ep 4` on GB200. B200 uses the default NVIDIA settings generated above.
 * **NVFP4 Quantization**: Requires `--quantization modelopt_fp4` and uses a different model path (`nvidia/Qwen3-Coder-...`).
 * **DP Attention**: NVFP4 configuration supports `--enable-dp-attention` for improved throughput.
@@ -482,7 +481,7 @@ Max ITL (ms):                            36863.32
 
 #### 5.1.2 NVIDIA (B200/GB200) Standard Scenario Benchmark
 
-The following runs use the same random dataset benchmark client commands as the AMD section. On GB200, launch the server with `--tp 4 --ep 4`. Both FP8 and NVFP4 use `--moe-runner-backend flashinfer_trtllm`.
+The following runs use the same random dataset benchmark client commands as the AMD section. On GB200, launch the server with `--tp 4 --ep 4`.
 
 ##### 5.1.2.1 FP8 Model
 

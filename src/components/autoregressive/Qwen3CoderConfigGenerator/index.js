@@ -126,9 +126,6 @@ const Qwen3CoderConfigGenerator = () => {
 
       // MOE runner backend for NVIDIA
       if (isNvidia) {
-        if (quantization === 'fp8' || quantization === 'nvfp4') {
-          cmd += ` \\\n  --moe-runner-backend flashinfer_trtllm`;
-        }
         if (quantization === 'nvfp4') {
           cmd += ` \\\n  --quantization modelopt_fp4`;
         }
