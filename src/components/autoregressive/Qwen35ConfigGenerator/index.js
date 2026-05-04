@@ -251,8 +251,8 @@ const Qwen35ConfigGenerator = () => {
       const epValue = hwConfig.ep;
       const memFraction = hwConfig.mem;
 
-      // Prepend SGLANG_ENABLE_SPEC_V2=1 for B200 FP8 + MTP (validated InferenceX#1065)
-      const envPrefix = (hardware === 'b200' && quantization === 'fp8' && speculative === 'enabled')
+      // Prepend SGLANG_ENABLE_SPEC_V2=1 for B200 FP8 + MTP (InferenceX#1065) and B200 FP4 + MTP (InferenceX#1257)
+      const envPrefix = (hardware === 'b200' && (quantization === 'fp8' || quantization === 'fp4') && speculative === 'enabled')
         ? 'SGLANG_ENABLE_SPEC_V2=1 '
         : '';
 
